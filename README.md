@@ -14,9 +14,10 @@ Redundancy is licensed under the terms and conditions of the GNU GPL v3.
 Installation
 ============
 
-See INSTALL_MANUAL for more details
+See INSTALL_MANUAL for more details.
 
 Note
 ====
 
 Redundancy is still a very unstable program. It is still under active development.
+See branch "stable" for the stable versions.
