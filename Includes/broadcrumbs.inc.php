@@ -1,17 +1,38 @@
-<li>
+<ul id = 'broadcrumb'>
 <?php
+	//start a session if needed
 	if (isset($_SESSION) == false)
-		session_start();
+		session_start();	
+	//include the database file
+	include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";	
+	//Get the path parts
 	$dirs = explode("/",$_SESSION["currentdir"]);
+	//parts_before is a kind of prefix to display a complete link step by step
 	$parts_before = "";
-	echo "<ul id = 'broadcrumb'><a href= 'index.php?module=list&dir=/'>Home</a></ul>";
+	//link suffix to display
+	$suffix = "";
+	//Display several kinds of links for cases like copy file, move filey, copy dir, move dir and the regular display
+	if (isset($_GET["move"]) && isset($_GET["file"]))
+			$suffix = "module=list&dir=/&move=true&file=".mysql_real_escape_string($_GET["file"])."&dir=/";
+	else if (isset($_GET["copy"]) && isset($_GET["file"]))
+			$suffix = "module=list&dir=/&copy=true&file=".mysql_real_escape_string($_GET["file"])."&dir=/";
+	else if (isset($_GET["copy"]) && isset($_GET["source"]))
+			$suffix = "module=list&dir=/&copy=true&source=".mysql_real_escape_string($_GET["source"])."&old_root=".mysql_real_escape_string($_GET["old_root"])."&target=/";
+				else if (isset($_GET["move"]) && isset($_GET["source"]))
+			$suffix = "module=list&dir=/&move=true&source=".mysql_real_escape_string($_GET["source"])."&old_root=".mysql_real_escape_string($_GET["old_root"])."&target=/";
+	else
+			$suffix = "module=list&dir=/";
+	//Display home link
+	echo "<li ><a href= 'index.php?$suffix'><img src = './Images/folder_user.png'>Home</a></li>";
+	//Display the links as a kind of broadcrumb
 	for ($i = 0; $i < count($dirs); $i++)
 	{
 		if ($dirs[$i] != ""){
-			echo "<ul id = 'broadcrumb'><a href= 'index.php?module=list&dir=".$parts_before.$dirs[$i]."'>".$dirs[$i]."</a></ul>";
+			echo " / <li id = 'broadcrumb'><a href= 'index.php?$suffix".$parts_before.$dirs[$i]."/'><img src = './Images/folder.png'>".$dirs[$i]."</a></li>";
 			$parts_before = $parts_before.$dirs[$i]."/";
 		}	
 	}
 ?>
-</li>
+</ul>
 <br>
+

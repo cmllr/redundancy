@@ -1,0 +1,37 @@
+Errors
+======
+Database
+========
+
+001: Error while getting account informations to display
+002: Error while activating
+003: Error while getting infos for new directory
+004: Error while creating new directory
+005: Error while opening database
+006: Error while selecting database
+007-012: Error while delete process
+013: Error while getting image path;
+014: Error while listing files
+015: Error while moving file
+016: Error while moving directory
+017: Error while moving file in directory
+018: Error while logging in
+019: Error while registering
+020: Error while sending email
+021: Error while checking if user is existing
+022 & 023: Error while getting user space
+024: Error while checking if file is shared
+025: Error while getting directory size
+026: Error while deleting share information
+027 & 028: Error while creating new share information
+029: Error while displaying share informations and/or preparing the download
+030: Error while uploading
+
+Messages
+========
+
+1: Account successfully activated
+2: Directory not created
+3: Login failed
+4: Size to big
+5: Upload failed (permissions set?)

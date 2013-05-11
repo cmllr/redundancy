@@ -1,9 +1,5 @@
-<li>
-<ul><a href = "index.php?module=startpage">Startpage</a></ul>
-<ul><a href = "index.php?module=list">Files</a></ul>
-<ul><a href = "index.php?module=upload">Upload</a></ul>
-<ul><a href = "index.php?module=createdir">New Directory</a></ul>
-<ul><a href = "index.php?module=account">Account</a></ul>
-<ul><a href = "index.php?module=logout">Log out</a></ul>
-</li>
-<br>
+<ul>
+<li><a href = "index.php?module=list"><img src = "./Images/folder_user.png">Files</a></li>
+<li><a href = "index.php?module=upload"><img src = "./Images/add.png">Upload</a></li>
+<li><a href = "index.php?module=createdir"><img src = "./Images/folder_add.png">New Directory</a></li>
+</ul>

@@ -26,3 +26,19 @@ function removeLinks(Name)
 	var myDiv = document.getElementById(Name);
 	myDiv.removeChild(myDiv.childNodes[1]);
 }
+function displayorhide()
+{
+	
+	if (document.getElementById("sidebar").style.visibility == 'visible')
+		document.getElementById("sidebar").style.visibility = 'hidden';
+	else
+		document.getElementById("sidebar").style.visibility = 'visible';
+}
+function displayorhideWarning()
+{
+	
+	if (document.getElementById("warning").style.visibility == 'visible')
+		document.getElementById("warning").style.visibility = 'hidden';
+	else
+		document.getElementById("warning").style.visibility = 'visible';
+}
