@@ -1,8 +1,6 @@
 <?php	
-	//Program values
-	$_GLOBALS["Program_Name"] = "Redundancy";	
-	$_GLOBALS["Program_Storage"] = "/path/to/redundancy";
-	$_GLOBALS["Program_Version"] = "1.9.1.0-git-nightly";	
+	$_GLOBALS["Program_Version"] = "1.9.2-git-nightly";	
+	$_GLOBALS["config_dir"] = "./";
 ?>
 <?php
 	function login($pUser,$pPass)
@@ -152,7 +150,7 @@
 	{	
 		if (isset($_SESSION) == false)
 			session_start();	
-		$mimetype = mime_content_type($filename);
+		$mimetype = get_Mime_Type($filename);// mime_content_type($filename);
 		if ($mimetype == "image/png" || $mimetype == "image/jpg" || $mimetype == "image/jpeg" || $mimetype == "image/bmp")
 			return true;
 		return false;		
@@ -313,5 +311,9 @@
 			return $path_parts[count($path_parts) -2];
 		}
 	}
-
+	function get_Mime_Type($filename) {
+		$file = file_get_contents($filename);
+		$finfo = new finfo(FILEINFO_MIME_TYPE);		
+		return $finfo->buffer($file);
+	}
 ?>

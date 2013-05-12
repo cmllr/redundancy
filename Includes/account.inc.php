@@ -12,10 +12,12 @@
 	while ($row = mysql_fetch_object($result)) {
 		echo "<b>Email:</b> ".$row->Email;	
 		echo "<br><b>Username:</b> ".$row->User;
-		echo "<br><p class = 'token'>API Token</p><input type ='text' cols='70' rows='2' value ='".$row->API_Key."'></input></p>";
+		if ($_SESSION["role"] != 3)
+			echo "<br><p class = 'token'>API Token</p><input type ='text' cols='70' rows='2' value ='".$row->API_Key."'></input></p>";
 		//If the config allows user deletion by the user himself, display a link
-		if ($_SESSION["config"]["User_Allow_Delete"] == 1)
+		if ($_SESSION["config"]["User_Allow_Delete"] == 1 )
 			echo "<br><a href = 'index.php?module=goodbye'>Delete my account</a>";
+	
 	}
 	//Close the connection if finished
 	mysql_close($connect);

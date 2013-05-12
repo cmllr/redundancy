@@ -44,7 +44,8 @@
 		}	
 		//Create move links if needed
 		//Include database file
-		include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";	
+		include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";
+		
 		if (isset($_GET["file"]))
 			$fileToCopyOrToMove = mysql_real_escape_string($_GET["file"]);
 		if (isset($_GET["source"]))
@@ -69,7 +70,7 @@
 		$i++;
 		//Display the file or directory links itself
 		if ($row->Displayname == $row->Filename)
-			echo "<tr class = 'filetype$suffix'><td><img  src='./Images/folder.png'></td><td>$dirlink</td><td>".date("j.n.Y H:i",$date)."</td><td class ='size'>".getFittingDisplayStlye(getDirectorySize($row->Displayname))."</td><td class =  'actions' ><a class = 'delete' href ='index.php?module=delete&dir=".$row->Filename."'><img  src = './Images/folder_delete.png'></a><a class = 'delete' href ='index.php?module=list&move=true&source=".$row->Filename."&old_root=".$row->Directory."'><img  src = './Images/cut_red.png'></a></td><td></td></tr>";
+			echo "<tr class = 'filetype$suffix'><td><img  src='./Images/folder.png'></td><td>$dirlink</td><td>".date("j.n.Y H:i",$date)."</td><td class ='size'>".getFittingDisplayStlye(getDirectorySize($row->Displayname))."</td><td class =  'actions' ><a class = 'delete' href ='index.php?module=delete&dir=".$row->Filename."'><img  src = './Images/folder_delete.png'></a><a class = 'delete' href ='index.php?module=list&move=true&source=".$row->Filename."&old_root=".$row->Directory."'><img  src = './Images/cut_red.png'></a><a class = 'delete' href = 'index.php?module=list&copy=true&source=".$row->Filename."&old_root=".$row->Directory."'><img src= './Images/page_copy.png'></a></td><td></td></tr>";
 		else
 			echo "<tr class = 'filetype$suffix'><td><img src='$imagepath'></td><td><a class = 'filelink' href = 'index.php?module=file&file=".$row->Hash."'>".$row->Displayname."</a></td><td>".date("j.n.Y H:i",$date)."</td><td class ='size'>".getFittingDisplayStlye($row->Size)."</td><td class =  'actions' ><a class = 'delete'href ='index.php?module=delete&file=".$row->Hash."'><img  src = './Images/page_delete.png'></a><a class = 'delete' href ='index.php?module=list&move=true&file=".$row->Hash."'><img  src = './Images/cut_red.png'></a><a class = 'delete' href ='index.php?module=list&copy=true&file=".$row->Hash."'><img  src = './Images/page_copy.png'></a></td><td>$Share_Status</td></tr>";
 	}

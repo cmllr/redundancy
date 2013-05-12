@@ -4,7 +4,7 @@
 	//TODO: Find the bug which causes a complete loss of any data?! :(
 	if (isset($_SESSION) == false)
 			session_start();
-	if (isset($_GET["sure"])){	
+	if ($_SESSION["role"] != 3 && isset($_GET["sure"])){	
 		include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";	
 		$userID = mysql_real_escape_string($_SESSION["user_id"]);	
 		$getFiles = mysql_query("Select * from Files where UserID = '$userID'") ;

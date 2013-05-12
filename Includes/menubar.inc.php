@@ -12,5 +12,11 @@
 ?>
 </p>
 <a href = "index.php?module=account"><img src ="./Images/user_orange.png">My account</a>
+<?php
+	if (isset($_SESSION) == false)
+		session_start();
+	if ($_SESSION["role"] == 0)
+		echo "<a href = 'index.php?module=admin'><img src ='./Images/group_gear.png'>Administration</a>";
+?>
 <a href = "index.php?module=logout"><img src ="./Images/user_go.png">Exit</a>
 </div>

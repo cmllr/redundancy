@@ -13,11 +13,6 @@ function getLinks(Name)
 		a.appendChild(downloadButton);	
 		a.href = "index.php?module=donwload&file=Name".replace("Name",Name);		
 		document.getElementById(Name).appendChild(a);
-		
-		
-		
-		
-	
 	}
 }
 function removeLinks(Name)
@@ -35,10 +30,16 @@ function displayorhide()
 		document.getElementById("sidebar").style.visibility = 'visible';
 }
 function displayorhideWarning()
-{
-	
+{	
 	if (document.getElementById("warning").style.visibility == 'visible')
 		document.getElementById("warning").style.visibility = 'hidden';
 	else
 		document.getElementById("warning").style.visibility = 'visible';
+}
+function displayorhideContainer(Name)
+{
+	if (document.getElementById(Name).style.visibility == 'visible')
+		document.getElementById(Name).style.visibility = 'hidden';
+	else
+		document.getElementById(Name).style.visibility = 'visible';
 }

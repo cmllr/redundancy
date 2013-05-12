@@ -26,6 +26,7 @@ Database
 027 & 028: Error while creating new share information
 029: Error while displaying share informations and/or preparing the download
 030: Error while uploading
+031: Error while folder copying
 
 Messages
 ========

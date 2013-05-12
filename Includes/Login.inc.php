@@ -7,8 +7,13 @@ if (isset($_POST["user"])){
 	//Include Program file
 	include $_SESSION["Program_Dir"]."Includes/Program.inc.php";
 	//Login and/or rediret the user
+	$redir = "";
+	if ($_SESSION["config"]["Enable"] != 1 ) 
+	{
+		$redir = "?module=admin";
+	}
 	if (login($_POST["user"],$_POST["pass"]) == true)
-		header('Location: ../index.php');
+		header('Location: ../index.php'.$redir);
 	else
 		header('Location: ../index.php?message=3');
 }

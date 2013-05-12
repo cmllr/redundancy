@@ -3,7 +3,7 @@
 	if (isset($_SESSION) == false)
 			session_start();
 	//only proceed if a post parameter is set
-	if (isset($_POST["directory"]))
+	if ($_SESSION["role"] != 3 && isset($_POST["directory"]))
 	{		
 		//only proceed if the user is logged in and we have a valid user_id
 		if (isset($_SESSION['user_id']))
@@ -19,6 +19,7 @@
 			$uploadtime= date("D M j G:i:s T Y", $timestamp);
 			$hash = md5($newdirectory.$uploadtime);	
 			$client_ip = getIP();	
+			
 			$result = mysql_query("Select * from Files  where UserID = '$userid' and Filename ='".mysql_real_escape_string($newdirectory)."'") or die("Error: 003 ".mysql_error());
 			//If whe already have a directory like this -> abort
 			if (mysql_affected_rows() > 0)

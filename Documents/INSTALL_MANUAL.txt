@@ -1,0 +1,47 @@
+Redundancy installation manual
+==============================
+
+The manual target is 1.9.x-unstable/nightly.
+
+The installation of Redundancy is very easy, it is installed with only 3 steps.
+
+1. Download the files 2. Upload to your server 3. Configure the program 4. Create the DataBase
+
+1. Download the files
+=====================
+
+You can download the files over http with the following link
+
+https://github.com/squarerootfury/redundancy/archive/unstable.zip
+
+Alternative, you can use a git client, too.
+
+2. Upload the files to your webspace or server
+==============================================
+
+Extract and upload the files useing your prefered ftp client to your server
+
+3. Configure the program
+========================
+
+3.1. Open the file "/Includes/DataBase.inc.php". Replace the values with your database credentials and the name of the database (remember the database name for later use!)
+
+3.2. Open the file "/Redundancy.conf". 
+
+Change following program settings:
+
+The setting "Program_Share_Dir" has to be filled with the path of Redundancy to your server. For example, if you use Redundancy out of a sub folder called "redundancy", you have to put "redundancy" into this value.
+
+The value "Program_Path" is the internal path to Redundancy (often "/var/www/redundancy", for example).
+
+4. Create the database and the tables
+=====================================
+4.1. First, create a new, empty database. Use the name you have remembered at 3.1.
+4.2. If you are useing PHPmyAdmin (or equal), you can import the tables useing the file Redundancy.sql into your database server.
+
+5. Use
+======
+Now the program is installed. 
+If you open http://yourserver.tld/path/to/redundancy/ you should see the login screen and you should be able to register a new account.
+
+Please note that Redundancy is somewhere between alpha and beta. The risk of loosing data is there until the program will be called stable.

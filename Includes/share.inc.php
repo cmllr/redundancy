@@ -7,13 +7,13 @@
 	if (isset($_SESSION["user_id"]))
 		$userID = $_SESSION["user_id"];	
 	$code = "";
-	if (isset($_GET["delete"]) && $_GET["delete"] == "true")
+	if (isset($_GET["delete"]) && $_GET["delete"] == "true" && $_SESSION["role"] != 3)
 	{					
 		mysql_query("delete from `Share` where  Hash = '$file' and UserID = '$userID'") or die("Error: 026");
 		mysql_close($connect);	
 		header ("Location: index.php?module=list");
 	}
-	else if (isset($_GET["new"]) && $_GET["new"] == "true")
+	else if (isset($_GET["new"]) && $_GET["new"] == "true" && $_SESSION["role"] != 3)
 	{
 		mysql_query("Select *  from `Share` where  Hash = '$file' and UserID = '$userID'")  or die("Error: 027");
 		if (mysql_affected_rows() > 0)
@@ -46,7 +46,7 @@
 	{	
 		$result = mysql_query("Select * from Share  where UserID = '$userID' and Hash ='".$file."'") or die("Error: 029".mysql_error());	
 		while ($row = mysql_fetch_object($result)) {
-			$sharetext = $_SERVER["SERVER_NAME"].$_GLOBALS["Program_Storage"]."index.php?share=".$row->Extern_ID;
+			$sharetext = $_SERVER["SERVER_NAME"].$_SESSION["config"]["Program_Share_Dir"]."index.php?share=".$row->Extern_ID;
 			echo "<textarea cols='70' rows='2'>$sharetext</textarea><br>";
 			echo "<a href = 'index.php?module=file&file=".$row->Hash."'>View</a> ";			
 			echo "<a href = 'index.php?module=share&file=".$row->Hash."&delete=true'>Unshare</a>";			
@@ -81,4 +81,5 @@
 		} 
 		mysql_close($connect);			
 	}
+	header("Location: index.php?module=list");
 ?>

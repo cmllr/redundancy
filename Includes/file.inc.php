@@ -34,7 +34,7 @@
 		$shared = false;
 		//Get Share infos (if existing)
 		while ($rowShare = mysql_fetch_object($result)) {
-			$sharetext = $_SERVER["SERVER_NAME"].$_GLOBALS["Program_Storage"]."index.php?share=".$rowShare->Extern_ID;
+			$sharetext = $_SERVER["SERVER_NAME"].$_SESSION["config"]["Program_Share_Dir"]."index.php?share=".$rowShare->Extern_ID;
 			echo "<p class = 'sharelink'>Share link</p><input type ='text' cols='70' rows='2' value ='$sharetext'></input>";	
 			$shared = true;
 		} 
