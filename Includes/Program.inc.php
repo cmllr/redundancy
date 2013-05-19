@@ -1,6 +1,6 @@
 <?php	
-	$_GLOBALS["Program_Version"] = "1.9.2-git-nightly";	
-	$_GLOBALS["config_dir"] = "./";
+	$GLOBALS["Program_Version"] = "1.9.3-git-nightly";		
+	$GLOBALS["config_dir"] = "./";
 ?>
 <?php
 	function login($pUser,$pPass)
@@ -166,7 +166,7 @@
 		while ($row = mysql_fetch_object($result)) {
 			$userID = $row->ID;				
 		}
-		$result = mysql_query("Select * from Files where UserID = '$userID'") or die("Error 023: ".mysql_error());
+		$result = mysql_query("Select * from Files where UserID = '$userID'")  or die("Error 023: ".mysql_error());
 		while ($row = mysql_fetch_object($result)) {
 			$amount_in_Byte = $amount_in_Byte + $row->Size;			
 		}
@@ -228,7 +228,7 @@
 			$storage_used = $storage_used /1024 / 1024 / 1024;
 		}
 		if ($storage_used == 0)
-			$storage_used = 1;
+			$storage_used = 0;
 		return round($storage_used,2)." $measure of ".$_SESSION['space']." Megabytes used";
 	}
 	function getPercentage()
@@ -239,7 +239,8 @@
 		$storage = $storage * 1024 * 1024;
 		$storage_used = getUsedSpace($_SESSION["user_name"]);
 		if ($storage_used == 0)
-			$storage_used = 1;
+		return "0%";
+			else
 		return round(100/($storage/$storage_used),2)."%";
 	}
 	function isShared($file)
@@ -302,6 +303,7 @@
 		else
 			return false;		
 	}
+	
 	function getDisplayName($string,$filename)
 	{
 		if ($string != $filename)
@@ -315,5 +317,78 @@
 		$file = file_get_contents($filename);
 		$finfo = new finfo(FILEINFO_MIME_TYPE);		
 		return $finfo->buffer($file);
+	}
+	function getDirectoryID($directory)
+	{	
+		if (isset($_SESSION) == false)
+			session_start();
+		$filename = -1;
+		include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";	
+		$result = mysql_query("Select * from Files where UserID = '".$_SESSION["user_id"]."' and Displayname = '$directory' and Filename = '$directory' limit 1") or die("Error 025: ".mysql_error());
+		while ($row = mysql_fetch_object($result)) {
+			$filename = $row->ID;
+		}		
+		return $filename;
+	}
+	function fs_file_exists($file,$directory )
+	{
+		if (isset($_SESSION) == false)
+			session_start();	
+		include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";	
+		$result = mysql_query("Select * from Files where UserID = '".$_SESSION["user_id"]."' and Displayname = '$file'  and Directory = '$directory'") or die("Error 025: ".mysql_error());
+		
+		if (mysql_affected_rows() > 0)
+			return true;
+		else
+			return false;
+	}
+	function getFileByHash($hash)
+	{
+		if (isset($_SESSION) == false)
+			session_start();
+		$filename = "";
+		include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";	
+		$result = mysql_query("Select * from Files where UserID = '".$_SESSION["user_id"]."' and Hash = '$hash' limit 1") or die("Error 025: ".mysql_error());
+		while ($row = mysql_fetch_object($result)) {
+			$filename = $row->Displayname;
+		}			
+		return $filename;
+	}
+	function xss_check()
+	{
+			$cfg_server = parse_ini_file($GLOBALS["config_dir"]."Redundancy.conf");
+			if (count($cfg_server) != count($_SESSION["config"]))
+				exit;
+			if (count(array_diff($cfg_server,$_SESSION["config"])) != 0)
+				exit;
+			if ($_SESSION["Program_Dir"] !=  $cfg_server["Program_Path"])
+				exit;
+	}
+	function moveDir($source,$target,$old_root)
+	{
+		$uploadtime= date("D M j G:i:s T Y",time());
+		$user = mysql_real_escape_string($_SESSION["user_id"]);		
+		$getfiles_select = mysql_query("Select * from Files where Directory like '$old_root%' and UserID = '$user' ");	
+		while ($row = mysql_fetch_object($getfiles_select) ) {		
+			if ($row->Filename != $target && (startsWith($row->Filename,$source) || startsWith($row->Directory,$source) )){
+				//TODO: Display a "status monitor" while copying
+				if ($row->Displayname == $row->Filename){					
+					//	echo "<br>found dir: ".str_replace("//","/",$row->Displayname);			
+					//	echo "<br>new  displayname & filename: ".str_replace("//","/",$target.str_replace($old_root,"/",$row->Displayname));					
+					//	echo "<br>new  directory:  ".str_replace("//","/",$target.str_replace($old_root,"/",$row->Directory));	
+						$displayname = str_replace("//","/",$target.str_replace($old_root,"/",$row->Displayname));;
+						$directory = str_replace("//","/",$target.str_replace($old_root,"/",$row->Directory));	
+						include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";	
+						mysql_query("Update Files SET Displayname ='$displayname', Filename ='$displayname',Directory='$directory' where ID =".$row->ID) or die("Error: 016: ".mysql_error());	
+				}			
+				else
+				{
+						//echo "<br>found file: ".$row->Directory.$row->Displayname;				
+						//echo "<br>new  directory: ".str_replace("//","/",$target.str_replace($old_root,"/",$row->Directory));					
+						$directory =str_replace("//","/",$target.str_replace($old_root,"/",$row->Directory));
+						mysql_query("Update Files Set Directory='$directory' where ID =".$row->ID) or die("Error: 017 ".mysql_error());						
+				}
+			}			
+		}		
 	}
 ?>

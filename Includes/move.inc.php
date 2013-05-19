@@ -43,30 +43,7 @@
 				$old_root = mysql_real_escape_string($_GET["old_root"]); // old root dir
 			else
 				$old_root = mysql_real_escape_string($_POST["old_root"]); // old root dir
-			$uploadtime= date("D M j G:i:s T Y",time());
-			$user = mysql_real_escape_string($_SESSION["user_id"]);		
-			$getfiles_select = mysql_query("Select * from Files where Directory like '$old_root%' and UserID = '$user' ");	
-			while ($row = mysql_fetch_object($getfiles_select) ) {		
-				if ($row->Filename != $target && (startsWith($row->Filename,$source) || startsWith($row->Directory,$source) )){
-					//TODO: Display a "status monitor" while copying
-					if ($row->Displayname == $row->Filename){					
-					//	echo "<br>found dir: ".str_replace("//","/",$row->Displayname);			
-					//	echo "<br>new  displayname & filename: ".str_replace("//","/",$target.str_replace($old_root,"/",$row->Displayname));					
-					//	echo "<br>new  directory:  ".str_replace("//","/",$target.str_replace($old_root,"/",$row->Directory));	
-						$displayname = str_replace("//","/",$target.str_replace($old_root,"/",$row->Displayname));;
-						$directory = str_replace("//","/",$target.str_replace($old_root,"/",$row->Directory));	
-						include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";	
-						mysql_query("Update Files SET Displayname ='$displayname', Filename ='$displayname',Directory='$directory' where ID =".$row->ID) or die("Error: 016: ".mysql_error());	
-					}			
-					else
-					{
-						//echo "<br>found file: ".$row->Directory.$row->Displayname;				
-						//echo "<br>new  directory: ".str_replace("//","/",$target.str_replace($old_root,"/",$row->Directory));					
-						$directory =str_replace("//","/",$target.str_replace($old_root,"/",$row->Directory));
-						mysql_query("Update Files Set Directory='$directory' where ID =".$row->ID) or die("Error: 017 ".mysql_error());						
-					}
-				}			
-			}		
+			moveDir($source,$target,$old_root);
 			$success = true;
 		}
 	}
@@ -81,4 +58,5 @@
 			header("Location: ./index.php?module=list&dir=/");
 			exit;
 	}	
+	
 ?>

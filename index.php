@@ -4,6 +4,7 @@
 	if (isset($_SESSION) == false)
 		session_start();
 	//session_destroy();
+
 	//if the wanted module is the module for displaying an image -> Include the Image layer.
 	if (isset($_GET["module"]) && $_GET["module"] == "image" && isset($_SESSION["user_logged_in"]))
 	{
@@ -14,30 +15,17 @@
 <?php include "./Includes/gpl.inc.php";?>
 <!doctype html>
 <html>
-<!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  _paq.push(["trackPageView"]);
-  _paq.push(["enableLinkTracking"]);
-
-  (function() {
-    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://scribble.pf-control.de/piwik/";
-    _paq.push(["setTrackerUrl", u+"piwik.php"]);
-    _paq.push(["setSiteId", "6"]);
-    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
-    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<!-- End Piwik Code -->
 <head>
 <link rel = "stylesheet" href="./Style_Modern.css" type = "text/css"/>
 <link rel="shortcut icon" href="./images/favicon.ico">
 <title>
 <?php
 	//Include the main program file
+		
 	include "./Includes/Program.inc.php";	
 	//Parse the config file	
-	$_SESSION["config"] = parse_ini_file($_GLOBALS["config_dir"]."Redundancy.conf");
+	$_SESSION["config"] = parse_ini_file($GLOBALS["config_dir"]."Redundancy.conf");
+
 	//$_SESSION["Path_Separator"] = $_SESSION["config"]["Program_Path_Separator"];	
 	if ($_SESSION["config"]["Program_Debug"] == 1)
 			error_reporting(E_ALL);
@@ -47,7 +35,8 @@
 	echo $_SESSION["config"]["Program_Name_ALT"];
 	if (isset($_SESSION["user_name"])){
 		//Set the user contingent and refresh the information about used space
-		setUsedSpace($_SESSION['user_name']);		
+		setUsedSpace($_SESSION['user_name']);	
+		//xss_check();
 	}		
 ?>
 </title>
@@ -107,7 +96,7 @@ src="Core.js">
 <?php
 	//Display the version if wanted
 	if ($_SESSION["config"]["Program_Display_Version"])
-		echo "<div id = 'version'>".$_SESSION["config"]["Program_Name_ALT"]." ". $_GLOBALS["Program_Version"]."";
+		echo "<div id = 'version'>".$_SESSION["config"]["Program_Name_ALT"]." ". $GLOBALS["Program_Version"]."";
 	$end = microtime(true);
 	if ($_SESSION["config"]["Program_Display_Loadtime"])
 		echo "<br><small>Needed ". round($end-$start,4)." seconds.</small></div>";

@@ -30,10 +30,12 @@ if (isset($_SESSION) == false)
 				$dir = $_SESSION['currentdir'];				
 				$oldfilename = mysql_real_escape_string($_FILES['userfile']['name']);
 				$size = filesize($_FILES['userfile']['tmp_name']);
+				$directory_id =  getDirectoryID($dir);
+				
 				//TODO FIX ERROR HERE
-				if (getUsedSpace($_SESSION["user_id"])  + $size < $_SESSION["space"] * 1024 * 1024){
+				if ((getUsedSpace($_SESSION["user_id"])  + $size < $_SESSION["space"] * 1024 * 1024) && fs_file_exists($oldfilename,$dir) == false){
 					include $dbpath;	
-					$insert = "INSERT INTO Files (Filename,Displayname,Hash,UserID,IP,Uploaded,Size,Directory,Client) VALUES ('$newfilename','$oldfilename','$hash','$userid','$client_ip','$uploadtime','$size','$dir','".$_SERVER['HTTP_USER_AGENT']."')";
+					$insert = "INSERT INTO Files (Filename,Displayname,Hash,UserID,IP,Uploaded,Size,Directory,Directory_ID, Client) VALUES ('$newfilename','$oldfilename','$hash','$userid','$client_ip','$uploadtime','$size','$dir','$directory_id','".$_SERVER['HTTP_USER_AGENT']."')";
 					//echo $insert;
 					$inser_query = mysql_query($insert) or die ("Error: 030:" .mysql_error());
 					if ($inser_query == true)

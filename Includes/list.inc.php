@@ -11,10 +11,12 @@
 		$dir = $_SESSION["currentdir"];
 	//Includes DataBase and broadcrumbs and DataBase
 	include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";	
-	include $_SESSION["Program_Dir"]."Includes/broadcrumbs.inc.php";	
-	
+	include $_SESSION["Program_Dir"]."Includes/broadcrumbs.inc.php";		
 	$user = mysql_real_escape_string($_SESSION["user_id"]);	
-	$result = mysql_query("Select * from Files  where UserID = '$user' and Directory ='".mysql_real_escape_string($dir)."'") or die("Error: 014 ".mysql_error());
+
+	//	echo $dir;
+	$id = getDirectoryID(mysql_real_escape_string($dir));
+	$result = mysql_query("Select * from Files  where UserID = '$user' and Directory_ID ='".$id."'") or die("Error: 014 ".mysql_error());
 	$rows = mysql_affected_rows();	
 	if (mysql_affected_rows() > 0){
 		//Only start the table if we have files in there.
@@ -51,15 +53,15 @@
 		if (isset($_GET["source"]))
 			$fileToCopyOrToMove = mysql_real_escape_string($_GET["source"]);
 		if (isset($_GET["move"]) && isset($_GET["file"]))
-			$dirlink = "<a class = 'filelink' href = 'index.php?module=move&dir=".$row->Displayname."&file=".mysql_real_escape_string($_GET["file"])."'>".$row->Displayname."</a>";
+			$dirlink = "<a class = 'filelink' href = 'index.php?module=move&dir=".$row->Displayname."&file=".mysql_real_escape_string($_GET["file"])."'>".$row->Filename_only."</a>";
 		else if (isset($_GET["copy"]) && isset($_GET["file"]))
-			$dirlink = "<a class = 'filelink' href = 'index.php?module=copy&dir=".$row->Displayname."&file=".mysql_real_escape_string($_GET["file"])."'>".$row->Displayname."</a>";
+			$dirlink = "<a class = 'filelink' href = 'index.php?module=copy&dir=".$row->Displayname."&file=".mysql_real_escape_string($_GET["file"])."'>".$row->Filename_only."</a>";
 		else if (isset($_GET["move"]) && isset($_GET["source"]))
-			$dirlink = "<a class = 'filelink' href = 'index.php?module=move&source=".$_GET["source"]."&target=".$row->Displayname."&old_root=".$_GET["old_root"]."'>".$row->Displayname."</a>";
+			$dirlink = "<a class = 'filelink' href = 'index.php?module=move&source=".$_GET["source"]."&target=".$row->Displayname."&old_root=".$_GET["old_root"]."'>".$row->Filename_only."</a>";
 		else if (isset($_GET["copy"]) && isset($_GET["source"]))
-			$dirlink = "<a class = 'filelink' href = 'index.php?module=copy&source=".$_GET["source"]."&target=".$row->Displayname."&old_root=".$_GET["old_root"]."'>".$row->Displayname."</a>";
+			$dirlink = "<a class = 'filelink' href = 'index.php?module=copy&source=".$_GET["source"]."&target=".$row->Displayname."&old_root=".$_GET["old_root"]."'>".$row->Filename_only."</a>";
 		else
-			$dirlink = "<a class = 'filelink' href = 'index.php?module=list&dir=".$row->Displayname."'>".getDisplayName($row->Displayname,$row->Filename)."</a>";
+			$dirlink = "<a class = 'filelink' href = 'index.php?module=list&dir=".$row->Displayname."'>".getDisplayName($row->Filename_only,$row->Filename)."</a>";
 	
 		
 		//This is needed to allow alternating colors
@@ -72,7 +74,7 @@
 		if ($row->Displayname == $row->Filename)
 			echo "<tr class = 'filetype$suffix'><td><img  src='./Images/folder.png'></td><td>$dirlink</td><td>".date("j.n.Y H:i",$date)."</td><td class ='size'>".getFittingDisplayStlye(getDirectorySize($row->Displayname))."</td><td class =  'actions' ><a class = 'delete' href ='index.php?module=delete&dir=".$row->Filename."'><img  src = './Images/folder_delete.png'></a><a class = 'delete' href ='index.php?module=list&move=true&source=".$row->Filename."&old_root=".$row->Directory."'><img  src = './Images/cut_red.png'></a><a class = 'delete' href = 'index.php?module=list&copy=true&source=".$row->Filename."&old_root=".$row->Directory."'><img src= './Images/page_copy.png'></a></td><td></td></tr>";
 		else
-			echo "<tr class = 'filetype$suffix'><td><img src='$imagepath'></td><td><a class = 'filelink' href = 'index.php?module=file&file=".$row->Hash."'>".$row->Displayname."</a></td><td>".date("j.n.Y H:i",$date)."</td><td class ='size'>".getFittingDisplayStlye($row->Size)."</td><td class =  'actions' ><a class = 'delete'href ='index.php?module=delete&file=".$row->Hash."'><img  src = './Images/page_delete.png'></a><a class = 'delete' href ='index.php?module=list&move=true&file=".$row->Hash."'><img  src = './Images/cut_red.png'></a><a class = 'delete' href ='index.php?module=list&copy=true&file=".$row->Hash."'><img  src = './Images/page_copy.png'></a></td><td>$Share_Status</td></tr>";
+			echo "<tr class = 'filetype$suffix'><td><img src='$imagepath'></td><td><a class = 'filelink' href = 'index.php?module=file&file=".$row->Hash."'>".$row->Displayname."</a></td><td>".date("j.n.Y H:i",$date)."</td><td class ='size'>".getFittingDisplayStlye($row->Size)."</td><td class =  'actions' ><a class = 'delete'href ='index.php?module=delete&file=".$row->Hash."'><img  src = './Images/page_delete.png'></a><a class = 'delete' href ='index.php?module=list&move=true&file=".$row->Hash."'><img  src = './Images/cut_red.png'></a><a class = 'delete' href ='index.php?module=list&copy=true&file=".$row->Hash."'><img  src = './Images/page_copy.png'></a><a class = 'delete' href ='index.php?module=rename&file=".$row->Hash."'><img  src = './Images/textfield_rename.png'></a></td><td>$Share_Status</td></tr>";
 	}
 	
 	if ($rows == 0)

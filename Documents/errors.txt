@@ -27,6 +27,7 @@ Database
 029: Error while displaying share informations and/or preparing the download
 030: Error while uploading
 031: Error while folder copying
+032: Error while renaming.
 
 Messages
 ========
