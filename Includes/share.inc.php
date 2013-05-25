@@ -44,6 +44,7 @@
 	}
 	else if (isset($_GET["display"]) && $_GET["display"] == "true" )
 	{	
+		//[Obsolete]
 		$result = mysql_query("Select * from Share  where UserID = '$userID' and Hash ='".$file."'") or die("Error: 029".mysql_error());	
 		while ($row = mysql_fetch_object($result)) {
 			$sharetext = $_SERVER["SERVER_NAME"].$_SESSION["config"]["Program_Share_Dir"]."index.php?share=".$row->Extern_ID;

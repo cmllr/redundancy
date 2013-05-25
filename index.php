@@ -25,7 +25,7 @@
 	include "./Includes/Program.inc.php";	
 	//Parse the config file	
 	$_SESSION["config"] = parse_ini_file($GLOBALS["config_dir"]."Redundancy.conf");
-
+	$GLOBALS["Program_Language"] = parse_ini_file("./Language/".$_SESSION["config"]["Program_Language"].".lng");	
 	//$_SESSION["Path_Separator"] = $_SESSION["config"]["Program_Path_Separator"];	
 	if ($_SESSION["config"]["Program_Debug"] == 1)
 			error_reporting(E_ALL);
@@ -36,7 +36,7 @@
 	if (isset($_SESSION["user_name"])){
 		//Set the user contingent and refresh the information about used space
 		setUsedSpace($_SESSION['user_name']);	
-		//xss_check();
+		xss_check();
 	}		
 ?>
 </title>
@@ -51,12 +51,12 @@ src="Core.js">
 	if (!(strpos($_SERVER['HTTP_USER_AGENT'],"MSIE") === false))
 	{
 		if ($_SESSION["config"]["IE_Warning"] == 1)
-			echo "<div style = 'visibility:visible;' id = 'warning'><b>Warning:</b> You are using Internet Explorer (".$_SERVER['HTTP_USER_AGENT']."). This program does not support the Internet Explorer due technical problems with stylesheet management. You can try to use it, but the user-expierience will be bad. That's a promise.<a href='javascript:void(0)' onclick='displayorhideWarning();'> I understand.</a></div>";
+			echo "<div style = 'visibility:visible;' id = 'warning'>".$GLOBALS["Program_Language"]["IE_Warning"]."</div>";
 	}	
 	if ($_SESSION["config"]["Enable"] != 1 ) 
 	{
 		if ((isset($_GET["module"]) && ($_GET["module"] == "admin" || $_GET["module"] == "login" || $_GET["module"] == "logout" )) == false){
-			echo "<div style = 'visibility:visible;' id = 'warning'>This Redundancy instance is currently offline.<a href='javascript:void(0)' onclick='displayorhideWarning();'> I understand.</a></div>";
+			echo "<div style = 'visibility:visible;' id = 'warning'>".$GLOBALS["Program_Language"]["Offline"]."<a href='javascript:void(0)' onclick='displayorhideWarning();'>OK</a></div>";
 			exit;
 		}
 	}
@@ -79,6 +79,7 @@ src="Core.js">
 			//The startpage is an exception, it will be displayed if the module= parameter is not set.
 			include $_SESSION["Program_Dir"]."Includes/startpage.inc.php";		
 		}	
+		
 	}
 	//Include other files (further exceptions)
 	else if (isset($_GET["module"]) && $_GET["module"] == "activate")
@@ -99,7 +100,7 @@ src="Core.js">
 		echo "<div id = 'version'>".$_SESSION["config"]["Program_Name_ALT"]." ". $GLOBALS["Program_Version"]."";
 	$end = microtime(true);
 	if ($_SESSION["config"]["Program_Display_Loadtime"])
-		echo "<br><small>Needed ". round($end-$start,4)." seconds.</small></div>";
+		echo "<br><small>". sprintf($GLOBALS["Program_Language"]["Loadtime"],round($end-$start,4))."</small></div>";
 	else
 		echo "</small></div>";
 ?>

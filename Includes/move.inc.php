@@ -19,7 +19,7 @@
 				$file = mysql_real_escape_string($_GET["file"]);	
 			else
 				$file = mysql_real_escape_string($_POST["file"]);
-			$sql = "UPDATE Files SET Directory='$dir',Uploaded='$uploadtime' WHERE Hash='$file'";			
+			$sql = "UPDATE Files SET Directory='$dir',Directory_ID=".getDirectoryID($dir).",Uploaded='$uploadtime' WHERE Hash='$file'";			
 			mysql_query($sql) or die("Error: 015 ".mysql_error());		
 			mysql_close($connect);
 			$success = true;
@@ -55,8 +55,8 @@
 	//Redirect the user if needed
 	
 	if (!isset($_GET["noredir"])){
-			header("Location: ./index.php?module=list&dir=/");
-			exit;
+			//header("Location: ./index.php?module=list&dir=/");
+			//exit;
 	}	
 	
 ?>

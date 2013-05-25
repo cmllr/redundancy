@@ -58,15 +58,22 @@ if (isset($_SESSION) == false)
 		echo "Command_Result:{$success}";
 		exit;	
 	}		
+	else
+	{
+		if ($success == true && $_SESSION["config"]["Program_Redirect_Upload"] == 1)
+		{
+			header("Location: index.php?module=file&file=$hash");
+		}
+	}
 ?>
 <div class ="contentWrapper">
 <?php	
-	echo "<h2>Upload file into " .$_SESSION['currentdir'].".</h2>";
+	echo "<h2>".$GLOBALS["Program_Language"]["Upload_Title"]." ".$_SESSION['currentdir'].".</h2>";
 ?>
 <form enctype="multipart/form-data" action="index.php?module=upload" method="POST">
 <p> 
 	<input name="userfile" type="file"/>
 </p>
-    <input  type='submit' value='Upload'>
+    <input  type='submit' value='<?php echo $GLOBALS["Program_Language"]["Upload"];?>'>
 </form>
 </div>

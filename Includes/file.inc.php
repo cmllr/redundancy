@@ -25,9 +25,9 @@
 		//Display the client, a browser is identified by the "Mozilla" entry in the user agent
 		$client = $row->Client;
 		if (strpos($client,"Mozilla") === false && $row->Client != NULL )
-			echo "<p class ='source'>Uploaded via client</a></p>";
+			echo "<p class ='source'>".$GLOBALS["Program_Language"]["Uploaded_API"]."</a></p>";
 		else		
-			echo "<p class ='source'>Uploaded via browser</a></p>";
+			echo "<p class ='source'>".$GLOBALS["Program_Language"]["Uploaded_Browser"]."</a></p>";
 		//Check if file is shared
 		$userID = $_SESSION["user_id"];
 		$result = mysql_query("Select * from Share  where UserID = '$userID' and Hash ='".$hash."'") or die("Error: ".mysql_error());	
@@ -35,17 +35,17 @@
 		//Get Share infos (if existing)
 		while ($rowShare = mysql_fetch_object($result)) {
 			$sharetext = $_SERVER["SERVER_NAME"].$_SESSION["config"]["Program_Share_Dir"]."index.php?share=".$rowShare->Extern_ID;
-			echo "<p class = 'sharelink'>Share link</p><input type ='text' cols='70' rows='2' value ='$sharetext'></input>";	
+			echo "<p class = 'sharelink'>".$GLOBALS["Program_Language"]["Share_Link"]."</p><input type ='text' cols='70' rows='2' value ='$sharetext'></input>";	
 			$shared = true;
 		} 
-		echo "<p class ='buttons'><a href ='index.php?module=download&file=$row->Hash'>Download</a>";		
+		echo "<p class ='buttons'><a href ='index.php?module=download&file=$row->Hash'>".$GLOBALS["Program_Language"]["Download"]."</a>";		
 		//Display links
 		if ($shared == false)
-			echo "<a href ='index.php?module=download&module=share&file=".$row->Hash."&new=true'>Share</a>";	
+			echo "<a href ='index.php?module=download&module=share&file=".$row->Hash."&new=true'>".$GLOBALS["Program_Language"]["Share"]."</a>";	
 		else
-				echo "<a href = 'index.php?module=share&file=".$row->Hash."&delete=true'>Unshare</a>";		
+				echo "<a href = 'index.php?module=share&file=".$row->Hash."&delete=true'>".$GLOBALS["Program_Language"]["Unshare"]."</a>";		
 		//Display delete link
-		echo "<a href ='index.php?module=delete&file=$row->Hash'>Delete</a></p></div>";	
+		echo "<a href ='index.php?module=delete&file=$row->Hash'>".$GLOBALS["Program_Language"]["Delete"]."</a></p></div>";	
 	}
 	//Close the connection if finished
 	mysql_close($connect);

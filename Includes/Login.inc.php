@@ -24,16 +24,16 @@ if (isset($_POST["user"])){
 <form method="POST" action="./Includes/Login.inc.php" id="login">
 
 <p>
-    <label for="user">User</label>
+    <label for="user"><?php echo $GLOBALS["Program_Language"]["Username"]; ?></label>
     <input class ="text" name="user" />
 </p>
 <p>
-    <label for="pass">Password</label>
+    <label for="pass"><?php echo $GLOBALS["Program_Language"]["Password"]; ?></label>
     <input class ="text"  name="pass" type="password" />
 </p>
 <p class="loginSubmit">
-    <input type="submit" value="Log in" />
+    <input type="submit" value="<?php echo $GLOBALS["Program_Language"]["Log_In"]; ?>" />
 </p>
-<a class = "actions" href = "index.php?module=register"><img src="./Images/user_add.png">Register new account</a>
-<a class = "actions" href = "index.php?module=recover"><img src="./Images/key_go.png">Recover password</a>
+<a class = "actions" href = "index.php?module=register"><img src="./Images/user_add.png"><?php echo $GLOBALS["Program_Language"]["Register"]; ?></a>
+<a class = "actions" href = "index.php?module=recover"><img src="./Images/key_go.png"><?php echo $GLOBALS["Program_Language"]["Recover"]; ?></a>
 </form>
