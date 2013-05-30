@@ -40,3 +40,6 @@ Upload_Title = "Datei hochladen in ";
 User_Details = "Kontoinformationen";
 IE_Warning = "Sie benutzen derzeit den Internet Explorer. Das Programm ist für diesen Browser infolge diverser CSS - Probleme nicht angepasst worden.";
 Offline = "Diese Programminstanz ist derzeit au&szlig;er Betrieb ";
+Admin_Panel = "Administrations - &Uuml;bersicht";
+System_Language = "Systemsprache";
+User_Storage = "Benutzerspeicher";

@@ -4,18 +4,18 @@
 	if (isset($_SESSION) == false)
 			session_start();
 	//Include database file
-	include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";	
+	include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 	//remember the hash
-	$hash = mysql_real_escape_string($_GET["file"]);
+	$hash = mysqli_real_escape_string($connect,$_GET["file"]);
 	//Searh for a file with this hash
-	$ergebnis = mysql_query("Select * from Files  where Hash = '$hash'") or die("Error: ".mysql_error());	
-	while ($row = mysql_fetch_object($ergebnis)) {
+	$ergebnis = mysqli_query($connect,"Select * from Files  where Hash = '$hash'") or die("Error: ".mysqli_error($connect));	
+	while ($row = mysqli_fetch_object($ergebnis)) {
 		//Remember the file for further processes
-		$_SESSION["current_file"] = $_SESSION["Program_Dir"]."Storage/".$row->Filename;
+		$_SESSION["current_file"] = $GLOBALS["Program_Dir"]."Storage/".$row->Filename;
 		
 		echo "<div class ='contentWrapper' >";
 		//If the file is a image -> Display it
-		if (isImage($_SESSION["Program_Dir"]."Storage/".$row->Filename) == 1)
+		if (isImage($GLOBALS["Program_Dir"]."Storage/".$row->Filename) == 1)
 			echo "<p id = 'preview'><img src='index.php?module=image'>";
 		else
 			echo "<p id = 'preview'><img  src='./Images/page.png'>";
@@ -30,11 +30,11 @@
 			echo "<p class ='source'>".$GLOBALS["Program_Language"]["Uploaded_Browser"]."</a></p>";
 		//Check if file is shared
 		$userID = $_SESSION["user_id"];
-		$result = mysql_query("Select * from Share  where UserID = '$userID' and Hash ='".$hash."'") or die("Error: ".mysql_error());	
+		$result = mysqli_query($connect,"Select * from Share  where UserID = '$userID' and Hash ='".$hash."'") or die("Error: ".mysqli_error($connect));	
 		$shared = false;
 		//Get Share infos (if existing)
-		while ($rowShare = mysql_fetch_object($result)) {
-			$sharetext = $_SERVER["SERVER_NAME"].$_SESSION["config"]["Program_Share_Dir"]."index.php?share=".$rowShare->Extern_ID;
+		while ($rowShare = mysqli_fetch_object($result)) {
+			$sharetext = $_SERVER["SERVER_NAME"].$GLOBALS["config"]["Program_Share_Dir"]."index.php?share=".$rowShare->Extern_ID;
 			echo "<p class = 'sharelink'>".$GLOBALS["Program_Language"]["Share_Link"]."</p><input type ='text' cols='70' rows='2' value ='$sharetext'></input>";	
 			$shared = true;
 		} 
@@ -48,6 +48,6 @@
 		echo "<a href ='index.php?module=delete&file=$row->Hash'>".$GLOBALS["Program_Language"]["Delete"]."</a></p></div>";	
 	}
 	//Close the connection if finished
-	mysql_close($connect);
+	mysqli_close($connect);
 ?>
 </div>

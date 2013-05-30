@@ -6,20 +6,18 @@ if (isset($_POST["regemail"])){
 	
 	if (isset($_SESSION) == false)
 			session_start();	
-	include $_SESSION["Program_Dir"]."Includes/Program.inc.php";		
+
 	if (registerUser($_POST["reguser"],$_POST["regemail"],$_POST["regpass"],$_POST["regpass_repeat"]) == true)
-		header("Location: ../index.php");
+		header("Location: ./index.php");
 	else
-		header("Location: ../index.php?module=register");
+		header("Location: ./index.php?module=register");
 }
-if ($_SESSION["config"]["Enable_register"] == 0){
+if ($GLOBALS["config"]["Enable_register"] == 0){
 	echo "<form id = 'login'><p>".$GLOBALS["Program_Language"]["Register_disabled"]."</p>";
 	exit;
 }
 ?>
-
-
-<form method="POST" action="./Includes/register.inc.php" id="login">
+<form method="POST" action="index.php?module=register" id="login">
 <p>
     <label for="reguser"><?php echo $GLOBALS["Program_Language"]["Username"];?></label>
     <input class ="text" name="reguser" />

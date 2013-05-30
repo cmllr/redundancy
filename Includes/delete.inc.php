@@ -6,21 +6,21 @@
 	if ($_SESSION["role"] != 3){
 		if (isset($_SESSION['user_name']) && (isset($_GET["file"]) || isset($_POST["file"]))) 
 		{ 	 	 
-			include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";
+			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 			$localfilename = "";
 			if (isset($_GET["file"]))
-				$hash = mysql_real_escape_string($_GET["file"]);
+				$hash = mysqli_real_escape_string($connect,$_GET["file"]);
 			else
-				$hash = mysql_real_escape_string($_POST["file"]);
+				$hash = mysqli_real_escape_string($connect,$_POST["file"]);
 			//step 1: get the Filename on the server file system
-			$result = mysql_query("Select * from Files  where Hash = '$hash' and UserID = '".$_SESSION['user_id']."' limit 1") or die("Error: 007 ".mysql_error());
+			$result = mysqli_query($connect,"Select * from Files  where Hash = '$hash' and UserID = '".$_SESSION['user_id']."' limit 1") or die("Error: 007 ".mysqli_error($connect));
 			$localfilename = "";
 			$dir = "";
-			while ($row = mysql_fetch_object($result)) {
+			while ($row = mysqli_fetch_object($result)) {
 				$localfilename = $row->Filename;
 				$dir = $row->Directory;
 			}	
-			mysql_close($connect);	
+			mysqli_close($connect);	
 			if ($localfilename != "" && $dir != "")
 				deleteFile($localfilename,$dir,$hash);
 			$success = true;
@@ -43,8 +43,5 @@
 		exit;	
 	}	
 	//Goto the main directory
-	header("Location: index.php?module=list&dir=/");	
-?>
-<?php
-	
+	//header("Location: index.php?module=list&dir=/");	
 ?>

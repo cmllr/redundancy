@@ -10,15 +10,15 @@
 	else
 		$dir = $_SESSION["currentdir"];
 	//Includes DataBase and broadcrumbs and DataBase
-	include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";	
-	include $_SESSION["Program_Dir"]."Includes/broadcrumbs.inc.php";		
-	$user = mysql_real_escape_string($_SESSION["user_id"]);	
+	include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+	include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
+	$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);	
 
 	//	echo $dir;
-	$id = getDirectoryID(mysql_real_escape_string($dir));
-	$result = mysql_query("Select * from Files  where UserID = '$user' and Directory_ID ='".$id."'") or die("Error: 014 ".mysql_error());
-	$rows = mysql_affected_rows();	
-	if (mysql_affected_rows() > 0){
+	$id = getDirectoryID(mysqli_real_escape_string($connect,$dir));
+	$result = mysqli_query($connect,"Select * from Files  where UserID = '$user' and Directory_ID ='".$id."'") or die("Error: 014 ".mysqli_error());
+	$rows = mysqli_affected_rows($connect);	
+	if (mysqli_affected_rows($connect) > 0){
 		//Only start the table if we have files in there.
 		//Display an information if the program should process copy or movement
 		if (isset($_GET["move"]) || isset($_GET["copy"]))
@@ -26,7 +26,7 @@
 		echo "<table id = 'filetable'><tr><th></th><th>".$GLOBALS["Program_Language"]["Name"]."</th><th>".$GLOBALS["Program_Language"]["Uploaded"]."</th><th>".$GLOBALS["Program_Language"]["Size"]."</th><th>".$GLOBALS["Program_Language"]["Actions"]."</th><th>".$GLOBALS["Program_Language"]["Share_Status"]."</th></tr>";
 	}
 	//Display the resultss
-	while ($row = mysql_fetch_object($result)) {
+	while ($row = mysqli_fetch_object($result)) {
 		$date = strtotime($row->Uploaded);
 		$Share_Status = "";	
 		if ($row->Displayname != $row->Filename){
@@ -39,7 +39,7 @@
 				$Share_Status = "<a href = 'index.php?module=share&file=".$row->Hash."&new=true'>".$GLOBALS["Program_Language"]["Share"]."</a>";
 			//Default image path, only change if the file is a image and the config allows it
 			$imagepath = './Images/page.png';			
-			if (isImage($_SESSION["Program_Dir"]."Storage/".$row->Filename) && $_SESSION["config"]["Program_Display_Icons_if_needed"] == 1)
+			if (isImage($GLOBALS["Program_Dir"]."Storage/".$row->Filename) && $GLOBALS["config"]["Program_Display_Icons_if_needed"] == 1)
 			{
 				$imagepath = "index.php?module=image&thumb=true&file=".$row->Hash;
 			}			
@@ -54,16 +54,16 @@
 		}
 		//Create move links if needed
 		//Include database file
-		include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		
 		if (isset($_GET["file"]))
-			$fileToCopyOrToMove = mysql_real_escape_string($_GET["file"]);
+			$fileToCopyOrToMove = mysqli_real_escape_string($connect,$_GET["file"]);
 		if (isset($_GET["source"]))
-			$fileToCopyOrToMove = mysql_real_escape_string($_GET["source"]);
+			$fileToCopyOrToMove = mysqli_real_escape_string($connect,$_GET["source"]);
 		if (isset($_GET["move"]) && isset($_GET["file"]))
-			$dirlink = "<a class = 'filelink' href = 'index.php?module=move&dir=".$row->Displayname."&file=".mysql_real_escape_string($_GET["file"])."'>".$row->Filename_only."</a>";
+			$dirlink = "<a class = 'filelink' href = 'index.php?module=move&dir=".$row->Displayname."&file=".mysqli_real_escape_string($connect,$_GET["file"])."'>".$row->Filename_only."</a>";
 		else if (isset($_GET["copy"]) && isset($_GET["file"]))
-			$dirlink = "<a class = 'filelink' href = 'index.php?module=copy&dir=".$row->Displayname."&file=".mysql_real_escape_string($_GET["file"])."'>".$row->Filename_only."</a>";
+			$dirlink = "<a class = 'filelink' href = 'index.php?module=copy&dir=".$row->Displayname."&file=".mysqli_real_escape_string($connect,$_GET["file"])."'>".$row->Filename_only."</a>";
 		else if (isset($_GET["move"]) && isset($_GET["source"]))
 			$dirlink = "<a class = 'filelink' href = 'index.php?module=move&source=".$_GET["source"]."&target=".$row->Displayname."&old_root=".$_GET["old_root"]."'>".$row->Filename_only."</a>";
 		else if (isset($_GET["copy"]) && isset($_GET["source"]))
@@ -82,7 +82,7 @@
 		if ($row->Displayname == $row->Filename)
 			echo "<tr class = 'filetype$suffix'><td><img  src='$imagepath'></td><td>$dirlink</td><td>".date("j.n.Y H:i",$date)."</td><td class ='size'>".getFittingDisplayStlye(getDirectorySize($row->Displayname))."</td><td class =  'actions' ><a class = 'delete' href ='index.php?module=delete&dir=".$row->Filename."'><img  src = './Images/folder_delete.png'></a><a class = 'delete' href ='index.php?module=list&move=true&source=".$row->Filename."&old_root=".$row->Directory."'><img  src = './Images/cut_red.png'></a><a class = 'delete' href = 'index.php?module=list&copy=true&source=".$row->Filename."&old_root=".$row->Directory."'><img src= './Images/page_copy.png'></a><a class = 'delete' href ='index.php?module=rename&source=".$row->Displayname."&old_root=".$_SESSION["currentdir"]."'><img  src = './Images/textfield_rename.png'></a></td><td></td></tr>";
 		else
-			echo "<tr class = 'filetype$suffix'><td><img src='$imagepath'></td><td><a class = 'filelink' href = 'index.php?module=file&file=".$row->Hash."'>".$row->Displayname."</a></td><td>".date("j.n.Y H:i",$date)."</td><td class ='size'>".getFittingDisplayStlye($row->Size)."</td><td class =  'actions' ><a class = 'delete'href ='index.php?module=delete&file=".$row->Hash."'><img  src = './Images/page_delete.png'></a><a class = 'delete' href ='index.php?module=list&move=true&file=".$row->Hash."'><img  src = './Images/cut_red.png'></a><a class = 'delete' href ='index.php?module=list&copy=true&file=".$row->Hash."'><img  src = './Images/page_copy.png'></a><a class = 'delete' href ='index.php?module=rename&file=".$row->Hash."'><img  src = './Images/textfield_rename.png'></a></td><td>$Share_Status</td></tr>";
+			echo "<tr class = 'filetype$suffix'><td><img src='$imagepath'></td><td><a class = 'filelink' href = 'index.php?module=file&file=".$row->Hash."'>".$row->Displayname."</a></td><td>".date("j.n.Y H:i",$date)."</td><td class ='size'>".getFittingDisplayStlye($row->Size)."</td><td class =  'actions' ><a class = 'delete'href ='index.php?module=delete&file=".$row->Hash."'><img  src = './Images/page_delete.png'></a><a class = 'delete' href ='index.php?module=list&move=true&file=".$row->Hash."'><img  src = './Images/cut_red.png'></a><a class = 'delete' href ='index.php?module=list&copy=true&file=".$row->Hash."'><img  src = './Images/page_copy.png'></a><a class = 'delete' href ='index.php?module=rename&file=".$row->Hash."'><img  src = './Images/textfield_rename.png'></a><a class = 'delete' href ='index.php?module=download&file=".$row->Hash."'><img  src = './Images/arrow_down.png'></a></td><td>$Share_Status</td></tr>";
 	}
 	
 	if ($rows == 0)

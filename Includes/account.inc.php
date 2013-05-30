@@ -5,21 +5,21 @@
 	if (isset($_SESSION) == false)
 			session_start();
 	//Include DataBase file
-	include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";	
+	include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 	//get the urrent user id an search for users with this id
-	$id = mysql_real_escape_string($_SESSION["user_id"]);
-	$result = mysql_query("Select * from Users  where ID = '$id' limit 1") or die("DataBase Error: 001 ".mysql_error());
-	while ($row = mysql_fetch_object($result)) {
+	$id = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+	$result = mysqli_query($connect,"Select * from Users  where ID = '$id' limit 1") or die("DataBase Error: 001 ".mysqli_error($connect));
+	while ($row = mysqli_fetch_object($result)) {
 		echo "<b>".$GLOBALS["Program_Language"]["Email"].": </b> ".$row->Email;	
 		echo "<br><b>".$GLOBALS["Program_Language"]["Username"].": </b> ".$row->User;
 		if ($_SESSION["role"] != 3)
 			echo "<br><p class = 'token'>API Token</p><input type ='text' cols='70' rows='2' value ='".$row->API_Key."'></input></p>";
 		//If the config allows user deletion by the user himself, display a link
-		if ($_SESSION["config"]["User_Allow_Delete"] == 1 )
+		if ($GLOBALS["config"]["User_Allow_Delete"] == 1 )
 			echo "<br><a href = 'index.php?module=goodbye'>".$GLOBALS["Program_Language"]["Delete_Account"]."</a>";
 	
 	}
 	//Close the connection if finished
-	mysql_close($connect);
+	mysqli_close($connect);	
 ?>
 </div>

@@ -6,15 +6,15 @@
 	if (isset($_GET["file"]) )
 	{
 		//Include DataBase file
-		include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";	
-		$result = mysql_query("Select * from Files  where Hash = '".mysql_real_escape_string($_GET["file"])."' limit 1");	
-		while ($row = mysql_fetch_object($result)) {
-			$filename = $_SESSION["Program_Dir"]."Storage/".$row->Filename;
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$result = mysqli_query($connect,"Select * from Files  where Hash = '".mysqli_real_escape_string($connect,$_GET["file"])."' limit 1");	
+		while ($row = mysqli_fetch_object($result)) {
+			$filename = $GLOBALS["Program_Dir"]."Storage/".$row->Filename;
 		}
 		//Set the current file
 		$_SESSION["current_file"] = $filename;
 		//Delete database connection and display the image
-		mysql_close($connect);	
+		mysqli_close($connect);	
 		display();
 	}
 	else if (isset($_SESSION["current_file"]) && $_SESSION["current_file"] != "-1"){	

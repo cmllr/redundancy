@@ -6,12 +6,12 @@
 	if (isset($_GET["email"]))
 	{
 		//Include DataBase file
-		include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";		
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
 		//get the Email
-		$email = mysql_real_escape_string($_GET["email"]);			
+		$email = mysqli_real_escape_string($connect,$_GET["email"]);			
 		$sql = "UPDATE Users SET Enabled=1 WHERE Email='$email'" ;
 		//Update the data row
-		mysql_query($sql) or die("DataBase Error: 002 ".mysql_error());;
+		mysqli_query($sql) or die("DataBase Error: 002 ".mysqli_error($connect));
 		header("Location: ./index.php?message=1");
 	}
 ?>

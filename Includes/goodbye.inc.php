@@ -5,22 +5,22 @@
 	if (isset($_SESSION) == false)
 			session_start();
 	if ($_SESSION["role"] != 3 && isset($_GET["sure"])){	
-		include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";	
-		$userID = mysql_real_escape_string($_SESSION["user_id"]);	
-		$getFiles = mysql_query("Select * from Files where UserID = '$userID'") ;
-		while ($row = mysql_fetch_object($getFiles)) {
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);	
+		$getFiles = mysqli_query($connect,"Select * from Files where UserID = '$userID'") ;
+		while ($row = mysqli_fetch_object($getFiles)) {
 			echo "<br>Deleting ".$row->Displayname ."...";
 			if ($row->Filename != $row->Displayname)
-			unlink($_SESSION["Program_Dir"]."Storage/".$row->Filename);
+			unlink($GLOBALS["Program_Dir"]."Storage/".$row->Filename);
 			echo "<br>Removing database entry...";
-			mysql_query("Delete from Files where UserID = '$userID'");			
-			mysql_query("Delete from Share where UserID = '$userID'");
+			mysqli_query($connect,"Delete from Files where UserID = '$userID'");			
+			mysqli_query($connect,"Delete from Share where UserID = '$userID'");
 			echo "<br>Removing shares entry entry...".mysql_affected_rows()." found.";
 			echo "..Done";			
 		}
 		echo "Delete from Users where UserID = '$userID'";
-		mysql_query("Delete from Users where ID = '$userID'");
-		mysql_close($connect);	
+		mysqli_query($connect,"Delete from Users where ID = '$userID'");
+		mysqli_close($connect);	
 		header("Location: index.php?module=logout");
 	}	
 	else

@@ -4,7 +4,7 @@
 	if (isset($_SESSION) == false)
 		session_start();	
 	//include the database file
-	include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";	
+	include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 	//Get the path parts
 	$dirs = explode("/",$_SESSION["currentdir"]);
 	//parts_before is a kind of prefix to display a complete link step by step
@@ -13,13 +13,13 @@
 	$suffix = "";
 	//Display several kinds of links for cases like copy file, move filey, copy dir, move dir and the regular display
 	if (isset($_GET["move"]) && isset($_GET["file"]))
-			$suffix = "module=list&dir=/&move=true&file=".mysql_real_escape_string($_GET["file"])."&dir=/";
+			$suffix = "module=list&dir=/&move=true&file=".mysqli_real_escape_string($connect,$_GET["file"])."&dir=/";
 	else if (isset($_GET["copy"]) && isset($_GET["file"]))
-			$suffix = "module=list&dir=/&copy=true&file=".mysql_real_escape_string($_GET["file"])."&dir=/";
+			$suffix = "module=list&dir=/&copy=true&file=".mysqli_real_escape_string($connect,$_GET["file"])."&dir=/";
 	else if (isset($_GET["copy"]) && isset($_GET["source"]))
-			$suffix = "module=list&dir=/&copy=true&source=".mysql_real_escape_string($_GET["source"])."&old_root=".mysql_real_escape_string($_GET["old_root"])."&target=/";
+			$suffix = "module=list&dir=/&copy=true&source=".mysqli_real_escape_string($connect,$_GET["source"])."&old_root=".mysqli_real_escape_string($connect,$_GET["old_root"])."&target=/";
 				else if (isset($_GET["move"]) && isset($_GET["source"]))
-			$suffix = "module=list&dir=/&move=true&source=".mysql_real_escape_string($_GET["source"])."&old_root=".mysql_real_escape_string($_GET["old_root"])."&target=/";
+			$suffix = "module=list&dir=/&move=true&source=".mysqli_real_escape_string($connect,$_GET["source"])."&old_root=".mysqli_real_escape_string($connect,$_GET["old_root"])."&target=/";
 	else
 			$suffix = "module=list&dir=/";
 	//Display home link

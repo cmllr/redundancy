@@ -7,12 +7,12 @@ if (isset($_POST["email"])){
 	
 	if (isset($_SESSION) == false)
 			session_start();	
-	include $_SESSION["Program_Dir"]."Includes/Program.inc.php";	
+	include $GLOBALS["Program_Dir"]."Includes/Program.inc.php";	
 	recover($_POST["email"]);
 }
 if (isset($_GET["msg"]) && $_GET["msg"] == "success")
 {
-	echo "<h2>".$GLOBALS["Program_Language"]["reovered"]."</h2>";
+	echo "<h2>".$GLOBALS["Program_Language"]["recovered"]."</h2>";
 	exit;
 }
 ?>

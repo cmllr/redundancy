@@ -10,9 +10,8 @@
 		//only proceed if the user is logged in and we have a valid user_id
 		if (isset($_SESSION['user_id']))
 		{					
-			include $_SESSION["Program_Dir"]."Includes/DataBase.inc.php";			
-			createDir(mysql_real_escape_string($_SESSION["currentdir"]),mysql_real_escape_string($_POST["directory"]));		
-			
+			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";			
+			createDir(mysqli_real_escape_string($connect,$_SESSION["currentdir"]),mysqli_real_escape_string($connect,$_POST["directory"]));				
 		}		
 	}
 ?>

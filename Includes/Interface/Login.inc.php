@@ -11,9 +11,9 @@ if (isset($_POST["user"])){
 		$redir = "?module=admin";
 	}
 	if (login($_POST["user"],$_POST["pass"]) == true)
-		header('Location: ./index.php'.$redir);
+		header('Location: ../index.php'.$redir);
 	else
-		header('Location: ./index.php?message=3');
+		header('Location: ../index.php?message=3');
 } 
 ?>
 <p id="logo">

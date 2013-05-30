@@ -40,3 +40,6 @@ Upload_Title = "Upload file into";
 User_Details ="User details";
 IE_Warning = "<b>Warning:</b> You are using Internet Explorer This program does not support the Internet Explorer due technical problems with stylesheet management. You can try to use it, but the user-expierience will be bad. That's a promise.<a href='javascript:void(0)' onclick='displayorhideWarning();'> I understand.</a>";
 Offline = "This program instance is currently offline ";
+Admin_Panel = "Administration panel";
+System_Language = "System language";
+User_Storage = "User storage";

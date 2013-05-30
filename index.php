@@ -20,24 +20,29 @@
 <link rel="shortcut icon" href="./images/favicon.ico">
 <title>
 <?php
-	//Include the main program file
-		
+	//Include the main program file		
 	include "./Includes/Program.inc.php";	
 	//Parse the config file	
-	$_SESSION["config"] = parse_ini_file($GLOBALS["config_dir"]."Redundancy.conf");
-	$GLOBALS["Program_Language"] = parse_ini_file("./Language/".$_SESSION["config"]["Program_Language"].".lng");	
-	//$_SESSION["Path_Separator"] = $_SESSION["config"]["Program_Path_Separator"];	
-	if ($_SESSION["config"]["Program_Debug"] == 1)
+	$GLOBALS["config"] = parse_ini_file($GLOBALS["config_dir"]."Redundancy.conf");
+	$GLOBALS["Program_Language"] = parse_ini_file("./Language/".$GLOBALS["config"]["Program_Language"].".lng");	
+	//$_SESSION["Path_Separator"] = $GLOBALS["config"]["Program_Path_Separator"];	
+	if ($GLOBALS["config"]["Program_Debug"] == 1)
 			error_reporting(E_ALL);
 	
-	$_SESSION["Program_Dir"] = $_SESSION["config"]["Program_Path"];
+	$GLOBALS["Program_Dir"] = $GLOBALS["config"]["Program_Path"];
 	//Display the Program name and calculate the user space
-	echo $_SESSION["config"]["Program_Name_ALT"];
+	echo $GLOBALS["config"]["Program_Name_ALT"];
 	if (isset($_SESSION["user_name"])){
 		//Set the user contingent and refresh the information about used space
 		setUsedSpace($_SESSION['user_name']);	
 		xss_check();
 	}		
+	if ($GLOBALS["config"]["Program_HTTPS_Redirect"] == 1)
+	{
+		if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == ""){			
+			header("Location: $redirect"."https://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+		}
+	}
 ?>
 </title>
 <script type="text/javascript" language="JavaScript"
@@ -50,10 +55,10 @@ src="Core.js">
 	//beta only.
 	if (!(strpos($_SERVER['HTTP_USER_AGENT'],"MSIE") === false))
 	{
-		if ($_SESSION["config"]["IE_Warning"] == 1)
+		if ($GLOBALS["config"]["IE_Warning"] == 1)
 			echo "<div style = 'visibility:visible;' id = 'warning'>".$GLOBALS["Program_Language"]["IE_Warning"]."</div>";
 	}	
-	if ($_SESSION["config"]["Enable"] != 1 ) 
+	if ($GLOBALS["config"]["Enable"] != 1 ) 
 	{
 		if ((isset($_GET["module"]) && ($_GET["module"] == "admin" || $_GET["module"] == "login" || $_GET["module"] == "logout" )) == false){
 			echo "<div style = 'visibility:visible;' id = 'warning'>".$GLOBALS["Program_Language"]["Offline"]."<a href='javascript:void(0)' onclick='displayorhideWarning();'>OK</a></div>";
@@ -71,13 +76,14 @@ src="Core.js">
 		if ($_SESSION["user_logged_in"] == true && isset($_GET["module"])){
 			//Include the requestet file
 			//TODO: Add security mechanism to avoid access to non accessible files
-			$path = $_SESSION["Program_Dir"]."Includes/".$_GET["module"].".inc.php";			
+			$path = $GLOBALS["Program_Dir"]."Includes/".$_GET["module"].".inc.php";			
 			if (file_exists($path))
 				include $path;
+		
 		}
 		else if ($_SESSION["user_logged_in"] == true && isset($_GET["module"]) == false){
 			//The startpage is an exception, it will be displayed if the module= parameter is not set.
-			include $_SESSION["Program_Dir"]."Includes/startpage.inc.php";		
+			include $GLOBALS["Program_Dir"]."Includes/startpage.inc.php";		
 		}	
 		
 	}
@@ -96,10 +102,10 @@ src="Core.js">
 </div>
 <?php
 	//Display the version if wanted
-	if ($_SESSION["config"]["Program_Display_Version"])
-		echo "<div id = 'version'>".$_SESSION["config"]["Program_Name_ALT"]." ". $GLOBALS["Program_Version"]."";
+	if ($GLOBALS["config"]["Program_Display_Version"])
+		echo "<div id = 'version'>".$GLOBALS["config"]["Program_Name_ALT"]." ". $GLOBALS["Program_Version"]."";
 	$end = microtime(true);
-	if ($_SESSION["config"]["Program_Display_Loadtime"])
+	if ($GLOBALS["config"]["Program_Display_Loadtime"])
 		echo "<br><small>". sprintf($GLOBALS["Program_Language"]["Loadtime"],round($end-$start,4))."</small></div>";
 	else
 		echo "</small></div>";
