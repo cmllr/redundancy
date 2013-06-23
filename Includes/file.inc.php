@@ -15,12 +15,12 @@
 		
 		echo "<div class ='contentWrapper' >";
 		//If the file is a image -> Display it
-		if (isImage($GLOBALS["Program_Dir"]."Storage/".$row->Filename) == 1)
+		if (isImage($row->Filename) == 1)
 			echo "<p id = 'preview'><img src='index.php?module=image'>";
 		else
 			echo "<p id = 'preview'><img  src='./Images/page.png'>";
 		//Display the name
-		echo "</p><p class = 'filename'>".$row->Displayname."</p>";	
+		echo "</p><p class = 'filename'>".htmlentities(utf8_decode($row->Displayname))."</p>";	
 		$date = strtotime($row->Uploaded);
 		//Display the client, a browser is identified by the "Mozilla" entry in the user agent
 		$client = $row->Client;
@@ -30,20 +30,28 @@
 			echo "<p class ='source'>".$GLOBALS["Program_Language"]["Uploaded_Browser"]."</a></p>";
 		//Check if file is shared
 		$userID = $_SESSION["user_id"];
-		$result = mysqli_query($connect,"Select * from Share  where UserID = '$userID' and Hash ='".$hash."'") or die("Error: ".mysqli_error($connect));	
+		$result = mysqli_query($connect,"Select * from Share  where UserID = '$userID' and Hash ='".$hash."' limit 1") or die("Error: ".mysqli_error($connect));	
 		$shared = false;
 		//Get Share infos (if existing)
 		while ($rowShare = mysqli_fetch_object($result)) {
-			$sharetext = $_SERVER["SERVER_NAME"].$GLOBALS["config"]["Program_Share_Dir"]."index.php?share=".$rowShare->Extern_ID;
-			echo "<p class = 'sharelink'>".$GLOBALS["Program_Language"]["Share_Link"]."</p><input type ='text' cols='70' rows='2' value ='$sharetext'></input>";	
-			$shared = true;
+		
+		if ($GLOBALS["config"]["Program_HTTPS_Redirect"] == 1)
+			
+			$sharetext = "https://".$_SERVER["SERVER_NAME"].$GLOBALS["config"]["Program_Share_Dir"]."index.php?share=".$rowShare->Extern_ID;
+		else
+			$sharetext = "http://".$_SERVER["SERVER_NAME"].$GLOBALS["config"]["Program_Share_Dir"]."index.php?share=".$rowShare->Extern_ID;
+		echo "<p class = 'sharelink'>".$GLOBALS["Program_Language"]["Share_Link"]."</p><input type ='text' cols='70' rows='2' value ='$sharetext'></input>";	
+		$shared = true;
+		echo "<p class ='source'>".$rowShare->Used ." ".$GLOBALS["Program_Language"]["Share_Accessed"]."</p>";
 		} 
+
+			
 		echo "<p class ='buttons'><a href ='index.php?module=download&file=$row->Hash'>".$GLOBALS["Program_Language"]["Download"]."</a>";		
 		//Display links
 		if ($shared == false)
 			echo "<a href ='index.php?module=download&module=share&file=".$row->Hash."&new=true'>".$GLOBALS["Program_Language"]["Share"]."</a>";	
 		else
-				echo "<a href = 'index.php?module=share&file=".$row->Hash."&delete=true'>".$GLOBALS["Program_Language"]["Unshare"]."</a>";		
+			echo "<a href = 'index.php?module=share&file=".$row->Hash."&delete=true'>".$GLOBALS["Program_Language"]["Unshare"]."</a>";		
 		//Display delete link
 		echo "<a href ='index.php?module=delete&file=$row->Hash'>".$GLOBALS["Program_Language"]["Delete"]."</a></p></div>";	
 	}

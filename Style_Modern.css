@@ -489,12 +489,12 @@ div#warning{
 	border-bottom: 1px dotted white;
 }
 
-h2#copyhint{
+h3#copyhint{
     font-style: italic;
 	font-weight: lighter;
     text-align: center;
 	color: gray;
-	text-shadow: 0 1px 0 lightgray;
+	text-shadow: 0 1px 0 lightgray; 
 }
 
 div#version{

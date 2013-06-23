@@ -6,16 +6,20 @@
 	//session_destroy();
 
 	//if the wanted module is the module for displaying an image -> Include the Image layer.
-	if (isset($_GET["module"]) && $_GET["module"] == "image" && isset($_SESSION["user_logged_in"]))
+	if (isset($_GET["module"]) && $_GET["module"] == "image" )
 	{
 		include "./Includes/image.inc.php";
 		exit;
 	}
+	elseif (isset($_GET["share"]))
+			include $GLOBALS["Program_Dir"]."Includes/share.inc.php";	
+			header('Content-Type: charset=utf-8'); 
 ?>
-<?php include "./Includes/gpl.inc.php";?>
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
+<meta charset="utf-8">
+<?php include "./Includes/gpl.inc.php";?>
 <link rel = "stylesheet" href="./Style_Modern.css" type = "text/css"/>
 <link rel="shortcut icon" href="./images/favicon.ico">
 <title>
@@ -45,11 +49,21 @@
 	}
 ?>
 </title>
-<script type="text/javascript" language="JavaScript"
-src="Core.js">
+<script type="text/javascript" src="Core.js">
 </script>
 </head>
 <body> 
+<?php
+	if ($GLOBALS["config"]["Program_Enable_Plugins"] == 1)
+	{
+		$handle=opendir ($GLOBALS["Program_Dir"]."Includes/Plugins/BeforeModule/");
+		while ($file = readdir ($handle)) {
+			if (strpos($file,"inc.php") !== false)
+				include $GLOBALS["Program_Dir"]."Includes/Plugins/BeforeModule/".$file;
+		}
+		closedir($handle);
+	}
+?>
 <?php
 	//Display a warning if the user uses internet explorer
 	//beta only.
@@ -73,7 +87,7 @@ src="Core.js">
 		include "./Includes/menubar.inc.php";
 		//Display content itself
 		echo "<div id = 'content'>";
-		if ($_SESSION["user_logged_in"] == true && isset($_GET["module"])){
+		if (isset($_GET["module"])){
 			//Include the requestet file
 			//TODO: Add security mechanism to avoid access to non accessible files
 			$path = $GLOBALS["Program_Dir"]."Includes/".$_GET["module"].".inc.php";			
@@ -81,10 +95,11 @@ src="Core.js">
 				include $path;
 		
 		}
-		else if ($_SESSION["user_logged_in"] == true && isset($_GET["module"]) == false){
+		else if (isset($_GET["module"]) == false && isset($_GET["share"]) == false){
 			//The startpage is an exception, it will be displayed if the module= parameter is not set.
 			include $GLOBALS["Program_Dir"]."Includes/startpage.inc.php";		
 		}	
+		
 		
 	}
 	//Include other files (further exceptions)
@@ -93,22 +108,35 @@ src="Core.js">
 	else if (isset($_GET["module"]) && $_GET["module"] == "register")
 		include "./Includes/register.inc.php";	
 	else if (isset($_GET["module"]) && $_GET["module"] == "recover")
-		include "./Includes/recover.inc.php";		
+		include "./Includes/recover.inc.php";	
+	else if (isset($_GET["share"]))
+		include "./Includes/share.inc.php";	
+	
 	else
 		include "./Includes/Login.inc.php";	
-	 if (isset($_GET["share"]))
-		include "./Includes/share.inc.php";
+	
 ?>
-</div>
+
 <?php
 	//Display the version if wanted
 	if ($GLOBALS["config"]["Program_Display_Version"])
-		echo "<div id = 'version'>".$GLOBALS["config"]["Program_Name_ALT"]." ". $GLOBALS["Program_Version"]."";
+		echo "<div id = 'version'>".$GLOBALS["Program_Version"]."";
 	$end = microtime(true);
 	if ($GLOBALS["config"]["Program_Display_Loadtime"])
 		echo "<br><small>". sprintf($GLOBALS["Program_Language"]["Loadtime"],round($end-$start,4))."</small></div>";
 	else
 		echo "</small></div>";
+?>
+<?php
+	if ($GLOBALS["config"]["Program_Enable_Plugins"] == 1)
+	{
+		$handle=opendir ($GLOBALS["Program_Dir"]."Includes/Plugins/AfterModule/");
+		while ($file = readdir ($handle)) {
+			if (strpos($file,"inc.php") !== false)
+				include $GLOBALS["Program_Dir"]."Includes/Plugins/AfterModule/".$file;
+		}
+		closedir($handle);
+	}
 ?>
 </body>
 </html>

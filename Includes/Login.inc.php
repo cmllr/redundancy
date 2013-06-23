@@ -17,21 +17,21 @@ if (isset($_POST["user"])){
 } 
 ?>
 <p id="logo">
-    <img src="./Images/Logo.png" />
+    <img alt="Logo" src="./Images/Logo.png" />
 </p>
 <form method="POST" action="index.php?module=login" id="login">
 
 <p>
     <label for="user"><?php echo $GLOBALS["Program_Language"]["Username"]; ?></label>
-    <input class ="text" name="user" />
+    <input class ="text" id ="user" name="user" />
 </p>
 <p>
     <label for="pass"><?php echo $GLOBALS["Program_Language"]["Password"]; ?></label>
-    <input class ="text"  name="pass" type="password" />
+    <input class ="text"  id = "pass" name="pass" type="password" />
 </p>
 <p class="loginSubmit">
     <input type="submit" value="<?php echo $GLOBALS["Program_Language"]["Log_In"]; ?>" />
 </p>
-<a class = "actions" href = "index.php?module=register"><img src="./Images/user_add.png"><?php echo $GLOBALS["Program_Language"]["Register"]; ?></a>
-<a class = "actions" href = "index.php?module=recover"><img src="./Images/key_go.png"><?php echo $GLOBALS["Program_Language"]["Recover"]; ?></a>
+<a class = "actions" href = "index.php?module=register"><img alt ="New User" src="./Images/user_add.png"><?php echo $GLOBALS["Program_Language"]["Register"]; ?></a>
+<a class = "actions" href = "index.php?module=recover"><img alt="Recover Password" src="./Images/key_go.png"><?php echo $GLOBALS["Program_Language"]["Recover"]; ?></a>
 </form>

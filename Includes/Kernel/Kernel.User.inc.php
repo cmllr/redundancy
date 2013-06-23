@@ -168,14 +168,14 @@
 						mysqli_query($connect,"Update Users Set Enabled=1 where Email ='$email'");
 				mysqli_query($connect,$query);
 				sendMail($email,2,$name,"Redundancy",$pass,"Redundancy");				
-				header("Location: ../index.php?module=recover&msg=success");
+				header("Location: ./index.php?module=recover&msg=success");
 			}
 			else
-				header("Location: ../index.php?module=recover&msg=nosuccess");
+				header("Location: ./index.php?module=recover&msg=nosuccess");
 		}		
 		else
 		{
-			header("Location: ../index.php");
+			header("Location: ./index.php");
 		}
 	}
 ?>

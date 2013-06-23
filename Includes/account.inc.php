@@ -13,13 +13,14 @@
 		echo "<b>".$GLOBALS["Program_Language"]["Email"].": </b> ".$row->Email;	
 		echo "<br><b>".$GLOBALS["Program_Language"]["Username"].": </b> ".$row->User;
 		if ($_SESSION["role"] != 3)
-			echo "<br><p class = 'token'>API Token</p><input type ='text' cols='70' rows='2' value ='".$row->API_Key."'></input></p>";
+			echo "<br><b>API Token </b><input type ='text' cols='70' rows='2' value ='".$row->API_Key."'></input></p>";
 		//If the config allows user deletion by the user himself, display a link
 		if ($GLOBALS["config"]["User_Allow_Delete"] == 1 )
 			echo "<br><a href = 'index.php?module=goodbye'>".$GLOBALS["Program_Language"]["Delete_Account"]."</a>";
 	
-	}
+	}	
 	//Close the connection if finished
 	mysqli_close($connect);	
 ?>
+<br><a href = "index.php?module=zip&dir=/"><?php echo $GLOBALS["Program_Language"]["Download_All_Files"];?></a>
 </div>

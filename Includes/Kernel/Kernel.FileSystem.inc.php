@@ -4,7 +4,7 @@
 	{	
 		if (isset($_SESSION) == false)
 			session_start();	
-		$mimetype = get_Mime_Type($filename);// mime_content_type($filename);
+		$mimetype = get_Mime_Type($filename);
 		if ($mimetype == "image/png" || $mimetype == "image/jpg" || $mimetype == "image/jpeg" || $mimetype == "image/bmp")
 			return true;
 		return false;		
@@ -66,24 +66,29 @@
 		$storage_used = getUsedSpace($_SESSION["user_name"]); 
 		
 		$measure = "B";
-		if ($storage_used > 1024)
+		if ($storage_used > 1024 && $storage_used < 1024 * 1024)
 		{
 			$measure = "KB";
 			$storage_used = $storage_used /1024;
 		}
-		else if ($storage_used > 1024 * 1024)
+		else if ($storage_used > 1024 * 1024 && $storage_used < 1024 * 1024 * 1024)
 		{
 			$measure = "MB";
 			$storage_used = $storage_used /1024 / 1024;
 		}
-		else if ($storage_used > 1024 * 1024 * 1024)
+		else if ($storage_used > 1024 * 1024 * 1024 && $storage_used < 1024 * 1024 * 1024 * 1024)
 		{
 			$measure = "GB";
 			$storage_used = $storage_used /1024 / 1024 / 1024;
 		}
+		else if ($storage_used > 1024 * 1024 * 1024 * 1024)
+		{
+			$measure = "TB";
+			$storage_used = $storage_used /1024 / 1024 / 1024 / 1024;
+		}
 		if ($storage_used == 0)
 			$storage_used = 0;
-		return round($storage_used,2)." $measure of ".$_SESSION['space']." MB ".$GLOBALS["Program_Language"]["used"];
+		return round($storage_used,2)." $measure of ".getFittingDisplayStlye($_SESSION['space']*1024*1024)." ".$GLOBALS["Program_Language"]["used"];
 	}
 	function getPercentage()
 	{
@@ -109,27 +114,45 @@
 		}		
 		return false;
 	}
-	
+	function getShareLink($file)
+	{
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$result = mysqli_query($connect,"Select * from Share where Hash = '".mysqli_real_escape_string($connect,$file)."' limit 1") or die("Error: 024: ".mysqli_error($connect));
+		
+		if ($row = mysqli_fetch_object($result)){
+				if ($GLOBALS["config"]["Program_HTTPS_Redirect"] == 1)			
+					$sharetext = "https://".$_SERVER["SERVER_NAME"].$GLOBALS["config"]["Program_Share_Dir"]."index.php?share=".$row->Extern_ID;
+				else
+					$sharetext = "http://".$_SERVER["SERVER_NAME"].$GLOBALS["config"]["Program_Share_Dir"]."index.php?share=".$row->Extern_ID;
+				return $sharetext;
+		}		
+		return -1;
+	}
 	function getFittingDisplayStlye($value,$offset = 1)
 	{
 		$measure = "B";
 	
 		$value = $value * $offset;
 		
-		if ($value > 1024)
+		if ($value > 1024 && $value  < 1024 * 1024)
 		{
 			$measure = "KB";
 			$value = $value /1024;
 		}
-		else if ($value > 1024 * 1024)
+		else if ($value > 1024 * 1024 && $value < 1024 * 1024 * 1024)
 		{
 			$measure = "MB";
 			$value = $value /1024 / 1024;
 		}
-		else if ($value > 1024 * 1024 * 1024)
+		else if ($value >= 1024 * 1024 * 1024 && $value < 1024 * 1024 * 1024 * 1024 )
 		{
 			$measure = "GB";
 			$value = $value /1024 / 1024 / 1024;
+		}
+		else if ($value > 1024 * 1024 * 1024 * 1024 )
+		{
+			$measure = "TB";
+			$value = $value /1024 / 1024 / 1024 / 1024;
 		}
 		return round($value,2) ." ". $measure;
 	}
@@ -158,9 +181,21 @@
 		}
 	}
 	function get_Mime_Type($filename) {
-		$file = file_get_contents($filename);
-		$finfo = new finfo(FILEINFO_MIME_TYPE);		
-		return $finfo->buffer($file);
+		if ($GLOBALS["config"]["Program_Mime_Use_DataBase"] == 0){
+			$file = file_get_contents($GLOBALS["Program_Dir"]."Storage/".$filename);
+			$finfo = new finfo(FILEINFO_MIME_TYPE);		
+			return $finfo->buffer($file);
+		}
+		else
+		{
+			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+			$result = mysqli_query($connect,"Select MimeType from Files where UserID = '".$_SESSION["user_id"]."' and Filename = '$filename' or Hash = '$filename' limit 1") or die("Error 025: ".mysqli_error($connect));
+			$filename_mime = "";
+			while ($row = mysqli_fetch_object($result)) {
+				$filename_mime = $row->MimeType;
+			}					
+			return $filename_mime;
+		}		
 	}
 	function getDirectoryID($directory)
 	{	
@@ -179,7 +214,7 @@
 		if (isset($_SESSION) == false)
 			session_start();	
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and Displayname = '$file'  and Directory = '$directory'") or die("Error 025: ".mysqli_error($connect));
+		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and (Displayname = '$file'  or Hash = '$file')and Directory = '$directory'") or die("Error 025: ".mysqli_error($connect));
 		
 		if (mysqli_affected_rows($connect) > 0)
 			return true;
@@ -511,5 +546,60 @@
 		//Delete it from the local server filesystem
 		if ($result == true)
 			unlink ( $GLOBALS["Program_Dir"]."Storage/".$filename);	
+	}
+	function createZipFile($dir,$zipfile)
+	{
+		//Create a session if needed
+		if (isset($_SESSION) == false)
+			session_start();
+			
+		//Create new database isntance
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$dir = mysqli_real_escape_string($connect,$dir);
+		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		$select = "Select * from Files where UserID = '$user' and Directory = '$dir'";
+		$result= mysqli_query($connect,$select);
+		while ($row = mysqli_fetch_object($result)) {
+			if ($row->Filename == $row->Displayname)
+			{
+				$zipfile->addEmptyDir((substr($row->Displayname,1)));
+				createZipFile(($row->Displayname),$zipfile);
+			}
+			else
+			{				
+				$zipfile->addFile($GLOBALS["Program_Dir"]."Storage/".$row->Filename,(substr( $dir.$row->Displayname, 1 )));
+			}
+		}		
+	}
+	function startZipCreation($dir)
+	{
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		
+		$zipfile = new ZipArchive();	
+		$fullPath = $GLOBALS["Program_Dir"]."Temp/".getRandomKey(50).".zip";
+		if ($zipfile->open($fullPath, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE)!==TRUE) {
+			exit("cannot open <$filename>\n");
+		}
+		createZipFile($dir,$zipfile);
+		$zipfile->addFromString("Timestamp.txt",date("D M j G:i:s T Y"));
+		$zipfile->Close();
+		$file = file_get_contents($fullPath);
+		$finfo = new finfo(FILEINFO_MIME_TYPE);	
+		if (file_exists($fullPath)) {
+			header('Content-Description: File Transfer');
+			header('Content-Type: ' . $finfo->buffer($file)); 
+			$filename= "Redundancy".getRandomKey(5);
+			header('Content-Disposition: attachment; filename='.$filename.'.zip');
+			header('Content-Transfer-Encoding: binary');
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate');
+			header('Pragma: public');
+			header('Content-Length: ' . filesize($fullPath));
+			ob_clean();
+			flush();
+			readfile($fullPath);
+			unlink ($fullPath);				
+			exit;
+		}
 	}
 ?>

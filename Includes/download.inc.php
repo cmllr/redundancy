@@ -14,9 +14,12 @@
 	mysqli_close($connect);
 	$fullPath = $GLOBALS["Program_Dir"]."Storage/".$filenamenew; 
 	//Create the download if the file is existant
+	$file = file_get_contents($fullPath);
+	$finfo = new finfo(FILEINFO_MIME_TYPE);		
+	
 	if (file_exists($fullPath)) {
 		header('Content-Description: File Transfer');
-		header('Content-Type: ' .mime_content_type($filenamenew)); 
+		header('Content-Type: ' . $finfo->buffer($file)); 
 		header('Content-Disposition: attachment; filename='.$displayname);
 		header('Content-Transfer-Encoding: binary');
 		header('Expires: 0');

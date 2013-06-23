@@ -13,7 +13,11 @@
 				$file = mysqli_real_escape_string($connect,$_GET["file"]);	
 			else
 				$file = mysqli_real_escape_string($connect,$_POST["file"]);
-			copyFile($file,$dir);				
+			
+			if (fs_file_exists($file,$dir) == false){
+				copyFile($file,$dir);		
+			}
+			echo 	"existing:".fs_file_exists($file,$dir);		
 			mysqli_close($connect);	
 			$success = true;
 		}	
@@ -43,8 +47,11 @@
 	{		
 		echo "Command_Result:{$success}";
 		exit;		
-	}		
-	header("Location: ./index.php?module=list&dir=/");
-	exit;
-	
+	}
+	else{	
+		if ($GLOBALS["config"]["Program_Debug"] != 1){
+			header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]);
+			exit;
+		}	
+	}
 ?>

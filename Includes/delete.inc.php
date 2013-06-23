@@ -38,10 +38,14 @@
 		}
 	}
 	if (isset($_POST["api_key"]))
-	{
+	{		
 		echo "Command_Result:{$success}";
-		exit;	
-	}	
-	//Goto the main directory
-	//header("Location: index.php?module=list&dir=/");	
+		exit;		
+	}
+	else{	
+		if ($GLOBALS["config"]["Program_Debug"] != 1){
+			header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]);
+			exit;
+		}	
+	}
 ?>

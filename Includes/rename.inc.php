@@ -32,9 +32,21 @@
 					if (fs_file_exists($newname,$_SESSION["currentdir"]) == false) 
 						$insert = mysqli_query($connect,"Update Files Set Displayname='$newname' where Hash ='$hash'") or die("Error: 017 ".mysqli_error($connect));	
 				}
+				if (isset($_POST["api_key"]))
+				{		
+					echo "Command_Result:{$success}";
+					exit;		
+				}
+				else{	
+					if ($GLOBALS["config"]["Program_Debug"] != 1){
+						header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]);
+						exit;
+					}	
+				}
 			}		
 		}		
-	}	
+	}
+	
 ?>
 <?php
 	if (isset($_GET["file"])){

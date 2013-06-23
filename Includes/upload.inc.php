@@ -2,8 +2,9 @@
 if (isset($_SESSION) == false)
 	session_start();
 	$success = false;
+	
 	if ($_SESSION["role"] != 3){
-		if (isset($_FILES["userfile"]))
+		if (isset($_FILES["userfile"]) && file_exists($_FILES['userfile']['tmp_name']))
 		{		
 			$basepath = $GLOBALS["Program_Dir"];		
 			$uploaddir =$basepath."Storage/";
@@ -20,7 +21,7 @@ if (isset($_SESSION) == false)
 				}
 			}while($found == true );			
 			$newfilename = $code.".dat";//$time.".dat"; 
-			if ($_FILES['userfile']['name'] != "index.php" && $_FILES['userfile']['name'] != "index.html" && strpos($_FILES['userfile']['name'],"<") === false) { 	
+			if ($_FILES['userfile']['name'] != ".htaccess" && $_FILES['userfile']['name'] != "index.php" && $_FILES['userfile']['name'] != "index.html" && strpos($_FILES['userfile']['name'],"<") === false) { 	
 				$dbpath = $basepath ."Includes/DataBase.inc.php";					
 				$userid = $_SESSION['user_id'];	
 				$hash = md5($newfilename);	
@@ -28,14 +29,16 @@ if (isset($_SESSION) == false)
 				$timestamp = time();
 				$uploadtime= date("D M j G:i:s T Y",$timestamp);
 				$dir = $_SESSION['currentdir'];				
-				$oldfilename = mysqli_real_escape_string($connect,$_FILES['userfile']['name']);
+				$oldfilename = mysqli_real_escape_string($connect,($_FILES['userfile']['name']));
 				$size = filesize($_FILES['userfile']['tmp_name']);
-				$directory_id =  getDirectoryID($dir);
-				
+				$directory_id =  getDirectoryID($dir);				
+				$file_mime = file_get_contents($_FILES['userfile']['tmp_name']); 
+				$finfo = new finfo(FILEINFO_MIME_TYPE);		
+				$mimetype =  $finfo->buffer($file_mime);
 				//TODO FIX ERROR HERE
 				if ((getUsedSpace($_SESSION["user_id"])  + $size < $_SESSION["space"] * 1024 * 1024) && fs_file_exists($oldfilename,$dir) == false){
 					include $dbpath;	
-					$insert = "INSERT INTO Files (Filename,Displayname,Hash,UserID,IP,Uploaded,Size,Directory,Directory_ID, Client) VALUES ('$newfilename','$oldfilename','$hash','$userid','$client_ip','$uploadtime','$size','$dir','$directory_id','".$_SERVER['HTTP_USER_AGENT']."')";
+					$insert = "INSERT INTO Files (Filename,Displayname,Hash,UserID,IP,Uploaded,Size,Directory,Directory_ID, Client,MimeType) VALUES ('$newfilename','$oldfilename','$hash','$userid','$client_ip','$uploadtime','$size','$dir','$directory_id','".$_SERVER['HTTP_USER_AGENT']."','$mimetype')";
 					//echo $insert;
 					$inser_query = mysqli_query($connect,$insert) or die ("Error: 030:" .mysqli_error());
 					if ($inser_query == true)

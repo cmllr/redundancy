@@ -12,12 +12,12 @@ if (isset($_POST["regemail"])){
 	else
 		header("Location: ./index.php?module=register");
 }
-if ($GLOBALS["config"]["Enable_register"] == 0){
+if ($GLOBALS["config"]["Enable_register"] == 0 && isset($_GET["renew"]) == false){
 	echo "<form id = 'login'><p>".$GLOBALS["Program_Language"]["Register_disabled"]."</p>";
 	exit;
 }
 ?>
-<form method="POST" action="index.php?module=register" id="login">
+<form method="POST" action="index.php?module=register&renew=true" id="login">
 <p>
     <label for="reguser"><?php echo $GLOBALS["Program_Language"]["Username"];?></label>
     <input class ="text" name="reguser" />
