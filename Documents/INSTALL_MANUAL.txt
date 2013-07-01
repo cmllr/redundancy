@@ -1,47 +1,77 @@
-Redundancy installation manual
-==============================
+  _____          _                 _                        
+ |  __ \        | |               | |                       
+ | |__) |___  __| |_   _ _ __   __| | __ _ _ __   ___ _   _ 
+ |  _  // _ \/ _` | | | | '_ \ / _` |/ _` | '_ \ / __| | | |
+ | | \ \  __/ (_| | |_| | | | | (_| | (_| | | | | (__| |_| |
+ |_|  \_\___|\__,_|\__,_|_| |_|\__,_|\__,_|_| |_|\___|\__, |
+                                                       __/ |
+ installation manual                                  |___/ 
 
 The manual target is 1.9.x-unstable/nightly.
 
 The installation of Redundancy is very easy, it is installed with only 3 steps.
+===================
+System requirements
+===================
+- Installed and configured webserver
+- PHP 5.x
+- PHP GD modules for image displaying 
+- PHP Zip modules
+- MySQL (MySQLi recommend) or equivalent
+- CHMOD 770 on /Storage/ /Temp/ and /Snapshot/ (important!)
 
-1. Download the files 2. Upload to your server 3. Configure the program 4. Create the DataBase
+============================
+Step One: Download the files
+============================
 
-1. Download the files
-=====================
+The latest build can be downloaded over GitHub. 
 
-You can download the files over http with the following link
+Unstable (very unrecommended for productive usage!): https://github.com/squarerootfury/redundancy/archive/unstable.zip
+Stable (recommend if you want to use a productive environment): https://github.com/squarerootfury/redundancy/archive/stable.zip
 
-https://github.com/squarerootfury/redundancy/archive/unstable.zip
+===========================
+Step Two: Install the files
+===========================
 
-Alternative, you can use a git client, too.
+Upload the downloaded files to your webserver directory (often /var/www/ on Linux - based systems).
+Apply the needed rights via chmod (see requirements for exact values).
 
-2. Upload the files to your webspace or server
-==============================================
+================================
+Step Three: Configure Redundancy
+================================
 
-Extract and upload the files useing your prefered ftp client to your server
+Open Redundancy.conf and edit following settings.
 
-3. Configure the program
-========================
+Change "Program_Path" to your Redundancy install path.
 
-3.1. Open the file "/Includes/DataBase.inc.php". Replace the values with your database credentials and the name of the database (remember the database name for later use!)
+Change "Program_Share_Dir" to the relative path (compared to the domain) of your installation, for example
+install path-Program_Share_Dir
+/var/www/Redundancy/-/Redundancy/
 
-3.2. Open the file "/Redundancy.conf". 
+==========================
+Step Four: Create database
+==========================
 
-Change following program settings:
+Open your server's database administration (common phpmyadmin), create a new empty database. 
+Then, select your database and import the File "Redundancy.sql".
 
-The setting "Program_Share_Dir" has to be filled with the path of Redundancy to your server. For example, if you use Redundancy out of a sub folder called "redundancy", you have to put "redundancy" into this value.
+=============================
+Step Five: Configure database
+=============================
 
-The value "Program_Path" is the internal path to Redundancy (often "/var/www/redundancy", for example).
+As the last step, open the file Includes/DataBase.inc.php. Replace the values user, password, server, db with your server's values.
 
-4. Create the database and the tables
-=====================================
-4.1. First, create a new, empty database. Use the name you have remembered at 3.1.
-4.2. If you are useing PHPmyAdmin (or equal), you can import the tables useing the file Redundancy.sql into your database server.
+=============================
+Step Six: Open
+=============================
 
-5. Use
-======
-Now the program is installed. 
-If you open http://yourserver.tld/path/to/redundancy/ you should see the login screen and you should be able to register a new account.
+Open http://yourserver.tld/Path/To/Redundancy/. If you see the login screen, your configuration was successfull. 
+
+=============================
+Optional: Security guidelines
+=============================
+
+- Block the viewing of the include dir's (you can do it over your webserver's configuration)
+- Disable the user registration (recommended for nightly and beta versions = unstable only) via Enable_register = 0
 
 Please note that Redundancy is somewhere between alpha and beta. The risk of loosing data is there until the program will be called stable.

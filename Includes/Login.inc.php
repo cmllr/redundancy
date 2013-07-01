@@ -16,9 +16,6 @@ if (isset($_POST["user"])){
 		header('Location: ./index.php?message=3');
 } 
 ?>
-<p id="logo">
-    <img alt="Logo" src="./Images/Logo.png" />
-</p>
 <form method="POST" action="index.php?module=login" id="login">
 
 <p>

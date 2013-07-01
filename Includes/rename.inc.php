@@ -28,13 +28,16 @@
 					//include the dataBase file
 					include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 					$newname = mysqli_real_escape_string($connect,$_POST["newname"]);
-					$hash = mysqli_real_escape_string($connect,$_GET["file"]);
+					if (isset($_GET["file"]))
+						$hash = mysqli_real_escape_string($connect,$_GET["file"]);
+					else
+						$hash = mysqli_real_escape_string($connect,$_POST["file"]);
 					if (fs_file_exists($newname,$_SESSION["currentdir"]) == false) 
 						$insert = mysqli_query($connect,"Update Files Set Displayname='$newname' where Hash ='$hash'") or die("Error: 017 ".mysqli_error($connect));	
 				}
 				if (isset($_POST["api_key"]))
 				{		
-					echo "Command_Result:{$success}";
+					echo "Command_Result:Done";
 					exit;		
 				}
 				else{	

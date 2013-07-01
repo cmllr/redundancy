@@ -1,11 +1,11 @@
 <div id = "statusbar">
 <p id = "title">
 <a href = "index.php">
-<img src = "./Images/Logo.png">
+<img src = "./Images/house.png">
 <?php
 if (isset($_SESSION) == false)
 		session_start();
-	echo $GLOBALS["config"]["Program_Name_ALT"];
+	echo $GLOBALS["Program_Language"]["Home"];
 ?>
 </a>
 </p>

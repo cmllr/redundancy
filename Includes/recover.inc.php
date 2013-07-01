@@ -1,6 +1,3 @@
-<p id="logo">
-    <img src="./Images/Logo.png" />
-</p>
 <form method="POST" action="index.php?module=recover" id="login">
 <?php
 if (isset($_POST["email"])){

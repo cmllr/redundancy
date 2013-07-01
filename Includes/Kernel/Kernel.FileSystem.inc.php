@@ -5,7 +5,7 @@
 		if (isset($_SESSION) == false)
 			session_start();	
 		$mimetype = get_Mime_Type($filename);
-		if ($mimetype == "image/png" || $mimetype == "image/jpg" || $mimetype == "image/jpeg" || $mimetype == "image/bmp")
+		if ($mimetype == "image/png" || $mimetype == "image/jpg" || $mimetype == "image/jpeg" || $mimetype == "image/bmp" || $mimetype == "image/x-icon")
 			return true;
 		return false;		
 	}
@@ -547,13 +547,87 @@
 		if ($result == true)
 			unlink ( $GLOBALS["Program_Dir"]."Storage/".$filename);	
 	}
+	function create_fs_snapshot()
+	{
+		if (!isset($_SESSION))
+			session_start();
+		echo "Starting snapshotting at ".date("D M j G:i:s T Y", time())." launched by ".$_SESSION["user_name"]."<br><hr>";
+		$filecount = 0;
+		$date = date("D M j G:i:s T Y", time());		
+		$zipfile = new ZipArchive();	
+		$fullPath = $GLOBALS["Program_Dir"]."Snapshots/".$date.".zip";
+		if ($zipfile->open($fullPath, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE)!==TRUE) {
+			exit("cannot open <$filename>\n");
+		}
+		
+		if ($handle = opendir($GLOBALS["config"]["Program_Path"]."Storage/")) {
+			while (false !== ($file = readdir($handle))) {			
+				if ($file != "." && $file != "..")
+				{		
+					echo date("D M j G:i:s T Y", time()).": Adding \"".$file."\" to snapshot<br>"; 
+					$zipfile->addFile($GLOBALS["Program_Dir"]."Storage/".$file,$file);	
+					$filecount++;
+				}
+			}		
+		}
+		closedir($handle);
+		echo "Finished snapshotting on ".$fullPath." [$filecount] files<br>";
+		$zipfile->addFromString("database.sql",backup_tables());
+		echo "Added database snapshot on ".$fullPath." [1] file";
+		$zipfile->Close();
+		
+	}	
+	function backup_tables($tables)
+	{
+		$return = "";
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";			
+		$tables = array();
+		$result = mysqli_query($connect,'SHOW TABLES');
+		while($row = mysqli_fetch_row($result))
+		{
+			$tables[] = $row[0];
+		}		
+		foreach($tables as $table)
+		{
+			$result = mysqli_query($connect,'SELECT * FROM '.$table);
+			$num_fields = mysqli_num_fields($result);			
+			$return.= 'DROP TABLE '.$table.';';
+			$row2 = mysqli_fetch_row(mysqli_query($connect,'SHOW CREATE TABLE '.$table));
+			$return.= "\n\n".$row2[1].";\n\n";			
+			for ($i = 0; $i < $num_fields; $i++) 
+			{
+				while($row = mysqli_fetch_row($result))
+				{
+					$return.= 'INSERT INTO '.$table.' VALUES(';
+					for($j=0; $j<$num_fields; $j++) 
+					{
+						$row[$j] = addslashes($row[$j]);
+						$row[$j] = str_replace("\n","\\n",$row[$j]);
+						if (isset($row[$j]) == true) 
+						{ 
+							$return.= '"'.$row[$j].'"' ; 
+						} else{ 
+							$return.= '""';
+						}
+						if ($j<($num_fields-1))
+						{ 
+							$return.= ','; 
+						}
+					}
+					$return.= ");\n";
+				}
+			}
+			$return.="\n\n\n";
+		}	
+		return $return;
+	}
 	function createZipFile($dir,$zipfile)
 	{
 		//Create a session if needed
 		if (isset($_SESSION) == false)
 			session_start();
 			
-		//Create new database isntance
+		//Create new database instance
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$dir = mysqli_real_escape_string($connect,$dir);
 		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
@@ -587,8 +661,11 @@
 		$finfo = new finfo(FILEINFO_MIME_TYPE);	
 		if (file_exists($fullPath)) {
 			header('Content-Description: File Transfer');
-			header('Content-Type: ' . $finfo->buffer($file)); 
-			$filename= "Redundancy".getRandomKey(5);
+			header('Content-Type: ' . $finfo->buffer($file)); 	
+			if ($dir == "/")
+				$filename = $GLOBALS["Program_Language"]["Files"];
+			else
+				$filename= str_replace("/","",$dir);
 			header('Content-Disposition: attachment; filename='.$filename.'.zip');
 			header('Content-Transfer-Encoding: binary');
 			header('Expires: 0');

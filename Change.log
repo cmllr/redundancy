@@ -1,0 +1,31 @@
+Redundancy 1.9.6 Changelog<br>
+<hr>
+<br>Bugfixes<br>
+<hr width = "10%"><br>
+- Fixed a bug which caused a warning of the webserver software<br>
+- Fixed a bug which caused a wrong displaying of the version information (if set) on an empty directory<br>
+- Fixed a translation bug (the delete button of a directory was not translated)<br>
+- Fixed a translation bug at the rename dialog<br>
+- Fixed a translation bug at the directory listing<br>
+<br>Security Bugfixes<br>
+<hr width = "10%"><br>
+- Improved XSS protection ($_GET,$_POST,$_FILES,$_SESSION,$_REQUEST,$_COOKIE)<br>
+- Improved protection against accessing files which should not be accessed (deny of contents ".." and "." of the module parameter)<br>
+- Beta feature: Added a block that forbids to copy a directory into the directory itself (would cause a forkbomb)<br> 
+- Added additional admin check to avoid possibility to fake a admin session<br> 
+<br>Feature additions<br>
+<hr width = "10%"><br>
+- The zip file is now named like the containing folder(s)<br>
+-- If the zipfile contains the base dir /, the file is named files (or respective translation)<br>
+- Added multiple file upload<br>
+- Added a "back" button to display when the register dialog is shown and the registration is disabled<br>
+- Re- Added the user deletion process<br>
+- Added a health monitor (module=health)<br>
+- Added a new function to set a new user own password<br>
+-- Added new config value User_Recover_Send_Password to determine if the user gets a mail containing his new password or not<br>
+- Added several new informations to the user's profile<br>
+- Added a snapshot feature: Saves a zipfile containing the current /Storage/ dir and the current database, but <b>not</b> the current configuration including database password<br>
+<br>Features removed<br>
+<hr width = "10%"><br>
+- Removed the user name field at the users registration<br>
+- Removed the logo at the navigation and replaced it with a home button

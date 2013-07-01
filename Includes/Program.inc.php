@@ -1,8 +1,8 @@
 <?php	
-	$GLOBALS["Program_Version"] = "1.9.5-git-nightly";		
+	$GLOBALS["Program_Version"] = "1.9.6-git-nightly";		
 	$GLOBALS["config_dir"] = "./";
-	Include $GLOBALS["Program_Dir"]."Includes/Kernel/Kernel.User.inc.php";
-	Include $GLOBALS["Program_Dir"]."Includes/Kernel/Kernel.Common.inc.php";
-	Include $GLOBALS["Program_Dir"]."Includes/Kernel/Kernel.FileSystem.inc.php";
-	Include $GLOBALS["Program_Dir"]."Includes/Kernel/Kernel.System.inc.php";
+	Include "Kernel/Kernel.User.inc.php";
+	Include "Kernel/Kernel.Common.inc.php";
+	Include "Kernel/Kernel.FileSystem.inc.php";
+	Include "Kernel/Kernel.System.inc.php";
 ?>

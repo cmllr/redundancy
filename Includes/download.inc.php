@@ -3,7 +3,14 @@
 	if (isset($_SESSION) == false);
 		session_start();
 	//Include database file
-	include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+	if (isset($GLOBALS["Program_Dir"]) != false)
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+	else{
+		include "./DataBase.inc.php";
+		$GLOBALS["config"] = parse_ini_file("../"."Redundancy.conf");
+		$GLOBALS["Program_Dir"] = $GLOBALS["config"]["Program_Path"];
+	}
+	
 	//get the display- and filename
 	$result = mysqli_query($connect,"Select * from Files  where UserID = \"" .  $_SESSION['user_id'] . "\" and Directory = \"" .$_SESSION['currentdir']."\" and Hash = \"".mysqli_real_escape_string($connect,$_GET["file"])."\"") or die("Error 013: ".mysqli_error($connect));
 	while ($row = mysqli_fetch_object($result)) {																	

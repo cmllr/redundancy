@@ -7,33 +7,38 @@
 	include "../Program.inc.php";
 	if ($config["Api_Enable"] != 1)
 	{
-		echo "Error:{API_Enable=0;}\n";
+		echo "Error:API_Enable\n";
 		exit;
 	}			
 	//acknoledge	
 	$_SESSION["acknoledge"] = false;
 	$_SESSION['user_id'] = "";
-	$_SESSION["user_name"] = "";
+	$_SESSION["user_name"] = "";	
 	if (isset($_POST["api_key"]))
 	{	
 		include "../DataBase.inc.php";			
-		$key = mysqli_real_escape_string($connect,$_POST["api_key"]);
+		$key = mysqli_real_escape_string($connect,$_POST["api_key"]);	
 		$result = mysqli_query($connect,"Select * from Users  where API_Key = '$key'") or die("Error: ".mysqli_error($connect));	
 		while ($row = mysqli_fetch_object($result)) {
 			$_SESSION['user_id'] = $row->ID;	
 			$_SESSION["user_name"] = $row->User;
-			$_SESSION["role"] = $row->Role;
+			$_SESSION["role"] = $row->Role;		
 			if ($row->Enabled != 1 || $row->Enable_API != 1)
 			{								
 				$_SESSION["acknoledge"] = false;
+				echo "User_privileges=false";
 				exit;
 			}
 			else
-			{
-				//echo "Status:{User_Enabled=1;}\n";
+			{			
 				$_SESSION["acknoledge"] = true;
 			}
 		}
+	}
+	else
+	{
+		echo "Error:Key_Missing\n";
+		exit;
 	}	
 	include "../DataBase.inc.php";			
 	if (isset($_POST["directory"]))
@@ -50,14 +55,14 @@
 		if ($value == "getUserName"){			
 			$result = mysqli_query($connect,"Select * from Users  where API_Key = '$key' ") or die("Error: ".mysqli_error($connect));
 			while ($row = mysqli_fetch_object($result)) {
-				echo "Command_Result:{".$row->User.";}\n";
+				echo "Result:".$row->User."\n";
 			}	
 			mysqli_close($connect);			
 		}
 		if ($value == "getUserSpace"){
 			$result = mysqli_query($connect,"Select * from Users  where API_Key = '$key' limit 1") or die("Error: ".mysqli_error($connect));
 			while ($row = mysqli_fetch_object($result)) {
-				echo "Command_Result:{".$row->Storage.";}\n";
+				echo "Result:".$row->Storage."\n";
 			}
 			mysqli_close($connect);
 		}
@@ -70,12 +75,14 @@
 			}			
 			$result = mysqli_query($connect,"Select * from Files  where UserID = '$id' and Directory = '".$_SESSION["directory"]."'") or die("Error: ".mysqli_error($connect));
 			while ($row = mysqli_fetch_object($result)) {
+			$date = date_create($row->Uploaded);
+			$uploaded = date_format($date, 'Y-m-d H:i:s');
 				if ($row->Displayname == $row->Filename)
-					$files .= $row->Displayname.";".$row->Displayname.".dat;";
+					$files .= "Dir:".$row->Displayname.";".$row->Filename_only.";".$uploaded.";".$row->Hash."\n";
 				else
-					$files .= $row->Displayname.";".$row->Filename.";";
+					$files .= "File:".$row->Displayname.";".$row->Filename.";".$uploaded.";".$row->Hash."\n";
 			}
-			echo $files."\n";
+			echo "Result:\n".$files."\n";
 			mysqli_close($connect);
 		}
 		if ($value == "getUsedSpace"){
@@ -89,7 +96,7 @@
 			while ($row = mysqli_fetch_object($result)) {
 				$size += $row->Size;
 			}
-			echo $size."\n";
+			echo "Result:".$size."\n";
 			mysqli_close($connect);
 		}
 		if ($value == "upload")
@@ -132,7 +139,17 @@
 		if ($value == "createDir")
 		{
 			$_SESSION["currentdir"] = $_POST["currentdir"];	
-			include "../move.inc.php";		
-		}	
+			include "../createDir.inc.php";		
+		}
+		if ($value == "downloadFile")
+		{
+			$_SESSION["currentdir"] = $_POST["currentdir"];	
+			//include "../download.inc.php";		
+			header("Location: ../download.inc.php?file=".$_POST["file"]);
+		}
+		if ($value == "renameFile")
+		{		
+			include "../rename.inc.php";		
+		}		
 	}	
 ?>

@@ -1,6 +1,6 @@
 <?php
 	//User functions	
-	function login($pUser,$pPass)
+	function login($pUser,$pPass,$login = true)
 	{		
 		//start a new session
 		if (isset($_SESSION) == false)
@@ -25,18 +25,20 @@
 				$enabled = $row->Enabled;
 				if ($internalpassword == hash('sha512',$pass.$row->Salt."thehoursedoesnoteatchickenandbacon") && $row->Enabled == 1)
 				{			
-					$_SESSION['user_id'] = $row->ID;
-					$_SESSION['user_name'] = $row->User;
-					$_SESSION['user_email'] = $row->Email;
-					$_SESSION["user_logged_in"] = true;
-					$_SESSION["currentdir"] = "/";	
-					$_SESSION["currentdir_hashed"] = "6666cd76f96956469e7be39d750cc7d9";	
-					$_SESSION["space"] = $row->Storage;	
-					$_SESSION["space_used"] = 0;
-					$_SESSION["role"] = $row->Role;
-					//Reset Login counter;
-					mysqli_query($connect,"Update Users Set Failed_logins=0 where Email ='$user' or User='$user'");
-					mysqli_close($connect);					
+					if ($login == true){
+						$_SESSION['user_id'] = $row->ID;
+						$_SESSION['user_name'] = $row->User;
+						$_SESSION['user_email'] = $row->Email;
+						$_SESSION["user_logged_in"] = true;
+						$_SESSION["currentdir"] = "/";	
+						$_SESSION["currentdir_hashed"] = "6666cd76f96956469e7be39d750cc7d9";	
+						$_SESSION["space"] = $row->Storage;	
+						$_SESSION["space_used"] = 0;
+						$_SESSION["role"] = $row->Role;
+						//Reset Login counter;
+						mysqli_query($connect,"Update Users Set Failed_logins=0 where Email ='$user' or User='$user'");
+						mysqli_close($connect);	
+					}					
 					return true;		
 				}							
 			}
@@ -53,8 +55,27 @@
 		mysqli_close($connect);
 		return false;
 	}
-	function registerUser($pUser,$pEmail,$pPass,$pPassRepeat)
+	function getNewUserName($pEmail){
+		$result = "";
+		$go = true;
+		$parts = explode("@",$pEmail);
+		$result = $parts[0];
+		$try = 0;
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
+		do{
+			$ergebnis = mysqli_query($connect,"Select ID, User, Email, Password, Salt,Storage,Role, Enabled,Failed_Logins from Users where User = '$result' or Email = '$pEmail' limit 1") or die("Error: 018 ".mysqli_error($connect));
+			if (mysqli_affected_rows($connect) == 0)
+				$go = false;
+			else{
+				$try++;
+				$result = $parts[i].$try;
+			}
+		}while($go == true);
+		return $result;
+	}
+	function registerUser($pEmail,$pPass,$pPassRepeat)
 	{
+		$pUser = getNewUserName($pEmail);
 		//Is the password and the repeated the same?
 		if (strpos("<",$pUser) !== false || strpos("<",$pEmail) !== false || strpos("<",$pPass) !== false || strpos("<",$pPassRepeat) !== false)
 			return false;
@@ -156,19 +177,23 @@
 			if ($GLOBALS["config"]["User_Enable_Recover"] == 1){
 				$pass = getRandomPass($GLOBALS["config"]["User_Recover_Password_Length"]);
 				
-				$query = mysqli_query($connect,"Select User, Email, Password, Salt from Users where Email ='$email' limit 1");
+				$query = mysqli_query($connect,"Select ID,User, Email, Password, Salt from Users where Email ='$email' limit 1");
 				$salt = getRandomKey(200);
-				$name = "";			
+				$name = "";		
+				$id = -1;
 				while ($row = mysqli_fetch_object($query)) {					
 						$name = $row->User;
+						$id = $row->ID;
 				}
 				$safetypass = hash('sha512',$pass.$salt."thehoursedoesnoteatchickenandbacon");	
 				$query = "Update Users Set Salt='$salt',Password='$safetypass' where Email ='$email'";
 				if ($GLOBALS["config"]["User_Unlock_Recover"] == 1)
 						mysqli_query($connect,"Update Users Set Enabled=1 where Email ='$email'");
 				mysqli_query($connect,$query);
+				$history = "Insert into Pass_History (Changed,IP,Who) Values ('".date("D M j G:i:s T Y", time())."','".getIP()."',$id)";
+				mysqli_query($connect,$history);				
 				sendMail($email,2,$name,"Redundancy",$pass,"Redundancy");				
-				header("Location: ./index.php?module=recover&msg=success");
+				//header("Location: ./index.php?module=recover&msg=success");
 			}
 			else
 				header("Location: ./index.php?module=recover&msg=nosuccess");
@@ -177,5 +202,61 @@
 		{
 			header("Location: ./index.php");
 		}
+	}
+	function setNewPassword($pEmail,$pass_old,$pass_new)
+	{
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$email = mysqli_real_escape_string($connect,$pEmail);		
+		$pass_new = mysqli_real_escape_string($connect,$pass_new);	
+		$pass_old = mysqli_real_escape_string($connect,$pass_old);	
+		if (isExisting($email,"") && strpos("<",$email) === false && login($pEmail,$pass_old,false) == true)
+		{		
+			if ($GLOBALS["config"]["User_Enable_Recover"] == 1){
+				$pass = $pass_new;
+				
+				$query = mysqli_query($connect,"Select User, Email, Password, Salt from Users where Email ='$email' limit 1");
+				$salt = getRandomKey(200);
+				$name = "";			
+				while ($row = mysqli_fetch_object($query)) {					
+						$name = $row->User;
+						$id = $row->ID;
+				}
+				$safetypass = hash('sha512',$pass.$salt."thehoursedoesnoteatchickenandbacon");	
+				$query = "Update Users Set Salt='$salt',Password='$safetypass' where Email ='$email'";
+				if ($GLOBALS["config"]["User_Unlock_Recover"] == 1)
+						mysqli_query($connect,"Update Users Set Enabled=1 where Email ='$email'");
+					
+						
+				mysqli_query($connect,$query);
+				$history = "Insert into Pass_History (Changed,IP,Who) Values ('".date("D M j G:i:s T Y", time())."','".getIP()."',$id)";
+				mysqli_query($connect,$history);							
+				header("Location: ./index.php");
+			}
+			else
+				header("Location: ./index.php?module=setpass");
+		}		
+		else
+		{
+			header("Location: ./index.php?module=setpass");
+		}
+	}
+	function is_admin()
+	{
+		if (!isset($_SESSION))
+			session_start();
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$user_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);
+		$user_name = mysqli_real_escape_string($connect,$_SESSION['user_name']);
+		$user_email = mysqli_real_escape_string($connect,$_SESSION['user_email']);
+		$query = "Select ID, User, Email, Role from Users where Email = '$user_email' and User = '$user_name' and ID = '$user_id'";
+		$mysql = mysqli_query($connect,$query);
+		while ($row = mysqli_fetch_object($mysql)) {					
+			if ($row->Role == 0)
+				$result = true;
+			else
+				$result = false;
+		}
+		mysqli_close($connect);	
+		return $result;
 	}
 ?>

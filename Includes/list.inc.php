@@ -101,11 +101,27 @@
 		//Display the file or directory links itself
 		if (isset($_GET["share"]))
 			$Share_Status = "";
+		$modulelink = "";
+	
+		//Display several kinds of links for cases like copy file, move filey, copy dir, move dir and the regular display
+		if (isset($_GET["move"]) && isset($_GET["file"]))
+				$modulelink = "module=list&dir=".$row->Displayname."&move=true&file=".mysqli_real_escape_string($connect,$_GET["file"])."&dir=".$row->Displayname;
+		else if (isset($_GET["copy"]) && isset($_GET["file"]))
+				$modulelink = "module=list&dir=".$row->Displayname."&copy=true&file=".mysqli_real_escape_string($connect,$_GET["file"])."&dir=".$row->Displayname;
+		else if (isset($_GET["copy"]) && isset($_GET["source"]))
+				$modulelink = "module=list&dir=".$row->Displayname."&copy=true&source=".mysqli_real_escape_string($connect,$_GET["source"])."&old_root=".mysqli_real_escape_string($connect,$_GET["old_root"])."&target=".$row->Displayname;
+		else if (isset($_GET["move"]) && isset($_GET["source"]))
+				$modulelink = "module=list&dir=".$row->Displayname."&move=true&source=".mysqli_real_escape_string($connect,$_GET["source"])."&old_root=".mysqli_real_escape_string($connect,$_GET["old_root"])."&target=".$row->Displayname;
+	
 		if ($row->Displayname == $row->Filename)
 		{
 			echo "<tr class = 'filetype$suffix'><td><img  src='$imagepath'></td><td>$dirlink</td><td>".date("j.n.Y H:i",$date)."</td><td class ='size'>".getFittingDisplayStlye(getDirectorySize($row->Displayname))."</td><td class =  'actions' >";
-			if (isset($_SESSION["user_logged_in"]))
-				echo "<a class = 'delete' title = '".$GLOBALS["Program_Language"]["Delete"]."' href ='index.php?module=delete&dir=".$row->Filename."'><img  src = './Images/folder_delete.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Cut"]."' href ='index.php?module=list&move=true&source=".$row->Filename."&old_root=".$row->Directory."'><img  src = './Images/cut_red.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Copy"]."' href = 'index.php?module=list&copy=true&source=".$row->Filename."&old_root=".$row->Directory."'><img src= './Images/page_copy.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Rename"]."' href ='index.php?module=rename&source=".$row->Displayname."&old_root=".$_SESSION["currentdir"]."'><img  src = './Images/textfield_rename.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Zip"]."' href ='index.php?module=zip&dir=".$row->Displayname."'><img  src = './Images/page_white_zip.png'></a>";
+			if (isset($_SESSION["user_logged_in"])&& isset($_GET["move"]) == false && isset($_GET["copy"]) == false)
+				echo "<a class = 'delete' title = '".$GLOBALS["Program_Language"]["Delete"]."' href ='index.php?module=delete&dir=".$row->Filename."'><img  src = './Images/folder_delete.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Cut"]."' href ='index.php?module=list&move=true&source=".$row->Filename."&old_root=".$row->Directory."'><img  src = './Images/cut_red.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Copy"]."' href = 'index.php?module=list&copy=true&source=".$row->Filename."&old_root=".$row->Directory."'><img src= './Images/page_copy.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Rename_title"]."' href ='index.php?module=rename&source=".$row->Displayname."&old_root=".$_SESSION["currentdir"]."'><img  src = './Images/textfield_rename.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Zip"]."' href ='index.php?module=zip&dir=".$row->Displayname."'><img  src = './Images/page_white_zip.png'></a>";
+			else if (isset($_SESSION["user_logged_in"]))
+			{
+					echo "<a class = 'delete' title = '".$GLOBALS["Program_Language"]["Open"]."' href ='index.php?$modulelink'><img  src = './Images/door_open.png'></a>";
+			}
 			echo "</td><td>$Share_Status";
 			if ($shared)
 				echo "<a href ='".getShareLink($row->Hash)."'><img src = './Images/link_go.png' alt='link' title='".$GLOBALS["Program_Language"]["Share_Link"]."'></a>";
@@ -114,9 +130,10 @@
 		else
 		{
 			 echo "<tr class = 'filetype$suffix'><td><img src='$imagepath'></td><td><a class = 'filelink' href = 'index.php?module=file&file=".$row->Hash."'>".htmlentities(utf8_decode($row->Displayname))."</a></td><td>".date("j.n.Y H:i",$date)."</td><td class ='size'>".getFittingDisplayStlye($row->Size)."</td>";
-			if (isset($_SESSION["user_logged_in"]))
-				echo "<td class =  'actions' ><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Delete"]."' href ='index.php?module=delete&file=".$row->Hash."'><img  src = './Images/page_delete.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Cut"]."' href ='index.php?module=list&move=true&file=".$row->Hash."'><img  src = './Images/cut_red.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Copy"]."' href ='index.php?module=list&copy=true&file=".$row->Hash."'><img  src = './Images/page_copy.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Rename"]."' href ='index.php?module=rename&file=".$row->Hash."'><img  src = './Images/textfield_rename.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Download"]."' href ='index.php?module=download&file=".$row->Hash."'><img  src = './Images/arrow_down.png'></a>";
-				echo "</td><td>$Share_Status";
+			if (isset($_SESSION["user_logged_in"]) )
+				echo "<td class =  'actions' ><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Delete"]."' href ='index.php?module=delete&file=".$row->Hash."'><img  src = './Images/page_delete.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Cut"]."' href ='index.php?module=list&move=true&file=".$row->Hash."'><img  src = './Images/cut_red.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Copy"]."' href ='index.php?module=list&copy=true&file=".$row->Hash."'><img  src = './Images/page_copy.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Rename_title"]."' href ='index.php?module=rename&file=".$row->Hash."'><img  src = './Images/textfield_rename.png'></a><a class = 'delete' title = '".$GLOBALS["Program_Language"]["Download"]."' href ='index.php?module=download&file=".$row->Hash."'><img  src = './Images/arrow_down.png'></a>";
+				
+			echo "</td><td>$Share_Status";
 			if ($shared)
 				echo "<a href ='".getShareLink($row->Hash)."'><img src = './Images/link_go.png' alt='link' title='".$GLOBALS["Program_Language"]["Share_Link"]."'></a>";
 			echo "</td></tr>";
@@ -124,20 +141,19 @@
 			
 	}
 	
-	if ($rows == 0)
-		echo "<h2>Nothing there :(<h2>";
+	
 	//Display links to move or copy files and directories	
-	if (isset($_GET["move"])   && $_SESSION["currentdir"] == "/" && isset($_GET["file"]))
-		echo "<tr class = 'filetype$suffix'><td><img src='./Images/folder.png'></td><td><a class = 'filelink' href = 'index.php?module=move&dir=/&file=".$fileToCopyOrToMove."'>".$GLOBALS["Program_Language"]["Paste_Home"]."</a></td><td></td><td>".getFittingDisplayStlye("/")."</td><td class =  'actions' ></td><td></td></tr>";
-	else if ( isset($_GET["copy"]) && $_SESSION["currentdir"] == "/" && isset($_GET["file"]))
-		echo "<tr class = 'filetype$suffix'><td><img src='./Images/folder.png'></td><td><a class = 'filelink' href = 'index.php?module=copy&dir=/&file=".$fileToCopyOrToMove."'>".$GLOBALS["Program_Language"]["Paste_Home"]."</a></td><td></td><td>".getFittingDisplayStlye("/")."</td><td class =  'actions' ></td><td></td></tr>";
-	else if (isset($_GET["move"]) && $_SESSION["currentdir"] == "/" && isset($_GET["source"]))
-		echo "<tr class = 'filetype$suffix'><td><img src='./Images/folder.png'></td><td><a class = 'filelink' href = 'index.php?module=move&target=/&source=".$fileToCopyOrToMove."&old_root=".$_GET["old_root"]."'>".$GLOBALS["Program_Language"]["Paste_Home"]."</a></td><td></td><td>".getFittingDisplayStlye("/")."</td><td class =  'actions' ></td><td></td></tr>";
-	else if (isset($_GET["copy"]) && $_SESSION["currentdir"] == "/" && isset($_GET["source"]))
-		echo "<tr class = 'filetype$suffix'><td><img src='./Images/folder.png'></td><td><a class = 'filelink' href = 'index.php?module=copy&target=/&source=".$fileToCopyOrToMove."&old_root=".$_GET["old_root"]."'>".$GLOBALS["Program_Language"]["Paste_Home"]."</a></td><td></td><td>".getFittingDisplayStlye("/")."</td><td class =  'actions' ></td><td></td></tr>";
+	if (isset($_GET["move"])    && isset($_GET["file"]))
+		echo "<tr class = 'filetype$suffix'><td><img src='./Images/folder.png'></td><td><a class = 'filelink' href = 'index.php?module=move&dir=".$_SESSION["currentdir"]."&file=".$fileToCopyOrToMove."'>".$GLOBALS["Program_Language"]["Paste_Home"]."</a></td><td></td><td></td><td class =  'actions' ></td><td></td></tr>";
+	else if ( isset($_GET["copy"])  && isset($_GET["file"]))
+		echo "<tr class = 'filetype$suffix'><td><img src='./Images/folder.png'></td><td><a class = 'filelink' href = 'index.php?module=copy&dir=".$_SESSION["currentdir"]."&file=".$fileToCopyOrToMove."'>".$GLOBALS["Program_Language"]["Paste_Home"]."</a></td><td></td><td></td><td class =  'actions' ></td><td></td></tr>";
+	else if (isset($_GET["move"])  && isset($_GET["source"]))
+		echo "<tr class = 'filetype$suffix'><td><img src='./Images/folder.png'></td><td><a class = 'filelink' href = 'index.php?module=move&target=".$_SESSION["currentdir"]."&source=".$fileToCopyOrToMove."&old_root=".$_GET["old_root"]."'>".$GLOBALS["Program_Language"]["Paste_Home"]."</a></td><td></td><td></td><td class =  'actions' ></td><td></td></tr>";
+	else if (isset($_GET["copy"]) && isset($_GET["source"]))
+		echo "<tr class = 'filetype$suffix'><td><img src='./Images/folder.png'></td><td><a class = 'filelink' href = 'index.php?module=copy&target=".$_SESSION["currentdir"]."&source=".$fileToCopyOrToMove."&old_root=".$_GET["old_root"]."'>".$GLOBALS["Program_Language"]["Paste_Home"]."</a></td><td></td><td></td><td class =  'actions' ></td><td></td></tr>";
 	//Close the table
 	echo "</table>";	
 	//Display the delete link if we are not in HOME
 	if ($_SESSION["currentdir"] != "/" && isset($_GET["share"]) == false)
-		echo "<a href ='index.php?module=delete&dir=".$_SESSION['currentdir']."'>Delete</a>";
+		echo "<a href ='index.php?module=delete&dir=".$_SESSION['currentdir']."'>".$GLOBALS["Program_Language"]["Delete"]."</a>";
 ?>

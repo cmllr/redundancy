@@ -14,6 +14,8 @@
 	elseif (isset($_GET["share"]))
 			include $GLOBALS["Program_Dir"]."Includes/share.inc.php";	
 			header('Content-Type: charset=utf-8'); 
+	if (isset($_GET["api"]) && $_GET["api"] == true)
+		header("Location: ./Includes/API/api.inc.php");
 ?>
 <!DOCTYPE html>
 <html>
@@ -21,11 +23,16 @@
 <meta charset="utf-8">
 <?php include "./Includes/gpl.inc.php";?>
 <link rel = "stylesheet" href="./Style_Modern.css" type = "text/css"/>
-<link rel="shortcut icon" href="./images/favicon.ico">
 <title>
 <?php
 	//Include the main program file		
-	include "./Includes/Program.inc.php";	
+	include "./Includes/Program.inc.php";
+	if (xss_check() == true)
+	{
+		echo "XSS Attack found</title>";
+		echo "<div style = 'visibility:visible;' id = 'warning'>You did an XSS attack. Redundancy will stop here.</div><body></body></html>";
+		exit;
+	}
 	//Parse the config file	
 	$GLOBALS["config"] = parse_ini_file($GLOBALS["config_dir"]."Redundancy.conf");
 	$GLOBALS["Program_Language"] = parse_ini_file("./Language/".$GLOBALS["config"]["Program_Language"].".lng");	
@@ -38,9 +45,8 @@
 	echo $GLOBALS["config"]["Program_Name_ALT"];
 	if (isset($_SESSION["user_name"])){
 		//Set the user contingent and refresh the information about used space
-		setUsedSpace($_SESSION['user_name']);	
-		xss_check();
-	}		
+		setUsedSpace($_SESSION['user_name']);			
+	}	
 	if ($GLOBALS["config"]["Program_HTTPS_Redirect"] == 1)
 	{
 		if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == ""){			
@@ -52,8 +58,10 @@
 <script type="text/javascript" src="Core.js">
 </script>
 </head>
+
 <body> 
-<?php
+<?php	
+	
 	if ($GLOBALS["config"]["Program_Enable_Plugins"] == 1)
 	{
 		$handle=opendir ($GLOBALS["Program_Dir"]."Includes/Plugins/BeforeModule/");
@@ -62,7 +70,7 @@
 				include $GLOBALS["Program_Dir"]."Includes/Plugins/BeforeModule/".$file;
 		}
 		closedir($handle);
-	}
+	}	
 ?>
 <?php
 	//Display a warning if the user uses internet explorer
@@ -79,6 +87,10 @@
 			exit;
 		}
 	}
+	if (isset($_SESSION["user_logged_in"]) == false)
+	{
+		include "./Includes/branding.inc.php";
+	}
 	if (isset($_SESSION["user_logged_in"]))
 	{		
 		//Include the status bar and menu and the wanted file
@@ -87,13 +99,11 @@
 		include "./Includes/menubar.inc.php";
 		//Display content itself
 		echo "<div id = 'content'>";
-		if (isset($_GET["module"])){
-			//Include the requestet file
-			//TODO: Add security mechanism to avoid access to non accessible files
+		if (isset($_GET["module"]) && strpos($_GET["module"],"..") === false && strpos($_GET["module"],".") === false){
+			//Include the requested file			
 			$path = $GLOBALS["Program_Dir"]."Includes/".$_GET["module"].".inc.php";			
 			if (file_exists($path))
-				include $path;
-		
+				include $path;		
 		}
 		else if (isset($_GET["module"]) == false && isset($_GET["share"]) == false){
 			//The startpage is an exception, it will be displayed if the module= parameter is not set.
@@ -110,8 +120,9 @@
 	else if (isset($_GET["module"]) && $_GET["module"] == "recover")
 		include "./Includes/recover.inc.php";	
 	else if (isset($_GET["share"]))
-		include "./Includes/share.inc.php";	
-	
+		include "./Includes/share.inc.php";		
+	else if (isset($_GET["module"]) && $_GET["module"] == "setpass")
+		include "./Includes/setpass.inc.php";		
 	else
 		include "./Includes/Login.inc.php";	
 	
