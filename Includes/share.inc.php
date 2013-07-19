@@ -24,17 +24,26 @@
 		else
 		{
 			$found =false;
-			$code = getRandomKey(50);
+			if ($GLOBALS["config"]["Program_Share_Anonymously"] == 0)
+				$code = getFileByHash($file).getRandomKey(50);
+			else
+				$code = getRandomKey(50);
+				
 			do{
 			
 				echo $code;
 				mysqli_query($connect,"Select *  from `Share` where  Extern_ID = '$code'")  or die("Error: 028");
 				if (mysql_affected_rows() > 0)
 				{
-					$code = getRandomKey(50);
+					if ($GLOBALS["config"]["Program_Share_Anonymously"] == 0)
+						$code = getFileByHash($file).getRandomKey(50);
+					else
+						$code = getRandomKey(50);
 					$found = true;					
 				}
-			}while($found == true );				
+			}while($found == true );	
+		
+				
 			//TODO: FIx entry bug			
 			$insert = "INSERT INTO Share (Hash,UserID,Extern_ID) VALUES ('$file',$userID,'$code')";			
 			echo mysqli_query($connect,$insert) or die("Error: 028");

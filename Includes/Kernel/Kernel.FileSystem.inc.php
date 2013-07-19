@@ -5,7 +5,7 @@
 		if (isset($_SESSION) == false)
 			session_start();	
 		$mimetype = get_Mime_Type($filename);
-		if ($mimetype == "image/png" || $mimetype == "image/jpg" || $mimetype == "image/jpeg" || $mimetype == "image/bmp" || $mimetype == "image/x-icon")
+		if ($mimetype == "image/png" || $mimetype == "image/jpg" || $mimetype == "image/jpeg" || $mimetype == "image/bmp" )
 			return true;
 		return false;		
 	}
@@ -170,7 +170,20 @@
 		mysqli_close($connect);	
 		return $dirSize;
 	}
-	
+	function getFileSize($value,$dir)
+	{
+		if (isset($_SESSION) == false)
+			session_start();
+		$dirSize = 0;
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and Displayname = '$value' and Directory = '$dir'") or die("Error 025: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($result)) {
+				if (startsWith($row->Directory,$value))
+					$dirSize += $row->Size;
+		}
+		mysqli_close($connect);	
+		return $dirSize;
+	}
 	function getDisplayName($string,$filename)
 	{
 		if ($string != $filename)
@@ -202,8 +215,9 @@
 		if (isset($_SESSION) == false)
 			session_start();
 		$filename = -1;
-		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and Displayname = '$directory' and Filename = '$directory' limit 1") or die("Error 025: ".mysqli_error($connect));
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$owner_ID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);		
+		$result = mysqli_query($connect,"Select * from Files where UserID = '".$owner_ID."' and Displayname = '$directory' and Filename = '$directory' limit 1") or die("Error 025: ".mysqli_error($connect));
 		while ($row = mysqli_fetch_object($result)) {
 			$filename = $row->ID;
 		}		
@@ -214,7 +228,8 @@
 		if (isset($_SESSION) == false)
 			session_start();	
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and (Displayname = '$file'  or Hash = '$file')and Directory = '$directory'") or die("Error 025: ".mysqli_error($connect));
+		$owner_ID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		$result = mysqli_query($connect,"Select * from Files where UserID = '".$owner_ID."' and (Displayname = '$file'  or Hash = '$file')and Directory = '$directory'") or die("Error 025: ".mysqli_error($connect));
 		
 		if (mysqli_affected_rows($connect) > 0)
 			return true;
@@ -265,7 +280,8 @@
 		//old_root = /
 		//target = /newdir/test/
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$select = "Select * from Files where Directory = '$old_root'  ";
+		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		$select = "Select * from Files where Directory = '$old_root' and UserID = '	$user' ";
 		$replace_count = 1;
 		if ($old_root == "/")
 			$new_root = $target;
@@ -324,7 +340,8 @@
 	function moveFile($ID,$newdir)
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
-		mysqli_query($connect,"Update Files Set Directory='$newdir',Directory_ID = ".getDirectoryID($newdir)." where ID =".$ID) or die("Error: 017 ".mysqli_error($connect));	
+		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		mysqli_query($connect,"Update Files Set Directory='$newdir',Directory_ID = ".getDirectoryID($newdir)." where ID =".$ID." and UserID = '$user'") or die("Error: 017 ".mysqli_error($connect));	
 	}
 	function moveContents($source,$target)
 	{	
@@ -375,8 +392,10 @@
 			}			
 			mysqli_close($connect);		
 		}
-		if ($GLOBALS["config"]["Program_Redirect_NewDir"] == 1)
-			header("Location: index.php?module=list&dir=".$newdirectory);
+		if ($GLOBALS["config"]["Program_Redirect_NewDir"] == 1){
+			if ($GLOBALS["config"]["Program_Debug"] != 1)
+				header("Location: ./index.php?module=list&dir=".$currentdir.$directory."/&result=1&from=createdir");
+		}			
 	}
 	function createBin($currentdir,$directory)
 	{
@@ -405,8 +424,11 @@
 		//Dir = /test/
 		//old_root = /
 		//target = /newdir/test/
+		if (isset($_SESSION) == false)
+			session_start();
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$select = "Select * from Files where Directory = '$old_root'  ";
+		$owner_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);
+		$select = "Select * from Files where Directory = '$old_root' and UserID = '$owner_id' ";
 		$replace_count = 1;
 		if ($old_root == "/")
 			$new_root = $target;
@@ -464,9 +486,12 @@
 	}
 	function copyFile($file,$dir)
 	{
+		if (isset($_SESSION) == false)
+			session_start();
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
 		$uploadtime= date("D M j G:i:s T Y",time());
-		$result = mysqli_query($connect,"Select * from Files  where Hash = '$file'") or die("Error: ".mysqli_error($connect));
+		$owner_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);
+		$result = mysqli_query($connect,"Select * from Files  where Hash = '$file' and UserID = '$owner_id'") or die("Error: ".mysqli_error($connect));
 		while ($row = mysqli_fetch_object($result)) {
 			$Filename =$row->Filename;
 			$Displayname = $row->Displayname;
@@ -509,8 +534,9 @@
 		if (isset($_SESSION) == false)
 			session_start();
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
-		$dir = mysqli_real_escape_string($connect,$dirname);		
-		$result = mysqli_query($connect,"Select * from Files  where Directory = '$dir' and UserID = '".$_SESSION['user_id']."'") or die("Error: 010 ".mysqli_error($connect));
+		$dir = mysqli_real_escape_string($connect,$dirname);
+		$owner_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);	
+		$result = mysqli_query($connect,"Select * from Files  where Directory = '$dir' and UserID = '".$owner_id."'") or die("Error: 010 ".mysqli_error($connect));
 	
 		while ($row = mysqli_fetch_object($result)) {
 			//get the Filename of the file
@@ -541,8 +567,9 @@
 		//Create new database isntance
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		//Delete the file from the database
-		mysqli_query($connect,"delete from `Files` where  `Filename` = '".$filename."' and UserID = '".$_SESSION['user_id']."' and Directory = '$directory'")or die("Error: 011 ".mysqli_error($connect));		
-		$result = mysqli_query($connect,"DELETE FROM `Share` WHERE `Hash` = '".$hash."' and UserID = '".$_SESSION['user_id']."' limit 1") or die("Error: 012 ".mysqli_error($connect));			
+		$owner_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);	
+		mysqli_query($connect,"delete from `Files` where  `Filename` = '".$filename."' and UserID = '".$owner_id."' and Directory = '$directory'")or die("Error: 011 ".mysqli_error($connect));		
+		$result = mysqli_query($connect,"DELETE FROM `Share` WHERE `Hash` = '".$hash."' and UserID = '".$owner_id."' limit 1") or die("Error: 012 ".mysqli_error($connect));			
 		//Delete it from the local server filesystem
 		if ($result == true)
 			unlink ( $GLOBALS["Program_Dir"]."Storage/".$filename);	
@@ -576,24 +603,37 @@
 		echo "Added database snapshot on ".$fullPath." [1] file";
 		$zipfile->Close();
 		
-	}	
-	function backup_tables($tables)
+	}
+	//Source:http://davidwalsh.name/backup-mysql-database-php
+	function backup_tables($tables = '*')
 	{
 		$return = "";
-		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";			
-		$tables = array();
-		$result = mysqli_query($connect,'SHOW TABLES');
-		while($row = mysqli_fetch_row($result))
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
+		//get all of the tables
+		if($tables == '*')
 		{
-			$tables[] = $row[0];
-		}		
+			$tables = array();
+			$result = mysqli_query($connect,'SHOW TABLES');
+			while($row = mysqli_fetch_row($result))
+			{
+				$tables[] = $row[0];
+			}
+		}
+		else
+		{
+			$tables = is_array($tables) ? $tables : explode(',',$tables);
+		}
+		
+		//cycle through
 		foreach($tables as $table)
 		{
 			$result = mysqli_query($connect,'SELECT * FROM '.$table);
-			$num_fields = mysqli_num_fields($result);			
+			$num_fields = mysqli_num_fields($result);
+			
 			$return.= 'DROP TABLE '.$table.';';
 			$row2 = mysqli_fetch_row(mysqli_query($connect,'SHOW CREATE TABLE '.$table));
-			$return.= "\n\n".$row2[1].";\n\n";			
+			$return.= "\n\n".$row2[1].";\n\n";
+			
 			for ($i = 0; $i < $num_fields; $i++) 
 			{
 				while($row = mysqli_fetch_row($result))
@@ -603,22 +643,17 @@
 					{
 						$row[$j] = addslashes($row[$j]);
 						$row[$j] = str_replace("\n","\\n",$row[$j]);
-						if (isset($row[$j]) == true) 
-						{ 
-							$return.= '"'.$row[$j].'"' ; 
-						} else{ 
-							$return.= '""';
-						}
-						if ($j<($num_fields-1))
-						{ 
-							$return.= ','; 
-						}
+						if (isset($row[$j])) { $return.= '"'.$row[$j].'"' ; } else { $return.= '""'; }
+						if ($j<($num_fields-1)) { $return.= ','; }
 					}
 					$return.= ");\n";
 				}
 			}
 			$return.="\n\n\n";
-		}	
+		}
+		
+		//save file
+		
 		return $return;
 	}
 	function createZipFile($dir,$zipfile)
@@ -627,7 +662,7 @@
 		if (isset($_SESSION) == false)
 			session_start();
 			
-		//Create new database instance
+		//Create new database isntance
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$dir = mysqli_real_escape_string($connect,$dir);
 		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
@@ -679,4 +714,45 @@
 			exit;
 		}
 	}
+	function fs_enough_space($dir)
+	{
+		$value = false;
+		$size = 0;		
+		//TODO: sql
+		//TODO: Bug
+		
+		if (getDirectorySize($dir) == 0 && endsWith($dir,"/") == false)
+		{
+			$size = getFileSize($dir,$_SESSION["currentdir"]);			
+		}
+		else if (getDirectorySize($dir) != 0 && endsWith($dir,"/") != false)
+		{
+			$size = getDirectorySize($dir);	
+		}
+		echo "Size: ".$size;
+		
+		$complete = $size  + getUsedSpace($_SESSION["user_id"]);
+		echo "Complete: ".$complete;
+		echo "Space: ".$_SESSION["space"] * 1024 * 1024;
+		if ($complete < $_SESSION["space"] * 1024 * 1024 )
+			$value = true;
+		else
+			$value = false;
+		return $value;
+	}
+	function fs_is_Dir($hash)
+	{
+		$folder = false;
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		$select = "Select * from Files where UserID = '$user' and Hash = '$hash'";
+		$result= mysqli_query($connect,$select);
+		while ($row = mysqli_fetch_object($result)) {
+			if ($row->Displayname == $row->Filename)
+				$folder = true;		
+		}
+		mysqli_close($connect);	
+		return $folder;
+	}
+	
 ?>

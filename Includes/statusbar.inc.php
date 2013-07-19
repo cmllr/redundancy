@@ -1,14 +1,5 @@
 <div id = "statusbar">
-<p id = "title">
-<a href = "index.php">
-<img src = "./Images/house.png">
-<?php
-if (isset($_SESSION) == false)
-		session_start();
-	echo $GLOBALS["Program_Language"]["Home"];
-?>
-</a>
-</p>
+
 <?php
 	if (isset($_SESSION["user_logged_in"])){
 		include $GLOBALS["Program_Dir"]."Includes/Menu.inc.php";
