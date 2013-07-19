@@ -22,12 +22,12 @@
 		echo $row->Changed." - " .$row->IP."<br>";
 	}	
 	if ($GLOBALS["config"]["User_Enable_Recover"] == 1 && $_SESSION["role"] != 3)
-		echo "<br><a href = 'index.php?module=setpass'>".$GLOBALS["Program_Language"]["Set"]."</a><br>"; 
+		echo "<br><a href = 'index.php?module=setpass'>".$GLOBALS["Program_Language"]["Set"]."</a>"; 
 	//Close the connection if finished	
 	mysqli_close($connect);	
 	
 ?>
-<br><h2><?php echo $GLOBALS["Program_Language"]["Files"];?></h2>
+<h2><?php echo $GLOBALS["Program_Language"]["Files"];?></h2>
 <div id = "progressbar">
 <?php
 	echo "<div id = 'progressbar_inner' style='width:".round(getPercentage(),0)."% ;'>";
@@ -40,16 +40,16 @@
 	echo getStoragePercentage();
 ?>
 </p>
-<br>
 <?php
 	if ($_SESSION["role"] == 3)
 		exit;
 ?>
-<a href = "index.php?module=zip&dir=/"><?php echo $GLOBALS["Program_Language"]["Download_All_Files"];?></a>
-<br>
+<br><a href = "index.php?module=zip&dir=/"><?php echo $GLOBALS["Program_Language"]["Download_All_Files"];?></a>
 <?php
 	if ($GLOBALS["config"]["User_Allow_Delete"] == 1 && $_SESSION["role"] != 3)
-		echo "<br><hr><h3>".$GLOBALS["Program_Language"]["Delete_Account"]."</h3><br><a href = 'index.php?module=goodbye'>".$GLOBALS["Program_Language"]["Delete_Account"]."</a><br>";
+		echo "<br><br><h3>".$GLOBALS["Program_Language"]["Delete_Account"]."</h3><br><a href = 'index.php?module=goodbye'>".$GLOBALS
+
+["Program_Language"]["Delete_Account"]."</a><br>";
 	
 ?>
 </div>

@@ -1,3 +1,4 @@
+
 <?php
 //Only proceed if a post param named user is iset
 if (isset($_POST["user"])){
@@ -13,7 +14,7 @@ if (isset($_POST["user"])){
 	if (login($_POST["user"],$_POST["pass"]) == true)
 		header('Location: ./index.php'.$redir);
 	else
-		header('Location: ./index.php?message=3');
+		header('Location: ./index.php?message=wrongcredentials&ef=s');
 } 
 ?>
 <form method="POST" action="index.php?module=login" id="login">
@@ -32,3 +33,5 @@ if (isset($_POST["user"])){
 <a class = "actions" href = "index.php?module=register"><img alt ="New User" src="./Images/user_add.png"><?php echo $GLOBALS["Program_Language"]["Register"]; ?></a>
 <a class = "actions" href = "index.php?module=recover"><img alt="Recover Password" src="./Images/key_go.png"><?php echo $GLOBALS["Program_Language"]["Recover"]; ?></a>
 </form>
+
+

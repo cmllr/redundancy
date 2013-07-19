@@ -14,12 +14,22 @@
 			else
 				$file = mysqli_real_escape_string($connect,$_POST["file"]);
 			
-			if (fs_file_exists($file,$dir) == false){
-				copyFile($file,$dir);		
+			$fileDisplayName = getFileByHash($file);
+			echo $file;
+			echo $dir;
+			echo $dir;
+			if (fs_file_exists($fileDisplayName,$dir) == false){
+				$success = true;
+				if (fs_enough_space($dir) == true)
+					copyFile($file,$dir);		
+				else
+					$success = false;
 			}
-			echo 	"existing:".fs_file_exists($file,$dir);		
+			else
+				$success = false;
+				
 			mysqli_close($connect);	
-			$success = true;
+		
 		}	
 		else if ((isset($_GET["source"]) && isset($_GET["target"]) && isset($_GET["old_root"])) || (isset($_POST["source"]) && isset($_POST["target"]) && isset($_POST["old_root"])))
 		{
@@ -39,9 +49,24 @@
 					$old_root = mysqli_real_escape_string($connect,$_GET["old_root"]); // old root dir
 				else
 					$old_root = mysqli_real_escape_string($connect,$_POST["old_root"]); // old root dir
-				copyDir($source,$target,$old_root);	
+				//TODO: überschreibehilfe
+				echo $target.getDisplayName($source,$source)."/";
+				if (fs_file_exists($target.getDisplayName($source,$source)."/",$target) == false)
+				{
+					$success = true;
+					if (fs_enough_space($source))
+					{
+						copyDir($source,$target,$old_root);	
+						$success = true;
+					}
+					else
+						$success = false;
+				}
+				else
+					$success = false;
+					
 				//mysql_close($connect);	
-				$success = true;
+				
 			}
 		}
 	}
@@ -52,7 +77,10 @@
 	}
 	else{	
 		if ($GLOBALS["config"]["Program_Debug"] != 1){
-			header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]);
+			if ($success != true)
+				header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=copyfail&img=exclamation");
+			else
+				header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=copysuccess&img=accept");
 			exit;
 		}	
 	}

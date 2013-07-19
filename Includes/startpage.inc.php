@@ -1,7 +1,5 @@
-<div id = 'content'>
-<div id = "nothing">
+<div class = "contentWrapper">
 <?php
 	readfile("./Change.log");	
 ?>
-</div>
 </div>
