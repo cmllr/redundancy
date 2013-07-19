@@ -1,4 +1,3 @@
-
 Redundancy  1.9.x unstable branch
 =================================
 Redundancy is an lightweigth cloud computing systems. The program is very lightweight so you can run it on microservers, like the Raspberry Pi without having too much load.
@@ -10,6 +9,7 @@ Requirements
 - PHP GD modules
 - PHP zip modules
 - MySQL(i) or equivalent
+- Client: JQuery Support (if enabled)
 
 License
 =======
@@ -17,6 +17,7 @@ License
 Redundancy is licensed under the terms and conditions of the GNU GPL v3.
 Redundancy uses icons from "famfamfam Icons Silk", see http://www.famfamfam.com/lab/icons/silk/ for more informations
 Redundancy uses DidactGothic.ttf, licensed under the Open Font license (http://scripts.sil.org/OFL) 
+Redundancy uses JQuery, it can be found on https://jquery.org/.
 
 Note/ Disclaimer
 ================
