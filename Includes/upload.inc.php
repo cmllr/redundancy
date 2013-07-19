@@ -55,15 +55,19 @@ if (isset($_SESSION) == false)
 						}
 						else
 						{
-							header("Location: index.php?message=4");
+							header("Location: index.php?message=nospace");
 						}
 						
 					} else {
-						header("Location: index.php?message=5");
+						header("Location: index.php?message=notallowed");
 					}
 				}				
 			}			
 		}		
+	}
+	else
+	{
+			header("Location: index.php?message=readonly");
 	}
 	if (isset($_POST["api_key"]))
 	{
@@ -83,6 +87,9 @@ if (isset($_SESSION) == false)
 	}
 ?>
 <div class ="contentWrapper">
+<?php
+		include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
+?>
 <?php	
 	echo "<h2>".$GLOBALS["Program_Language"]["Upload_Title"]." ".$_SESSION['currentdir'].".</h2>";
 ?>
@@ -90,6 +97,7 @@ if (isset($_SESSION) == false)
 <p> 
 	<input name="userfile[]" type="file" multiple/>
 </p>
+<small><?php echo $GLOBALS["Program_Language"]["Upload_SubTitle"];?></small>
     <input  type='submit' value='<?php echo $GLOBALS["Program_Language"]["Upload"];?>'>
 </form>
 </div>

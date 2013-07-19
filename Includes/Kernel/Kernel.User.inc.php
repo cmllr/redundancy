@@ -259,4 +259,34 @@
 		mysqli_close($connect);	
 		return $result;
 	}
+	function user_apply_Informations()
+	{
+		if (!isset($_SESSION))
+			session_start();
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$user = mysqli_real_escape_string($connect,$_SESSION['user_name']);
+		$email = mysqli_real_escape_string($connect,$_SESSION['user_email']);
+		$ergebnis = mysqli_query($connect,"Select ID, User, Email, Password, Salt,Storage,Role, Enabled,Failed_Logins from Users where User = '$user' or Email = '$email' limit 1") or die("Error: 018 ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($ergebnis)) {										
+			$_SESSION["space"] = $row->Storage;	
+			$_SESSION["role"] = $row->Role;		
+		}							
+		mysqli_close($connect);		
+	}
+	function user_check_session()
+	{
+		if (!isset($_SESSION))
+			session_start();
+		$found = false;
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		for ($i = 0; $i < count($_SESSION);$i++)
+		{
+			if ($_SESSION[$i] != mysqli_real_escape_string($connect,$_SESSION[$i]))
+				$found = true;
+		}		
+		if ($found == true)
+			banUser(getIP(),$_SERVER['HTTP_USER_AGENT'],"SQLi");
+		return $found;
+	}
+	
 ?>

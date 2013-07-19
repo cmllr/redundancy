@@ -14,6 +14,7 @@
 		$_SESSION["current_file"] = $GLOBALS["Program_Dir"]."Storage/".$row->Filename;
 		
 		echo "<div class ='contentWrapper' >";
+			include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
 		//If the file is a image -> Display it
 		if (isImage($row->Filename) == 1)
 			echo "<p id = 'preview'><img src='index.php?module=image'>";

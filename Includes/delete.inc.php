@@ -19,6 +19,7 @@
 			while ($row = mysqli_fetch_object($result)) {
 				$localfilename = $row->Filename;
 				$dir = $row->Directory;
+				echo $localfilename."<br>";
 			}	
 			mysqli_close($connect);	
 			if ($localfilename != "" && $dir != "")
@@ -32,7 +33,8 @@
 			if (isset($_GET["dir"]))
 					$todelete = $_GET["dir"];
 				else 	
-					$todelete = $_POST["dir"];						
+					$todelete = $_POST["dir"];	
+			echo $todelete."<br>";
 			deleteDir($todelete);		
 			$success = true;		
 		}
