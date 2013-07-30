@@ -19,7 +19,7 @@
 	}	
 	//close databse connection
 	mysqli_close($connect);
-	$fullPath = $GLOBALS["Program_Dir"]."Storage/".$filenamenew; 
+	$fullPath = $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$filenamenew; 
 	//Create the download if the file is existant
 	$file = file_get_contents($fullPath);
 	$finfo = new finfo(FILEINFO_MIME_TYPE);		
@@ -27,7 +27,7 @@
 	if (file_exists($fullPath)) {
 		header('Content-Description: File Transfer');
 		header('Content-Type: ' . $finfo->buffer($file)); 
-		header('Content-Disposition: attachment; filename='.$displayname);
+		header("Content-Disposition: attachment; filename='".$displayname."'");
 		header('Content-Transfer-Encoding: binary');
 		header('Expires: 0');
 		header('Cache-Control: must-revalidate');

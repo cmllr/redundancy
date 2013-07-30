@@ -5,6 +5,7 @@
 	//Remember a new date
 	$uploadtime= date("D M j G:i:s T Y",time());
 	$success = false;
+	$redir ="";
 	//Split between moving a file and moving a dir
 	if ($_SESSION["role"] != 3){
 		if ((isset($_GET["file"]) && isset($_GET["dir"])) || (isset($_POST["file"]) && isset($_POST["dir"]))){
@@ -19,10 +20,18 @@
 				$file = mysqli_real_escape_string($connect,$_GET["file"]);	
 			else
 				$file = mysqli_real_escape_string($connect,$_POST["file"]);
-			$sql = "UPDATE Files SET Directory='$dir',Directory_ID=".getDirectoryID($dir).",Uploaded='$uploadtime' WHERE Hash='$file'";			
-			mysqli_query($connect,$sql) or die("Error: 015 ".mysqli_error($connect));		
-			mysqli_close($connect);
+			$sql = "UPDATE Files SET Directory='$dir',Directory_ID=".getDirectoryID($dir).",Uploaded='$uploadtime' WHERE Hash='$file'";
+			$displayname = getFileByHash($file);
+			echo $displayname;	
 			$success = true;
+			if (fs_file_exists($displayname,$dir) == false)
+				mysqli_query($connect,$sql) or die("Error: 015 ".mysqli_error($connect));	
+			else 
+				$success = false;
+			mysqli_close($connect);
+			$redir = $dir;
+		
+			//TODO: move check
 		}
 		else if ((isset($_GET["source"]) && isset($_GET["target"]) && isset($_GET["old_root"])) || (isset($_POST["source"]) && isset($_POST["target"]) && isset($_POST["old_root"])))				
 		{
@@ -45,8 +54,13 @@
 					$old_root = mysqli_real_escape_string($connect,$_GET["old_root"]); // old root dir
 				else
 					$old_root = mysqli_real_escape_string($connect,$_POST["old_root"]); // old root dir
-				moveDir($source,$target,$old_root);
+				$redir = $target;
 				$success = true;
+				if (fs_file_exists($target.getDisplayName($source,$source)."/",$target) == false)
+					moveDir($source,$target,$old_root);
+				else 
+					$success = false;
+				
 			}
 		}
 	}
@@ -57,8 +71,11 @@
 	}	
 	//Redirect the user if needed
 	
-	if (!isset($_GET["noredir"])){
-			header("Location: ./index.php?module=list&dir=/");
+	if ($GLOBALS["config"]["Program_Debug"] != 1){
+		if ($success != true)
+				header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=movefail&img=exclamation");
+			else
+				header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=movesuccess&img=accept");
 			exit;
 	}	
 	

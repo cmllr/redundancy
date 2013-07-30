@@ -11,12 +11,12 @@
 		include "health.inc.php";
 		$snapshotcount = 0;
 		$last = "-";
-		if ($handle = opendir($GLOBALS["config"]["Program_Path"]."Snapshots/")) {
+		if ($handle = opendir($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Snapshots_Dir"]."/")) {
 			while (false !== ($file = readdir($handle))) {			
 				if ($file != "." && $file != ".." && endsWith($file,".zip") )
 				{		
 					$snapshotcount++;
-					$last = date ("F d Y H:i:s", filemtime($GLOBALS["config"]["Program_Path"]."Snapshots/".$file));
+					$last = date ("F d Y H:i:s", filemtime($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Snapshots_Dir"]."/".$file));
 				}
 			}		
 		}

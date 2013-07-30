@@ -1,13 +1,59 @@
-<?php
-	//file and storage functions
-	function isImage($filename)
+<?php	
+	function fs_isImage($filename)
 	{	
-		if (isset($_SESSION) == false)
-			session_start();	
-		$mimetype = get_Mime_Type($filename);
-		if ($mimetype == "image/png" || $mimetype == "image/jpg" || $mimetype == "image/jpeg" || $mimetype == "image/bmp" || $mimetype == "image/x-icon")
-			return true;
-		return false;		
+		try{
+			if (isset($_SESSION) == false)
+				session_start();	
+			$mimetype = get_Mime_Type($filename);
+			if (strpos($mimetype,"image") !== false || $mimetype == "image/png" || $mimetype == "image/jpg" || $mimetype == "image/jpeg" || $mimetype == "image/bmp" )
+				return true;
+			return false;
+		}
+		catch (Exception $e){
+			return false;
+		}
+	}
+	function fs_isVideo($filename)
+	{	
+		try{
+			if (isset($_SESSION) == false)
+				session_start();	
+			$mimetype = get_Mime_Type($filename);
+			if (strpos($mimetype,"video") !== false ||  $mimetype == "video/mpeg" || $mimetype == "video/mp4" || $mimetype == "video/ogg" || $mimetype == "video/quicktime" || $mimetype == "video/webm" || $mimetype == "video/x-mastroska" || $mimetype == "video/x-ms-wmv" || $mimetype == "video/x-flv" || $mimetype == "video/x-ms-asf" )
+				return true;
+			return false;
+		}
+		catch (Exception $e){
+			return false;
+		}
+	}
+	function fs_isAudio($filename)
+	{	
+		try{
+			if (isset($_SESSION) == false)
+				session_start();	
+			$mimetype = get_Mime_Type($filename);
+			if (strpos($mimetype,"audio") !== false || $mimetype == "audio/basic" || $mimetype == "audio/L24" || $mimetype == "audio/mp4" || $mimetype == "audio/mpeg" || $mimetype == "audio/ogg" || $mimetype == "audio/vorbis" || $mimetype == "audio/vnd.rn-realaudio" || $mimetype == "audio/vnd.wave" || $mimetype == "audio/webm" || $mimetype == "audio/mpeg")
+				return true;
+			return false;
+		}
+		catch (Exception $e){
+			return false;
+		}
+	}
+	function fs_isText($filename)
+	{	
+		try{
+			if (isset($_SESSION) == false)
+				session_start();	
+			$mimetype = get_Mime_Type($filename);
+			if ($mimetype == "text/cmd" || $mimetype == "text/css" || $mimetype == "text/csv" || $mimetype == "text/html" || $mimetype == "text/plain" || $mimetype == "text/xml" || $mimetype == "text/x-asm")
+				return true;
+			return false;
+		}
+		catch (Exception $e){
+			return false;
+		}
 	}
 	function getUsedSpace($username)
 	{	
@@ -27,9 +73,9 @@
 		mysqli_close($connect);		
 		return $amount_in_Byte ;
 	}
-	function setUsedSpace($username)
-	{	
-		//echo $username;
+	
+	function fs_setUsedSpace($username)
+	{			
 		if (isset($_SESSION) == false)
 			session_start();
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";			
@@ -47,17 +93,18 @@
 		//Store the space information in the session
 		$_SESSION["space_used"] =  $amount_in_Byte;	
 	}
-	function getTopDir($directory)
+	//Obsolete since 1.9.8
+	function _getTopDir($directory)
 	{
 		if (isset($_SESSION) == false)
 			session_start();
-		$dirs = explode("/",$_SESSION["curre	ntdir"]);
+		$dirs = explode("/",$_SESSION["currentdir"]);
 		if (count($dirs) -1 >= 0)		
 			return $dirs[count($dirs) -1];
 		else
 			return "/";
 	}
-	function getStoragePercentage()
+	function fs_get_Storage_Percentage()
 	{
 		if (isset($_SESSION) == false)
 			session_start();
@@ -88,9 +135,9 @@
 		}
 		if ($storage_used == 0)
 			$storage_used = 0;
-		return round($storage_used,2)." $measure of ".getFittingDisplayStlye($_SESSION['space']*1024*1024)." ".$GLOBALS["Program_Language"]["used"];
-	}
-	function getPercentage()
+		return round($storage_used,2)." $measure ".$GLOBALS["Program_Language"]["of"]." ".fs_get_fitting_DisplayStyle($_SESSION['space']*1024*1024)." ".$GLOBALS["Program_Language"]["used"];
+	}	 
+	function fs_get_Percentage()
 	{
 		if (isset($_SESSION) == false)
 			session_start();
@@ -101,34 +148,32 @@
 		return "0%";
 			else
 		return round(100/($storage/$storage_used),2)."%";
-	}
+	}	
 	function isShared($file)
-	{
-		if (isset($_SESSION) == false)
-			session_start();
+	{		
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";			
 		
-		$result = mysqli_query($connect,"Select * from Share where Hash = '".mysqli_real_escape_string($connect,$file)."' limit 1") or die("Error: 024: ".mysqli_error($connect));
+		$result = mysqli_query($connect,"Select ID from Share where Hash = '".mysqli_real_escape_string($connect,$file)."' limit 1") or die("Error: 024: ".mysqli_error($connect));
 		if (mysqli_affected_rows($connect) > 0){
 				return true;
 		}		
 		return false;
-	}
-	function getShareLink($file)
+	}	
+	function fs_getShareLink($file)
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		$result = mysqli_query($connect,"Select * from Share where Hash = '".mysqli_real_escape_string($connect,$file)."' limit 1") or die("Error: 024: ".mysqli_error($connect));
-		
+		$share_dir = str_replace("index.php","",$_SERVER["PHP_SELF"]);
 		if ($row = mysqli_fetch_object($result)){
 				if ($GLOBALS["config"]["Program_HTTPS_Redirect"] == 1)			
-					$sharetext = "https://".$_SERVER["SERVER_NAME"].$GLOBALS["config"]["Program_Share_Dir"]."index.php?share=".$row->Extern_ID;
+					$sharetext = "https://".$_SERVER["SERVER_NAME"].$share_dir."index.php?share=".$row->Extern_ID;
 				else
-					$sharetext = "http://".$_SERVER["SERVER_NAME"].$GLOBALS["config"]["Program_Share_Dir"]."index.php?share=".$row->Extern_ID;
+					$sharetext = "http://".$_SERVER["SERVER_NAME"].$share_dir."index.php?share=".$row->Extern_ID;
 				return $sharetext;
 		}		
 		return -1;
-	}
-	function getFittingDisplayStlye($value,$offset = 1)
+	}	
+	function fs_get_fitting_DisplayStyle($value,$offset = 1)
 	{
 		$measure = "B";
 	
@@ -155,7 +200,7 @@
 			$value = $value /1024 / 1024 / 1024 / 1024;
 		}
 		return round($value,2) ." ". $measure;
-	}
+	}	
 	function getDirectorySize($value)
 	{
 		if (isset($_SESSION) == false)
@@ -170,7 +215,20 @@
 		mysqli_close($connect);	
 		return $dirSize;
 	}
-	
+	function getFileSize($value,$dir)
+	{
+		if (isset($_SESSION) == false)
+			session_start();
+		$dirSize = 0;
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and Displayname = '$value' and Directory = '$dir'") or die("Error 025: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($result)) {
+				if (startsWith($row->Directory,$value))
+					$dirSize += $row->Size;
+		}
+		mysqli_close($connect);	
+		return $dirSize;
+	}
 	function getDisplayName($string,$filename)
 	{
 		if ($string != $filename)
@@ -182,7 +240,7 @@
 	}
 	function get_Mime_Type($filename) {
 		if ($GLOBALS["config"]["Program_Mime_Use_DataBase"] == 0){
-			$file = file_get_contents($GLOBALS["Program_Dir"]."Storage/".$filename);
+			$file = file_get_contents($GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$filename);
 			$finfo = new finfo(FILEINFO_MIME_TYPE);		
 			return $finfo->buffer($file);
 		}
@@ -202,8 +260,9 @@
 		if (isset($_SESSION) == false)
 			session_start();
 		$filename = -1;
-		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and Displayname = '$directory' and Filename = '$directory' limit 1") or die("Error 025: ".mysqli_error($connect));
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$owner_ID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);		
+		$result = mysqli_query($connect,"Select ID from Files where UserID = '".$owner_ID."' and Displayname = '$directory' and Filename = '$directory' limit 1") or die("Error 025: ".mysqli_error($connect));
 		while ($row = mysqli_fetch_object($result)) {
 			$filename = $row->ID;
 		}		
@@ -214,7 +273,8 @@
 		if (isset($_SESSION) == false)
 			session_start();	
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and (Displayname = '$file'  or Hash = '$file')and Directory = '$directory'") or die("Error 025: ".mysqli_error($connect));
+		$owner_ID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		$result = mysqli_query($connect,"Select * from Files where UserID = '".$owner_ID."' and (Displayname = '$file'  or Hash = '$file')and Directory = '$directory'") or die("Error 025: ".mysqli_error($connect));
 		
 		if (mysqli_affected_rows($connect) > 0)
 			return true;
@@ -233,6 +293,7 @@
 		}			
 		return $filename;
 	}
+	//obsolete since 1.9.5
 	function moveDir_old($source,$target,$old_root)
 	{
 		$uploadtime= date("D M j G:i:s T Y",time());
@@ -265,7 +326,8 @@
 		//old_root = /
 		//target = /newdir/test/
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$select = "Select * from Files where Directory = '$old_root'  ";
+		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		$select = "Select * from Files where Directory = '$old_root' and UserID = '	$user' ";
 		$replace_count = 1;
 		if ($old_root == "/")
 			$new_root = $target;
@@ -324,7 +386,8 @@
 	function moveFile($ID,$newdir)
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
-		mysqli_query($connect,"Update Files Set Directory='$newdir',Directory_ID = ".getDirectoryID($newdir)." where ID =".$ID) or die("Error: 017 ".mysqli_error($connect));	
+		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		mysqli_query($connect,"Update Files Set Directory='$newdir',Directory_ID = ".getDirectoryID($newdir)." where ID =".$ID." and UserID = '$user'") or die("Error: 017 ".mysqli_error($connect));	
 	}
 	function moveContents($source,$target)
 	{	
@@ -364,7 +427,7 @@
 			$filenameonly = $directory;
 			$timestamp = time();
 			$uploadtime= date("D M j G:i:s T Y", $timestamp);
-			$hash = md5($newdirectory.$uploadtime);	
+			$hash = md5($newdirectory.$uploadtime.$userid);	
 			$client_ip = getIP();	
 			$dir_id = getDirectoryID($uploaddirectory); 		
 			if (fs_file_exists($directory,$uploaddirectory) == false)
@@ -375,8 +438,10 @@
 			}			
 			mysqli_close($connect);		
 		}
-		if ($GLOBALS["config"]["Program_Redirect_NewDir"] == 1)
-			header("Location: index.php?module=list&dir=".$newdirectory);
+		if ($GLOBALS["config"]["Program_Redirect_NewDir"] == 1){
+			if ($GLOBALS["config"]["Program_Debug"] != 1)
+				header("Location: ./index.php?module=list&dir=".$currentdir.$directory."/&result=1&from=createdir");
+		}			
 	}
 	function createBin($currentdir,$directory)
 	{
@@ -400,13 +465,16 @@
 			}			
 			mysqli_close($connect);			
 	}
-	function copyDir($dir,$target,$old_root)
+	function fs_copyDir($dir,$target,$old_root)
 	{	
 		//Dir = /test/
 		//old_root = /
 		//target = /newdir/test/
+		if (isset($_SESSION) == false)
+			session_start();
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$select = "Select * from Files where Directory = '$old_root'  ";
+		$owner_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);
+		$select = "Select * from Files where Directory = '$old_root' and UserID = '$owner_id' ";
 		$replace_count = 1;
 		if ($old_root == "/")
 			$new_root = $target;
@@ -417,7 +485,9 @@
 			$ID = $row->ID;
 			$Filename = $row->Filename;
 			$Displayname = $row->Displayname;
-			$Hash = $row->Hash;
+			$timestamp = time();
+			$uploadtime= date("D M j G:i:s T Y", $timestamp);
+			$Hash = md5($Displayname.$uploadtime);	
 			$UserID = $row->UserID;
 			$IP = $row->IP;
 			$Uploaded = $row->Uploaded;
@@ -443,7 +513,7 @@
 				$insertDir = "Insert into Files (Filename, Displayname,Filename_only, Hash, UserID, IP, Uploaded, Size, Directory,Directory_ID ) Values ('".$target.$row->Filename_only."/"."','".$target.$row->Filename_only."/"."','$filename_only','$Hash',$UserID,'$IP','$Uploaded',$Size,'$target',$dir_id)";
 				mysqli_query($connect,$insertDir);
 			
-				copyDir($row->Filename,$target.$row->Filename_only."/",$row->Displayname);
+				fs_copyDir($row->Filename,$target.$row->Filename_only."/",$row->Displayname);
 					
 			}
 			else if (strpos($row->Directory,$dir) !== false && fs_file_exists($row->Displayname,$target) == false)
@@ -458,19 +528,24 @@
 				echo "<br>NEW entry name:".$target.$row->Displayname;
 				echo "<br>Old directory".$old_root;
 				echo "<br>New Directory".$target;	
-				copyFile($row->Hash,$target);
+				fs_copyFile($row->Hash,$target);
 			}
 		}
 	}
-	function copyFile($file,$dir)
+	function fs_copyFile($file,$dir)
 	{
+		if (isset($_SESSION) == false)
+			session_start();
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
 		$uploadtime= date("D M j G:i:s T Y",time());
-		$result = mysqli_query($connect,"Select * from Files  where Hash = '$file'") or die("Error: ".mysqli_error($connect));
+		$owner_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);
+		$result = mysqli_query($connect,"Select * from Files  where Hash = '$file' and UserID = '$owner_id'") or die("Error: ".mysqli_error($connect));
 		while ($row = mysqli_fetch_object($result)) {
 			$Filename =$row->Filename;
 			$Displayname = $row->Displayname;
-			$Hash = $row->Hash;
+			$timestamp = time();
+			$uploadtime= date("D M j G:i:s T Y", $timestamp);
+			$Hash = md5($Filename.$uploadtime);	
 			$UserId = $row->UserID;
 			$IP = getIP();
 			$Uploaded = $row->Uploaded;
@@ -495,7 +570,7 @@
 		}while($found == true );	
 		$hash_new = md5($code.".dat");	
 		$newfilename = $code.".dat";	
-		$uploaddir =$GLOBALS["Program_Dir"]."Storage/";	
+		$uploaddir =$GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/";	
 		$dir_id = getDirectoryID($dir);
 		$insert = "Insert into Files (Filename, Displayname, Hash, UserID, IP, Uploaded, Size, Directory,Directory_ID ) Values ('$newfilename','$Displayname','$hash_new',$UserId,'$IP','$uploadtime',$Size,'$dir',$dir_id)";
 		$insertquery = mysqli_query($connect,$insert);
@@ -509,8 +584,9 @@
 		if (isset($_SESSION) == false)
 			session_start();
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
-		$dir = mysqli_real_escape_string($connect,$dirname);		
-		$result = mysqli_query($connect,"Select * from Files  where Directory = '$dir' and UserID = '".$_SESSION['user_id']."'") or die("Error: 010 ".mysqli_error($connect));
+		$dir = mysqli_real_escape_string($connect,$dirname);
+		$owner_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);	
+		$result = mysqli_query($connect,"Select * from Files  where Directory = '$dir' and UserID = '".$owner_id."'") or die("Error: 010 ".mysqli_error($connect));
 	
 		while ($row = mysqli_fetch_object($result)) {
 			//get the Filename of the file
@@ -541,11 +617,12 @@
 		//Create new database isntance
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		//Delete the file from the database
-		mysqli_query($connect,"delete from `Files` where  `Filename` = '".$filename."' and UserID = '".$_SESSION['user_id']."' and Directory = '$directory'")or die("Error: 011 ".mysqli_error($connect));		
-		$result = mysqli_query($connect,"DELETE FROM `Share` WHERE `Hash` = '".$hash."' and UserID = '".$_SESSION['user_id']."' limit 1") or die("Error: 012 ".mysqli_error($connect));			
+		$owner_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);	
+		mysqli_query($connect,"delete from `Files` where  `Filename` = '".$filename."' and UserID = '".$owner_id."' and Directory = '$directory'")or die("Error: 011 ".mysqli_error($connect));		
+		$result = mysqli_query($connect,"DELETE FROM `Share` WHERE `Hash` = '".$hash."' and UserID = '".$owner_id."' limit 1") or die("Error: 012 ".mysqli_error($connect));			
 		//Delete it from the local server filesystem
 		if ($result == true)
-			unlink ( $GLOBALS["Program_Dir"]."Storage/".$filename);	
+			unlink ( $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$filename);	
 	}
 	function create_fs_snapshot()
 	{
@@ -555,17 +632,17 @@
 		$filecount = 0;
 		$date = date("D M j G:i:s T Y", time());		
 		$zipfile = new ZipArchive();	
-		$fullPath = $GLOBALS["Program_Dir"]."Snapshots/".$date.".zip";
+		$fullPath = $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Snapshots_Dir"]."/".$date.".zip";
 		if ($zipfile->open($fullPath, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE)!==TRUE) {
 			exit("cannot open <$filename>\n");
 		}
 		
-		if ($handle = opendir($GLOBALS["config"]["Program_Path"]."Storage/")) {
+		if ($handle = opendir($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/")) {
 			while (false !== ($file = readdir($handle))) {			
 				if ($file != "." && $file != "..")
 				{		
 					echo date("D M j G:i:s T Y", time()).": Adding \"".$file."\" to snapshot<br>"; 
-					$zipfile->addFile($GLOBALS["Program_Dir"]."Storage/".$file,$file);	
+					$zipfile->addFile($GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$file,$file);	
 					$filecount++;
 				}
 			}		
@@ -576,24 +653,37 @@
 		echo "Added database snapshot on ".$fullPath." [1] file";
 		$zipfile->Close();
 		
-	}	
-	function backup_tables($tables)
+	}
+	//Source:http://davidwalsh.name/backup-mysql-database-php
+	function backup_tables($tables = '*')
 	{
 		$return = "";
-		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";			
-		$tables = array();
-		$result = mysqli_query($connect,'SHOW TABLES');
-		while($row = mysqli_fetch_row($result))
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
+		//get all of the tables
+		if($tables == '*')
 		{
-			$tables[] = $row[0];
-		}		
+			$tables = array();
+			$result = mysqli_query($connect,'SHOW TABLES');
+			while($row = mysqli_fetch_row($result))
+			{
+				$tables[] = $row[0];
+			}
+		}
+		else
+		{
+			$tables = is_array($tables) ? $tables : explode(',',$tables);
+		}
+		
+		//cycle through
 		foreach($tables as $table)
 		{
 			$result = mysqli_query($connect,'SELECT * FROM '.$table);
-			$num_fields = mysqli_num_fields($result);			
+			$num_fields = mysqli_num_fields($result);
+			
 			$return.= 'DROP TABLE '.$table.';';
 			$row2 = mysqli_fetch_row(mysqli_query($connect,'SHOW CREATE TABLE '.$table));
-			$return.= "\n\n".$row2[1].";\n\n";			
+			$return.= "\n\n".$row2[1].";\n\n";
+			
 			for ($i = 0; $i < $num_fields; $i++) 
 			{
 				while($row = mysqli_fetch_row($result))
@@ -603,22 +693,17 @@
 					{
 						$row[$j] = addslashes($row[$j]);
 						$row[$j] = str_replace("\n","\\n",$row[$j]);
-						if (isset($row[$j]) == true) 
-						{ 
-							$return.= '"'.$row[$j].'"' ; 
-						} else{ 
-							$return.= '""';
-						}
-						if ($j<($num_fields-1))
-						{ 
-							$return.= ','; 
-						}
+						if (isset($row[$j])) { $return.= '"'.$row[$j].'"' ; } else { $return.= '""'; }
+						if ($j<($num_fields-1)) { $return.= ','; }
 					}
 					$return.= ");\n";
 				}
 			}
 			$return.="\n\n\n";
-		}	
+		}
+		
+		//save file
+		
 		return $return;
 	}
 	function createZipFile($dir,$zipfile)
@@ -627,7 +712,7 @@
 		if (isset($_SESSION) == false)
 			session_start();
 			
-		//Create new database instance
+		//Create new database isntance
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$dir = mysqli_real_escape_string($connect,$dir);
 		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
@@ -641,7 +726,7 @@
 			}
 			else
 			{				
-				$zipfile->addFile($GLOBALS["Program_Dir"]."Storage/".$row->Filename,(substr( $dir.$row->Displayname, 1 )));
+				$zipfile->addFile($GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$row->Filename,(substr( $dir.$row->Displayname, 1 )));
 			}
 		}		
 	}
@@ -650,7 +735,7 @@
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		
 		$zipfile = new ZipArchive();	
-		$fullPath = $GLOBALS["Program_Dir"]."Temp/".getRandomKey(50).".zip";
+		$fullPath = $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Temp_Dir"]."/".getRandomKey(50).".zip";
 		if ($zipfile->open($fullPath, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE)!==TRUE) {
 			exit("cannot open <$filename>\n");
 		}
@@ -679,4 +764,67 @@
 			exit;
 		}
 	}
+	function fs_enough_space($dir)
+	{
+		$value = false;
+		$size = 0;		
+		//TODO: sql
+		//TODO: Bug
+		
+		if (getDirectorySize($dir) == 0 && endsWith($dir,"/") == false)
+		{
+			$size = getFileSize($dir,$_SESSION["currentdir"])/1024;			
+		}
+		else if (getDirectorySize($dir) != 0 && endsWith($dir,"/") != false)
+		{
+			$size = getDirectorySize($dir);	
+		}
+		echo "Size: ".$size;
+		
+		$complete = $size  + getUsedSpace($_SESSION["user_id"]);
+		echo "Complete used space including new file: ".$complete;
+		echo "Space available: ".$_SESSION["space"] * 1024 * 1024;
+		if ($complete < $_SESSION["space"] * 1024 * 1024 )
+			$value = true;
+		else
+			$value = false;
+		return $value;
+	}
+	function fs_is_Dir($hash)
+	{
+		$folder = false;
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		$select = "Select * from Files where UserID = '$user' and Hash = '$hash'";
+		$result= mysqli_query($connect,$select);
+		while ($row = mysqli_fetch_object($result)) {
+			if ($row->Displayname == $row->Filename)
+				$folder = true;		
+		}
+		mysqli_close($connect);	
+		return $folder;
+	}
+	function fs_get_imagepath($Displayname,$Filename,$MimeType,$Hash)
+	{
+		$imagepath = './Images/page.png';		
+		if ($Displayname != $Filename){									
+			if (fs_isImage($Filename) && $GLOBALS["config"]["Program_Display_Icons_if_needed"] == 1)
+			{		
+				$imagepath = "index.php?module=image&file=".$Hash;
+			}	
+			else if (fs_isImage($Filename) == false )
+			{			
+				if (file_exists("./Images/mimetypes/".str_replace("/","-",$MimeType).".png"))
+						$imagepath = "./Images/mimetypes/".str_replace("/","-",$MimeType).".png";	
+			}		
+		}
+		else
+		{
+			$imagepath = "./Images/mimetypes/folder.png";
+			if (isShared($Hash))
+				$imagepath = "./Images/mimetypes/folder-publicshare.png";
+		}
+		return $imagepath;
+	}
+	
 ?>

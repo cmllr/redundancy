@@ -1,3 +1,4 @@
+<div class ="contentWrapper">
 <h2>System status</h2>
 <br>
 <?php	
@@ -34,7 +35,7 @@
 	{
 		echo "<img src = './Images/exclamation.png' alt = 'ok'> DataBase Support<br>";
 	}
-	if (is_writable($GLOBALS["config"]["Program_Path"]."Storage") == true)
+	if (is_writable($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/") == true)
 	{
 		echo "<img src = './Images/accept.png' alt = 'ok'> Storage Access<br>";
 	} 
@@ -42,7 +43,7 @@
 	{
 		echo "<img src = './Images/exclamation.png' alt = 'ok'> Storage Access<br>";
 	}
-	if (is_writable($GLOBALS["config"]["Program_Path"]."Temp") == true)
+	if (is_writable($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Temp_Dir"]."/") == true)
 	{
 		echo "<img src = './Images/accept.png' alt = 'ok'> Temp Access<br>";
 	} 
@@ -50,7 +51,7 @@
 	{
 		echo "<img src = './Images/exclamation.png' alt = 'ok'> Temp Access<br>";
 	}
-	if (is_writable($GLOBALS["config"]["Program_Path"]."Snapshots") == true)
+	if (is_writable($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Snapshots_Dir"]."/") == true)
 	{
 		echo "<img src = './Images/accept.png' alt = 'ok'> Snapshots Access<br>";
 	} 
@@ -66,7 +67,7 @@
 	while ($row = mysqli_fetch_object($query)) {		
 		if ($row->Filename != $row->Displayname){
 		$count++;			
-			if (file_exists($GLOBALS["config"]["Program_Path"]."Storage/".$row->Filename) == false)
+			if (file_exists($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$row->Filename) == false)
 			{
 				$countMissing++;
 				echo "<img src = './Images/exclamation.png' alt = 'ok'>File \"".$row->Displayname."\" (".$row->Filename.") in database, but not on filesystem!<br>";
@@ -86,7 +87,7 @@
 	$count = 0;
 	$countMissing = 0;
 	echo "<b>Performing filesystem check</b><br>";
-	if ($handle = opendir($GLOBALS["config"]["Program_Path"]."Storage/")) {
+	if ($handle = opendir($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/")) {
 		while (false !== ($file = readdir($handle))) {			
 			if ($file != "." && $file != ".." && $file != ".htaccess" && $file != "index.php" )
 			{
@@ -161,3 +162,4 @@
 
 	
 ?>
+</div>

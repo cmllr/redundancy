@@ -10,13 +10,13 @@
 
 	if (isset($_GET["delete"]) && $_GET["delete"] == "true" && $_SESSION["role"] != 3)
 	{					
-		mysqli_query($connect,"delete from `Share` where  Hash = '$file' and UserID = '$userID'") or die("Error: 026");
+		mysqli_query($connect,"delete  from `Share` where  Hash = '$file' and UserID = $userID") or die("Error: 026");
 		mysqli_close($connect);	
 		header ("Location: index.php?module=list");
 	}
 	else if (isset($_GET["new"]) && $_GET["new"] == "true" && $_SESSION["role"] != 3)
 	{
-		mysqli_query($connect,"Select *  from `Share` where  Hash = '$file' and UserID = '$userID'")  or die("Error: 027");
+		mysqli_query($connect,"Select *  from `Share` where  Hash = '$file' and UserID = $userID")  or die("Error: 027");
 		if (mysql_affected_rows() > 0)
 		{
 			//File is already shared
@@ -24,19 +24,28 @@
 		else
 		{
 			$found =false;
-			$code = getRandomKey(50);
+			if ($GLOBALS["config"]["Program_Share_Anonymously"] == 0)
+				$code = getFileByHash($file).getRandomKey(50);
+			else
+				$code = getRandomKey(50);
+				
 			do{
 			
 				echo $code;
 				mysqli_query($connect,"Select *  from `Share` where  Extern_ID = '$code'")  or die("Error: 028");
 				if (mysql_affected_rows() > 0)
 				{
-					$code = getRandomKey(50);
+					if ($GLOBALS["config"]["Program_Share_Anonymously"] == 0)
+						$code = getFileByHash($file).getRandomKey(50);
+					else
+						$code = getRandomKey(50);
 					$found = true;					
 				}
-			}while($found == true );				
+			}while($found == true );	
+		
+				
 			//TODO: FIx entry bug			
-			$insert = "INSERT INTO Share (Hash,UserID,Extern_ID) VALUES ('$file',$userID,'$code')";			
+			$insert = "INSERT INTO Share (Hash,UserID,Extern_ID,Used) VALUES ('$file',$userID,'$code',0)";			
 			echo mysqli_query($connect,$insert) or die("Error: 028");
 			echo mysqli_error($connect);			
 		}

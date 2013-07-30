@@ -3,15 +3,21 @@
 	if (isset($_SESSION) == false)
 		session_start();		
 	//if the file parameter is set -> Get a image to display
+	
+//$GLOBALS["config"]["Program_Storage_Dir"] = "Storage";
 	if (isset($_GET["file"]) )
 	{
 		//Include DataBase file
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$filename = "";
 		$result = mysqli_query($connect,"Select * from Files  where Hash = '".mysqli_real_escape_string($connect,$_GET["file"])."' limit 1");	
+		//echo $_SESSION["current_file"];
 		while ($row = mysqli_fetch_object($result)) {
-			$filename = $GLOBALS["Program_Dir"]."Storage/".$row->Filename;
+			$filename = $GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$row->Filename;
 		}
+		
 		//Set the current file
+		//echo $filename;
 		$_SESSION["current_file"] = $filename;
 		//Delete database connection and display the image
 		mysqli_close($connect);	
@@ -44,5 +50,7 @@
 				imagedestroy($im);				 		
 			}		
 		}
+		else
+			echo "error";
 	}
 ?> 

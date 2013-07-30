@@ -8,17 +8,26 @@
 	//remember the hash
 	$hash = mysqli_real_escape_string($connect,$_GET["file"]);
 	//Searh for a file with this hash
-	$ergebnis = mysqli_query($connect,"Select * from Files  where Hash = '$hash'") or die("Error: ".mysqli_error($connect));	
+	$ergebnis = mysqli_query($connect,"Select Filename,Displayname,Uploaded,Client,Hash,MimeType from Files  where Hash = '$hash' limit 1") or die("Error: ".mysqli_error($connect));	
 	while ($row = mysqli_fetch_object($ergebnis)) {
 		//Remember the file for further processes
-		$_SESSION["current_file"] = $GLOBALS["Program_Dir"]."Storage/".$row->Filename;
+		$_SESSION["current_file"] = $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$row->Filename;
 		
 		echo "<div class ='contentWrapper' >";
-		//If the file is a image -> Display it
-		if (isImage($row->Filename) == 1)
-			echo "<p id = 'preview'><img src='index.php?module=image'>";
-		else
-			echo "<p id = 'preview'><img  src='./Images/page.png'>";
+			include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
+		//Get file image or icon
+		if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 && fs_isImage($row->Filename) == 1)
+			echo "<p id = 'preview'><img src='index.php?module=image'>";	
+		else if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 && fs_isVideo($row->Filename) == true)
+			echo "<p id = 'preview'><video src='./Includes/player.inc.php' controls>Your browser does not support the <code>video</code> element.</video>";
+		else if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 && fs_isAudio($row->Filename) == true)
+			echo "<p id = 'preview'><audio src='./Includes/player.inc.php' controls>Your browser does not support the <code>audio</code> element.</audio>";
+		else if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 && fs_isText($row->Filename) == true) {
+			echo "<p id = 'preview'><textarea  cols='120' rows='5'>";
+			include "./Includes/player.inc.php";
+			echo "</textarea>";	}
+		else 
+			echo "<p id = 'preview'><img  src='".fs_get_imagepath($row->Displayname,$row->Filename,$row->MimeType,$row->Hash)."'>";
 		//Display the name
 		echo "</p><p class = 'filename'>".htmlentities(utf8_decode($row->Displayname))."</p>";	
 		$date = strtotime($row->Uploaded);
@@ -27,28 +36,15 @@
 		if (strpos($client,"Mozilla") === false && $row->Client != NULL )
 			echo "<p class ='source'>".$GLOBALS["Program_Language"]["Uploaded_API"]."</a></p>";
 		else		
-			echo "<p class ='source'>".$GLOBALS["Program_Language"]["Uploaded_Browser"]."</a></p>";
-		//Check if file is shared
-		$userID = $_SESSION["user_id"];
-		$result = mysqli_query($connect,"Select * from Share  where UserID = '$userID' and Hash ='".$hash."' limit 1") or die("Error: ".mysqli_error($connect));	
-		$shared = false;
-		//Get Share infos (if existing)
-		while ($rowShare = mysqli_fetch_object($result)) {
-		
-		if ($GLOBALS["config"]["Program_HTTPS_Redirect"] == 1)
-			
-			$sharetext = "https://".$_SERVER["SERVER_NAME"].$GLOBALS["config"]["Program_Share_Dir"]."index.php?share=".$rowShare->Extern_ID;
-		else
-			$sharetext = "http://".$_SERVER["SERVER_NAME"].$GLOBALS["config"]["Program_Share_Dir"]."index.php?share=".$rowShare->Extern_ID;
-		echo "<p class = 'sharelink'>".$GLOBALS["Program_Language"]["Share_Link"]."</p><input type ='text' cols='70' rows='2' value ='$sharetext'></input>";	
-		$shared = true;
-		echo "<p class ='source'>".$rowShare->Used ." ".$GLOBALS["Program_Language"]["Share_Accessed"]."</p>";
-		} 
-
-			
+			echo "<p class ='source'>".$GLOBALS["Program_Language"]["Uploaded_Browser"]."</a></p>";		
+		if (isShared($hash))
+		{
+			$sharetext = fs_getShareLink($hash);
+			echo "<p class = 'sharelink'>".$GLOBALS["Program_Language"]["Share_Link"]."</p><input type ='text' cols='70' rows='2' value ='$sharetext'></input>";	
+		}			
 		echo "<p class ='buttons'><a href ='index.php?module=download&file=$row->Hash'>".$GLOBALS["Program_Language"]["Download"]."</a>";		
 		//Display links
-		if ($shared == false)
+		if (isShared($hash) == false)
 			echo "<a href ='index.php?module=download&module=share&file=".$row->Hash."&new=true'>".$GLOBALS["Program_Language"]["Share"]."</a>";	
 		else
 			echo "<a href = 'index.php?module=share&file=".$row->Hash."&delete=true'>".$GLOBALS["Program_Language"]["Unshare"]."</a>";		

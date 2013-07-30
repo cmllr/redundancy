@@ -15,11 +15,10 @@
 			$email ="";
 			$name = "";
 			$enabled = 1;
-			$ergebnis = mysqli_query($connect,"Select ID, User, Email, Password, Salt,Storage,Role, Enabled,Failed_Logins from Users where User = '$user' or Email = '$user' limit 1") or die("Error: 018 ".mysqli_error($connect));
+			$ergebnis = mysqli_query($connect,"Select ID, User, Email, Password, Salt,Storage,Role, Enabled,Failed_Logins,Session_Closed from Users where User = '$user' or Email = '$user' limit 1") or die("Error: 018 ".mysqli_error($connect));
 			while ($row = mysqli_fetch_object($ergebnis)) {	
 				$internalpassword = $row->Password;	
 				$tries = $row->Failed_Logins;
-				echo "found fails:".$tries;
 				$email = $row->Email;
 				$name = $row->User;
 				$enabled = $row->Enabled;
@@ -35,8 +34,11 @@
 						$_SESSION["space"] = $row->Storage;	
 						$_SESSION["space_used"] = 0;
 						$_SESSION["role"] = $row->Role;
+						$_SESSION["fs_hash"] = hash('sha512',$pass.$row->Salt.$row->Email);
+						$_SESSION["Session_Closed"] = $row->Session_Closed;
+						
 						//Reset Login counter;
-						mysqli_query($connect,"Update Users Set Failed_logins=0 where Email ='$user' or User='$user'");
+						mysqli_query($connect,"Update Users Set Failed_logins=0,Session_Closed =0 where Email ='$user' or User='$user'");
 						mysqli_close($connect);	
 					}					
 					return true;		
@@ -104,6 +106,8 @@
 		$user = mysqli_real_escape_string($connect,$pUser);
 		$pass = mysqli_real_escape_string($connect,$pPass);	
 		$email = mysqli_real_escape_string($connect,$pEmail);
+		if (strpos($email,"@") === false || strpos($email,".") === false)
+			return false;
 		$salt = getRandomKey(200);
 		$safetypass = hash('sha512',$pass.$salt."thehoursedoesnoteatchickenandbacon");	
 		$registered= date("D M j G:i:s T Y",time());
@@ -259,4 +263,35 @@
 		mysqli_close($connect);	
 		return $result;
 	}
+	function user_apply_Informations()
+	{
+		if (!isset($_SESSION))
+			session_start();
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$user = mysqli_real_escape_string($connect,$_SESSION['user_name']);
+		$email = mysqli_real_escape_string($connect,$_SESSION['user_email']);
+		$ergebnis = mysqli_query($connect,"Select ID, User, Email, Password, Salt,Storage,Role, Enabled,Failed_Logins from Users where User = '$user' or Email = '$email' limit 1") or die("Error: 018 ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($ergebnis)) {										
+			$_SESSION["space"] = $row->Storage;	
+			$_SESSION["role"] = $row->Role;		
+		}							
+		mysqli_close($connect);		
+	}
+	function user_check_session()
+	{
+		if (!isset($_SESSION))
+			session_start();
+		$found = false;
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
+		foreach($_SESSION as $key => $value)
+		{			
+		  if ($value != mysqli_real_escape_string($connect,$value))
+			$found = true;
+		}		
+		if ($found == true)
+			banUser(getIP(),$_SERVER['HTTP_USER_AGENT'],"SQLi");
+		return $found;
+	}
+	
+	
 ?>

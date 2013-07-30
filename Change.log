@@ -1,31 +1,36 @@
-Redundancy 1.9.6 Changelog<br>
+Redundancy 1.9.8 Changelog<br>
 <hr>
 <br>Bugfixes<br>
 <hr width = "10%"><br>
-- Fixed a bug which caused a warning of the webserver software<br>
-- Fixed a bug which caused a wrong displaying of the version information (if set) on an empty directory<br>
-- Fixed a translation bug (the delete button of a directory was not translated)<br>
-- Fixed a translation bug at the rename dialog<br>
-- Fixed a translation bug at the directory listing<br>
+- Fixed a bug where the current space situation was calculated wrong.<br>
+- Fixed a bug where the folder hash was not refreshed at copying of a directory<br>
+- Fixed a translation bug at the storage percentage display<br>
+- Added an experimental bugfix to allow path settings<br>
+- Fixed a bug which caused an error when trying to embed a image link<br>
+- Fixed a wrong redirection after successfull login<br>
 <br>Security Bugfixes<br>
 <hr width = "10%"><br>
-- Improved XSS protection ($_GET,$_POST,$_FILES,$_SESSION,$_REQUEST,$_COOKIE)<br>
-- Improved protection against accessing files which should not be accessed (deny of contents ".." and "." of the module parameter)<br>
-- Beta feature: Added a block that forbids to copy a directory into the directory itself (would cause a forkbomb)<br> 
-- Added additional admin check to avoid possibility to fake a admin session<br> 
+- Fixed a bug which allowed it to register users without a "@" in the email adress<br>
+- Added a warning if the user did not logged out a session on another machine (can be controlled with User_NoLogout_Warning)<br> 
+- Fixed bug in $_SESSION - check<br>
 <br>Feature additions<br>
 <hr width = "10%"><br>
-- The zip file is now named like the containing folder(s)<br>
--- If the zipfile contains the base dir /, the file is named files (or respective translation)<br>
-- Added multiple file upload<br>
-- Added a "back" button to display when the register dialog is shown and the registration is disabled<br>
-- Re- Added the user deletion process<br>
-- Added a health monitor (module=health)<br>
-- Added a new function to set a new user own password<br>
--- Added new config value User_Recover_Send_Password to determine if the user gets a mail containing his new password or not<br>
-- Added several new informations to the user's profile<br>
-- Added a snapshot feature: Saves a zipfile containing the current /Storage/ dir and the current database, but <b>not</b> the current configuration including database password<br>
+- Added new feature that allows to create multiple folders using ";" as a separator<br>
+- Added new feature to create folder trees using the create directory dialog<br>
+- Improved the file dialog<br>
+- Added additional dialog to confirm file or folder deletions<br>
+- Added program information dialog<br>
+- Added html5 video preview<br>
+- Added html5 audio preview<br>
+- Added text preview<br>
+- Added Program_Enable_Preview to control preview features<br>
+- Added Program_Max_Displayname_Length to set the maximum size of a displayname. If a displayname is longer, it will be cropped<br>
+- Added several settings to control the location of the storage, temp and snapshot dir<br>
+- Added Program_Embed_GPL_Header to determine if the sourcecode of the page should contain the gpl header<br>
+- Added Program_Display_Generator_Tag to determine if the generator - meta tag should be generated or not <br>
+- Added a theme chooser<br>
+- Added new display mode (action buttons will be hidden while copying or moving)<br>
+- Added Program_Enable_Action_Buttons to determine if the program will display the action buttons (Note: If you are not using the JQuery context menu, this should not be disabled)<br>
 <br>Features removed<br>
 <hr width = "10%"><br>
-- Removed the user name field at the users registration<br>
-- Removed the logo at the navigation and replaced it with a home button
+- Program_Share_Dir not needed anymore<br>

@@ -1,7 +1,4 @@
 <?php
-	//start a session if needed
-	if (isset($_SESSION) == false)
-		session_start();
 	//Only proceed if the email= parameter is set
 	if (isset($_GET["email"]))
 	{
@@ -12,6 +9,6 @@
 		$sql = "UPDATE Users SET Enabled=1 WHERE Email='$email'" ;
 		//Update the data row
 		mysqli_query($sql) or die("DataBase Error: 002 ".mysqli_error($connect));
-		header("Location: ./index.php?message=1");
+		header("Location: ./index.php?message=user_enabled");
 	}
 ?>

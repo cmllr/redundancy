@@ -24,7 +24,7 @@
 			$suffix = "module=list&dir=/";
 	//Display home link
 	echo "<li ><a href= 'index.php?$suffix'><img src = './Images/folder_user.png'>Home</a></li>";
-	//Display the links as a kind of broadcrumb
+	//Display the links as a part of the broadcrumb navigation
 	for ($i = 0; $i < count($dirs); $i++)
 	{
 		if ($dirs[$i] != ""){

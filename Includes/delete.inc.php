@@ -3,7 +3,22 @@
 	if (isset($_SESSION) == false)
 		 session_start();
 	//Case 1: the user wants to delete a file
-	if ($_SESSION["role"] != 3){
+	//echo var_dump($_SERVER);
+	if (isset($_GET["s"]) == false && isset($_POST["s"]) == false)
+	{
+		$agreed = false;
+		$query =  $_SERVER["QUERY_STRING"];		
+		echo "<div class = 'contentWrapper'><h2>".$GLOBALS["Program_Language"]["Delete"]."?</h2><a href = 'index.php?".$query."&s=true'>".$GLOBALS["Program_Language"]["Delete_OK"]."</a></div>";
+		exit;
+	}
+	else if (isset($_GET["s"]) || isset($_POST["s"]))
+	{
+		if (isset($_GET["s"]) && $_GET["s"] == "true")
+			$agreed = true;
+		if (isset($_POST["s"]) && $_POST["s"] == "true")
+			$agreed = true;
+	}
+	if ($agreed = true && $_SESSION["role"] != 3){
 		if (isset($_SESSION['user_name']) && (isset($_GET["file"]) || isset($_POST["file"]))) 
 		{ 	 	 
 			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
@@ -19,6 +34,7 @@
 			while ($row = mysqli_fetch_object($result)) {
 				$localfilename = $row->Filename;
 				$dir = $row->Directory;
+				echo $localfilename."<br>";
 			}	
 			mysqli_close($connect);	
 			if ($localfilename != "" && $dir != "")
@@ -32,7 +48,8 @@
 			if (isset($_GET["dir"]))
 					$todelete = $_GET["dir"];
 				else 	
-					$todelete = $_POST["dir"];						
+					$todelete = $_POST["dir"];	
+			echo $todelete."<br>";
 			deleteDir($todelete);		
 			$success = true;		
 		}

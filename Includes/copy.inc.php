@@ -2,9 +2,17 @@
 	if (isset($_SESSION) == false)
 			session_start();
 	$success = false;
+	//Only progress if the user account is not a guest account
 	if ($_SESSION["role"] != 3){
+		/*
+			Case 1: User wants to copy a single file.
+			Params: $_GET["file"] or $_POSt ["file"] -> source file			
+			Params: $_GET["dir"] or $_POST["dir"] -> target directory
+		*/
 		if (isset($_GET["file"]) || isset($_POST["file"])){
-			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+			//Include the database file
+			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+			//remember the two needed parameters (source file and target)
 			if (isset($_GET["dir"]))
 				$dir = mysqli_real_escape_string($connect,$_GET["dir"]);
 			else
@@ -14,19 +22,35 @@
 			else
 				$file = mysqli_real_escape_string($connect,$_POST["file"]);
 			
-			if (fs_file_exists($file,$dir) == false){
-				copyFile($file,$dir);		
+			//Get Display name of the file to check if the file is existing in the target directory.
+			$fileDisplayName = getFileByHash($file);
+			//Check if file exists
+			if (fs_file_exists($fileDisplayName,$dir) == false){
+				$success = true;
+				//Check if user has enough space left.
+				if (fs_enough_space($dir) == true)
+					fs_copyFile($file,$dir);		
+				else
+					$success = false;
 			}
-			echo 	"existing:".fs_file_exists($file,$dir);		
-			mysqli_close($connect);	
-			$success = true;
+			else
+				$success = false;
+			//Close database connection
+			mysqli_close($connect);			
 		}	
+		/*
+			Case 1: User wants to copy a folder file.
+			Params: $_GET["source"] or $_POSt ["source"] -> source folder
+			Params: $_GET["old_root"] or $_POST["old_root"] -> directory of the directory
+			Params: $_GET["target"] or $_POST["target"] -> target directory
+		*/
 		else if ((isset($_GET["source"]) && isset($_GET["target"]) && isset($_GET["old_root"])) || (isset($_POST["source"]) && isset($_POST["target"]) && isset($_POST["old_root"])))
 		{
 			//TODO: More testing.
 			if ($_GET["source"] != $_GET["target"]){
 				//Include database file
-				include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+				include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+				//Get the needed values, source, target and the old root
 				if (isset($_GET["source"]))
 					$source = mysqli_real_escape_string($connect,$_GET["source"]); //directory to be moved
 				else
@@ -39,9 +63,22 @@
 					$old_root = mysqli_real_escape_string($connect,$_GET["old_root"]); // old root dir
 				else
 					$old_root = mysqli_real_escape_string($connect,$_POST["old_root"]); // old root dir
-				copyDir($source,$target,$old_root);	
-				//mysql_close($connect);	
-				$success = true;
+				//Only progress if the directory did not exists in the target directory
+				if (fs_file_exists($target.getDisplayName($source,$source)."/",$target) == false)
+				{
+					$success = true;
+					//Check if enought space is available
+					if (fs_enough_space($source))
+					{
+						fs_copyDir($source,$target,$old_root);	
+						$success = true;
+					}
+					else
+						$success = false;
+				}
+				else
+					$success = false;
+									
 			}
 		}
 	}
@@ -52,7 +89,10 @@
 	}
 	else{	
 		if ($GLOBALS["config"]["Program_Debug"] != 1){
-			header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]);
+			if ($success != true)
+				header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=copyfail&img=exclamation");
+			else
+				header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=copysuccess&img=accept");
 			exit;
 		}	
 	}

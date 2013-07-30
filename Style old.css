@@ -22,7 +22,13 @@ a{
     width: 16px;
 	//height: 100%;
 }
-
+img#imagelogo{
+    position: fixed;
+    width: 26px;
+	top: 3px;
+	left: 50%;
+	visibility:hidden; 
+}
 #title{
     display: inline;
 }
@@ -35,7 +41,11 @@ div#statusbar{
 #statusbar ul, #statusbar li{
     display: inline;
 }
-
+video 
+{
+	margin: 10px 0;
+	text-align: center;
+}
 #statusbar a{
     color: white;
     background: #4873af; /* Old browsers */
