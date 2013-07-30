@@ -10,10 +10,6 @@
 		//only proceed if the user is logged in and we have a valid user_id
 		if (isset($_SESSION['user_id']))
 		{					
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> Re-Release of 1.9.8
 			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 	
 			$dirs = explode(";",$_POST["directory"]);
@@ -32,15 +28,6 @@
 				
 					
 			}		
-<<<<<<< HEAD
-=======
-			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
-			if (substr_count($_POST["directory"],"/") != 1){
-				createDir(mysqli_real_escape_string($connect,$_SESSION["currentdir"]),mysqli_real_escape_string($connect,$_POST["directory"]));					
-			}			
->>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
-=======
->>>>>>> Re-Release of 1.9.8
 			//TODO: Display error messages
 		}		
 	}
@@ -58,10 +45,6 @@
 <?php
 	include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
 ?>	
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> Re-Release of 1.9.8
 <small>
 <?php
 	echo $GLOBALS["Program_Language"]["multiple_dirs"];
@@ -69,11 +52,5 @@
 </small>
 <br>
 <tag><?php echo $GLOBALS["Program_Language"]["New_Directory"]." ". $_SESSION["currentdir"];?></tag><input name="directory">
-<<<<<<< HEAD
-=======
-<tag><?php echo $GLOBALS["Program_Language"]["New_Directory"]." ". $_SESSION["currentdir"];?><r></tag><input name="directory">
->>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
-=======
->>>>>>> Re-Release of 1.9.8
 <input type=submit name=submit value="<?php echo $GLOBALS["Program_Language"]["New_Directory_Button"];?>"></div>
 </form>
