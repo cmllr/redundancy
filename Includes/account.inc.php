@@ -48,6 +48,13 @@
 <br><a href = "index.php?module=zip&dir=/"><?php echo $GLOBALS["Program_Language"]["Download_All_Files"];?></a>
 <?php
 	if ($GLOBALS["config"]["User_Allow_Delete"] == 1 && $_SESSION["role"] != 3)
+<<<<<<< HEAD
 		echo "<br><br><h3>".$GLOBALS["Program_Language"]["Delete_Account"]."</h3><br><a href = 'index.php?module=goodbye'>".$GLOBALS["Program_Language"]["Delete_Account"]."</a><br>";
+=======
+		echo "<br><br><h3>".$GLOBALS["Program_Language"]["Delete_Account"]."</h3><br><a href = 'index.php?module=goodbye'>".$GLOBALS
+
+["Program_Language"]["Delete_Account"]."</a><br>";
+	
+>>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
 ?>
 </div>

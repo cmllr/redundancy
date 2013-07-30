@@ -11,6 +11,7 @@ if (isset($_POST["user"])){
 	{
 		$redir = "?module=admin";
 	}
+<<<<<<< HEAD
 	if (login($_POST["user"],$_POST["pass"]) == true){
 		$_SESSION["style"] = $_POST["Style"];
 		if ($_SESSION["Session_Closed"] == 1 )
@@ -20,6 +21,11 @@ if (isset($_POST["user"])){
 		else 
 			header("Location: ./index.php");	
 	}else
+=======
+	if (login($_POST["user"],$_POST["pass"]) == true)
+		header('Location: ./index.php'.$redir);
+	else
+>>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
 		header('Location: ./index.php?message=wrongcredentials&ef=s');
 } 
 ?>

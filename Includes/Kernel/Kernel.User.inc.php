@@ -282,16 +282,27 @@
 		if (!isset($_SESSION))
 			session_start();
 		$found = false;
+<<<<<<< HEAD
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
 		foreach($_SESSION as $key => $value)
 		{			
 		  if ($value != mysqli_real_escape_string($connect,$value))
 			$found = true;
+=======
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		for ($i = 0; $i < count($_SESSION);$i++)
+		{
+			if ($_SESSION[$i] != mysqli_real_escape_string($connect,$_SESSION[$i]))
+				$found = true;
+>>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
 		}		
 		if ($found == true)
 			banUser(getIP(),$_SERVER['HTTP_USER_AGENT'],"SQLi");
 		return $found;
 	}
 	
+<<<<<<< HEAD
 	
+=======
+>>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
 ?>

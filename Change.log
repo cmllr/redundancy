@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Redundancy 1.9.8 Changelog<br>
 <hr>
 <br>Bugfixes<br>
@@ -34,3 +35,34 @@ Redundancy 1.9.8 Changelog<br>
 <br>Features removed<br>
 <hr width = "10%"><br>
 - Program_Share_Dir not needed anymore<br>
+=======
+Redundancy 1.9.7 Changelog<br>
+<hr>
+<br>Bugfixes<br>
+<hr width = "10%"><br>
+- Fixed a bug which caused that it was not possible to copy or move folders<br>
+- Fixed several css errors<br>
+<br>Security Bugfixes<br>
+<hr width = "10%"><br>
+- Fixed a bug which gave the possibility to copy/move/delete a file or folder of another user<br>
+- Fixed several sql injection security problems <br>
+- Added additional check of $_SESSION informations to detect SQL injections<br>
+- $_SESSION will be re-set on every page load to forbid changes via manipulating the $_SESSION array<br>
+<br>Feature additions<br>
+<hr width = "10%"><br>
+- Added exist check for moving or copying<br>
+- Added JQuery support to display user messages<br>
+- Added new Setting Program_Enable_JQuery to control support of JQuery<br>
+- Added several user informations<br>
+- Added Program_Share_Anonymously to determine if the file displayname gets displayed in the share link<br>
+- Added new icon set (Faenza)<br>
+- Added JQuery context menu on files and folders<br>
+- Added .htaccess file to avoid access on the global config file<br>
+- Added flag icons to change language at login (for the current session<br>
+- Added new configuration value Program_Share_Anonymously to determine if the share links should contain the display name of the file<br>
+- Added mimetype detection<br>
+- Added third party libs folder /lib/ (shipping JQuery and JQuery UI)<br>
+<br>Features removed<br>
+<hr width = "10%"><br>
+- Program_Path_Separator removed<br>
+>>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191

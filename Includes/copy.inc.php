@@ -22,6 +22,7 @@
 			else
 				$file = mysqli_real_escape_string($connect,$_POST["file"]);
 			
+<<<<<<< HEAD
 			//Get Display name of the file to check if the file is existing in the target directory.
 			$fileDisplayName = getFileByHash($file);
 			//Check if file exists
@@ -30,13 +31,29 @@
 				//Check if user has enough space left.
 				if (fs_enough_space($dir) == true)
 					fs_copyFile($file,$dir);		
+=======
+			$fileDisplayName = getFileByHash($file);
+			echo $file;
+			echo $dir;
+			echo $dir;
+			if (fs_file_exists($fileDisplayName,$dir) == false){
+				$success = true;
+				if (fs_enough_space($dir) == true)
+					copyFile($file,$dir);		
+>>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
 				else
 					$success = false;
 			}
 			else
 				$success = false;
+<<<<<<< HEAD
 			//Close database connection
 			mysqli_close($connect);			
+=======
+				
+			mysqli_close($connect);	
+		
+>>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
 		}	
 		/*
 			Case 1: User wants to copy a folder file.
@@ -63,6 +80,7 @@
 					$old_root = mysqli_real_escape_string($connect,$_GET["old_root"]); // old root dir
 				else
 					$old_root = mysqli_real_escape_string($connect,$_POST["old_root"]); // old root dir
+<<<<<<< HEAD
 				//Only progress if the directory did not exists in the target directory
 				if (fs_file_exists($target.getDisplayName($source,$source)."/",$target) == false)
 				{
@@ -71,6 +89,16 @@
 					if (fs_enough_space($source))
 					{
 						fs_copyDir($source,$target,$old_root);	
+=======
+				//TODO: überschreibehilfe
+				echo $target.getDisplayName($source,$source)."/";
+				if (fs_file_exists($target.getDisplayName($source,$source)."/",$target) == false)
+				{
+					$success = true;
+					if (fs_enough_space($source))
+					{
+						copyDir($source,$target,$old_root);	
+>>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
 						$success = true;
 					}
 					else
@@ -78,7 +106,13 @@
 				}
 				else
 					$success = false;
+<<<<<<< HEAD
 									
+=======
+					
+				//mysql_close($connect);	
+				
+>>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
 			}
 		}
 	}
