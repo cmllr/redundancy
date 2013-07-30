@@ -23,6 +23,9 @@
 				$file = mysqli_real_escape_string($connect,$_POST["file"]);
 			
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Re-Release of 1.9.8
 			//Get Display name of the file to check if the file is existing in the target directory.
 			$fileDisplayName = getFileByHash($file);
 			//Check if file exists
@@ -31,6 +34,7 @@
 				//Check if user has enough space left.
 				if (fs_enough_space($dir) == true)
 					fs_copyFile($file,$dir);		
+<<<<<<< HEAD
 =======
 			$fileDisplayName = getFileByHash($file);
 			echo $file;
@@ -41,11 +45,14 @@
 				if (fs_enough_space($dir) == true)
 					copyFile($file,$dir);		
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+>>>>>>> Re-Release of 1.9.8
 				else
 					$success = false;
 			}
 			else
 				$success = false;
+<<<<<<< HEAD
 <<<<<<< HEAD
 			//Close database connection
 			mysqli_close($connect);			
@@ -54,6 +61,10 @@
 			mysqli_close($connect);	
 		
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+			//Close database connection
+			mysqli_close($connect);			
+>>>>>>> Re-Release of 1.9.8
 		}	
 		/*
 			Case 1: User wants to copy a folder file.
@@ -81,6 +92,9 @@
 				else
 					$old_root = mysqli_real_escape_string($connect,$_POST["old_root"]); // old root dir
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Re-Release of 1.9.8
 				//Only progress if the directory did not exists in the target directory
 				if (fs_file_exists($target.getDisplayName($source,$source)."/",$target) == false)
 				{
@@ -89,6 +103,7 @@
 					if (fs_enough_space($source))
 					{
 						fs_copyDir($source,$target,$old_root);	
+<<<<<<< HEAD
 =======
 				//TODO: überschreibehilfe
 				echo $target.getDisplayName($source,$source)."/";
@@ -99,6 +114,8 @@
 					{
 						copyDir($source,$target,$old_root);	
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+>>>>>>> Re-Release of 1.9.8
 						$success = true;
 					}
 					else
@@ -107,12 +124,16 @@
 				else
 					$success = false;
 <<<<<<< HEAD
+<<<<<<< HEAD
 									
 =======
 					
 				//mysql_close($connect);	
 				
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+									
+>>>>>>> Re-Release of 1.9.8
 			}
 		}
 	}

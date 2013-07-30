@@ -2,6 +2,9 @@
 	function fs_isImage($filename)
 	{	
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Re-Release of 1.9.8
 		try{
 			if (isset($_SESSION) == false)
 				session_start();	
@@ -55,6 +58,7 @@
 		catch (Exception $e){
 			return false;
 		}
+<<<<<<< HEAD
 =======
 		if (isset($_SESSION) == false)
 			session_start();	
@@ -63,6 +67,8 @@
 			return true;
 		return false;		
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+>>>>>>> Re-Release of 1.9.8
 	}
 	function getUsedSpace($username)
 	{	
@@ -272,10 +278,14 @@
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$owner_ID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);		
 <<<<<<< HEAD
+<<<<<<< HEAD
 		$result = mysqli_query($connect,"Select ID from Files where UserID = '".$owner_ID."' and Displayname = '$directory' and Filename = '$directory' limit 1") or die("Error 025: ".mysqli_error($connect));
 =======
 		$result = mysqli_query($connect,"Select * from Files where UserID = '".$owner_ID."' and Displayname = '$directory' and Filename = '$directory' limit 1") or die("Error 025: ".mysqli_error($connect));
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+		$result = mysqli_query($connect,"Select ID from Files where UserID = '".$owner_ID."' and Displayname = '$directory' and Filename = '$directory' limit 1") or die("Error 025: ".mysqli_error($connect));
+>>>>>>> Re-Release of 1.9.8
 		while ($row = mysqli_fetch_object($result)) {
 			$filename = $row->ID;
 		}		
@@ -787,10 +797,14 @@
 		if (getDirectorySize($dir) == 0 && endsWith($dir,"/") == false)
 		{
 <<<<<<< HEAD
+<<<<<<< HEAD
 			$size = getFileSize($dir,$_SESSION["currentdir"])/1024;			
 =======
 			$size = getFileSize($dir,$_SESSION["currentdir"]);			
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+			$size = getFileSize($dir,$_SESSION["currentdir"])/1024;			
+>>>>>>> Re-Release of 1.9.8
 		}
 		else if (getDirectorySize($dir) != 0 && endsWith($dir,"/") != false)
 		{
@@ -800,12 +814,17 @@
 		
 		$complete = $size  + getUsedSpace($_SESSION["user_id"]);
 <<<<<<< HEAD
+<<<<<<< HEAD
 		echo "Complete used space including new file: ".$complete;
 		echo "Space available: ".$_SESSION["space"] * 1024 * 1024;
 =======
 		echo "Complete: ".$complete;
 		echo "Space: ".$_SESSION["space"] * 1024 * 1024;
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+		echo "Complete used space including new file: ".$complete;
+		echo "Space available: ".$_SESSION["space"] * 1024 * 1024;
+>>>>>>> Re-Release of 1.9.8
 		if ($complete < $_SESSION["space"] * 1024 * 1024 )
 			$value = true;
 		else
@@ -827,6 +846,9 @@
 		return $folder;
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Re-Release of 1.9.8
 	function fs_get_imagepath($Displayname,$Filename,$MimeType,$Hash)
 	{
 		$imagepath = './Images/page.png';		
@@ -849,7 +871,10 @@
 		}
 		return $imagepath;
 	}
+<<<<<<< HEAD
 =======
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+>>>>>>> Re-Release of 1.9.8
 	
 ?>

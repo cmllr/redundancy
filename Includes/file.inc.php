@@ -16,6 +16,9 @@
 		echo "<div class ='contentWrapper' >";
 			include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Re-Release of 1.9.8
 		//Get file image or icon
 		if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 && fs_isImage($row->Filename) == 1)
 			echo "<p id = 'preview'><img src='index.php?module=image'>";	
@@ -29,6 +32,7 @@
 			echo "</textarea>";	}
 		else 
 			echo "<p id = 'preview'><img  src='".fs_get_imagepath($row->Displayname,$row->Filename,$row->MimeType,$row->Hash)."'>";
+<<<<<<< HEAD
 =======
 		//If the file is a image -> Display it
 		if (isImage($row->Filename) == 1)
@@ -36,6 +40,8 @@
 		else
 			echo "<p id = 'preview'><img  src='./Images/page.png'>";
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+>>>>>>> Re-Release of 1.9.8
 		//Display the name
 		echo "</p><p class = 'filename'>".htmlentities(utf8_decode($row->Displayname))."</p>";	
 		$date = strtotime($row->Uploaded);

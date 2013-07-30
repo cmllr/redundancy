@@ -75,13 +75,20 @@ movesuccess = "Der Verschiebevorgang war erfolgreich.";
 movefail ="Der Verschiebevorgang ist gescheitert";
 readonly = "Sie besitzen nicht die notwendigen Berechtigungen zur Durchführung dieses Vorgangs";
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Re-Release of 1.9.8
 open_generic = "Öffnen";
 user_enabled="Ihr Benutzeraccount wurde erfolgreich aktiviert.";
 multiple_dirs ="Sie können mehrere Verzeichnisse gleichzeitig erstellen, indem Sie die Namen mit ';' trennen.";
 session = "Ihre Sitzung wurde nicht geschlossen. Haben Sie eventuell vergessen, sich das letzte Mal abzumelden?";
 of = "von";
 Bugreport = "Fehler berichten";
+<<<<<<< HEAD
 nospace = "Kein Speicherplatz mehr übrig";
 =======
 open_generic = "Öffnen";
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+nospace = "Kein Speicherplatz mehr übrig";
+>>>>>>> Re-Release of 1.9.8

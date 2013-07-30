@@ -25,6 +25,9 @@
 <head>
 <meta charset="utf-8">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Re-Release of 1.9.8
 <?php if ($GLOBALS["config"]["Program_Display_Generator_Tag"] == 1): ?>
 <meta name="generator" content="<?php echo $GLOBALS["config"]["Program_Name_ALT"]." ".$GLOBALS["Program_Version"];?>" />
 <?php endif;?>
@@ -38,6 +41,7 @@
 <link rel = "stylesheet" href="./<?php echo $style?>" type = "text/css"/>
 <?php
 	//$GLOBALS["config"] = parse_ini_file($GLOBALS["config_dir"]."Redundancy.conf");
+<<<<<<< HEAD
 =======
 <?php include "./Includes/gpl.inc.php";?>
 <?php
@@ -54,14 +58,20 @@
 <?php
 	$GLOBALS["config"] = parse_ini_file($GLOBALS["config_dir"]."Redundancy.conf");
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+>>>>>>> Re-Release of 1.9.8
 	if ($GLOBALS["config"]["Program_Enable_JQuery"] == 1)
 		include "./Lib/JQuery.inc.php";
 ?>
 <link rel="icon" href="../favicon.png" type="image/png">
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+
+>>>>>>> Re-Release of 1.9.8
 <title>
 <?php
 	//Include the main program file		
@@ -96,10 +106,14 @@
 	if (isset($_SESSION["user_name"])){
 		//Set the user contingent and refresh the information about used space
 <<<<<<< HEAD
+<<<<<<< HEAD
 		fs_setUsedSpace($_SESSION['user_name']);	
 =======
 		setUsedSpace($_SESSION['user_name']);	
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+		fs_setUsedSpace($_SESSION['user_name']);	
+>>>>>>> Re-Release of 1.9.8
 		if (user_check_session() == true)
 		{
 			echo "SQL Injection found</title>";

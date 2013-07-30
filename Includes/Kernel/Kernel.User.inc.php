@@ -283,11 +283,15 @@
 			session_start();
 		$found = false;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Re-Release of 1.9.8
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
 		foreach($_SESSION as $key => $value)
 		{			
 		  if ($value != mysqli_real_escape_string($connect,$value))
 			$found = true;
+<<<<<<< HEAD
 =======
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		for ($i = 0; $i < count($_SESSION);$i++)
@@ -295,6 +299,8 @@
 			if ($_SESSION[$i] != mysqli_real_escape_string($connect,$_SESSION[$i]))
 				$found = true;
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+>>>>>>> Re-Release of 1.9.8
 		}		
 		if ($found == true)
 			banUser(getIP(),$_SERVER['HTTP_USER_AGENT'],"SQLi");
@@ -302,7 +308,11 @@
 	}
 	
 <<<<<<< HEAD
+<<<<<<< HEAD
 	
 =======
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+	
+>>>>>>> Re-Release of 1.9.8
 ?>

@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Re-Release of 1.9.8
 Redundancy 1.9.8 Changelog<br>
 <hr>
 <br>Bugfixes<br>
@@ -34,6 +37,7 @@ Redundancy 1.9.8 Changelog<br>
 - Added Program_Enable_Action_Buttons to determine if the program will display the action buttons (Note: If you are not using the JQuery context menu, this should not be disabled)<br>
 <br>Features removed<br>
 <hr width = "10%"><br>
+<<<<<<< HEAD
 - Program_Share_Dir not needed anymore<br>
 =======
 Redundancy 1.9.7 Changelog<br>
@@ -66,3 +70,6 @@ Redundancy 1.9.7 Changelog<br>
 <hr width = "10%"><br>
 - Program_Path_Separator removed<br>
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+- Program_Share_Dir not needed anymore<br>
+>>>>>>> Re-Release of 1.9.8

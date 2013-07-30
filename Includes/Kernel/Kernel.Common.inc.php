@@ -50,6 +50,7 @@
 		else
 			return false;		
 <<<<<<< HEAD
+<<<<<<< HEAD
 	}	
 =======
 	}
@@ -101,4 +102,7 @@
 		echo "</script>";
 	}
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+	}	
+>>>>>>> Re-Release of 1.9.8
 ?>

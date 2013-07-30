@@ -73,13 +73,20 @@ movesuccess = "The file movement was successfull";
 movefail ="The file movement failed";
 readonly = "Access denied";
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Re-Release of 1.9.8
 open_generic = "Open";
 user_enabled="The account was created successfully";
 multiple_dirs ="You can create multiple directories using the ';' char to separate several directories.";
 session = "Your session was not closed properly. Maybe you've forgot to log out?";
 of ="of";
 Bugreport = "Report bug";
+<<<<<<< HEAD
 nospace = "No space left";
 =======
 open_generic = "Open";
 >>>>>>> 5e9a750acf0acdacbe14df627db66d91f30d2191
+=======
+nospace = "No space left";
+>>>>>>> Re-Release of 1.9.8
