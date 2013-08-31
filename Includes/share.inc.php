@@ -1,4 +1,27 @@
 <?php
+	/**
+	 * @file
+	 * @author  squarerootfury <fury224@googlemail.com>	 
+	 *
+	 * @section LICENSE
+	 *
+	 * This program is free software; you can redistribute it and/or
+	 * modify it under the terms of the GNU General Public License as
+	 * published by the Free Software Foundation; either version 3 of
+	 * the License, or (at your option) any later version.
+	 *
+	 * This program is distributed in the hope that it will be useful, but
+	 * WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+	 * General Public License for more details at
+	 * http://www.gnu.org/copyleft/gpl.html
+	 *
+	 * @section DESCRIPTION
+	 *
+	 * Any share functionality is stored in tis file.
+	 */
+	 //Include uri check
+	require_once ("checkuri.inc.php");
 	if (isset($_SESSION) == false)
 		session_start();
 	include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
@@ -50,7 +73,7 @@
 			echo mysqli_error($connect);			
 		}
 		mysqli_close($connect);			
-			header ("Location: index.php?module=list");
+			header ("Location: index.php?module=list#$file");
 	}	
 	else if (isset($_GET["share"]))
 	{
@@ -90,7 +113,7 @@
 			}
 			else
 			{
-				include $GLOBALS["Program_Dir"]."Includes/Program.inc.php";
+				//include $GLOBALS["Program_Dir"]."Includes/Program.inc.php";
 				echo $filenamenew;
 				startZipCreation($filenamenew);
 				if (!isset($_SESSION["user_logged_in"]))
@@ -98,6 +121,11 @@
 			}
 			
 		} 
+		
+		if (mysqli_affected_rows($connect) == 0)
+		{
+			header("Location: index.php?message=DeadLink"); 
+		}
 		mysqli_close($connect);			
 	}
 	//header("Location: index.php?module=list");

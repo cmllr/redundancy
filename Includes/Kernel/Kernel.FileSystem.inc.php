@@ -1,4 +1,31 @@
-<?php	
+<?php
+	/**
+	 * @file
+	 * @author  squarerootfury <fury224@googlemail.com>	 
+	 *
+	 * @section LICENSE
+	 *
+	 * This program is free software; you can redistribute it and/or
+	 * modify it under the terms of the GNU General Public License as
+	 * published by the Free Software Foundation; either version 3 of
+	 * the License, or (at your option) any later version.
+	 *
+	 * This program is distributed in the hope that it will be useful, but
+	 * WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+	 * General Public License for more details at
+	 * http://www.gnu.org/copyleft/gpl.html
+	 *
+	 * @section DESCRIPTION
+	 *
+	 * This file contains filesystem relevant methods.
+	 * @todo the copy, rename and move algorithms must be tested more
+	 */
+	/*
+	 * fs_isImage determines if a file is an image
+	 * @param $filename the full filename ({Random}.dat)
+	 * @return If the file is an image
+	 */
 	function fs_isImage($filename)
 	{	
 		try{
@@ -13,6 +40,11 @@
 			return false;
 		}
 	}
+	/**
+	 * fs_isVideo determines if a file is a video
+	 * @param $filename the full filename ({Random}.dat)
+	 * @return If the file is a video
+	 */
 	function fs_isVideo($filename)
 	{	
 		try{
@@ -27,6 +59,11 @@
 			return false;
 		}
 	}
+	/**
+	 * fs_isAudio determines if a file is an audio
+	 * @param $filename the full filename ({Random}.dat)
+	 * @return If the file is an audio
+	 */
 	function fs_isAudio($filename)
 	{	
 		try{
@@ -41,6 +78,11 @@
 			return false;
 		}
 	}
+	/**
+	 * fs_isText determines if a file is a text
+	 * @param $filename the full filename ({Random}.dat)
+	 * @return If the file is a text
+	 */
 	function fs_isText($filename)
 	{	
 		try{
@@ -55,6 +97,11 @@
 			return false;
 		}
 	}
+	/**
+	 * getUsedSpace get the user's storage
+	 * @param $username the username or the user id (recommended)
+	 * @return the used space in byte
+	 */
 	function getUsedSpace($username)
 	{	
 		if (isset($_SESSION) == false)
@@ -73,7 +120,10 @@
 		mysqli_close($connect);		
 		return $amount_in_Byte ;
 	}
-	
+	/**
+	 * fs_setUsedSpace sets the current used space
+	 * @param $username the username or the user id (recommended)	
+	 */
 	function fs_setUsedSpace($username)
 	{			
 		if (isset($_SESSION) == false)
@@ -81,7 +131,7 @@
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";			
 		$userID = "";
 		$amount_in_Byte  = 0;
-		$result = mysqli_query($connect,"Select ID, User from Users where User = '$username' LIMIT 1") or die("Error: 022: ".mysqli_error($connect));
+		$result = mysqli_query($connect,"Select ID, User from Users where User = '$username' or ID = '$username' LIMIT 1") or die("Error: 022: ".mysqli_error($connect));
 		while ($row = mysqli_fetch_object($result)) {
 			$userID = $row->ID;				
 		}
@@ -104,6 +154,10 @@
 		else
 			return "/";
 	}
+	/**
+	 * fs_get_Storage_Percentage get the used percentage by the current session	
+	 * @return a string containg "X of Y measure used (XY %)"
+	 */
 	function fs_get_Storage_Percentage()
 	{
 		if (isset($_SESSION) == false)
@@ -136,7 +190,11 @@
 		if ($storage_used == 0)
 			$storage_used = 0;
 		return round($storage_used,2)." $measure ".$GLOBALS["Program_Language"]["of"]." ".fs_get_fitting_DisplayStyle($_SESSION['space']*1024*1024)." ".$GLOBALS["Program_Language"]["used"];
-	}	 
+	}	
+	/**
+	 * fs_get_Percentage get the percents of used space	
+	 * @return a string containg "x%"
+	 */
 	function fs_get_Percentage()
 	{
 		if (isset($_SESSION) == false)
@@ -149,6 +207,11 @@
 			else
 		return round(100/($storage/$storage_used),2)."%";
 	}	
+	/**
+	 * isShared determines if a file is already shared
+	 * @param $file the hash of the file
+	 * @return if the file is shared
+	 */
 	function isShared($file)
 	{		
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";			
@@ -159,6 +222,11 @@
 		}		
 		return false;
 	}	
+	/**
+	 * fs_getShareLink gets the share link
+	 * @param $file the hash of the file
+	 * @return the sharelink or -1
+	 */
 	function fs_getShareLink($file)
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
@@ -173,6 +241,12 @@
 		}		
 		return -1;
 	}	
+	/**
+	 * fs_get_fitting_DisplayStyle gets a correct measurement for a size
+	 * @param $value the file size in Byte
+	 * @param $offset a file offset (default 1)
+	 * @return a fitting measurement (from Byte to TerraByte)
+	 */
 	function fs_get_fitting_DisplayStyle($value,$offset = 1)
 	{
 		$measure = "B";
@@ -201,6 +275,11 @@
 		}
 		return round($value,2) ." ". $measure;
 	}	
+	/**
+	 * getDirectorySize get the size of a directory
+	 * @param $value the fullpath of the directory
+	 * @return the size in Byte
+	 */
 	function getDirectorySize($value)
 	{
 		if (isset($_SESSION) == false)
@@ -215,6 +294,12 @@
 		mysqli_close($connect);	
 		return $dirSize;
 	}
+	/**
+	 * getFileSize get the size of a file in byte
+	 * @param $value the displayname
+	 * @param $dir the directory, where the file is saved
+	 * @return the size in byte
+	 */
 	function getFileSize($value,$dir)
 	{
 		if (isset($_SESSION) == false)
@@ -229,6 +314,12 @@
 		mysqli_close($connect);	
 		return $dirSize;
 	}
+	/**
+	 * getDisplayName get a fitting displaystyle for directories
+	 * @param $string the displayname
+	 * @param $filename the filename
+	 * @return the displayname in the best display form
+	 */
 	function getDisplayName($string,$filename)
 	{
 		if ($string != $filename)
@@ -238,6 +329,11 @@
 			return $path_parts[count($path_parts) -2];
 		}
 	}
+	/**
+	 * get_Mime_Type determines the MIMEType
+	 * @param $filename the full(!) path of the file ending with .dat
+	 * @return the MIME of the file
+	 */
 	function get_Mime_Type($filename) {
 		if ($GLOBALS["config"]["Program_Mime_Use_DataBase"] == 0){
 			$file = file_get_contents($GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$filename);
@@ -255,6 +351,11 @@
 			return $filename_mime;
 		}		
 	}
+	/**
+	 * getDirectoryID get the database ID of a directory
+	 * @param $directory the directory full path
+	 * @return the ID or -1 if not found
+	 */
 	function getDirectoryID($directory)
 	{	
 		if (isset($_SESSION) == false)
@@ -268,19 +369,31 @@
 		}		
 		return $filename;
 	}
+	/**
+	 * fs_file_exists checks if a file or dir exists on the filesystem
+	 * @param $file the displayname of the searched file or dir
+	 * @param $directory the directory where the file or dir is searched
+	 * @return True or false
+	 */
 	function fs_file_exists($file,$directory )
 	{
+		echo "param $file and dir $directory<br>";
 		if (isset($_SESSION) == false)
 			session_start();	
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		$owner_ID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
-		$result = mysqli_query($connect,"Select * from Files where UserID = '".$owner_ID."' and (Displayname = '$file'  or Hash = '$file')and Directory = '$directory'") or die("Error 025: ".mysqli_error($connect));
+		$result = mysqli_query($connect,"Select * from Files where UserID = '".$owner_ID."' and (Filename_only = '$file' or Displayname = '$file'  or Hash = '$file')and Directory = '$directory'") or die("Error 025: ".mysqli_error($connect));
 		
 		if (mysqli_affected_rows($connect) > 0)
 			return true;
 		else
 			return false;
 	}
+	/**
+	 * getFileByHash returns the displayname searched by a hash
+	 * @param $hash the hash
+	 * @return the displayname or ""
+	 */
 	function getFileByHash($hash)
 	{
 		if (isset($_SESSION) == false)
@@ -292,6 +405,46 @@
 			$filename = $row->Displayname;
 		}			
 		return $filename;
+	}
+	/**
+	 * getHashByFile the opposite function of @see getFileByHash
+	 * @param $file the displayname
+	 * @return the hash
+	 * @todo possible bug because no directory is delivered
+	 */
+	function getHashByFile($file)
+	{
+		if (isset($_SESSION) == false)
+			session_start();
+		$filename = "";
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and Displayname = '$file' limit 1") or die("Error 025: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($result)) {
+			$filename = $row->Hash;
+		}			
+		return $filename;
+	}
+	/**
+	 * getFileRoot get the directory id of the dir where a file is saved
+	 * @param $hash the hash of the file
+	 * @return the ID or ""
+	 */
+	function getFileRoot($hash)
+	{
+		if (isset($_SESSION) == false)
+			session_start();
+		$dir = "";
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and Hash = '$hash' limit 1") or die("Error 025: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($result)) {
+			$dir = $row->Directory_ID;
+		}	
+		$res = "";
+		$result = mysqli_query($connect,"Select * from Files where ID = '$dir' limit 1") or die("Error 025: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($result)) {
+			$res = $row->Displayname;
+		}		
+		return $res;
 	}
 	//obsolete since 1.9.5
 	function moveDir_old($source,$target,$old_root)
@@ -320,6 +473,12 @@
 			}			
 		}		
 	}
+	/**
+	 * moveDir moves a directory
+	 * @param $dir the dir
+	 * @param $target the target dir
+	 * @param $old_root the directory, where the directory was saved	
+	 */
 	function moveDir($dir,$target,$old_root)
 	{
 		//Dir = /test/
@@ -383,12 +542,22 @@
 			}
 		}	
 	}
+	/**
+	 * moveFile moves a file
+	 * @param $ID the ID
+	 * @param $newdir the new directory
+	 */
 	function moveFile($ID,$newdir)
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
 		mysqli_query($connect,"Update Files Set Directory='$newdir',Directory_ID = ".getDirectoryID($newdir)." where ID =".$ID." and UserID = '$user'") or die("Error: 017 ".mysqli_error($connect));	
 	}
+	/**
+	 * moveContents move the contents of a directory
+	 * @param $source the source directory
+	 * @param $target the target directory
+	 */
 	function moveContents($source,$target)
 	{	
 		$uploadtime= date("D M j G:i:s T Y",time());
@@ -414,6 +583,11 @@
 				}
 		}		
 	}
+	/**
+	 * createDir creates a new directory
+	 * @param $currentdir the root of the new directory
+	 * @param $directory the new directory name (does not end with "/"!)
+	 */
 	function createDir($currentdir,$directory)
 	{
 		//an easy possibility to avoid xss 
@@ -443,6 +617,7 @@
 				header("Location: ./index.php?module=list&dir=".$currentdir.$directory."/&result=1&from=createdir");
 		}			
 	}
+	//obsolete
 	function createBin($currentdir,$directory)
 	{
 		//include the dataBase file
@@ -465,6 +640,12 @@
 			}			
 			mysqli_close($connect);			
 	}
+	/**
+	 * fs_CopyDir copies a dir
+	 * @param $dir the directory
+	 * @param $target the target directory
+	 * @param $old_root the directory, where the directory was saved	
+	 */
 	function fs_copyDir($dir,$target,$old_root)
 	{	
 		//Dir = /test/
@@ -532,6 +713,11 @@
 			}
 		}
 	}
+	/**
+	 * fs_copyFile copies a file	
+	 * @param $file the file
+	 * @param $dir the directory which contains the file
+	 */
 	function fs_copyFile($file,$dir)
 	{
 		if (isset($_SESSION) == false)
@@ -551,6 +737,8 @@
 			$Uploaded = $row->Uploaded;
 			$Size = $row->Size;
 			$Directory = $row->Directory;
+			$MimeType = $row->MimeType;
+			$Client = $row->Client;
 		}
 		if(getUsedSpace("/") + $Size >= $_SESSION["space"] * 1024 * 1024)
 		{
@@ -572,12 +760,15 @@
 		$newfilename = $code.".dat";	
 		$uploaddir =$GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/";	
 		$dir_id = getDirectoryID($dir);
-		$insert = "Insert into Files (Filename, Displayname, Hash, UserID, IP, Uploaded, Size, Directory,Directory_ID ) Values ('$newfilename','$Displayname','$hash_new',$UserId,'$IP','$uploadtime',$Size,'$dir',$dir_id)";
+		$insert = "Insert into Files (Filename, Displayname, Hash, UserID, IP, Uploaded, Size, Directory,Directory_ID,MimeType,Client ) Values ('$newfilename','$Displayname','$hash_new',$UserId,'$IP','$uploadtime',$Size,'$dir',$dir_id,'$MimeType','$Client')";
 		$insertquery = mysqli_query($connect,$insert);
 		if ($insertquery == true)
 			copy($uploaddir.$Filename,$uploaddir.$newfilename);	
 	}
-	//Delete directory function
+	/**
+	 * deleteDir deletes a directory
+	 * @param $dirname the directory name	
+	 */
 	function deleteDir($dirname)
 	{
 		//Create a session if needed
@@ -612,6 +803,12 @@
 		//close connection
 		mysqli_close($connect);
 	}
+	/**
+	 * deleteFile deletes a file
+	 * @param $filename the file (ending with .dat!)
+	 * @param $directory the directory which contains the file
+	 * @param $hash the file hash
+	 */
 	function deleteFile($filename,$directory,$hash)
 	{
 		//Create new database isntance
@@ -624,6 +821,9 @@
 		if ($result == true)
 			unlink ( $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$filename);	
 	}
+	/**
+	 * fs_create_fs_snapshot creates a database snapshot (can take long time!)
+	 */
 	function create_fs_snapshot()
 	{
 		if (!isset($_SESSION))
@@ -654,7 +854,11 @@
 		$zipfile->Close();
 		
 	}
-	//Source:http://davidwalsh.name/backup-mysql-database-php
+	/**
+	 * backup_tables backup the tables
+	 * Source http://davidwalsh.name/backup-mysql-database-php
+	 * @param $tables the wildcard for the tables
+	 */
 	function backup_tables($tables = '*')
 	{
 		$return = "";
@@ -706,6 +910,11 @@
 		
 		return $return;
 	}
+	/**
+	 * createZipFile backup the tables
+	 * @param $zipfile zipfile in Program_Dir/Temp/
+	 * @param $dir the directory 
+	 */
 	function createZipFile($dir,$zipfile)
 	{
 		//Create a session if needed
@@ -730,6 +939,11 @@
 			}
 		}		
 	}
+	/**
+	 * startZipCreation backup the tables
+	 * start function for createZipFile()
+	 * @param $dir the directory 
+	 */
 	function startZipCreation($dir)
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
@@ -764,6 +978,11 @@
 			exit;
 		}
 	}
+	/**
+	 * fs_enough_space check if enough space is here for a copy of a directory
+	 * @param $dir the directory 
+	 * @return if enough space is here for copying of a dir
+	 */
 	function fs_enough_space($dir)
 	{
 		$value = false;
@@ -790,6 +1009,11 @@
 			$value = false;
 		return $value;
 	}
+	/**
+	 * fs_is_Dir check if a entry is in a dir
+	 * @param $hash the file or dir 
+	 * @return the result of the search
+	 */
 	function fs_is_Dir($hash)
 	{
 		$folder = false;
@@ -804,13 +1028,32 @@
 		mysqli_close($connect);	
 		return $folder;
 	}
-	function fs_get_imagepath($Displayname,$Filename,$MimeType,$Hash)
+	/**
+	 * fs_get_imagepath get a imagepath
+	 * @param $Displayname the displayname
+	 * @param $Filename the filename (ending with .dat)
+	 * @param $MimeType the MimeType
+	 * @param $Hash the hash of the file
+	 * @param int $thumb create a thumbnail (1) or not (0)
+	 * @return a imagepath to display
+	 */
+	function fs_get_imagepath($Displayname,$Filename,$MimeType,$Hash,$thumb=1)
 	{
-		$imagepath = './Images/page.png';		
+		$imagepath = './Images/page.png';	
+		
 		if ($Displayname != $Filename){									
 			if (fs_isImage($Filename) && $GLOBALS["config"]["Program_Display_Icons_if_needed"] == 1)
 			{		
-				$imagepath = "index.php?module=image&file=".$Hash;
+				if ($thumb == 1){
+					if (isShared($Hash))
+							$imagepath = "index.php?module=image&file=".$Hash."&e=s&t=1";
+					else
+						$imagepath = "index.php?module=image&file=".$Hash."&t=1";
+				}
+				else
+				{
+					$imagepath = "index.php?module=image&file=".$Hash;
+				}
 			}	
 			else if (fs_isImage($Filename) == false )
 			{			
@@ -825,6 +1068,5 @@
 				$imagepath = "./Images/mimetypes/folder-publicshare.png";
 		}
 		return $imagepath;
-	}
-	
+	}	
 ?>

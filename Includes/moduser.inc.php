@@ -1,5 +1,5 @@
 <?php
-	/**
+		/**
 	 * @file
 	 * @author  squarerootfury <fury224@googlemail.com>	 
 	 *
@@ -18,16 +18,24 @@
 	 *
 	 * @section DESCRIPTION
 	 *
-	 * This file triggeres the zip creation.
+	 * User modify task are done with this file
 	 */
 	 //Include uri check
 	require_once ("checkuri.inc.php");
-if (isset($_SESSION) == false);
-		session_start();
-	if (isset($_GET["dir"]) )
+	 if (isset($_SESSION) == false)
+			session_start();	
+	if (isset($_GET["task"]) && $_SESSION["role"] == 0 && is_admin() && $GLOBALS["config"]["Program_Enable_Web_Administration"] == 1)
 	{
-		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$dir = mysqli_real_escape_string($connect,$_GET["dir"]);
-		startZipCreation($dir);
+		if ($_GET["task"] == "delete")
+		{
+			
+			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+			$user = mysqli_real_escape_string($connect, $_GET["user"]);
+			user_delete($user);
+		}
+	}
+	else
+	{
+		echo "You don't have enought permissions";
 	}
 ?>

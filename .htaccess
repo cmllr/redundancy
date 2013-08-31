@@ -2,3 +2,7 @@
 Order Allow,Deny
 Deny from all
 </Files>
+<Files "System.log">
+Order Allow,Deny
+Deny from all
+</Files>

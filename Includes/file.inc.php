@@ -1,5 +1,28 @@
 <div id = "files">
 <?php
+	/**
+	 * @file
+	 * @author  squarerootfury <fury224@googlemail.com>	 
+	 *
+	 * @section LICENSE
+	 *
+	 * This program is free software; you can redistribute it and/or
+	 * modify it under the terms of the GNU General Public License as
+	 * published by the Free Software Foundation; either version 3 of
+	 * the License, or (at your option) any later version.
+	 *
+	 * This program is distributed in the hope that it will be useful, but
+	 * WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+	 * General Public License for more details at
+	 * http://www.gnu.org/copyleft/gpl.html
+	 *
+	 * @section DESCRIPTION
+	 *
+	 * This file displays the file properties and a preview (if enabled)
+	 */
+	//Include uri check
+	require_once ("checkuri.inc.php");
 	//start a session if needed
 	if (isset($_SESSION) == false)
 			session_start();
@@ -8,11 +31,12 @@
 	//remember the hash
 	$hash = mysqli_real_escape_string($connect,$_GET["file"]);
 	//Searh for a file with this hash
-	$ergebnis = mysqli_query($connect,"Select Filename,Displayname,Uploaded,Client,Hash,MimeType from Files  where Hash = '$hash' limit 1") or die("Error: ".mysqli_error($connect));	
+	$ergebnis = mysqli_query($connect,"Select Filename,Displayname,Uploaded,Client,Hash,MimeType,Directory from Files  where Hash = '$hash' limit 1") or die("Error: ".mysqli_error($connect));	
 	while ($row = mysqli_fetch_object($ergebnis)) {
+		$_SESSION["currentdir"] = $row->Directory;
 		//Remember the file for further processes
 		$_SESSION["current_file"] = $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$row->Filename;
-		
+		$_SESSION["current_file_hash"] = $row->Hash;
 		echo "<div class ='contentWrapper' >";
 			include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
 		//Get file image or icon
@@ -26,8 +50,10 @@
 			echo "<p id = 'preview'><textarea  cols='120' rows='5'>";
 			include "./Includes/player.inc.php";
 			echo "</textarea>";	}
-		else 
-			echo "<p id = 'preview'><img  src='".fs_get_imagepath($row->Displayname,$row->Filename,$row->MimeType,$row->Hash)."'>";
+		else if ($GLOBALS["config"]["Program_Enable_Preview"] == 1)
+			echo "<p id = 'preview'><img  src='".fs_get_imagepath($row->Displayname,$row->Filename,$row->MimeType,$row->Hash,0)."'>";
+		else
+			echo "<p id = 'preview'><img  src='./Images/page.png'>";
 		//Display the name
 		echo "</p><p class = 'filename'>".htmlentities(utf8_decode($row->Displayname))."</p>";	
 		$date = strtotime($row->Uploaded);
@@ -49,7 +75,9 @@
 		else
 			echo "<a href = 'index.php?module=share&file=".$row->Hash."&delete=true'>".$GLOBALS["Program_Language"]["Unshare"]."</a>";		
 		//Display delete link
-		echo "<a href ='index.php?module=delete&file=$row->Hash'>".$GLOBALS["Program_Language"]["Delete"]."</a></p></div>";	
+		echo "<a href ='index.php?module=delete&file=$row->Hash'>".$GLOBALS["Program_Language"]["Delete"]."</a>";	
+		echo "<a href ='index.php?module=rename&file=$row->Hash'>".$GLOBALS["Program_Language"]["Rename_title"]."</a></p></div>";	
+		
 	}
 	//Close the connection if finished
 	mysqli_close($connect);

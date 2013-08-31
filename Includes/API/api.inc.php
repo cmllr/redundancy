@@ -5,6 +5,7 @@
 	$config = parse_ini_file("../../Redundancy.conf");
 	$GLOBALS["Program_Dir"] = $GLOBALS["config"]["Program_Path"];
 	include "../Program.inc.php";
+	
 	if ($config["Api_Enable"] != 1)
 	{
 		echo "Error:API_Enable\n";
@@ -78,9 +79,9 @@
 			$date = date_create($row->Uploaded);
 			$uploaded = date_format($date, 'Y-m-d H:i:s');
 				if ($row->Displayname == $row->Filename)
-					$files .= "Dir:".$row->Displayname.";".$row->Filename_only.";".$uploaded.";".$row->Hash."\n";
+					$files .= "Dir:".$row->Displayname.";".$row->Filename_only.";".$uploaded.";".$row->Hash.";".getDirectorySize($row->Displayname)."\n";
 				else
-					$files .= "File:".$row->Displayname.";".$row->Filename.";".$uploaded.";".$row->Hash."\n";
+					$files .= "File:".$row->Displayname.";".$row->Filename.";".$uploaded.";".$row->Hash.";".$row->Size."\n";
 			}
 			echo "Result:\n".$files."\n";
 			mysqli_close($connect);
@@ -150,6 +151,21 @@
 		if ($value == "renameFile")
 		{		
 			include "../rename.inc.php";		
-		}		
+		}
+		if ($value == "getFileByHash")
+		{			
+			echo getHashByFile($_POST["file"]);
+		}
+		if ($value == "getServer")
+		{
+			echo $_SERVER["SERVER_NAME"];
+		}
+		if ($value == "isExisting")
+		{
+			$file = $_POST["file"];
+			$directory = $_POST["directory"];			
+			$res = fs_file_exists($file,$directory );
+			echo "Command_Result:".$res;
+		}
 	}	
 ?>

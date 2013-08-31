@@ -1,3 +1,27 @@
+<?php
+	/**
+	 * @file
+	 * @author  squarerootfury <fury224@googlemail.com>	 
+	 *
+	 * @section LICENSE
+	 *
+	 * This program is free software; you can redistribute it and/or
+	 * modify it under the terms of the GNU General Public License as
+	 * published by the Free Software Foundation; either version 3 of
+	 * the License, or (at your option) any later version.
+	 *
+	 * This program is distributed in the hope that it will be useful, but
+	 * WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+	 * General Public License for more details at
+	 * http://www.gnu.org/copyleft/gpl.html
+	 *
+	 * @section DESCRIPTION
+	 *
+	 * This file represents the user account dialog.
+	 */	
+	require_once ("checkuri.inc.php");
+?>
 <div class = "contentWrapper">
 <h1><?php echo $GLOBALS["Program_Language"]["User_Details"];?></h1>
 <?php
@@ -18,12 +42,12 @@
 	}	
 	echo "<h2>".$GLOBALS["Program_Language"]["Password_Management"]."</h2>";	
 	echo "<h3>".$GLOBALS["Program_Language"]["Pass_Changes"]."</h2>";
-	$result = mysqli_query($connect,"Select IP from Pass_History  where Who = '$id' limit 10") or die("DataBase Error: 001 ".mysqli_error($connect));
+	$result = mysqli_query($connect,"Select IP ,Changed from Pass_History  where Who = '$id' limit 10") or die("DataBase Error: 001 ".mysqli_error($connect));
 	while ($row = mysqli_fetch_object($result)) {		
 		echo $row->Changed." - " .$row->IP."<br>";
 	}	
 	//Display the passwort recovery link if allowed
-	if ($GLOBALS["config"]["User_Enable_Recover"] == 1 && $_SESSION["role"] != 3)
+	if ($GLOBALS["config"]["User_Enable_Recover"] == 1 && ($_SESSION["role"] != 3 || is_guest()))
 		echo "<br><a href = 'index.php?module=setpass'>".$GLOBALS["Program_Language"]["Set"]."</a>"; 
 	//Close the connection if finished	
 	mysqli_close($connect);	
@@ -41,6 +65,11 @@
 	echo fs_get_Storage_Percentage();
 ?>
 </p>
+<br>
+<?php
+	if ($GLOBALS["config"]["Program_Enable_User_Settings"] == 1)
+		include $GLOBALS["Program_Dir"]."Includes/settings.inc.php";	
+?>
 <?php
 	if ($_SESSION["role"] == 3)
 		exit;

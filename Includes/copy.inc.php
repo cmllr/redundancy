@@ -1,4 +1,27 @@
 <?php
+	/**
+	 * @file
+	 * @author  squarerootfury <fury224@googlemail.com>	 
+	 *
+	 * @section LICENSE
+	 *
+	 * This program is free software; you can redistribute it and/or
+	 * modify it under the terms of the GNU General Public License as
+	 * published by the Free Software Foundation; either version 3 of
+	 * the License, or (at your option) any later version.
+	 *
+	 * This program is distributed in the hope that it will be useful, but
+	 * WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+	 * General Public License for more details at
+	 * http://www.gnu.org/copyleft/gpl.html
+	 *
+	 * @section DESCRIPTION
+	 *
+	 * This file triggeres the Kernel.FileSystem.inc.php copy functions
+	 */
+	//Include uri check
+	require_once ("checkuri.inc.php");
 	if (isset($_SESSION) == false)
 			session_start();
 	$success = false;
@@ -47,7 +70,7 @@
 		else if ((isset($_GET["source"]) && isset($_GET["target"]) && isset($_GET["old_root"])) || (isset($_POST["source"]) && isset($_POST["target"]) && isset($_POST["old_root"])))
 		{
 			//TODO: More testing.
-			if ($_GET["source"] != $_GET["target"]){
+			if ((isset($_GET["source"]) &&  $_GET["source"] != $_GET["target"]) || (isset($_POST["source"]) &&  $_POST["source"] != $_POST["target"])){
 				//Include database file
 				include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 				//Get the needed values, source, target and the old root

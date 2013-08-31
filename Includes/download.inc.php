@@ -1,4 +1,27 @@
 <?php
+	/**
+	 * @file
+	 * @author  squarerootfury <fury224@googlemail.com>	 
+	 *
+	 * @section LICENSE
+	 *
+	 * This program is free software; you can redistribute it and/or
+	 * modify it under the terms of the GNU General Public License as
+	 * published by the Free Software Foundation; either version 3 of
+	 * the License, or (at your option) any later version.
+	 *
+	 * This program is distributed in the hope that it will be useful, but
+	 * WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+	 * General Public License for more details at
+	 * http://www.gnu.org/copyleft/gpl.html
+	 *
+	 * @section DESCRIPTION
+	 *
+	 * This file is used to generated downloads
+	 */
+	//Include uri check
+	require_once ("checkuri.inc.php");
 	//start a session if needed
 	if (isset($_SESSION) == false);
 		session_start();
@@ -11,11 +34,13 @@
 		$GLOBALS["Program_Dir"] = $GLOBALS["config"]["Program_Path"];
 	}
 	
+	
 	//get the display- and filename
 	$result = mysqli_query($connect,"Select * from Files  where UserID = \"" .  $_SESSION['user_id'] . "\" and Directory = \"" .$_SESSION['currentdir']."\" and Hash = \"".mysqli_real_escape_string($connect,$_GET["file"])."\"") or die("Error 013: ".mysqli_error($connect));
 	while ($row = mysqli_fetch_object($result)) {																	
 		$filenamenew = $row->Filename;
 		$displayname = $row->Displayname;
+		$crypted = $row->Crypted;
 	}	
 	//close databse connection
 	mysqli_close($connect);
@@ -35,7 +60,7 @@
 		header('Content-Length: ' . filesize($fullPath));
 		ob_clean();
 		flush();
-		readfile($fullPath);
+		readfile($fullPath);	
 		exit;
 	}
 	else

@@ -18,16 +18,12 @@
 	 *
 	 * @section DESCRIPTION
 	 *
-	 * This file triggeres the zip creation.
-	 */
-	 //Include uri check
-	require_once ("checkuri.inc.php");
-if (isset($_SESSION) == false);
-		session_start();
-	if (isset($_GET["dir"]) )
-	{
-		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$dir = mysqli_real_escape_string($connect,$_GET["dir"]);
-		startZipCreation($dir);
+	 * This file checks if a include file is acessed directly. If it's acessed directly, it will stops execution
+	 */	
+	//Forbid direkt access to the file
+	if (strpos($_SERVER["PHP_SELF"],".inc.php") !== false) {
+		echo "Please do not access files directly";
+		header("HTTP/1.0 403 Forbidden");
+		exit;
 	}
 ?>

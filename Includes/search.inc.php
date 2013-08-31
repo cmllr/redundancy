@@ -18,16 +18,12 @@
 	 *
 	 * @section DESCRIPTION
 	 *
-	 * This file triggeres the zip creation.
+	 * This file contains the search dialog
 	 */
 	 //Include uri check
 	require_once ("checkuri.inc.php");
-if (isset($_SESSION) == false);
-		session_start();
-	if (isset($_GET["dir"]) )
-	{
-		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$dir = mysqli_real_escape_string($connect,$_GET["dir"]);
-		startZipCreation($dir);
-	}
 ?>
+<form method="POST" action="index.php?module=list" align = "center">
+<div class = 'contentWrapper'><tag><?php echo $GLOBALS["Program_Language"]["Search_to"];?> <r><tag><input id = "searchquery" name="searchquery">
+<input type=submit name=submit value="<?php echo $GLOBALS["Program_Language"]["Search"];?>"><div>
+<form>

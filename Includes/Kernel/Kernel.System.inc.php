@@ -1,5 +1,29 @@
 <?php
-	//System functions
+	/**
+	 * @file
+	 * @author  squarerootfury <fury224@googlemail.com>	 
+	 *
+	 * @section LICENSE
+	 *
+	 * This program is free software; you can redistribute it and/or
+	 * modify it under the terms of the GNU General Public License as
+	 * published by the Free Software Foundation; either version 3 of
+	 * the License, or (at your option) any later version.
+	 *
+	 * This program is distributed in the hope that it will be useful, but
+	 * WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+	 * General Public License for more details at
+	 * http://www.gnu.org/copyleft/gpl.html
+	 *
+	 * @section DESCRIPTION
+	 *
+	 * Redundancy's system functions (security functions also) are located here
+	 */
+	/**
+	 * xss_check logs an event
+	 * @return if something is wrong with $_GET/$_POST/$_SESSION/$_REQUEST/$_COOKIE
+	 */
 	function xss_check()
 	{
 		$found = false;		
@@ -26,10 +50,17 @@
 			if ($found != true)
 				$found = check($_POST);
 		}	
-		if ($found == true)
-		banUser(getIP(),$_SERVER['HTTP_USER_AGENT'],"XSS");
+		if ($found == true){
+			banUser(getIP(),$_SERVER['HTTP_USER_AGENT'],"XSS");
+			log_event("Kernel.System","xss_check","XSS attack detected");
+		}
 		return $found;
 	}
+	/**
+	 * check logs an event
+	 * @param $array the array to be checked
+	 * @return if something is wrong with the array
+	 */
 	function check($array)
 	{
 		$result = false;
@@ -41,6 +72,9 @@
 		}
 		return $result;
 	}
+	/**
+	 * listLanguages list langauges as a combobox	 
+	 */
 	function listLanguages()
 	{
 		$lng_path = "./Language/";
@@ -57,6 +91,9 @@
 		}
 		echo "</select>";
 	}
+	/**
+	 * secureCheck determine if https is used
+	 */
 	function secureCheck()
 	{
 		if  (empty($_SERVER['HTTPS']))
@@ -68,6 +105,12 @@
 			return true;
 		}		
 	}
+	/**
+	 * banUser ban an user
+	 * @param $client_ip the ip of the user
+	 * @param $client the user agent
+	 * @param $reason the reason
+	 */
 	function banUser($client_ip,$client,$reason)
 	{
 		//Create new database isntance
@@ -77,6 +120,5 @@
 		$date = date("m.d.y H:i:s",time());
 		$query = "Insert into Banned (IP,Client,Date,Reason) Values('".$client_ip."','".$client."','$date','$reason')";
 		mysqli_query($connect,$query);
-	}
-	
+	}	
 ?>

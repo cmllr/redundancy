@@ -22,8 +22,15 @@ img#imagelogo{
     width: 26px;
 	top: 3px;
 	left: 50%;
+	margin-left:50px;
 }
-
+p#imagelogotext{
+	
+    position: fixed;
+    width: 26px;
+	top: 3px;
+	left: 50%;
+}
 a{
     color: red;
 	text-decoration: none;
@@ -77,10 +84,12 @@ div#sidebar{
   //  box-shadow: inset 1px 4px 9px -6px black; 
     background: #F0F0F0;
     width: 300px;
-    position: absolute;
+    position: fixed;
 	top: 33px;
 	right: 0;
 	padding: 10px;
+	border-bottom: 1px solid #f55d5d;
+	border-left: 1px solid #f55d5d;
 }
 
 #statusbar img, #broadcrumb img, #sidebar img{

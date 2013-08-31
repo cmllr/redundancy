@@ -1,4 +1,27 @@
 <?php
+	/**
+	 * @file
+	 * @author  squarerootfury <fury224@googlemail.com>	 
+	 *
+	 * @section LICENSE
+	 *
+	 * This program is free software; you can redistribute it and/or
+	 * modify it under the terms of the GNU General Public License as
+	 * published by the Free Software Foundation; either version 3 of
+	 * the License, or (at your option) any later version.
+	 *
+	 * This program is distributed in the hope that it will be useful, but
+	 * WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+	 * General Public License for more details at
+	 * http://www.gnu.org/copyleft/gpl.html
+	 *
+	 * @section DESCRIPTION
+	 *
+	 * The upload process is runned out of this file
+	 */
+	 //Include uri check
+	require_once ("checkuri.inc.php");
 if (isset($_SESSION) == false)
 	session_start();
 	$success = false;
@@ -50,6 +73,17 @@ if (isset($_SESSION) == false)
 							$inser_query = mysqli_query($connect,$insert) or die ("Error: 030:" .mysqli_error());
 							if ($inser_query == true)
 								 move_uploaded_file($_FILES['userfile']['tmp_name'][$key], $uploaddir.$newfilename);
+							
+							/*if ($GLOBALS["config"]["Program_Crypt_FileSystem"] == 1)
+							{
+								$datei = fopen($uploaddir.$newfilename,"r+");
+								$content =  fgets($datei);
+								fclose($datei);
+								$datei = fopen($uploaddir.$newfilename,"w+");
+								fwrite($datei,fs_file_crypt($content,$_SESSION["fs_hash"])); 
+								fclose($datei);
+								mysqli_query($connect,"Update Files Set Crypted = 1 where Hash = '$hash'");
+							}*/
 							mysqli_close($connect);	
 							$success =true;
 						}
@@ -88,6 +122,7 @@ if (isset($_SESSION) == false)
 ?>
 <div class ="contentWrapper">
 <?php
+	if (isset($_GET["upload"]) == false)
 		include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
 ?>
 <?php	

@@ -1,5 +1,27 @@
-
 <?php
+	/**
+	 * @file
+	 * @author  squarerootfury <fury224@googlemail.com>	 
+	 *
+	 * @section LICENSE
+	 *
+	 * This program is free software; you can redistribute it and/or
+	 * modify it under the terms of the GNU General Public License as
+	 * published by the Free Software Foundation; either version 3 of
+	 * the License, or (at your option) any later version.
+	 *
+	 * This program is distributed in the hope that it will be useful, but
+	 * WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+	 * General Public License for more details at
+	 * http://www.gnu.org/copyleft/gpl.html
+	 *
+	 * @section DESCRIPTION
+	 *
+	 * This file offeres the login functionality
+	 */
+	 //Include uri check
+	require_once ("checkuri.inc.php");
 //Only proceed if a post param named user is iset
 if (isset($_POST["user"])){
 	//start a session if needed.
@@ -20,8 +42,12 @@ if (isset($_POST["user"])){
 		else 
 			header("Location: ./index.php");	
 	}else
-		header('Location: ./index.php?message=wrongcredentials&ef=s');
+		header('Location: ./index.php?message=wrongcredentials');
 } 
+else
+{
+	include "./Includes/branding.inc.php";
+}
 ?>
 <form method="POST" action="index.php?module=login" id="login">
 

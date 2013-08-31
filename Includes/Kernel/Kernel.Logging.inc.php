@@ -18,16 +18,21 @@
 	 *
 	 * @section DESCRIPTION
 	 *
-	 * This file triggeres the zip creation.
+	 * Any logging methods are located here.
 	 */
-	 //Include uri check
-	require_once ("checkuri.inc.php");
-if (isset($_SESSION) == false);
-		session_start();
-	if (isset($_GET["dir"]) )
+	/**
+	 * log_event logs an event
+	 * @param $event_name the name of the event
+	 * @param $method the name of the method
+	 * @param $content what happened?
+	 */
+	function log_event($event_name,$method,$content)
 	{
-		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$dir = mysqli_real_escape_string($connect,$_GET["dir"]);
-		startZipCreation($dir);
+		if ($GLOBALS["config"]["Program_Enable_Logging"] == 1){
+			$file = fopen($GLOBALS["Program_Dir"]."System.log","a+");		
+			$date= date("D M j G:i:s T Y", time());
+			fwrite($file, "[$date] function $method() - $event_name: $content\n");
+			fclose($file);
+		}
 	}
 ?>

@@ -2,6 +2,8 @@
 <h2>System status</h2>
 <br>
 <?php	
+	//Include uri check
+	require_once ("checkuri.inc.php");
 	echo "<b>Performing feature check</b><br>";
 	if (class_exists("ZipArchive") == true)
 	{
