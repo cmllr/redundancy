@@ -1,9 +1,8 @@
 Redundancy  1.9.x unstable branch
 =================================
-> Redundancy is an lightweigth cloud computing systems. The program is very lightweight so you can run it on microservers, like the Raspberry Pi without having too much load.
-Redundancy does not require full server access, it can be installed on every server running a webserver using php. Redundancy uses an very easy way of configuring throught a central configuration file.
-Redundancy does not have an "bling bling" configuration wizard at the moment. The stable branch will probably get an installer and an installation wizard, too. The biggest difference between Redundancy and other programs for this purpose is that you can have a very lightweight user
-expierience. There are no unnecessary features you probably never use. Redundancy concentrates on the core of the task to create an easy cloud, for example to use at home.
+> Redundancy is an lightweight cloud computing system. The program is so lightweight that you can run it on microservers like the Raspberry Pi without having too much load.
+Redundancy does not require full server access. It can be installed on every server running a webserver using PHP. The configuration is very easy through a central configuration file. At the moment it does not have a "bling bling" configuration wizard. The stable branch will probably get an installer and an installation wizard, too. The biggest difference between Redundancy and other programs for this purpose is that you get a very lightweight user
+experience. There are no unnecessary features you probably never use. Redundancy focuses on the core of the task to create an easy cloud, for example to use at home.
 
 
 
@@ -28,7 +27,6 @@ License
 Note/ Disclaimer
 ================
 
-Redundancy's default branch is unstable. At the moment there is no stable version available. The program runs on every configured server, but there is
-the possibility to loose data because of hidden bugs is very high. Please feel free to inform me about these issues over the github issue tracker. Thanks :).
+Redundancy's default branch is unstable. At the moment there is no stable version available. The program runs on every configured server, but the possibility of loosing data caused by hidden bugs is very high. Please feel free to inform me about these issues over the github issue tracker. Thanks :).
 
 Since 1.9.7 it is possible to create snapshots. It will be recommended (if the feature is out of beta state) to run these snapshots via cronjobs or tasks cyclic to avoid data loss.
