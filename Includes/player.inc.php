@@ -20,9 +20,7 @@
 	 *
 	 * This file allows a preview of readable files.
 	 */
-	 //Include uri check
-	require_once ("checkuri.inc.php");
-if (isset($_SESSION) == false)
-			session_start();
+	if (isset($_SESSION) == false)
+		session_start();			
 	readfile($_SESSION["current_file"]);
 ?>

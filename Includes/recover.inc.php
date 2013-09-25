@@ -1,4 +1,8 @@
-<form method="POST" action="index.php?module=recover" id="login">
+<div class="col-md-4 hidden-xs"></div>
+<div class="col-md-4 col-xs-12">
+<div class="panel panel-default">
+<div class="panel-body">
+<form class="form-horizontal" role="form" method="POST" action="index.php?module=recover" >
 <?php
 	/**
 	 * @file
@@ -30,19 +34,24 @@ if (isset($_POST["email"])){
 	
 	recover($_POST["email"]);
 }
+else
+{
+	include "./Includes/branding.inc.php";
+}
 if (isset($_GET["msg"]) && $_GET["msg"] == "success")
 {
 	echo "<h2>".$GLOBALS["Program_Language"]["recovered"]."</h2>";
 	exit;
 }
-?>
-
-<p>
-    <label for="email"><?php echo $GLOBALS["Program_Language"]["Email"]; ?></label>
-    <input class ="text" name="email" />
-</p>
-<p class="loginSubmit">
-    <input type="submit" value="<?php echo $GLOBALS["Program_Language"]["Recover"]; ?>" />
-</p>
-<a class = "actions" href = "index.php"><img src="./Images/arrow_left.png"><?php echo $GLOBALS["Program_Language"]["Back"];?></a>
-</form>
+?>		
+<div class="form-group">
+			<label for="inputEmail" class="col-lg-3 control-label"><?php echo $GLOBALS["Program_Language"]["Email"];?></label>
+			<div class="col-lg-9">
+				<input type="text" class="form-control" id="email" name="email" placeholder="Email">
+			</div>
+		</div>	
+		<input class = "btn btn-default "type="submit" value="<?php echo $GLOBALS["Program_Language"]["Recover"]; ?>" />
+	</form>	
+</div>
+</div>
+<div class="col-md-4 hidden-xs"></div> 

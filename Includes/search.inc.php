@@ -23,7 +23,17 @@
 	 //Include uri check
 	require_once ("checkuri.inc.php");
 ?>
-<form method="POST" action="index.php?module=list" align = "center">
-<div class = 'contentWrapper'><tag><?php echo $GLOBALS["Program_Language"]["Search_to"];?> <r><tag><input id = "searchquery" name="searchquery">
-<input type=submit name=submit value="<?php echo $GLOBALS["Program_Language"]["Search"];?>"><div>
-<form>
+
+  <div class="panel-body">
+	<form method="POST" action="index.php?module=list" class="form-horizontal" role="form">  
+  <div class="form-group"> 
+<?php
+	echo $GLOBALS["Program_Language"]["Search_Description"];
+?>
+<br>
+
+<?php echo $GLOBALS["Program_Language"]["Search_to"];?> <input id = "searchquery" name="searchquery">
+<input class = 'btn btn-default' type="submit"  value="<?php echo $GLOBALS["Program_Language"]["Search"];?>">
+</div>
+</form>
+</div>

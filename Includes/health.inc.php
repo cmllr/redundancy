@@ -1,95 +1,135 @@
-<div class ="contentWrapper">
-<h2>System status</h2>
-<br>
-<?php	
-	//Include uri check
-	require_once ("checkuri.inc.php");
-	echo "<b>Performing feature check</b><br>";
-	if (class_exists("ZipArchive") == true)
+<div class = "table table-responsive">
+<table>
+<tr>
+<th></th>
+<th>Value</th>
+<th>Details</th>
+</tr>
+<tr>
+
+<td><?php
+if (class_exists("ZipArchive") == true)
 	{
-		echo "<img src = './Images/accept.png' alt = 'ok'> Zip Support<br>";
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\">";
 	}	
 	else
 	{
-		echo "<img src = './Images/exclamation.png' alt = 'ok'> Zip Support<br>";
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\">";
 	}
-	if (function_exists("imagecreate") == true)
+?></td>
+<td>Zip Support</td>
+</tr>
+<tr>
+<td><?php
+if (function_exists("imagecreate") == true)
 	{
-		echo "<img src = './Images/accept.png' alt = 'ok'> Image Support<br>";
-	}
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\">";
+	}	
 	else
 	{
-		echo "<img src = './Images/exclamation.png' alt = 'ok'> Image Support<br>";
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\">";
 	}
-	if (function_exists("move_uploaded_file") == true)
+?></td>
+<td>Image Support</td>
+</tr>
+<tr>
+<td><?php
+if (function_exists("move_uploaded_file") == true)
 	{
-		echo "<img src = './Images/accept.png' alt = 'ok'> FileSystem Support<br>";
-	}
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\">";
+	}	
 	else
 	{
-		echo "<img src = './Images/exclamation.png' alt = 'ok'> FileSystem Support<br>";
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\">";
 	}
-	if (function_exists("mysqli_query") == true)
+?></td>
+<td>FileSystem Support</td>
+</tr>
+<tr>
+<td><?php
+if (function_exists("mysqli_query") == true)
 	{
-		echo "<img src = './Images/accept.png' alt = 'ok'> DataBase Support<br>";
-	} 
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\">";
+	}	
 	else
 	{
-		echo "<img src = './Images/exclamation.png' alt = 'ok'> DataBase Support<br>";
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\">";
 	}
-	if (is_writable($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/") == true)
+?></td>
+<td>MySQLi Support</td>
+</tr>
+<tr>
+<td><?php
+if (is_writable($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/") == true)
 	{
-		echo "<img src = './Images/accept.png' alt = 'ok'> Storage Access<br>";
-	} 
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\">";
+	}	
 	else
 	{
-		echo "<img src = './Images/exclamation.png' alt = 'ok'> Storage Access<br>";
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\">";
 	}
-	if (is_writable($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Temp_Dir"]."/") == true)
+?></td>
+<td>Storage Access</td>
+</tr>
+<tr>
+<td><?php
+if (is_writable($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Temp_Dir"]."/") == true)
 	{
-		echo "<img src = './Images/accept.png' alt = 'ok'> Temp Access<br>";
-	} 
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\">";
+	}	
 	else
 	{
-		echo "<img src = './Images/exclamation.png' alt = 'ok'> Temp Access<br>";
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\">";
 	}
-	if (is_writable($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Snapshots_Dir"]."/") == true)
+?></td>
+<td>Temp Access</td>
+</tr>
+<tr>
+<td><?php
+if (is_writable($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Snapshots_Dir"]."/") == true)
 	{
-		echo "<img src = './Images/accept.png' alt = 'ok'> Snapshots Access<br>";
-	} 
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\">";
+	}	
 	else
 	{
-		echo "<img src = './Images/exclamation.png' alt = 'ok'> Snapshots Access<br>";
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\">";
 	}
-	include $GLOBALS["config"]["Program_Path"]."Includes/DataBase.inc.php";	
+?></td>
+<td>Snapshots Access</td>
+</tr>
+<tr>
+<td><?php
+include $GLOBALS["config"]["Program_Path"]."Includes/DataBase.inc.php";	
 	$query = mysqli_query($connect,"Select * from Files");
 	$count = 0;
 	$countMissing = 0;	
-	echo "<b>Performing database check</b><br>";
 	while ($row = mysqli_fetch_object($query)) {		
 		if ($row->Filename != $row->Displayname){
 		$count++;			
 			if (file_exists($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$row->Filename) == false)
 			{
 				$countMissing++;
-				echo "<img src = './Images/exclamation.png' alt = 'ok'>File \"".$row->Displayname."\" (".$row->Filename.") in database, but not on filesystem!<br>";
+				echo "<span class=\"errorValue elusive icon-remove glyphIcon\"></span><td>File \"".$row->Displayname."\" (".$row->Filename.") in database, but not on filesystem!</td>";
 			}
 		}		
 	}	
 	if ($countMissing == 0)
-		echo "<img src = './Images/accept.png' alt = 'ok'>";
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\"></span>";
 	else
-		echo "<img src = './Images/exclamation.png' alt = 'not ok'>";
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\"></span>";
 	$percent = 0;
 	if ($countMissing != 0)
 	{
 		$percent = round(100/($count/$countMissing),2);
 	}
-	echo "DataBase Check: Found ".$count." files in database, ".$countMissing." (".$percent."%)<br>";
+	echo "<td>Database check</td><td>Found ".$count." files in database, ".$countMissing." (".$percent."%)";
 	$count = 0;
 	$countMissing = 0;
-	echo "<b>Performing filesystem check</b><br>";
-	if ($handle = opendir($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/")) {
+?></td>
+</tr>
+<tr>
+<td><?php
+if ($handle = opendir($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/")) {
 		while (false !== ($file = readdir($handle))) {			
 			if ($file != "." && $file != ".." && $file != ".htaccess" && $file != "index.php" )
 			{
@@ -98,70 +138,108 @@
 				if (mysqli_affected_rows($connect) == 0)
 				{
 					$countMissing++;					
-					echo "<img src = './Images/exclamation.png' alt = 'ok'>File \"$file\" on filesystem, but not in database!<br>";
+					echo "<span class=\"errorValue elusive icon-remove glyphIcon\"></span><td>File \"$file\" on filesystem, but not in database!</td>";
 				}
 			}
 		}
 		closedir($handle);
 	}
 	if ($countMissing == 0)
-		echo "<img src = './Images/accept.png' alt = 'ok'>";
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\"></span>";
 	else
-		echo "<img src = './Images/exclamation.png' alt = 'not ok'>";
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\"></span>";
 	if ($countMissing != 0)
 	{
 		$percent = round(100/($count/$countMissing),2);
 	}
-	echo "FileSystem Check: Found ".$count." files on filesystem, ".$countMissing." too much (".$percent."%)<br>";
-	echo "<b>Performing security check</b><br>";
+	echo "<td>Filesystem check</td><td>Found ".$count." files on filesystem, ".$countMissing." too much (".$percent."%)";
+?></td>
+</tr>
+<tr>
+<td><?php
 	$count = 0;
 	$query = mysqli_query($connect,"Select * from Banned where Reason = 'XSS'");
 	while ($row = mysqli_fetch_object($query)) {		
 			$count++;
 	}	
 	if ($count == 0)
-		echo "<img src = './Images/accept.png' alt = 'ok'>";
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\"></span>";
 	else
-		echo "<img src = './Images/error.png' alt = 'not ok'>";
-	echo "$count XSS attacks blocked<br>";
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\"></span>";
+	echo "<td>User check</td><td>$count XSS attacks blocked";
+?></td>
+
+</tr>
+<tr>
+<td><?php
 	$count = 0;
 	$query = mysqli_query($connect,"Select * from Users where Enabled = 0");
 	while ($row = mysqli_fetch_object($query)) {		
 			$count++;
 	}	
 	if ($count == 0)
-		echo "<img src = './Images/accept.png' alt = 'ok'>";
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\"></span>";
 	else
-		echo "<img src = './Images/error.png' alt = 'not ok'>";
-	echo "$count disabled user(s) found<br>";	
-	echo "<b>Performing config check</b><br>";
-	if ($GLOBALS["config"]["Enable_register"]== "1")
-		echo "<img src = './Images/information.png' alt = 'ok'>Registration is on<br>";
-	else
-		echo "<img src = './Images/accept.png' alt = 'not ok'>Registration is off<br>";
-	if ($GLOBALS["config"]["Program_HTTPS_Redirect"]=="1")
-		echo "<img src = './Images/accept.png' alt = 'ok'>HTTP is on<br>";
-	else
-		echo "<img src = './Images/error.png' alt = 'not ok'>HTTPS is off<br>";
-	if ($GLOBALS["config"]["Api_Enable"] == 1 )
-		echo "<img src = './Images/information.png' alt = 'ok'>API is on<br>";
-	else
-		echo "<img src = './Images/accept.png' alt = 'not ok'>API is off<br>";
-	if ($GLOBALS["config"]["User_Enable_Recover"]==1)
-		echo "<img src = './Images/information.png' alt = 'ok'>User is allowed to recover passwords<br>";
-	else
-		echo "<img src = './Images/accept.png' alt = 'not ok'>Password recovery is off<br>";	
-	if ($GLOBALS["config"]["Program_Enable_Plugins"]==1)
-		echo "<img src = './Images/information.png' alt = 'ok'>Plugins are enabled<br>";
-	else
-		echo "<img src = './Images/accept.png' alt = 'not ok'>Plugins are disabled<br>";	
-	if ($GLOBALS["config"]["Program_Debug"]==1)
-		echo "<img src = './Images/error.png' alt = 'ok'>Debug mode is on<br>";
-	else
-		echo "<img src = './Images/accept.png' alt = 'not ok'>Debug mode is off<br>";	
-	//Close the connection if finished
-	mysqli_close($connect);
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\"></span>";
+	echo "</td><td>User check</td><td>$count disabled user(s) found<br>";	
+?></td>
 
-	
-?>
+</tr>
+<tr>
+<td><?php
+	if ($GLOBALS["config"]["Enable_register"]== "1")
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\"></span>";
+	else
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\"></span>";
+?></td>
+<td>Register</td>
+</tr>
+<tr>
+<td><?php
+	if ($GLOBALS["config"]["Program_HTTPS_Redirect"]=="1")
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\"></span>";
+	else
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\"></span>";
+?></td>
+<td>HTTPS</td>
+</tr>
+<tr>
+<td><?php
+	if ($GLOBALS["config"]["Api_Enable"] == 1 )
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\"></span>";
+	else
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\"></span>";
+?></td>
+<td>API</td>
+</tr>
+<tr>
+<td><?php
+	if ($GLOBALS["config"]["User_Enable_Recover"]==1)
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\"></span>";
+	else
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\"></span>";
+?></td>
+<td>Password recovery</td>
+</tr>
+<tr>
+<td><?php
+	if ($GLOBALS["config"]["Program_Enable_Plugins"]==1)
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\"></span>";
+	else
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\"></span>";
+?></td>
+<td>Plugins</td>
+</tr>
+<tr>
+<td><?php
+	if ($GLOBALS["config"]["Program_Debug"]==1)
+		echo "<span class=\"successValue elusive icon-ok glyphIcon\"></span>";
+	else
+		echo "<span class=\"errorValue elusive icon-remove glyphIcon\"></span>";
+	mysqli_close($connect);
+?></td>
+<td>Debug mode</td>
+</tr>
+</table>
+
 </div>

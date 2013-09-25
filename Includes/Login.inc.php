@@ -1,3 +1,9 @@
+<div class="col-md-4 hidden-xs"></div>
+<div class="col-md-4 col-xs-12">
+<?php
+	//Message display stack
+	ui_get_messages();
+?>
 <?php
 	/**
 	 * @file
@@ -34,7 +40,9 @@ if (isset($_POST["user"])){
 		$redir = "?module=admin";
 	}
 	if (login($_POST["user"],$_POST["pass"]) == true){
-		$_SESSION["style"] = $_POST["Style"];
+		
+		$_SESSION["template"] = parse_ini_file("./Styles/Bootstrap.tpl");
+		$_SESSION["language"] = $_POST["lang"];
 		if ($_SESSION["Session_Closed"] == 1 )
 			header('Location: ./index.php'.$redir);
 		else if ($GLOBALS["config"]["User_NoLogout_Warning"] == 1 && $_SESSION["Session_Closed"] == 0)
@@ -49,28 +57,51 @@ else
 	include "./Includes/branding.inc.php";
 }
 ?>
-<form method="POST" action="index.php?module=login" id="login">
-
-<p>
-    <label for="user"><?php echo $GLOBALS["Program_Language"]["Username"]; ?></label>
-    <input class ="text" id ="user" name="user" />
-</p>
-<p>
-    <label for="pass"><?php echo $GLOBALS["Program_Language"]["Password"]; ?></label>
-    <input class ="text"  id = "pass" name="pass" type="password" />
-</p>
-<p>
-	<label for= "Style">Style</label>
-	<?php
-		ui_get_Styles("./");
-	?>
-</p>
-<p class="loginSubmit">
-    <input type="submit" value="<?php echo $GLOBALS["Program_Language"]["Log_In"]; ?>" />
-</p>
-
-<a class = "actions" href = "index.php?module=register"><img alt ="New User" src="./Images/user_add.png"><?php echo $GLOBALS["Program_Language"]["Register"]; ?></a>
-<a class = "actions" href = "index.php?module=recover"><img alt="Recover Password" src="./Images/key_go.png"><?php echo $GLOBALS["Program_Language"]["Recover"]; ?></a>
-</form>
-
-
+<div class="panel panel-default">
+<div class="panel-body">
+	<form class="form-horizontal" role="form" method="POST" action="index.php?module=login">
+		<div class="form-group">
+			<label for="inputEmail" class="col-lg-3 control-label"><?php echo $GLOBALS["Program_Language"]["Email"];?></label>
+			<div class="col-lg-9">
+				<input type="text" class="form-control" id="user" name="user" placeholder="Email">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="inputPassword" class="col-lg-3 control-label"><?php echo $GLOBALS["Program_Language"]["Password"];?></label>
+			<div class="col-lg-9">
+				<input type="password" class="form-control" id="pass" name = "pass" placeholder="<?php echo $GLOBALS["Program_Language"]["Password"];?>">
+			</div>
+		</div>		
+		 <div class="form-group">
+            <label for="inputLanguage" class="col-lg-3 control-label"><?php echo $GLOBALS["Program_Language"]["Lang"];?></label>
+            <div class="col-lg-9">
+                <select class="form-control" id="lang" name = "lang">
+                   <?php
+						ui_get_Langs("./Language/");
+				   ?>
+                </select>
+            </div>
+        </div>
+		<div class="form-group">
+			<div class="col-lg-offset-3 col-lg-9">
+				<button type="submit" class="btn btn-default btn-block">
+					<?php echo $GLOBALS["Program_Language"]["Log_In"];?>
+				</button>
+			</div>
+		</div>
+		
+	</form>
+	<?php if ($GLOBALS["config"]["Enable_register"] || $GLOBALS["config"]["User_Enable_Recover"]) :?>
+	<div class="btn-toolbar">
+		<?php if ($GLOBALS["config"]["Enable_register"]) :?>
+		<a class = "btn btn-default" href = "index.php?module=register"><?php echo $GLOBALS["Program_Language"]["Register"]; ?></a>
+		<?php endif; ?>
+		<?php if ($GLOBALS["config"]["User_Enable_Recover"]) :?>
+		<a class = "btn btn-default"href = "index.php?module=recover"><?php echo $GLOBALS["Program_Language"]["Recover"]; ?></a>
+		<?php endif; ?>
+	</div>
+	<?php endif; ?>
+</div>
+</div>
+</div>
+<div class="col-md-4 hidden-xs"></div> 

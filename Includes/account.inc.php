@@ -22,7 +22,6 @@
 	 */	
 	require_once ("checkuri.inc.php");
 ?>
-<div class = "contentWrapper">
 <h1><?php echo $GLOBALS["Program_Language"]["User_Details"];?></h1>
 <?php
 	//start a session if needed
@@ -47,25 +46,71 @@
 		echo $row->Changed." - " .$row->IP."<br>";
 	}	
 	//Display the passwort recovery link if allowed
-	if ($GLOBALS["config"]["User_Enable_Recover"] == 1 && ($_SESSION["role"] != 3 || is_guest()))
-		echo "<br><a href = 'index.php?module=setpass'>".$GLOBALS["Program_Language"]["Set"]."</a>"; 
+	echo "<div class=\"btn-group\">";
+	if ($GLOBALS["config"]["User_Enable_Recover"] == 1 && ($_SESSION["role"] != 3 || is_guest()))		
+		echo "<a type=\"a\" href = 'index.php?module=setpass'class=\"btn btn-default\"><span class=\"elusive icon-edit glyphIcon\"></span>".$GLOBALS["Program_Language"]["Set"]."</a>";
 	//Close the connection if finished	
+	echo "</div>";
 	mysqli_close($connect);	
 ?>
 <h2><?php echo $GLOBALS["Program_Language"]["Files"];?></h2>
-<div id = "progressbar">
-<?php
-	echo "<div id = 'progressbar_inner' style='width:".round(fs_get_Percentage(),0)."% ;'>";
-	echo "<p>&nbsp;".fs_get_Percentage()."&nbsp;".$GLOBALS["Program_Language"]["used"]."</p<>";
-?>
+<div class="progress">
+	<div class="progress-bar" role="progressbar" aria-valuenow="<?php echo fs_get_Percentage_2();?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo fs_get_Percentage_2();?>%;">
+	</div>
 </div>
-</div>
-<p>	
-<?php
-	echo fs_get_Storage_Percentage();
+<?php	
+	echo "&nbsp;".fs_get_Percentage()."&nbsp;(";
 ?>
-</p>
-<br>
+<?php
+	echo fs_get_Storage_Percentage().")";
+?>
+<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="./Lib/jqplot/excanvas.js"></script><![endif]-->
+<script language="javascript" type="text/javascript" src="./Lib/jqplot/jquery.jqplot.min.js"></script>
+<link rel="stylesheet" type="text/css" href="./Lib/jqplot/jquery.jqplot.css" />
+<script type="text/javascript" src="./Lib/jqplot/plugins/jqplot.pieRenderer.min.js"></script>
+<script type="text/javascript" src="./Lib/jqplot/plugins/jqplot.donutRenderer.min.js"></script>
+<script type="text/javascript" src="./Lib/jqplot/plugins/jqplot.highlighter.min.js"></script>
+<script type="text/javascript" src="./Lib/jqplot/plugins/jqplot.cursor.min.js"></script>
+<div class= "hidden-xs">
+<div  id="chartdiv" ></div>
+<script>
+$(document).ready(function(){
+  var data = [
+    <?php echo fs_get_stats();?>
+  ];
+  var plot1 = jQuery.jqplot ('chartdiv', [data], 
+    { 
+      seriesDefaults: {
+        // Make this a pie chart.
+        renderer: jQuery.jqplot.PieRenderer, 
+        rendererOptions: {
+          // Put data labels on the pie slices.
+          // By default, labels show the percentage of the slice.
+          showDataLabels: true,
+		  sortData: true,
+		  showLabel: true,
+		  dataLabels: [<?php echo fs_get_stats();?>],
+		  dataLabelNudge: 30,	
+		  varyBarColor: true,
+		  cursor:{ 
+			show: true,			
+			showTooltip:true,
+			 tooltipLocation:'sw'
+		  } 		 
+        },				
+      }, 	  
+      legend: { renderer: $.jqplot.EnhancedLegendRenderer,
+    show: true,
+    rendererOptions: {
+		border: "0px",
+        numberRows: 10
+    } }	  
+    }
+  );
+});
+</script>
+</div>
+
 <?php
 	if ($GLOBALS["config"]["Program_Enable_User_Settings"] == 1)
 		include $GLOBALS["Program_Dir"]."Includes/settings.inc.php";	
@@ -74,9 +119,11 @@
 	if ($_SESSION["role"] == 3)
 		exit;
 ?>
-<br><a href = "index.php?module=zip&dir=/"><?php echo $GLOBALS["Program_Language"]["Download_All_Files"];?></a>
+<p>
+<div class="btn-group">
+<a class = 'btn btn-default' href = "index.php?module=zip&dir=/"><?php echo $GLOBALS["Program_Language"]["Download_All_Files"];?></a>
+</div>
 <?php
 	if ($GLOBALS["config"]["User_Allow_Delete"] == 1 && $_SESSION["role"] != 3)
-		echo "<br><br><h3>".$GLOBALS["Program_Language"]["Delete_Account"]."</h3><br><a href = 'index.php?module=goodbye'>".$GLOBALS["Program_Language"]["Delete_Account"]."</a><br>";
+		echo "<br><br><h3>".$GLOBALS["Program_Language"]["Delete_Account"]."</h3><br><a class = 'btn btn-default' href = 'index.php?module=goodbye'>".$GLOBALS["Program_Language"]["Delete_Account"]."</a><br>";
 ?>
-</div>

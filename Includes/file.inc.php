@@ -1,4 +1,3 @@
-<div id = "files">
 <?php
 	/**
 	 * @file
@@ -30,56 +29,102 @@
 	include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 	//remember the hash
 	$hash = mysqli_real_escape_string($connect,$_GET["file"]);
+	$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
 	//Searh for a file with this hash
-	$ergebnis = mysqli_query($connect,"Select Filename,Displayname,Uploaded,Client,Hash,MimeType,Directory from Files  where Hash = '$hash' limit 1") or die("Error: ".mysqli_error($connect));	
+	$ergebnis = mysqli_query($connect,"Select Filename,Displayname,Uploaded,Client,Hash,MimeType,Directory,Size from Files  where Hash = '$hash' and UserID = '$userID' limit 1") or die("Error: ".mysqli_error($connect));	
 	while ($row = mysqli_fetch_object($ergebnis)) {
 		$_SESSION["currentdir"] = $row->Directory;
 		//Remember the file for further processes
 		$_SESSION["current_file"] = $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$row->Filename;
-		$_SESSION["current_file_hash"] = $row->Hash;
-		echo "<div class ='contentWrapper' >";
-			include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
-		//Get file image or icon
-		if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 && fs_isImage($row->Filename) == 1)
-			echo "<p id = 'preview'><img src='index.php?module=image'>";	
-		else if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 && fs_isVideo($row->Filename) == true)
-			echo "<p id = 'preview'><video src='./Includes/player.inc.php' controls>Your browser does not support the <code>video</code> element.</video>";
-		else if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 && fs_isAudio($row->Filename) == true)
-			echo "<p id = 'preview'><audio src='./Includes/player.inc.php' controls>Your browser does not support the <code>audio</code> element.</audio>";
-		else if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 && fs_isText($row->Filename) == true) {
-			echo "<p id = 'preview'><textarea  cols='120' rows='5'>";
-			include "./Includes/player.inc.php";
-			echo "</textarea>";	}
-		else if ($GLOBALS["config"]["Program_Enable_Preview"] == 1)
-			echo "<p id = 'preview'><img  src='".fs_get_imagepath($row->Displayname,$row->Filename,$row->MimeType,$row->Hash,0)."'>";
-		else
-			echo "<p id = 'preview'><img  src='./Images/page.png'>";
-		//Display the name
-		echo "</p><p class = 'filename'>".htmlentities(utf8_decode($row->Displayname))."</p>";	
+		$_SESSION["current_file_hash"] = $row->Hash;	
+		include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
+		echo "<h1>".htmlentities(utf8_decode($row->Displayname))."</h1>";
+	
+		if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 &&(fs_isImage($row->Filename) == 1 || fs_isVideo($row->Filename) == true || fs_isAudio($row->Filename) == true || fs_isText($row->Filename) == true  ||fs_isVector($row->Filename) == true)){
+				echo "<div class = \"panel panel-default\">";
+			echo "<div class = \"panel-body\">";
+			//Get file image or icon
+			if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 && fs_isImage($row->Filename) == 1)
+				echo "<img src='index.php?module=image' class=\"img-responsive\" style=\"margin: 0 auto\">";	
+			else if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 && fs_isVideo($row->Filename) == true)
+				echo "<video class=\"img-responsive\" style=\"margin: 0 auto\" src='./Includes/player.inc.php' controls>Your browser does not support the <code>video</code> element.</video>";
+			else if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 && fs_isAudio($row->Filename) == true)
+				echo "<audio  src='./Includes/player.inc.php' controls>Your browser does not support the <code>audio</code> element.</audio>";
+			else if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 && fs_isText($row->Filename) == true) {
+				echo "<textarea class=\"img-responsive\" style=\"margin: 0 auto\" cols='120' rows='5'>";
+				include "./Includes/player.inc.php";
+				echo "</textarea>";	}
+			else if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 && fs_isVector($row->Filename) == true)
+				{echo "<div style=\"margin: 0 auto\" class = \"svg\">";
+				include "./Includes/player.inc.php";
+				echo "</div>"; }			
+			else if ($GLOBALS["config"]["Program_Enable_Preview"] == 1)
+				echo "<img  src='".fs_get_imagepath($row->Displayname,$row->Filename,$row->MimeType,$row->Hash,0)."'>";
+			else
+				echo "<img  src='./Images/page.png'>";
+			//Display the name
+			echo "</div>";	
+				echo "</div>";
+		}
 		$date = strtotime($row->Uploaded);
+		$size = fs_get_fitting_DisplayStyle($row->Size);
+		
 		//Display the client, a browser is identified by the "Mozilla" entry in the user agent
 		$client = $row->Client;
 		if (strpos($client,"Mozilla") === false && $row->Client != NULL )
-			echo "<p class ='source'>".$GLOBALS["Program_Language"]["Uploaded_API"]."</a></p>";
+			$source =  $GLOBALS["Program_Language"]["Uploaded_API"];
 		else		
-			echo "<p class ='source'>".$GLOBALS["Program_Language"]["Uploaded_Browser"]."</a></p>";		
+			$source = $GLOBALS["Program_Language"]["Uploaded_Browser"];	
+	
+		echo "<div class = \"btn-group\" id = \"fileActionBtnGroup\">";
 		if (isShared($hash))
 		{
-			$sharetext = fs_getShareLink($hash);
-			echo "<p class = 'sharelink'>".$GLOBALS["Program_Language"]["Share_Link"]."</p><input type ='text' cols='70' rows='2' value ='$sharetext'></input>";	
-		}			
-		echo "<p class ='buttons'><a href ='index.php?module=download&file=$row->Hash'>".$GLOBALS["Program_Language"]["Download"]."</a>";		
+			$sharetext = fs_getShareLink($hash);		
+		}	
+		echo "<a type=\"a\" href = 'index.php?module=download&file=$row->Hash'class=\"btn btn-default\"><span class=\"elusive icon-download-alt glyphIcon\"></span>".$GLOBALS["Program_Language"]["Download"]."</a>";
+			
 		//Display links
 		if (isShared($hash) == false)
-			echo "<a href ='index.php?module=download&module=share&file=".$row->Hash."&new=true'>".$GLOBALS["Program_Language"]["Share"]."</a>";	
+			echo "<a type=\"a\" href = 'index.php?module=download&module=share&file=".$row->Hash."&new=true'class=\"btn btn-default\"><span class=\"elusive icon-share glyphIcon\"></span>".$GLOBALS["Program_Language"]["Share"]."</a>";
 		else
-			echo "<a href = 'index.php?module=share&file=".$row->Hash."&delete=true'>".$GLOBALS["Program_Language"]["Unshare"]."</a>";		
-		//Display delete link
-		echo "<a href ='index.php?module=delete&file=$row->Hash'>".$GLOBALS["Program_Language"]["Delete"]."</a>";	
-		echo "<a href ='index.php?module=rename&file=$row->Hash'>".$GLOBALS["Program_Language"]["Rename_title"]."</a></p></div>";	
+				echo "<a type=\"a\" href = 'index.php?module=share&file=".$row->Hash."&delete=true'class=\"btn btn-default\"><span class=\"elusive icon-remove-sign glyphIcon\"></span>".$GLOBALS["Program_Language"]["Unshare"]."</a>";
+		//Display delete link	
+		echo "<a type=\"a\" href = 'index.php?module=delete&file=$row->Hash'class=\"btn btn-default\"><span class=\"elusive icon-trash glyphIcon\"></span>".$GLOBALS["Program_Language"]["Delete"]."</a>";
+		echo "<a type=\"a\" href = 'index.php?module=rename&file=$row->Hash'class=\"btn btn-default\"><span class=\"elusive icon-edit glyphIcon\"></span>".$GLOBALS["Program_Language"]["Rename_title"]."</a>";
+		echo "</div>";
 		
 	}
 	//Close the connection if finished
 	mysqli_close($connect);
+
+
 ?>
+<div class="panel panel-default">
+  <div class="panel-body">
+	<form class="form-horizontal" role="form">
+   <div class="form-group">
+    <label class="col-lg-2 control-label"><?php echo $GLOBALS["Program_Language"]["Size"];?></label>
+    <div class="col-lg-8">
+      <p class="form-control-static"><?php echo $size;?></p>
+	  	<div class="col-lg-2"></div>
 </div>
+</div>
+  <div class="form-group">
+    <label class="col-lg-2 control-label"><?php echo $GLOBALS["Program_Language"]["Source"];?></label>
+    <div class="col-lg-8">
+      <p class="form-control-static"><?php echo $source;?></p>
+    </div>
+	<div class="col-lg-2"></div>
+  </div>
+  <?php if (isShared($hash)):?>
+  <div class="form-group">
+    <label for="inputSharedLink" class="col-lg-2 control-label"><?php echo $GLOBALS["Program_Language"]["Share_Link"];?></label>
+    <div class="col-lg-8">
+      <input type="text" class="form-control" id="inputSharedLink" placeholder="Freigabelink" value="<?php echo $sharetext;?>">
+    </div>		
+  </div>   
+  <?php endif ;?>
+</form>
+</div>
+</div>
+

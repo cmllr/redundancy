@@ -23,7 +23,5 @@
 	 //Include uri check
 	require_once ("checkuri.inc.php");
 ?>
-<a class = "actions" href = "index.php?lang=de"><img alt ="New User" src="./Images/flags/de.png"></a>
-<a class = "actions" href = "index.php?lang=en"><img alt ="New User" src="./Images/flags/gb.png"></a>
-<a class = "actions" href = "index.php?lang=fr"><img alt ="New User" src="./Images/flags/fr.png"></a>
-<p id='logo'><a href = "index.php"><img src='./Images/Logo.png' /></a></p>
+<img src="./Images/bootstrapped_logo.png" style="margin: 0 auto;" class="img-responsive">
+<h1 class="text-center">Redundancy<sup>2</sup></h1>

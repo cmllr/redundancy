@@ -21,8 +21,7 @@
 	 * This file contains the startpage of the program
 	 */
 ?>
-<div class = "contentWrapper">
+
 <?php
 	readfile("./Change.log");	
 ?>
-</div>

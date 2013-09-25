@@ -41,11 +41,11 @@
 		++$count;
 		$shared = isShared(str_replace("#","",$hashcode));
 		if ($shared)
-			$Share_Status = "<a class = 'shared' href = 'index.php?module=share&file=".str_replace("#","",$hashcode)."&delete=true'><img  src = './Images/link_go.png'> ".$GLOBALS["Program_Language"]["Shared"]."</a>";
+			$Share_Status = "<a class = 'shared' href = 'index.php?module=share&file=".str_replace("#","",$hashcode)."&delete=true'><span class=\"elusive icon-share glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Shared"]."</a>";
 		else
-			$Share_Status = "<a href = 'index.php?module=share&file=".str_replace("#","",$hashcode)."&new=true'><img  src = './Images/link_go.png'> ".$GLOBALS["Program_Language"]["Share"]."</a>";
+			$Share_Status = "<a href = 'index.php?module=share&file=".str_replace("#","",$hashcode)."&new=true'><span class=\"elusive icon-share glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Share"]."</a>";
 		$folder = fs_is_Dir(str_replace("#","",$hashcode));
-		echo "<ul id='context_menu$count' style='position:absolute;font-size:small'>";
+		echo "<ul id='context_menu$count' style='position:fixed;font-size:small;width:150px'>";
 		if ($folder == true)
 		{
 			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
@@ -53,12 +53,12 @@
 			$select = "Select Displayname,Filename,Directory from Files where UserID = '$user' and Hash = '".str_replace("#","",$hashcode)."' limit 1";
 			$result= mysqli_query($connect,$select);
 			while ($row = mysqli_fetch_object($result)) {
-					echo "<li><a href ='index.php?module=list&dir=".$row->Displayname."'><img  src = './Images/folder_magnify.png'> ".$GLOBALS["Program_Language"]["open_generic"]."</a></li>";
-				echo "<li><a href ='index.php?module=delete&dir=".$row->Filename."'><img  src = './Images/folder_delete.png'> ".$GLOBALS["Program_Language"]["Delete"]."</a></li>";
-				echo "<li><a class = 'delete' href ='index.php?module=list&move=true&source=".$row->Filename."&old_root=".$row->Directory."'><img  src = './Images/cut_red.png'> ".$GLOBALS["Program_Language"]["Cut"]."</a></li>";
-				echo "<li><a class = 'delete' href = 'index.php?module=list&copy=true&source=".$row->Filename."&old_root=".$row->Directory."'><img src= './Images/page_copy.png'> ".$GLOBALS["Program_Language"]["Copy"]."</a></li>";
-				echo "<li><a class = 'delete'  href ='index.php?module=rename&source=".$row->Displayname."&old_root=".$_SESSION["currentdir"]."'><img  src = './Images/textfield_rename.png'> ".$GLOBALS["Program_Language"]["Rename_title"]."</a></li>";
-				echo "<li><a href ='index.php?module=zip&dir=".$row->Displayname."'><img  src = './Images/page_white_zip.png'> ".$GLOBALS["Program_Language"]["Zip"]."</a></li>";			
+				echo "<li><a href ='index.php?module=list&dir=".$row->Displayname."'><span class=\"elusive icon-folder-open glyphIcon\"></span> ".$GLOBALS["Program_Language"]["open_generic"]."</a></li>";
+				echo "<li><a href ='index.php?module=delete&dir=".$row->Filename."'><span class=\"elusive icon-remove-sign glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Delete"]."</a></li>";
+				echo "<li><a class = 'delete' href ='index.php?module=list&move=true&source=".$row->Filename."&old_root=".$row->Directory."'><span class=\"elusive icon-tag glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Cut"]."</a></li>";
+				echo "<li><a class = 'delete' href = 'index.php?module=list&copy=true&source=".$row->Filename."&old_root=".$row->Directory."'><span class=\"elusive icon-tags glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Copy"]."</a></li>";
+				echo "<li><a class = 'delete'  href ='index.php?module=rename&source=".$row->Displayname."&old_root=".$_SESSION["currentdir"]."'><span class=\"elusive icon-edit glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Rename_title"]."</a></li>";
+				echo "<li><a href ='index.php?module=zip&dir=".$row->Displayname."'><span class=\"elusive icon-download-alt glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Zip"]."</a></li>";			
 			}			
 			mysqli_close($connect);	
 		}
@@ -69,19 +69,33 @@
 			$select = "Select Displayname,Filename,Directory,Hash from Files where UserID = '$user' and Hash = '".str_replace("#","",$hashcode)."' limit 1";
 			$result= mysqli_query($connect,$select);
 			while ($row = mysqli_fetch_object($result)) {
-				echo "<li><a href ='index.php?module=file&file=".$row->Hash."'><img  src = './Images/page_white_magnify.png'> ".$GLOBALS["Program_Language"]["open_generic"]."</a></li>";
-				echo "<li><a href ='index.php?module=delete&file=".$row->Hash."'><img  src = './Images/folder_delete.png'> ".$GLOBALS["Program_Language"]["Delete"]."</a></li>";
-				echo "<li><a class = 'delete' href ='index.php?module=list&move=true&file=".$row->Hash."'><img  src = './Images/cut_red.png'> ".$GLOBALS["Program_Language"]["Cut"]."</a></li>";
-				echo "<li><a class = 'delete' href = 'index.php?module=list&copy=true&file=".$row->Hash."'><img src= './Images/page_copy.png'> ".$GLOBALS["Program_Language"]["Copy"]."</a></li>";
-				echo "<li><a class = 'delete'  href ='index.php?module=rename&file=".$row->Hash."'><img  src = './Images/textfield_rename.png'> ".$GLOBALS["Program_Language"]["Rename_title"]."</a></li>";
-				echo "<li><a href ='index.php?module=download&file=".$row->Hash."'><img  src = './Images/arrow_down.png'> ".$GLOBALS["Program_Language"]["Download"]."</a></li>";			
+				echo "<li><a href ='index.php?module=file&file=".$row->Hash."'><span class=\"elusive icon-eye-open glyphIcon\"></span> ".$GLOBALS["Program_Language"]["open_generic"]."</a></li>";
+				echo "<li><a href ='index.php?module=delete&file=".$row->Hash."'><span class=\"elusive icon-remove-sign glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Delete"]."</a></li>";
+				echo "<li><a class = 'delete' href ='index.php?module=list&move=true&file=".$row->Hash."'><span class=\"elusive icon-tag glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Cut"]."</a></li>";
+				echo "<li><a class = 'delete' href = 'index.php?module=list&copy=true&file=".$row->Hash."'><span class=\"elusive icon-tags glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Copy"]."</a></li>";
+				echo "<li><a class = 'delete'  href ='index.php?module=rename&file=".$row->Hash."'><span class=\"elusive icon-file-edit glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Rename_title"]."</a></li>";
+				echo "<li><a href ='index.php?module=download&file=".$row->Hash."'><span class=\"elusive icon-download-alt glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Download"]."</a></li>";			
 			}			
 			mysqli_close($connect);	
 		}
 		echo "<li >$Share_Status</li></ul>";
-		echo "<script>$(function() {\$('#context_menu$count').menu();\$('#context_menu$count').toggle();\$('$hashcode').bind('contextmenu', function(e){var MouseX;var MouseY;e.preventDefault();MouseX = e.pageX;MouseY = e.pageY;$('#context_menu$count').css({'top':MouseY,'left':MouseX});\$('#context_menu$count').toggle('clip', {}, 100 );return false;});";
+		echo "<script>$(function() {\$('#context_menu$count').menu();\$('#context_menu$count').toggle();\$('$hashcode').bind('contextmenu', function(e){var MouseX;var MouseY;e.preventDefault();MouseX = e.clientX ;MouseY = e.clientY;$('#context_menu$count').css({'position':'fixed','top':MouseY,'left':MouseX,'z-index':'10'});\$('#context_menu$count').toggle('clip', {}, 100 );return false;});";
 		echo "\$('#context_menu$count').mouseleave(function(){\$(this).hide();});});";  
 		echo "</script>";
+		echo "<script>
+			$(\"$hashcode\").click(500, function(e){
+				e.preventDefault();
+			
+				var MouseX;var MouseY;
+				e.preventDefault();
+				MouseX = e.clientX ;
+				MouseY = e.clientY;
+				$('#context_menu$count').css(
+				{'position':'fixed','top':MouseY,'left':MouseX});
+				\$('#context_menu$count').toggle('clip', {}, 100 );				
+				return false;
+			});
+		</script>";
 	}
 	/**
 	 * ui_get_cropped_displayname create a JQuery based context menu
@@ -90,12 +104,14 @@
 	 */
 	function ui_get_cropped_displayname($displayname)
 	{
-		
-		if (strlen($displayname) <= $GLOBALS["config"]["Program_Max_Displayname_Length"])
+		$extension = explode(".",$displayname);
+		$ext = $extension[count($extension)-1];
+		if (strlen($displayname)  <= $GLOBALS["config"]["Program_Max_Displayname_Length"] + strlen($ext))
 			return $displayname;
 		else
 		{
-			return substr($displayname,0,-1*(strlen($displayname)-$GLOBALS["config"]["Program_Max_Displayname_Length"]))."...";
+			
+			return substr($displayname,0,-1*(strlen($displayname)-$GLOBALS["config"]["Program_Max_Displayname_Length"]))."[...].".strtolower($ext);
 		}
 	}
 	/**
@@ -103,33 +119,40 @@
 	 * @param $Displayname the long displayname
 	 * @param $Filename the filename (ending with .dat)
 	 * @param $Filename_only the filename of the dir (only short name)
+	 * @param $hash the hashcode of the file
 	 * @return the displaylink for the several cases (listing, copying, moving)
 	 */
-	function ui_get_dirlink($Displayname,$Filename,$Filename_only)
+	function ui_get_dirlink($Displayname,$Filename,$Filename_only,$hash)
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$dirlink = "";
+		$shared = "";
+		$shared = isShared($hash);
+		if ($shared)
+			$shared = " <span class = 'label label-primary'>".$GLOBALS["Program_Language"]["Share_Title"]."</span>";
 		if (isset($_GET["move"]) && isset($_GET["file"]))
-			$dirlink = "<a title = '".$Displayname."' class = 'filelink' href = 'index.php?module=move&dir=".$Displayname."&file=".mysqli_real_escape_string($connect,$_GET["file"])."'>".ui_get_cropped_displayname($Filename_only)."</a>";
+			$dirlink = "<a title = '".$Displayname."'  href = 'index.php?module=move&dir=".$Displayname."&file=".mysqli_real_escape_string($connect,$_GET["file"])."'>".ui_get_cropped_displayname($Filename_only)."$shared</a>";
 		else if (isset($_GET["copy"]) && isset($_GET["file"]))
-			$dirlink = "<a title = '".$Displayname."' class = 'filelink' href = 'index.php?module=copy&dir=".$Displayname."&file=".mysqli_real_escape_string($connect,$_GET["file"])."'>".ui_get_cropped_displayname($Filename_only)."</a>";
+			$dirlink = "<a title = '".$Displayname."' ' href = 'index.php?module=copy&dir=".$Displayname."&file=".mysqli_real_escape_string($connect,$_GET["file"])."'>".ui_get_cropped_displayname($Filename_only)."$shared</a>";
 		else if (isset($_GET["move"]) && isset($_GET["source"]))
-			$dirlink = "<a title = '".$Displayname."' class = 'filelink' href = 'index.php?module=move&source=".$_GET["source"]."&target=".$Displayname."&old_root=".$_GET["old_root"]."'>".ui_get_cropped_displayname($Filename_only)."</a>";
+			$dirlink = "<a title = '".$Displayname."'  href = 'index.php?module=move&source=".$_GET["source"]."&target=".$Displayname."&old_root=".$_GET["old_root"]."'>".ui_get_cropped_displayname($Filename_only)."$shared</a>";
 		else if (isset($_GET["copy"]) && isset($_GET["source"]))
-			$dirlink = "<a title = '".$Displayname."' class = 'filelink' href = 'index.php?module=copy&source=".$_GET["source"]."&target=".$Displayname."&old_root=".$_GET["old_root"]."'>".ui_get_cropped_displayname($Filename_only)."</a>";
+			$dirlink = "<a title = '".$Displayname."'  href = 'index.php?module=copy&source=".$_GET["source"]."&target=".$Displayname."&old_root=".$_GET["old_root"]."'>".ui_get_cropped_displayname($Filename_only)."$shared</a>";
 		else
-			$dirlink = "<a title = '".$Displayname."' class = 'filelink' href = 'index.php?module=list&dir=".$Displayname."'>".ui_get_cropped_displayname(getDisplayName($Filename_only,$Filename))."</a>";
+			$dirlink = "<a title = '".$Displayname."'  href = 'index.php?module=list&dir=".$Displayname."'>".ui_get_cropped_displayname(getDisplayName($Filename_only,$Filename))."$shared</a>";
 		return $dirlink;
 	}
 	/**
 	 * ui_get_modulelink get the file module link
-	 * @param $Displayname the long displayname
+	 * @param $Displayname the long displayname	
 	 * @return the dthe link with the several parameters for several cases
 	 */
 	function ui_get_modulelink($Displayname)
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$modulelink = "";
+		$shared = "";
+	
 		if (isset($_GET["move"]) && isset($_GET["file"]))
 				$modulelink = "module=list&dir=".$Displayname."&move=true&file=".mysqli_real_escape_string($connect,$_GET["file"])."&dir=".$Displayname;
 		else if (isset($_GET["copy"]) && isset($_GET["file"]))
@@ -147,10 +170,10 @@
 	function ui_get_Styles($stylesdir)
 	{
 		$languages = scandir($stylesdir);
-		echo "<select id = 'Style' name = 'Style'>";
+		echo "<select class=\"selectpicker\" id = 'Style' name = 'Style'>";
 		foreach($languages as $entry) {
-			if (is_file($stylesdir.$entry) && endsWith($entry,".css")){
-				echo "<option value='$entry'>".str_replace(".css","",$entry)."</option>";			
+			if (is_file($stylesdir.$entry) && endsWith($entry,".css") && $entry == "Bootstrap.css"){
+				echo "<option value='Styles/$entry'>".str_replace(".css","",$entry)."</option>";			
 			}				
 		}
 		echo "</select>";
@@ -163,11 +186,20 @@
 	function ui_get_Share_Status($hashcode)
 	{
 		$shared = isShared($hashcode);	
-		$Share_Status = "-1";
-		if ($shared)
-			$Share_Status = "<a class = 'shared' href = 'index.php?module=share&file=".$hashcode."&delete=true'>".$GLOBALS["Program_Language"]["Shared"]."</a>";
-		else
-			$Share_Status = "<a href = 'index.php?module=share&file=".$hashcode."&new=true'>".$GLOBALS["Program_Language"]["Share"]."</a>";
+		$Share_Status = "-1";		
+		if ($shared){
+			$Share_Status = str_replace(
+			array("##hash","##shared"),
+			array("$hashcode",$GLOBALS["Program_Language"]["Shared"]),
+			$_SESSION["template"]["Status_template_shared"]
+			);	}				
+		else{
+			$Share_Status = str_replace(
+			array("##hash","##share"),
+			array("$hashcode",$GLOBALS["Program_Language"]["Share"]),
+			$_SESSION["template"]["Status_template_share"]
+			);	
+		}
 		return $Share_Status;
 	}
 	function ui_enable_keyhooks()
@@ -230,8 +262,43 @@
 	 */
 	function ui_create_query_title($query)
 	{
-		echo "<ul id = 'broadcrumb'>";
-		echo "<li ><a href= '#'><img src = './Images/folder_magnify.png'>".$GLOBALS["Program_Language"]["Search_to"]." \"".$query."\""."</a></li>";
-		echo "</ul>";
+		echo "<ol class = 'breadcrumb'>";
+		echo "<li ><a href= '#'><span class=\"elusive icon-search alt glyphIcon\"></span>".$GLOBALS["Program_Language"]["Search_to"]." \"".$query."\""."</a></li>";
+		echo "</ol>";
+	}
+	/**
+	 * prints a list of languages
+	 * @param $languages the directory containing the languages
+	 */
+	function ui_get_Langs($languages)
+	{
+		$languages = scandir($languages);	
+		foreach($languages as $entry) {
+			if (endsWith($entry,".lng") ){
+				echo "<option >".str_replace(".lng","",$entry)."</option>";			
+			}			
+		}		
+	}	
+	/**
+	*prints a message
+	*/ 
+	function ui_get_messages()
+	{
+		if (isset($_GET["message"]) && isset($GLOBALS["Program_Language"][$_GET["message"]]))
+		{		
+			$message = $_GET["message"];
+			$image = "./Images/error.png";			
+			if (isset($_GET["img"]))
+			$image = "./Images/".$_GET["img"].".png";			
+			if (strpos($message,"success") === false){
+			
+				echo "<div class='alert alert-danger'>".$GLOBALS["Program_Language"][$message]."<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button></div>";
+			}	
+			else
+			{
+				echo "<div class='alert alert-success'>".$GLOBALS["Program_Language"][$message]."<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button></div>";
+				
+			}	
+		}
 	}
 ?>

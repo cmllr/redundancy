@@ -1,39 +1,39 @@
-Redundancy 1.9.9 Changelog<br>
-<hr>
-<br>Bugfixes<br>
-<hr width = "10%"><br>
-- [#1]Fixed a bug which avoided to share a folder<br>
-- [#2]Fixed a wrong display of the logout menu when scrolling<br>
-- [#3] Fixed title display bug <br>
-- [#4] Fixed a bug which caused a wrong usage of the user settings<br>
-- [#5] Fixed a display bug of the menu when JQuery is not enabled<br>
-- [#6] Added missing translation<br>
-- [#7] Fixed a bug which avoided to display Redundancy in Trident powered browsers and on some Webkit powered browsers, like Midori<br>
-- [#8] Added bugfix in fs_file_exists (experimental bugfix)<br>
-- [#27] Fixed a bug that the informations about client and MimeType are lost when you tried to copy a file<br>
-<br>Security Bugfixes<br>
-<hr width = "10%"><br>
-- [#9] Fixed a sql injection vulnerability at the user registration<br>
-<br>Feature additions<br>
-<hr width = "10%"><br>
-- [#10] Added a new feature: After a share addition the file will be selected again (HTML anchor)<br>
-- [#11] Replaced messagebox informations with light notifications (http://www.vicreative.nl/Projects/Notify)<br>
-- [#12] Replaced sidebar fade in/out with JQuery Module. No- [#2]JQuery Fallback still available<br>
-- [#13] Added search module. Can be activated with STRG + F<br>
-- [#14] Added quick access for upload and dir create. Can be used with STRG + U and STRG + D<br>
-- [#15] http://commons.wikimedia.org/wiki/File:AnimatedStop.gif added.<br>
-- [#16] Added thumbnail function to increase load speed<br>
-- [#17] Added user settings function<br>
-- [#18] Added Program_Enable_User_Settings to control the enable or disable the user settings<br>
-- [#19] Added warning if JavaScript is not supported or enabled.<br>
-- [#20] Added warning if Sharelink is not valid<br> 
-- [#21] Added a web administration panel to administrate storage, role and passwords <br> 
-- [#22] Added new setting Program_Enable_Web_Administration to control the web administration panel<br>
-- [#23] Added a information if the recovering of passwords is disabled<br>
-- [#24] Added a page for mainteance mode<br>
-- [#25] Added further redirection at "list.inc.php" if the user is not logged in <br>
-- [#28] Added a function to check if a user accessed a include file directly (will abort execution) <br>
-- [#29] Added Program_Enable_Logging to control logging of the program<br>
-<br>Features removed<br>
-<hr width = "10%"><br>
-- [#26] Removed Program_Enable_Action_Buttons
+<h1>Redundancy 1.9.10 Changelog</h1>
+<h2>Overview</h2> 
+<span class="label label-success">14 Bugfixes</span>
+<span class="label label-warning">1 Security Bugfixes</span>
+<span class="label label-info">13 Feature Additions</span>
+<span class="label label-important" style="background:#b94a48">1 Feature removed</span>
+<h2>Bugfixes</h2>
+- Re-Added the branding at the registration<br>
+- Fixed a bug when a directory was renamed and the name existed already<br>
+- Fixed a bug which allowed to create directories with empty names<br>
+- Fixed a bug which redirected the user to a non existant directory when the program should be installed<br>
+- Fixed a bug which blocked the playing of a multimedia file<br>
+- Fixed a bug caused a strange action of the administration panel (issue #15)<br>
+- Fixed a bug which blocked the usage of the administration panel (issue #16)<br>
+- Fixed a bug giving wrong feedback at the file upload (issue #17)<br>
+- Fixed a bug connected to issue #17 at the file upload<br>
+- Fixed a translation bug (issue #14)<br>
+- Fixed a bug to get an empty message when the get parameter "message" is incorrect<br>
+- Fixed a bug causing a wrong download filename (issue #20)<br>
+- Fixed a bug allowing unlimited filename length (added Program_FileSystem_Name_Max_Length to control it)<br>
+- Fixed a bug causing an error message in the webserver's log files containing the variable Program_Dir is not known<br>
+<h2>Security Bugfixes</h2>
+- Fixed a bug which allowed it to see the properties of a file if the hash was known<br>
+<h2>Feature additions</h2>
+- Added better feedback at the user registration<br>
+- Added better feedback if registration is disabled<br>
+- Added a loader using http://upload.wikimedia.org/wikipedia/commons/d/de/Ajax-loader.gif<br>
+- Applied a better stylesheet for the context menu<br>
+- Register and recover links are now only displayed if the option is enabled<br>
+- The filename or directory name is now displayed at the delete confirm dialog (issue #12)<br>
+- Users can be created with the administration panel (issue #13)<br>
+- Users can be enabled or disabled with the administration panel<br>
+- Added a list of last changed files and folders (issue #8)<br>
+- Added a new bootstrap based theme<br>
+- Added a mobile view<br>
+- Added setting "use_buffer" to use the object buffer of php<br>
+- Added setting "Program_Share_Link_Length" to control the length of share links (default: 7 chars)<br>
+<h2>Features removed</h2>
+- Removed support vor <b>any</b> theme before 1.9.10<br>

@@ -1,25 +1,33 @@
-<div class ="contentWrapper">
+<ul class="nav nav-tabs" id="dataTabs">
+<li >
+	<a href="#Administration" data-toggle="tab">Administration</a>
+</li>
+<li>
+	<a href="#Status" data-toggle="tab">Status</a>
+</li>
+<li>
+	<a href="#Edit" data-toggle="tab">Edit</a>
+</li>
+<li>
+	<a href="#New" data-toggle="tab">New</a>
+</li>
+</ul>
 <script>
-$(document).ready(function(){
-  $("#expander1_content").hide()
-  <?php if (isset($_POST["username_info"]) == false): ?>
-  $("#expander2_content").hide()  
-  <?php endif; ?>
-  $("#expander3_content").hide()
-  $('#expander1').click(function(){
-		$("#expander1_content").slideToggle(200); 
-    });	
-	$('#expander2').click(function(){
-		$("#expander2_content").slideToggle(200); 
-    });		
-	$('#expander3').click(function(){
-		$("#expander3_content").slideToggle(200); 
-    });	
+$(function(){
+	$('#dataTabs li:eq(0) a').tab('show');
 });
 </script>
-<form method="POST" action="index.php?module=admin" >
-<a id = "expander1" href ="#">System status</a>
-<div id = "expander1_content">
+<div class="tab-content" id ="tab-content">
+<div class="tab-pane" id="Administration">
+<div class="panel panel-default">
+<div class="panel-body">
+Add admin remarks here	
+</div>
+</div>
+</div>
+<div class="tab-pane" id="Status">
+<div class="panel panel-default">
+<div class="panel-body">
 <?php
 	
 	/**
@@ -52,7 +60,7 @@ $(document).ready(function(){
 	//TODO: Implement admin check
 	if ($_SESSION["role"] == 0 && is_admin() && $GLOBALS["config"]["Program_Enable_Web_Administration"] == 1)
 	{
-		echo "<h2>".$GLOBALS["Program_Language"]["Admin_Panel"]."</h2><br>";
+		//echo "<h2>".$GLOBALS["Program_Language"]["Admin_Panel"]."</h2>";
 		include "health.inc.php";
 		$snapshotcount = 0;
 		$last = "-";
@@ -61,20 +69,15 @@ $(document).ready(function(){
 				if ($file != "." && $file != ".." && endsWith($file,".zip") )
 				{		
 					$snapshotcount++;
-					$last = date ("F d Y H:i:s", filemtime($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Snapshots_Dir"]."/".$file));
+					$last = date ("H:i:s d.m.y", filemtime($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Snapshots_Dir"]."/".$file));
 				}
 			}		
 		}
 		closedir($handle);	
 		if ($snapshotcount == 0)
-			echo "<img src = './Images/error.png'>0 Snapshots<br>";
+			echo "<span class=\"successValue elusive icon-remove glyphIcon\"></span>0 Snapshots<br>";
 		else
-			echo "<img src = './Images/accept.png'>".$snapshotcount ." Snapshot(s) (".$last.")<br>";	
-		echo "<br><hr><img src = './Images/accept.png' alt = 'not ok'>Feature needed <b>or</b> security relevant feature is disabled<br>";
-		echo "<img src = './Images/information.png' alt = 'not ok'>Security relevant feature is enabled<br>";
-		echo "<img src = './Images/error.png' alt = 'not ok'>Possible security problem<br>";
-		echo "<img src = './Images/exclamation.png' alt = 'not ok'>Problem<br>";
-		echo "<br><hr><br><a href = '?module=snapshot'>Run Snapshot</a>";
+			echo "<span class=\"successValue elusive icon-ok glyphIcon\"></span>".$snapshotcount ." Snapshot(s) (".$last.")<br>";	
 	}		
 	else
 	{
@@ -82,49 +85,67 @@ $(document).ready(function(){
 		exit;
 	}
 	echo "<br>";
-	echo "</div>";
 ?>
-<br> 
-<a id = "expander2" href ="#">User management</a>
-<div id ="expander2_content">
-<?php if (isset($_POST["username_info"])): ?>
-
-<?php
-	
-		if (isExisting("",$_POST["username_info"]) == false)
-		{
-			echo "No such user";
-			exit;
+<a type="a" href = 'index.php?module=snapshot' class="btn btn-default"><span class="elusive icon-camera glyphIcon"></span>Snapshot</a>
+</div>
+</div>
+</div>
+<div class="tab-pane fade" id="Edit">
+<div class="panel panel-default">
+<div class="panel-body">
+<form method="POST" action="index.php?module=admin" >
+<?php if (isset($_POST["username_info"])) : ?>
+<script>
+$(function(){
+	$('#dataTabs li:eq(2) a').tab('show');
+});
+</script>
+<?php	
+		if (isset($_POST["username_info"])){
+			if (isExisting("",$_POST["username_info"]) == false)
+			{
+				echo "No such user";
+				exit;
+			}		
+			if (isset($_POST["role"]) == false )
+			{			
+				echo "<input type=\"text\" name=\"username_info\" value=\"".$_POST["username_info"]."\" READONLY/><br>";
+				echo "<p>".$GLOBALS["Program_Language"]["role"];
+				echo " <input type=\"radio\" name=\"role\" value=\"0\"";
+				if (user_get_role($_POST["username_info"]) == 0)
+					echo "CHECKED />";
+				else
+					echo "/>";
+				echo "Administrator ";
+				echo "<input type=\"radio\" name=\"role\" value=\"1\"";
+				if (user_get_role($_POST["username_info"]) == 1)
+					echo "CHECKED />";
+				else
+					echo "/>";
+				echo "User ";
+				echo "<input type=\"radio\" name=\"role\" value=\"3\"";
+				if (user_get_role($_POST["username_info"]) == 3)
+					echo "CHECKED />";
+				else
+					echo "/>";
+				echo "Guest ";	
+				echo "</p>";
+			
+				echo "<p><input type=\"checkbox\" name=\"lock\"";
+				if (user_get_enabled($_POST["username_info"]) == 1)
+					echo " checked=\"checked\"/> ".$GLOBALS["Program_Language"]["enabled_user"]."</p>";
+				else
+					echo "/> ".$GLOBALS["Program_Language"]["enabled_user"]."</p>";
+				//TODO: bootstrap
+				//echo "<br><a type=\"a\" href = 'index.php?module=admin#Edit 'class=\"btn btn-default\"><span class=\"elusive icon-user glyphIcon\"></span>Edit Other</a>";
+			}			
+			if (isset($_POST["role"]) )
+			{				
+				user_save_administration();			
+			}
 		}		
-		if (isset($_POST["role"]) == false )
-		{			
-			echo "<input type=\"text\" name=\"username_info\" value=\"".$_POST["username_info"]."\" READONLY/><br>";
-			echo "<p>".$GLOBALS["Program_Language"]["role"];
-			echo " <input type=\"radio\" name=\"role\" value=\"0\"";
-			if (user_get_role($_POST["username_info"]) == 0)
-				echo "CHECKED />";
-			else
-				echo "/>";
-			echo "Administrator ";
-			echo "<input type=\"radio\" name=\"role\" value=\"1\"";
-			if (user_get_role($_POST["username_info"]) == 1)
-				echo "CHECKED />";
-			else
-				echo "/>";
-			echo "User ";
-			echo "<input type=\"radio\" name=\"role\" value=\"3\"";
-			if (user_get_role($_POST["username_info"]) == 3)
-				echo "CHECKED />";
-			else
-				echo "/>";
-			echo "Guest ";	
-			echo "</p>";
-		}
-		if (isset($_POST["role"]) && $_POST["delete"] != "Yes")
-		{				
-			user_save_administration();			
-		}			
 ?>
+ 
   <?php echo $GLOBALS["Program_Language"]["Size"];?>
  <input name="storage" value="<?php
 	echo user_get_storage($_POST["username_info"]);
@@ -138,19 +159,67 @@ $(document).ready(function(){
 <br>
 <input type=submit name=submit value="<?php echo $GLOBALS["Program_Language"]["Save"];?>">
 <br>
-<a id = "expander3" href ="#">Dangerious!</a>
-<div id = "expander3_content">
+</form>
 <form method="POST" action="index.php?module=moduser&task=delete&user=<?php echo $_POST["username_info"]?>">
 <?php echo $GLOBALS["Program_Language"]["user_delete_admin"];?><input type="submit" value="<?php echo $GLOBALS["Program_Language"]["Delete"]; ?>" />
 </form>
-</div>
-</div>
-</form>
-<?php endif; ?>
+<?php endif;?>
 <?php if (isset($_POST["username_info"]) == false): ?>
-<form method="POST" action="index.php?module=admin" align = "center">
-<tag>Username</tag> <input name="username_info">
-<input type=submit name=submit value="<?php echo $GLOBALS["Program_Language"]["get_user_info"];?>">
+<form role="form" method="POST" action="index.php?module=admin">
+  <div class="form-group">
+    <label for="inputUsername"><?php echo $GLOBALS["Program_Language"]["get_user_info"];?></label>
+      <div class="input-group" id="inputUsername">
+  <span class="input-group-addon">User</span>
+  <input name="username_info" type="text" class="form-control" placeholder="Benutzername">
+  <span class="input-group-btn">
+        <button class="btn btn-default" type="submit"><?php echo $GLOBALS["Program_Language"]["get_user_info"];?></button>
+      </span>
+</div>
+  </div>
 </form>
+<?php endif;?>	
+</div>
+</div>
+</div>
+<div class="tab-pane fade" id="New">
+<div class="panel panel-default">
+<div class="panel-body">
+<?php if (isset($_POST["user_create"],$_POST["pass_create"])) :?>
+<script>
+$(function(){
+	$('#dataTabs li:eq(3) a').tab('show');
+});
+</script>
 <?php endif; ?>
+<?php
+	if (isset($_POST["user_create"],$_POST["pass_create"])){
+		
+		$pEmail = $_POST["user_create"];
+		$pPass = $_POST["pass_create"];
+		$pPassRepeat = $pPass;
+		$pSystem = 1;
+		if (registerUser($pEmail,$pPass,$pPassRepeat,$pSystem) == true)
+		{
+			header("Location: index.php?module=admin&message=user_create_admin_success");
+		}
+		else
+		{
+			header("Location: index.php?module=admin&message=user_create_admin_fail");
+		}
+	}
+?>
+<form role="form" method="POST" action="index.php?module=admin">
+  <div class="form-group">
+    <label for="inputUsername"><?php echo $GLOBALS["Program_Language"]["Username"]; ?></label>
+    <input type="text" name="user_create" class="form-control" id="inputUsername" placeholder="<?php echo $GLOBALS["Program_Language"]["Username"]; ?>">
+  </div>
+  <div class="form-group">
+    <label for="inputPassword"><?php echo $GLOBALS["Program_Language"]["Password"]; ?></label>
+    <input type="password" name="pass_create" class="form-control" id="inputPassword" placeholder="<?php echo $GLOBALS["Program_Language"]["Password"]; ?>">
+  </div>
+  <button type="submit" class="btn btn-default"><?php echo $GLOBALS["Program_Language"]["Save"];?></button>
+</form>
+</div>
+</div>
+</div>
 </div>

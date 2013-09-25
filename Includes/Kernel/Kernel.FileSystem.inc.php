@@ -32,7 +32,26 @@
 			if (isset($_SESSION) == false)
 				session_start();	
 			$mimetype = get_Mime_Type($filename);
-			if (strpos($mimetype,"image") !== false || $mimetype == "image/png" || $mimetype == "image/jpg" || $mimetype == "image/jpeg" || $mimetype == "image/bmp" )
+			if ((strpos($mimetype,"image") !== false  && strpos($mimetype,"svg") ===  false) || $mimetype == "image/png" || $mimetype == "image/jpg" || $mimetype == "image/jpeg" || $mimetype == "image/bmp" )
+				return true;
+			return false;
+		}
+		catch (Exception $e){
+			return false;
+		}
+	}
+	/*
+	 * fs_isImage determines if a file is an vector graphics
+	 * @param $filename the full filename ({Random}.dat)
+	 * @return If the file is an vector graphics
+	 */
+	function fs_isVector($filename)
+	{	
+		try{
+			if (isset($_SESSION) == false)
+				session_start();	
+			$mimetype = get_Mime_Type($filename);
+			if (strpos($mimetype,"/svg") !== false )
 				return true;
 			return false;
 		}
@@ -206,6 +225,22 @@
 		return "0%";
 			else
 		return round(100/($storage/$storage_used),2)."%";
+	}	
+	/**
+	 * fs_get_Percentage get the percents of used space	
+	 * @return a string containg "x"
+	 */
+	function fs_get_Percentage_2()
+	{
+		if (isset($_SESSION) == false)
+			session_start();
+		$storage = $_SESSION["space"];		
+		$storage = $storage * 1024 * 1024;
+		$storage_used = getUsedSpace($_SESSION["user_name"]);
+		if ($storage_used == 0)
+		return "0%";
+			else
+		return round(100/($storage/$storage_used),2);
 	}	
 	/**
 	 * isShared determines if a file is already shared
@@ -400,7 +435,8 @@
 			session_start();
 		$filename = "";
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and Hash = '$hash' limit 1") or die("Error 025: ".mysqli_error($connect));
+		$hashSafe = mysqli_real_escape_string($connect,$hash);
+		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and Hash = '$hashSafe' limit 1") or die("Error 025: ".mysqli_error($connect));
 		while ($row = mysqli_fetch_object($result)) {
 			$filename = $row->Displayname;
 		}			
@@ -776,7 +812,7 @@
 			session_start();
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$dir = mysqli_real_escape_string($connect,$dirname);
-		$owner_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);	
+		$owner_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);			
 		$result = mysqli_query($connect,"Select * from Files  where Directory = '$dir' and UserID = '".$owner_id."'") or die("Error: 010 ".mysqli_error($connect));
 	
 		while ($row = mysqli_fetch_object($result)) {
@@ -789,10 +825,13 @@
 			if ($row->Filename == $row->Displayname)
 			{
 				//Process dir delete recursively
-				deleteDir($row->Filename);			
+				echo "found dir ".$row->Filename."<br>";
+				deleteDir($row->Filename);				
 			}
 			else
 			{
+				//Process dir delete recursively
+				echo "found file ".$row->Displayname."<br>";
 				deleteFile($localfilename,$dir,$hash);	
 			}
 		}
@@ -801,6 +840,7 @@
 		//Delete the directory itself
 		mysqli_query($connect,"delete from `Files` where   UserID = '".$_SESSION['user_id']."' and Filename = '$dir' and Displayname = '$dir'") or die("Error: 012 ".mysqli_error($connect));	
 		//close connection
+		echo "dir $dir deleted";
 		mysqli_close($connect);
 	}
 	/**
@@ -830,7 +870,7 @@
 			session_start();
 		echo "Starting snapshotting at ".date("D M j G:i:s T Y", time())." launched by ".$_SESSION["user_name"]."<br><hr>";
 		$filecount = 0;
-		$date = date("D M j G:i:s T Y", time());		
+		$date = date("H:i:s d.m.y", time());		
 		$zipfile = new ZipArchive();	
 		$fullPath = $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Snapshots_Dir"]."/".$date.".zip";
 		if ($zipfile->open($fullPath, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE)!==TRUE) {
@@ -1039,7 +1079,7 @@
 	 */
 	function fs_get_imagepath($Displayname,$Filename,$MimeType,$Hash,$thumb=1)
 	{
-		$imagepath = './Images/page.png';	
+		$imagepath = './Images/mimetypes/page.png';	
 		
 		if ($Displayname != $Filename){									
 			if (fs_isImage($Filename) && $GLOBALS["config"]["Program_Display_Icons_if_needed"] == 1)
@@ -1069,4 +1109,109 @@
 		}
 		return $imagepath;
 	}	
+	/**
+	 * getUsedSpace get the user's storage	
+	 * @return the used space in byte
+	 */
+	function fs_get_storage_systemwide()
+	{			
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$amount_in_Byte  = 0;		
+		$result = mysqli_query($connect,"Select * from Files")  or die("Error 023: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($result)) {
+			$amount_in_Byte = $amount_in_Byte + $row->Size;			
+		}
+		mysqli_close($connect);		
+		return $amount_in_Byte ;
+	}
+	/**
+	 * get the last changes of the user's storage
+	 * @param $changes the amount of changes
+	
+	 */
+	function fs_list_last_changes($changes = 10)
+	{
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$changes = mysqli_real_escape_string($connect,$changes);
+		if (isset($_SESSION) == false)
+			session_start();
+		$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		$result = mysqli_query($connect,"Select * from Files where UserID = '$userID'")  or die("Error 023: ".mysqli_error($connect));
+		$array = array ();
+		while ($row = mysqli_fetch_object($result)) {		
+			$datum = strtotime($row->Uploaded);
+			$array[$row->Displayname] = date("m.d.y",$datum);				
+		}		
+		arsort($array);
+		$i = 0;
+		echo   "<script>
+		  $(function() {
+			$( \"#accordion\" ).accordion();
+		  });
+		  </script>";
+		echo "<div id=\"accordion\">";
+		$current_data = "";
+		foreach($array as $key => $val) {
+			
+			if ($current_data != $val){
+				if ($i != 0)
+					echo "</ul></div>";
+				$current_data = $val;
+				$parts = explode(".",$val);
+				echo "<h3>".$parts[1].".".$parts[0].".".$parts[2]."</h3>";
+				echo "<div>";
+				echo "<ul>";
+			}				
+		
+			echo "<li>$key</li>";
+			$i++;
+			if ($i >= $changes)
+				break;
+		}
+		if (count($array) != 0)
+			echo "</div>";
+		echo "</div>";
+		mysqli_close($connect);		
+	}
+	
+	function fs_transform_timestamp()
+	{
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$result = mysqli_query($connect,"Select * from Files")  or die("Error 023: ".mysqli_error($connect));
+		$array = array ();
+		while ($row = mysqli_fetch_object($result)) {		
+			$datum = new DateTime($row->Uploaded);
+			$datum_string = $datum->Format("d.m.y H:i:s");	
+			$query = mysqli_query($connect,"Update Files SET Uploaded = '$datum_string' where Hash = '".$row->Hash."'");
+			echo "Transformed ".$row->Displayname.".<br>";
+		}	
+		mysqli_close($connect);				
+	}
+	function fs_get_stats()
+	{
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		$result = mysqli_query($connect,"Select * from Files where UserID = '$userID'")  or die("Error 023: ".mysqli_error($connect));
+		$array = array ();			
+		while ($row = mysqli_fetch_object($result)) {
+			if ($row->Filename != $row->Displayname){
+				
+				$extension = explode(".",$row->Displayname);				
+				$extension = $extension[count($extension)-1];
+				if (isset($array[$extension]) == false)
+				{
+					$array[$extension] = 1;
+				}
+				else
+				{
+					$array[$extension]++;
+				}
+			}
+		}			
+		foreach($array as $key => $val)
+		{
+			echo "['.".$key."',$val],";
+		}
+		mysqli_close($connect);	
+	}
 ?>

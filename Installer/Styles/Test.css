@@ -1,0 +1,151 @@
+*
+{
+	font-family: Arial
+}
+
+body
+{
+	margin: 0;
+	padding: 0;
+}
+
+div
+{
+	//border: 1px solid black;
+}
+a
+{
+	color: black;
+	border-bottom: 1px solid dotted;
+}
+
+a:hover
+{
+	color: white;
+	background: #045FB4;
+}
+
+#wrapper
+{
+	width: 1200px;
+	margin: auto;
+	overflow: hidden;
+	margin-top: 20px;
+}
+
+#statusbar
+{
+	margin: 0;
+	float: left;
+	position: fixed;
+	width: 240px;
+}
+
+#statusbar ul
+{
+	padding: 0;
+}
+
+#statusbar ul li, #statusbar ul li a
+{
+	list-style-type: none;
+	color: black;
+	text-decoration: none;
+}
+
+#statusbar ul li a
+{
+	display: block;
+	padding: 5px;
+}
+
+#statusbar ul li a:hover
+{
+	background: #045FB4;
+	color: white;
+	text-decoration: none;
+}
+
+#statusbar ul li a img
+{
+	width: 16px;
+	height: 16px;
+	margin-right: 5px;
+}
+
+#sidebar
+{
+	margin: 0;
+	float: right;
+	padding-top: 15px; /*nur wegen Workaround*/
+	width: 200px;
+}
+
+#sidebar a
+{
+	display: block;
+}
+
+#content
+{
+	margin-left: 245px;
+	margin-right: 205px;
+}
+
+/*Workaround!*/
+#accountname
+{
+    position: absolute;
+    top: 0;
+    right: -975px;
+}
+
+#broadcrumb
+{
+	padding: 5px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+#broadcrumb li
+{
+	display: inline;
+	list-style-type: none;
+}
+
+#filetable
+{   
+	margin-top: 40px;
+	margin-left: auto;
+	margin-right: auto;
+	border-collapse: collapse;
+}
+
+#filetable td
+{
+	padding: 10px;
+}
+
+#filetable img
+{
+	width: 16px;
+	height: 16px;
+}
+
+.filetype0
+{
+	background: rgb(240,240,240);
+}
+
+#version
+{
+	//display: inline-block;
+	//float: right;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+	color: lightgray;
+}

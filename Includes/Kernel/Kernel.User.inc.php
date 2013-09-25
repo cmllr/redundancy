@@ -113,11 +113,17 @@
 	 * @param $pEmail the email
 	 * @param $pPass the password
 	 * @param $pPassRepeat the password repated
+	 * @param $pSystem if the registration is done via the system
 	 * @return the result of the registraiton (success/fail)
 	 */
-	function registerUser($pEmail,$pPass,$pPassRepeat)
+	function registerUser($pEmail,$pPass,$pPassRepeat,$pSystem = 0)
 	{
-		$pUser = getNewUserName($pEmail);
+		if ($pSystem == 0)
+			$pUser = getNewUserName($pEmail);
+		else
+		{
+			$pUser = $pEmail;			
+		}
 		//Is the password and the repeated the same?
 		if (strpos("<",$pUser) !== false || strpos("<",$pEmail) !== false || strpos("<",$pPass) !== false || strpos("<",$pPassRepeat) !== false)
 			return false;
@@ -145,9 +151,14 @@
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";			
 		$user = mysqli_real_escape_string($connect,$pUser);
 		$pass = mysqli_real_escape_string($connect,$pPass);	
-		$email = mysqli_real_escape_string($connect,$pEmail);
-		if (strpos($email,"@") === false || strpos($email,".") === false)
-			return false;
+		if ($pSystem == 0)
+			$email = mysqli_real_escape_string($connect,$pEmail);
+		else
+			$email = $user."@localhost";
+		if ($pSystem == 0){
+			if (strpos($email,"@") === false || strpos($email,".") === false)
+				return false;
+		}
 		$salt = getRandomKey(200);
 		$safetypass = hash('sha512',$pass.$salt."thehoursedoesnoteatchickenandbacon");	
 		$registered= date("D M j G:i:s T Y",time());
@@ -159,6 +170,8 @@
 			$enabled = 0;		
 				else 
 			$enabled = 1;
+		if ($pSystem == 1)
+			$enabled = 1;
 		if ($passOK == true && $free == true){
 			$ergebnis = mysqli_query($connect,"Insert into Users (User, Email,Password,Salt,Registered,Role,Storage,Enabled,API_Key,Enable_API) Values('$user','$email','$safetypass','$salt','$registered','$role',$storage,$enabled,'$api_key',1)") or die("Error: 019 ".mysqli_error($connect));
 		
@@ -167,7 +180,7 @@
 			return false;
 		//Send a activation mail when the account is not activated automatically	
 		if ($ergebnis == true){
-			if ($GLOBALS["config"]["User_Registration_AutoDisable"] == 1  )
+			if ($GLOBALS["config"]["User_Registration_AutoDisable"] == 1 && $pSystem != 1 )
 				sendMail($email,1,$user,"Redundancy",$GLOBALS["config"]["User_Activation_Link"]."&email=".$email,"Redundancy");
 			return true;
 		}
@@ -391,8 +404,10 @@
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
 		foreach($_SESSION as $key => $value)
 		{			
-		  if ($value != mysqli_real_escape_string($connect,$value))
-			$found = true;
+			if ($key != "template"){
+			  if ($value != mysqli_real_escape_string($connect,$value))
+				$found = true;
+			}
 		}		
 		if ($found == true){
 			banUser(getIP(),$_SERVER['HTTP_USER_AGENT'],"SQLi");
@@ -505,7 +520,7 @@
 		$role = "";
 		$user = "";
 		$storage = 0;
-		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
 		if (is_admin())
 		{
 			if (isset($_POST["role"]) && $_POST["username_info"] != "")
@@ -520,7 +535,11 @@
 					setNewPassword($user,$newpass,$newpass,0,1);
 				}				
 				user_set_role($user,$role);
-				log_event("info","user_save_administration","administrated a user");
+				if (isset($_POST["lock"]))
+					user_set_enabled($user,true);
+				else
+					user_set_enabled($user,false);
+				log_event("info","user_save_administration","new role $role, new storage $storage, new pass $newpass");
 				header("Location: index.php?module=admin&message=user_changes_success");
 			}				
 		}				
@@ -534,20 +553,23 @@
 	{
 		$used_storage =getUsedSpace($user); 
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
-		$ergebnis = mysqli_query($connect,"Select Storage from  Users where User = '$user' or Email = '$user' limit 1") or die("Error: 018 ".mysqli_error($connect));	
+		$ergebnis = mysqli_query($connect,"Select Storage from  Users where User = '$user' limit 1") or die("Error: 018 ".mysqli_error($connect));	
+		$res = -1;
 		while ($row = mysqli_fetch_object($ergebnis)) {		
 			$res = $row->Storage;		
 		}	
+	
+		$used_storage =  $used_storage/1024/1024;			
 		if ($res != $newstorage){
 			if ($newstorage > $used_storage )
 			{
-				$ergebnis = mysqli_query($connect,"Update Users set Storage = '$newstorage' where User = '$user' or Email= '$user'") or die("Error: 018 ".mysqli_error($connect));			
-				
+				$ergebnis = mysqli_query($connect,"Update Users set Storage = $newstorage where User = '$user'") or die("Error: 018 ".mysqli_error($connect));	
 			}
 			else
-			{
-				mysqli_close($connect);	
-				header("Location: index.php?module=admin&message=user_changes_failed");
+			{			
+				mysqli_close($connect);					
+				header("Location: index.php?module=admin&message=storage_set_fail");
+				exit;
 			}
 		}
 		mysqli_close($connect);	
@@ -591,11 +613,14 @@
 			echo "<br>Deleteing user ...";
 			mysqli_query($connect,"Delete from Users where ID = '$userID'");
 			echo "<br>..Done";
-		header("Location: ?message=user_changes_success");			
+			header("Location: ?message=user_delete_success");			
+			exit;
 		}		
 		else
 		{
-			header("Location: ?message=user_changes_failed");
+			$changes_failed = true;
+			header("Location: ?message=user_delete_fail");
+			exit;
 		}
 		mysqli_close($connect);	
 	}
@@ -615,5 +640,40 @@
 		}		
 		mysqli_close($connect);	
 		return $id;
+	}
+	/**
+	 * gets the user status if enabled
+	 * @param $username the username or Email
+	 */
+	function user_get_enabled($username)
+	{
+		$status = -1;
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$userID = mysqli_real_escape_string($connect,$username);	
+		$files_query = mysqli_query($connect,"Select * from Users where User = '$userID'  or Email = '$username' limit 1") or die(mysqli_error($connect)) ;
+		
+		while ($row = mysqli_fetch_object($files_query)) {
+				$status = $row->Enabled;	
+		}		
+		mysqli_close($connect);	
+		return $status;
+	}
+	/**
+	 * gets the user status if enabled
+	 * @param $user the username or Email
+	 * @param $enabled the status as boolean
+	 */
+	function user_set_enabled($user,$enabled)
+	{	
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$userID = mysqli_real_escape_string($connect,$user);	
+		if ($enabled == true)
+			$en = 1;
+		else
+			$en = 0;
+		$files_query = mysqli_query($connect,"Update Users set Enabled = '$en' where User = '$userID' or Email = '$userID' limit 1") or die(mysqli_error($connect)) ;
+		
+		mysqli_close($connect);	
+		
 	}
 ?>

@@ -25,7 +25,7 @@
 	//start a session if needed
 	if (isset($_SESSION) == false)
 			session_start();
-			
+	$success = false;
 	//only proceed if a post parameter is set
 	if ($_SESSION["role"] != 3  )
 	{		
@@ -38,14 +38,21 @@
 					$source = mysqli_real_escape_string($connect,$_GET["source"]);
 					$target = mysqli_real_escape_string($connect,$_POST["newname"]);
 					$old_root= mysqli_real_escape_string($connect,$_GET["old_root"]);
-					createDir($old_root,$target);
-					$Dir_ID = getDirectoryID($source);
-					//TODO: DIR renmae
-					//Step 1 create new dir (new name) - check
-					moveContents($source,$_SESSION["currentdir"].$target);
-					//Step 2 move contents -check					
-					//STep 3 delete old dir
-					deleteDir($source);
+					if (fs_file_exists($target,$old_root) == false && strlen($target) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]){
+						createDir($old_root,$target);
+						$Dir_ID = getDirectoryID($source);
+						//TODO: DIR renmae
+						//Step 1 create new dir (new name) - check
+						moveContents($source,$_SESSION["currentdir"].$target);
+						//Step 2 move contents -check					
+						//STep 3 delete old dir
+						deleteDir($source);
+						$success = true;
+					}
+					else
+					{
+						$success = false;
+					}
 				}
 				else{
 					//include the dataBase file
@@ -55,8 +62,10 @@
 						$hash = mysqli_real_escape_string($connect,$_GET["file"]);
 					else
 						$hash = mysqli_real_escape_string($connect,$_POST["file"]);
-					if (fs_file_exists($newname,$_SESSION["currentdir"]) == false) 
+					if (fs_file_exists($newname,$_SESSION["currentdir"]) == false && strlen($newname) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]) {
 						$insert = mysqli_query($connect,"Update Files Set Displayname='$newname' where Hash ='$hash'") or die("Error: 017 ".mysqli_error($connect));	
+						$success = true;
+					}				
 				}
 				if (isset($_POST["api_key"]))
 				{		
@@ -64,10 +73,16 @@
 					exit;		
 				}
 				else{	
-					if ($GLOBALS["config"]["Program_Debug"] != 1){
-						header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]);
-						exit;
+					if ($GLOBALS["config"]["Program_Debug"] != 1){						
+						if ($success == true){
+							header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=rename_success");
+						}
+						else
+						{
+							header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=rename_fail");
+						}
 					}	
+					
 				}
 			}		
 		}		
@@ -86,6 +101,6 @@
 	}	
 ?>
 <form method="POST" action="index.php?module=rename<?php echo $suffix;?>" align = "center">
-<div class = 'contentWrapper'><tag><?php echo sprintf($GLOBALS["Program_Language"]["Rename"],$file);?> <r></tag><input name="newname">
-<input type=submit name=submit value="<?php echo $GLOBALS["Program_Language"]["Rename_Button"];?>"></div>
+<tag><?php echo sprintf($GLOBALS["Program_Language"]["Rename"],$file);?> <r></tag><input name="newname">
+<input class = "btn btn-default" type=submit name=submit value="<?php echo $GLOBALS["Program_Language"]["Rename_Button"];?>">
 </form>

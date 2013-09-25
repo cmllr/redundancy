@@ -25,11 +25,12 @@
 if (isset($_SESSION) == false)
 	session_start();
 	$success = false;
-	
+	$alreadyExisting = false;
 	if ($_SESSION["role"] != 3){
 		$filecount = 0;
 		if (isset($_FILES["userfile"]))
 		{		
+			$move_process = false;			
 			foreach($_FILES['userfile']['tmp_name'] as $key => $tmp_name ){			
 				$filecount++;
 			}
@@ -71,25 +72,27 @@ if (isset($_SESSION) == false)
 							$insert = "INSERT INTO Files (Filename,Displayname,Hash,UserID,IP,Uploaded,Size,Directory,Directory_ID, Client,MimeType) VALUES ('$newfilename','$oldfilename','$hash','$userid','$client_ip','$uploadtime','$size','$dir','$directory_id','".$_SERVER['HTTP_USER_AGENT']."','$mimetype')";
 							//echo $insert;
 							$inser_query = mysqli_query($connect,$insert) or die ("Error: 030:" .mysqli_error());
-							if ($inser_query == true)
-								 move_uploaded_file($_FILES['userfile']['tmp_name'][$key], $uploaddir.$newfilename);
 							
-							/*if ($GLOBALS["config"]["Program_Crypt_FileSystem"] == 1)
+							if ($inser_query == true)
+								$move_process = move_uploaded_file($_FILES['userfile']['tmp_name'][$key], $uploaddir.$newfilename);
+							
+							if ($move_process == false)
 							{
-								$datei = fopen($uploaddir.$newfilename,"r+");
-								$content =  fgets($datei);
-								fclose($datei);
-								$datei = fopen($uploaddir.$newfilename,"w+");
-								fwrite($datei,fs_file_crypt($content,$_SESSION["fs_hash"])); 
-								fclose($datei);
-								mysqli_query($connect,"Update Files Set Crypted = 1 where Hash = '$hash'");
-							}*/
+								$remove = "Delete from Files where Filename = '$newfilename'";								
+								mysqli_query($connect,$remove);
+							}							
 							mysqli_close($connect);	
-							$success =true;
+							if ($move_process != false)							
+								$success =true;
 						}
-						else
+						else if (fs_file_exists($oldfilename,$dir) == false)
 						{
 							header("Location: index.php?message=nospace");
+						}
+						else if (fs_file_exists($oldfilename,$dir) != false)
+						{
+							$success == false;
+							$alreadyExisting = true;
 						}
 						
 					} else {
@@ -112,15 +115,22 @@ if (isset($_SESSION) == false)
 	{
 		if ($success == true && $GLOBALS["config"]["Program_Redirect_Upload"] == 1 && $filecount == 1 )
 		{
-			header("Location: index.php?module=file&file=$hash");
+			header("Location: index.php?module=file&file=$hash&message=upload_success");
 		}
 		else if ($success == true && $GLOBALS["config"]["Program_Redirect_Upload"] == 1 && $filecount != 1)
 		{
-			header("Location: index.php?module=list");
-		}		
+			header("Location: index.php?module=list&message=upload_success");
+		}	
+		else if ($success == false&& $GLOBALS["config"]["Program_Redirect_Upload"] == 1 && $filecount != 0 && $alreadyExisting == false)
+		{
+			header("Location: index.php?module=list&message=upload_fail");
+		}
+		else if ($success == false&& $GLOBALS["config"]["Program_Redirect_Upload"] == 1 && $filecount != 0 && $alreadyExisting == true)
+		{
+			header("Location: index.php?module=list&message=file_exists");
+		}
 	}
 ?>
-<div class ="contentWrapper">
 <?php
 	if (isset($_GET["upload"]) == false)
 		include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
@@ -130,9 +140,8 @@ if (isset($_SESSION) == false)
 ?>
 <form enctype="multipart/form-data" action="index.php?module=upload" method="POST">
 <p> 
-	<input name="userfile[]" type="file" multiple/>
+	<input class = 'btn btn-default'  name="userfile[]" type="file" multiple/>
 </p>
 <small><?php echo $GLOBALS["Program_Language"]["Upload_SubTitle"];?></small>
-    <input  type='submit' value='<?php echo $GLOBALS["Program_Language"]["Upload"];?>'>
+    <input class = 'btn btn-default'  type='submit' value='<?php echo $GLOBALS["Program_Language"]["Upload"];?>'>	
 </form>
-</div>

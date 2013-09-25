@@ -41,40 +41,57 @@
 				$last = $_SESSION["currentdir"];
 				for ($x = 0; $x < count($dir_parts);$x++)
 				{
-					
-					echo "dir".$dir_parts[$x]."<br>";					
-					echo "in ".$dir_parts_before."<br>";					
-					$exists = fs_file_exists($dir_parts[$x],$dir_parts_before);
-					if ($exists == true)
+					if ($dir_parts[$x] != ""){
+						echo "dir".$dir_parts[$x]."<br>";					
+						echo "in ".$dir_parts_before."<br>";					
+						$exists = fs_file_exists($dir_parts[$x],$dir_parts_before);
+						if ($exists == true)
+							$failed = true;
+						
+						if (strlen($dir_parts[$x]) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]){
+							createDir(mysqli_real_escape_string($connect,$dir_parts_before),mysqli_real_escape_string($connect,$dir_parts[$x]));			
+						}
+						else
+						{
+							$failed = true;
+							break;
+						}
+						$dir_parts_before .= $dir_parts[$x]."/";		
+					}
+					else
+					{
 						$failed = true;
-					createDir(mysqli_real_escape_string($connect,$dir_parts_before),mysqli_real_escape_string($connect,$dir_parts[$x]));			
-					$dir_parts_before .= $dir_parts[$x]."/";		
+						break;
+					}
 				} 					
-			}		
-			//TODO: Display error messages
+			}
+			if ($failed == true)
+			{
+				header("Location: ./index.php?module=list&message=createdir_fail");
+			}
+			else
+			{
+				header("Location: ./index.php?module=list&message=createdir_success");
+			}
 		}		
 	}
-	else if(isset($_POST["directory"]) == true && (endsWith($_POST["directory"],"/") == true || $_POST["directory"] == "" ))
+	else if(isset($_POST["directory"]) == true && (endsWith($_POST["directory"],"/") == true || $_POST["directory"] == "" || $failed == true))
 	{
-		header("Location: ./index.php?message=wronginput");
-	}
+		header("Location: ./index.php?module=list&message=wronginput");
+	}	
 	else if ($_SESSION["role"] == 3)
 	{
-		header("Location: index.php?message=readonly");
+		header("Location: index.php?module=list&message=readonly");
 	}
+	
 ?>
-<form method="POST" action="index.php?module=createdir" align = "center">
-<div class = 'contentWrapper'>
-<?php
-	if (isset($_GET["newdir"]) == false)
-	include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
-?>	
+<form method="POST" action="index.php?module=createdir" >
 <small>
 <?php
 	echo $GLOBALS["Program_Language"]["multiple_dirs"];
 ?>
 </small>
 <br>
-<tag><?php echo $GLOBALS["Program_Language"]["New_Directory"]." ". $_SESSION["currentdir"];?></tag><input name="directory">
-<input type=submit name=submit value="<?php echo $GLOBALS["Program_Language"]["New_Directory_Button"];?>"></div>
+<?php echo $GLOBALS["Program_Language"]["New_Directory"]." ". $_SESSION["currentdir"];?><input name="directory">
+<input class = 'btn btn-default' type=submit name=submit value="<?php echo $GLOBALS["Program_Language"]["New_Directory_Button"];?>">
 </form>

@@ -1,4 +1,4 @@
-<ul id = 'broadcrumb'>
+<ol class = 'breadcrumb'>
 <?php
 	/**
 	 * @file
@@ -46,16 +46,14 @@
 	else
 			$suffix = "module=list&dir=/";
 	//Display home link
-	echo "<li ><a href= 'index.php?$suffix'><img src = './Images/folder_user.png'>Home</a></li>";
+	echo "<li><a href= 'index.php?$suffix'>Home</a></li>";
 	//Display the links as a part of the broadcrumb navigation
 	for ($i = 0; $i < count($dirs); $i++)
 	{
 		if ($dirs[$i] != ""){
-			echo " / <li id = 'broadcrumb'><a href= 'index.php?$suffix".$parts_before.$dirs[$i]."/'><img src = './Images/folder.png'>".$dirs[$i]."</a></li>";
+			echo "<li><a href= 'index.php?$suffix".$parts_before.$dirs[$i]."/'>".$dirs[$i]."</a></li>";
 			$parts_before = $parts_before.$dirs[$i]."/";
 		}	
 	}
 ?>
-</ul>
-<br>
-
+</ol>

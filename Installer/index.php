@@ -2,21 +2,19 @@
 <head>
 <meta charset="utf-8">
 <title>Redundancy Installation</title>
-<link rel = "stylesheet" href="./Style new.css" type = "text/css"/>
-<!--todo: dirs -->
- <link rel="stylesheet" href="../Demo/Lib/themes/cupertino/jquery-ui.css" />
-<script src="../Demo/Lib/jquery-1.10.2.min.js"></script>
-<script src="../Demo/Lib/ui/jquery-ui.js"></script>
-<script type="text/javascript" src="../Demo/Lib/jquery-notify.js"></script>
-<link rel="stylesheet" href="../Demo/Lib/notify.css"></link>
+<script src="Lib/jquery-1.10.2.min.js"></script>
+<script src="Lib/bootstrap/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="Lib/bootstrap/css/custom.css" type="text/css"/>
+<link rel="stylesheet" href="Lib/bootstrap/css/bootstrap.min.css" type="text/css"/>
+<link rel="icon" href="./favicon.ico">
 </head>
 <body>
-<div id = "contentWrapper">
+<div class="col-md-4 hidden-xs"></div>
+<div class="col-md-4 col-xs-12">
 <p style ="text-align:center">
-<img src = "./Images/Logo.png" style="display:float">
-<br>
-
-<?php	
+<img src="./Images/bootstrapped_logo.png" style="margin: 0 auto;" class="img-responsive">
+<h1 class="text-center">Redundancy<sup>2</sup></h1>
+<?php
 $GLOBALS["fail"] = 0;
 error_reporting(E_ALL);
 	
@@ -76,40 +74,53 @@ error_reporting(E_ALL);
 		exit;
 	}	
 ?>
-</p>
-<form method="POST" action="index.php" id="login">
-
-<p>
-    <label for="user">Username</label>
-    <input class ="text" id ="user" name="user" />
-</p>
-<p>
-    <label for="pass">Password</label>
-    <input class ="text"  id = "pass" name="pass" type="password" />
-</p>
-<p>
-    <label for="server">Server</label>
-    <input class ="text"  id = "server" name="server"  value="localhost"/>
-</p>
-<p>
-    <label for="db">Database</label>
-    <input class ="text"  id = "db" name="db"  />
-</p>
-<p>
-    <label for="dir">Program directory</label>
-    <input  class ="text"  value="
-<?php
-	echo str_replace("Installer/index.php","",$_SERVER["SCRIPT_FILENAME"]);
-?>" id = "dir" name="dir"  />
-</p>
-<p>
-    <label for="rootname">Root User</label>
-    <input class ="text"  id = "rootname" name="rootname"  />
-</p>
-<p>
-    <label for="rootpass">Root pass</label>
-    <input class ="text"  id = "rootpass" name="rootpass"  />
-</p>
+<div class="panel panel-default">
+<div class="panel-body">
+<form class="form-horizontal" role="form" method="POST" action="index.php">
+		<div class="form-group">
+			<label for="inputEmail" class="col-lg-3 control-label">Username</label>
+			<div class="col-lg-9">
+				<input type="text" class="form-control" id="user" name="user" placeholder="user">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="inputPassword" class="col-lg-3 control-label">Password</label>
+			<div class="col-lg-9">
+				<input type="password" class="form-control" id="pass" name = "pass" placeholder="Password">
+			</div>
+		</div>	
+		<div class="form-group">
+			<label for="inputEmail" class="col-lg-3 control-label">Server</label>
+			<div class="col-lg-9">
+				<input type="text" class="form-control" id="server" name="server" placeholder="localhost">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="inputEmail" class="col-lg-3 control-label">Database</label>
+			<div class="col-lg-9">
+				<input type="text" class="form-control" id="db" name="db" >
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="inputEmail" class="col-lg-3 control-label">Program directory</label>
+			<div class="col-lg-9">
+				<input type="text" class="form-control" value="<?php
+					echo str_replace("Installer/index.php","",$_SERVER["SCRIPT_FILENAME"]);
+				?>" id = "dir" name="dir"  />
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="inputEmail" class="col-lg-3 control-label">Root User</label>
+			<div class="col-lg-9">
+				<input type="text" class="form-control" id="rootname" name="rootname" >
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="inputEmail" class="col-lg-3 control-label">Root pass</label>
+			<div class="col-lg-9">
+				<input type="text" class="form-control" id="rootpass" name="rootpass" >
+			</div>
+		</div>
 <script>
    
 	   
@@ -124,26 +135,34 @@ $(document).ready(function(){
 </script>
 <a id = "expander" href ="#">Advanced...</a>
 <div id = "profi">
-<p>
-    <label for="storage">Storage directory</label>
-    <input value = "Storage" class ="text"  id = "storage" name="storage"  />
-</p>
-<p>
-    <label for="temp">Temp directory</label>
-    <input value = "Temp" class ="text"  id = "temp" name="temp"  />
-</p>
-<p>
-    <label for="snapshots">Snapshots directory</label>
-    <input value = "Snapshots" class ="text"  id = "snapshots" name="snapshots"  />
-</p>
+<div class="form-group">
+	<label for="inputEmail" class="col-lg-3 control-label">Storage directory</label>
+	<div class="col-lg-9">
+		<input type="text" class="form-control" id="storage" name="storage" placeholder="Storage">
+	</div>
 </div>
+<div class="form-group">
+	<label for="inputEmail" class="col-lg-3 control-label">Temp directory</label>
+	<div class="col-lg-9">
+		<input type="text" class="form-control" id="temp" name="temp" placeholder="Temp">
+	</div>
+</div>
+<div class="form-group">
+	<label for="inputEmail" class="col-lg-3 control-label">Snapshots directory</label>
+	<div class="col-lg-9">
+		<input type="text" class="form-control" id="snapshots" name="snapshots" placeholder="Snapshots" >
+	</div>
+</div>
+</div>
+
 <p class="loginSubmit">
     <input type="submit" value="Save" />
 </p>
 </form>
 </div>
+</div>
 <div id = "version">
-Redundancy Installer 0.1 alpha
+Redundancy Installer 0.2 alpha
 </div>
 </body>
 </html>

@@ -31,7 +31,17 @@
 	{
 		$agreed = false;
 		$query =  $_SERVER["QUERY_STRING"];		
-		echo "<div class = 'contentWrapper'><h2>".$GLOBALS["Program_Language"]["Delete"]."?</h2><a href = 'index.php?".$query."&s=true'>".$GLOBALS["Program_Language"]["Delete_OK"]."</a></div>";
+		
+		if (isset($_GET["file"]))
+		{
+			echo "<div class = 'contentWrapper'><h2>".getFileByHash($_GET["file"])." " .$GLOBALS["Program_Language"]["Delete"]."?</h2>";
+		}
+		else if (isset($_GET["dir"]))
+		{
+			
+			echo "<div class = 'contentWrapper'><h2>".$_GET["dir"]." " .$GLOBALS["Program_Language"]["Delete"]."?</h2>";
+		}
+		echo "<a href = 'index.php?".$query."&s=true'>".$GLOBALS["Program_Language"]["Delete_OK"]."</a></div>";
 		exit;
 	}
 	else if (isset($_GET["s"]) || isset($_POST["s"]))
@@ -65,7 +75,7 @@
 			$success = true;
 		}
 		//Case 2: the user wants to delete a directory
-		else if (isset($_SESSION["user_name"]) &&  ((isset($_GET["dir"]) && $_GET["dir"] != "/") || (isset($_POST["dir"]) && $_POST["dir"] != "/")))
+		else if (isset($_SESSION["user_name"]) &&  ((isset($_GET["dir"]) ) || (isset($_POST["dir"]) && $_POST["dir"] != "/")))
 		{
 			//TODO: ADD setting responsible for this
 			if (isset($_GET["dir"]))

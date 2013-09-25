@@ -52,7 +52,7 @@
 	if (file_exists($fullPath)) {
 		header('Content-Description: File Transfer');
 		header('Content-Type: ' . $finfo->buffer($file)); 
-		header("Content-Disposition: attachment; filename='".$displayname."'");
+		header("Content-Disposition: attachment; filename=".$displayname."");
 		header('Content-Transfer-Encoding: binary');
 		header('Expires: 0');
 		header('Cache-Control: must-revalidate');

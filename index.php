@@ -29,6 +29,10 @@
 	//Parse the configuration file
 	//User settings (if enabled) will overwrite some of them
 	$GLOBALS["config"] = parse_ini_file($GLOBALS["config_dir"]."Redundancy.conf");
+	//Set the program path (very important)
+	$GLOBALS["Program_Dir"] = $GLOBALS["config"]["Program_Path"];
+	if ($GLOBALS["config"]["use_buffer"] == 1)
+		ob_start();
 	if (isset($_SESSION["user_name"]) && $GLOBALS["config"]["Program_Enable_User_Settings"] == 1)
 		user_load_settings();
 	//Exceptions, where only the blank content should be displayed 
@@ -40,9 +44,14 @@
 	elseif (isset($_GET["share"])){
 		include $GLOBALS["Program_Dir"]."Includes/share.inc.php";	
 	}
-	elseif (isset($_GET["module"]) && $_GET["module"] == "image" )
+	elseif (isset($_GET["module"]) && $_GET["module"] == "player" )
 	{
 		include "./Includes/player.inc.php";
+	}	
+	elseif (isset($_GET["module"]) && $_GET["module"] == "webdav" )
+	{
+		include "./Includes/Source.inc.php";
+		exit;
 	}
 	//API redirection
 	if (isset($_GET["api"]) && $_GET["api"] == true)
@@ -50,17 +59,16 @@
 	//Exceptions for dynamically loaded content
 	if (isset($_GET["search"]) == true || isset($_GET["upload"]) == true || isset($_GET["newdir"]) == true)
 	{
-		if (isset($_GET["lang"]) == false){
-			if (isset($_SESSION["language"]) == false)
-				$GLOBALS["Program_Language"] = parse_ini_file("./Language/".$GLOBALS["config"]["Program_Language"].".lng");	
-			else if ($_SESSION["language"] != "..")
+		if (isset($GLOBALS["Program_language"]) == false)
+		{	
+			if (isset($_SESSION["language"]) && strpos($_SESSION["language"],"..") === false)
+			{
 				$GLOBALS["Program_Language"] = parse_ini_file("./Language/".$_SESSION["language"].".lng");	
-		}
-		else if (isset($_GET["lang"]) && file_exists("./Language/".$GLOBALS["config"]["Program_Language"].".lng") && $_GET["lang"] != ".."){
-			$GLOBALS["Program_Language"] = parse_ini_file("./Language/".$_GET["lang"].".lng");	
-			if (!isset($_SESSION))
-				session_start();
-			$_SESSION["language"] = $_GET["lang"];
+			}
+			else
+			{
+				$GLOBALS["Program_Language"] = parse_ini_file("./Language/".$GLOBALS["config"]["Program_Language"].".lng");
+			}
 		}
 		if (isset($_GET["search"]))
 			include "./Includes/search.inc.php";
@@ -77,26 +85,29 @@
 <meta charset="utf-8">
 <?php
 	//Internet Explorer fix
-	header('Content-type: text/html; charset=utf8');
+	if (isset($_FILES,$_POST) == false)
+		header('Content-type: text/html; charset=utf8');
 ?>
 <?php if ($GLOBALS["config"]["Program_Display_Generator_Tag"] == 1): ?>
 <meta name="generator" content="<?php echo $GLOBALS["config"]["Program_Name_ALT"]." ".$GLOBALS["Program_Version"];?>" />
 <?php endif;?>
 <?php if ($GLOBALS["config"]["Program_Embed_GPL_Header"] == 1) include "./Includes/gpl.inc.php";?>
 <?php
-	if (isset($_SESSION["style"]))
-		$style = $_SESSION["style"];
-	else
-		$style = "Style new.css";
+	$style = "Lib/bootstrap/css/bootstrap.min.css";
 ?>
 <link rel = "stylesheet" href="./<?php echo $style?>" type = "text/css"/>
 <?php	
 	if ($GLOBALS["config"]["Program_Enable_JQuery"] == 1)
 		include "./Lib/JQuery.inc.php";
 ?>
-<link rel="icon" href="../favicon.png" type="image/png">
+<?php
+	if (isset($_SESSION["template"]))
+		echo $_SESSION["template"]["Template_Header"];
+?>
+<link rel="icon" href="./favicon.ico" >
 <title>
 <?php
+	
 	//Check session if ok.
 	if (xss_check() == true)
 	{
@@ -104,22 +115,21 @@
 		echo "<center><img src = \"./Images/AnimatedStop.gif\"><div style = 'visibility:visible;' id = 'warning'>You did an XSS attack. Redundancy will stop here.<br>*<br>This violation was reported<br>*<br>Dieser Verstoß wurde berichtet<br></div></center><body></body></html>";
 		exit;
 	}	
-	//Parse the language file from config or from user session
-	if (isset($_GET["lang"]) == false){
-		if (isset($_SESSION["language"]) == false)
-			$GLOBALS["Program_Language"] = parse_ini_file("./Language/".$GLOBALS["config"]["Program_Language"].".lng");	
-		else if ($_SESSION["language"] != "..")
+	if (isset($GLOBALS["Program_language"]) == false)
+	{	
+		if (isset($_SESSION["language"]) && strpos($_SESSION["language"],"..") === false)
+		{
 			$GLOBALS["Program_Language"] = parse_ini_file("./Language/".$_SESSION["language"].".lng");	
-	}
-	else if (isset($_GET["lang"]) && file_exists("./Language/".$GLOBALS["config"]["Program_Language"].".lng") && $_GET["lang"] != ".." && $_GET["lang"] != "."){
-		$GLOBALS["Program_Language"] = parse_ini_file("./Language/".$_GET["lang"].".lng");	
-		$_SESSION["language"] = $_GET["lang"];
-	}
+		}
+		else
+		{
+			$GLOBALS["Program_Language"] = parse_ini_file("./Language/".$GLOBALS["config"]["Program_Language"].".lng");
+		}
+	}	
 	//Enable the debug mode (display errors) or not
 	if ($GLOBALS["config"]["Program_Debug"] == 1)
 			error_reporting(E_ALL);
-	//Set the program path (very important)
-	$GLOBALS["Program_Dir"] = $GLOBALS["config"]["Program_Path"];
+	
 	//Display the Program name and calculate the user space if a session is set
 	echo $GLOBALS["config"]["Program_Name_ALT"];
 	if (isset($_SESSION["user_name"])){
@@ -147,6 +157,17 @@
 </script>
 </head>
 <body> 
+<?php 
+	echo "<div class = 'container'>";
+		echo "<div class = 'row'>";
+?>
+<!--
+<div class="alert alert-danger alert-dismissable">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                            ×
+                        </button>
+                        <strong>Achtung!</strong> Redundancy's Design wird umgestellt. Die Funktionalität ist stark eingeschränkt
+                    </div>-->
 <?php	
 	//Include the plugins if enabled
 	if ($GLOBALS["config"]["Program_Enable_Plugins"] == 1)
@@ -176,20 +197,15 @@
 			exit;
 		}
 	}
-	//Remove until line 162
-	if (isset($_SESSION["user_logged_in"]) == false)
-	{
-	//	include "./Includes/branding.inc.php";
-	}
 	if (isset($_SESSION["user_logged_in"]))
 	{		
 		user_apply_Informations();
 		//Include the status bar and menu and the wanted file
-		include "./Includes/statusbar.inc.php";
-		//Include the menu bar
-		include "./Includes/menubar.inc.php";
-		//Display content itself
-		echo "<div id = 'content'>";
+	
+		include "./Includes/Header.inc.php";
+		//Display content itself		
+		echo "<div class=\"panel panel-default\"> " ;
+		echo "<div class=\"panel-body\">";
 		if (isset($_GET["module"]) && strpos($_GET["module"],"..") === false && strpos($_GET["module"],".") === false){
 			//Include the requested file			
 			$path = $GLOBALS["Program_Dir"]."Includes/".$_GET["module"].".inc.php";			
@@ -199,7 +215,9 @@
 		else if (isset($_GET["module"]) == false && isset($_GET["share"]) == false){
 			//The startpage is an exception, it will be displayed if the module= parameter is not set.
 			include $GLOBALS["Program_Dir"]."Includes/startpage.inc.php";		
-		}			
+		}		
+		echo "</div>";
+		echo "</div>";
 	}
 	//Include other files (further exceptions)
 	else if (isset($_GET["module"]) && $_GET["module"] == "activate")
@@ -219,16 +237,6 @@
 ?>
 </div>
 <?php
-	//Display the version and loadtime if wanted
-	if ($GLOBALS["config"]["Program_Display_Version"])
-		echo "<div id = 'version'>".$GLOBALS["Program_Version"]."";
-	$end = microtime(true);
-	if ($GLOBALS["config"]["Program_Display_Loadtime"])
-		echo "<br><small>". sprintf($GLOBALS["Program_Language"]["Loadtime"],round($end-$start,4))."</small></div>";
-	else
-		echo "</small></div>";
-?>
-<?php
 	if ($GLOBALS["config"]["Program_Enable_Plugins"] == 1)
 	{
 		$handle=opendir ($GLOBALS["Program_Dir"]."Includes/Plugins/AfterModule/");
@@ -239,26 +247,39 @@
 		closedir($handle);
 	}
 ?>
-<?php
-	//Message display stack
-	if (isset($_GET["message"]))
-	{		
-		$message = $_GET["message"];
-		$image = "./Images/error.png";			
-		if (isset($_GET["img"]))
-			$image = "./Images/".$_GET["img"].".png";		
-		if ($GLOBALS["config"]["Program_Enable_JQuery"] == 1){		
-			echo "<div class='box'><p ><img style='align:middle;margin-right:5px'src = '$image'>".$GLOBALS["Program_Language"][$message]."</p></div>";
-			if (strpos($message,"success") === false)
-				echo "<script type=\"text/javascript\">\$('.box').notify({ style:\"box\", type: \"error\"});</script>"; 
-			else
-				echo "<script type=\"text/javascript\">\$('.box').notify({ style:\"box\", type: \"success\"});</script>"; 
-		}
-		else 
-		{
-			echo "<div id='warning'><p><img style='margin-right:5px'src = '$image'>".$GLOBALS["Program_Language"][$message]."</p></div>";
-		}
-	}
+<!--Display the right container-->
+<?php if (isset($_SESSION["user_logged_in"])): ?>
+<div class="col-lg-2 col-md-2 visible-md visible-lg">
+<div data-spy="affix" data-offset-top="140" class="affix-top">
+	<div class="dropdown">
+		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			<span class = "elusive icon-user glyphIcon"></span><?php echo $_SESSION["user_name"];?> <span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu" role="menu">
+			<li>
+				<a href="?module=account"><?php echo $GLOBALS["Program_Language"]["My_Account"];?></a>
+			</li>
+			<?php if ($_SESSION["role"] == 0 && is_admin()): ?>
+				<li>
+				<a href="?module=admin"><?php echo $GLOBALS["Program_Language"]["Administration"];?></a>
+			</li>
+			<?php endif;?>		
+			<li>
+				<a href="index.php?module=info">Info</a>
+			</li>
+			<li class="divider"></li>
+			<li>
+				<a href="?module=logout"><?php echo $GLOBALS["Program_Language"]["Exit"];?></a>
+			</li>
+		</ul>
+	</div>
+</div>
+</div>
+<?php endif;?>
+<?php 
+	if ($GLOBALS["config"]["use_buffer"] == 1)
+		ob_end_flush();
 ?>
+</div>
 </body>
 </html>
