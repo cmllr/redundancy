@@ -2,27 +2,33 @@
 	function inst_create_DataBaseConfig($user,$pass,$server,$db)
 	{		
 		try{
-			$escapedollar = "$";
-			$text = $escapedollar."connect = mysqli_connect('$server', '$user', '$pass') or die('Error: 005 '.mysqli_error());	mysqli_select_db(".$escapedollar."connect,'$db') or die('Error: 006 '.mysqli_error());";
 			$ourFileName = $_POST["dir"]."Includes/DataBase.inc.php";
-			$ourFileHandle = fopen($ourFileName, 'w') or die("cant open file");
-			fwrite($ourFileHandle, "<?php $text?>");
-			fclose($ourFileHandle);
-			echo "<img src = './Images/accept.png'> Config file created successfully<br>";
-			echo "<i>Testing database config...</i><br>";
-			$connect = mysqli_connect("$server", "$user", "$pass");
-			if (mysqli_select_db($connect,"$db") == false){
-				echo "<img src = './Images/exclamation.png'> Database connection failed<br>";
-				$GLOBALS["fail"]++;
-				echo "Aborting...<br>";		
-				return;	
-			}else{
-				echo "<img src = './Images/accept.png'> Database connection successfull<br>";
-				inst_create_DataBase_Structure($user,$pass,$server,$db);
+			if (is_writable($ourFileName)){
+				$escapedollar = "$";
+				$text = $escapedollar."connect = mysqli_connect('$server', '$user', '$pass') or die('Error: 005 '.mysqli_error());	mysqli_select_db(".$escapedollar."connect,'$db') or die('Error: 006 '.mysqli_error());";
+				
+				$ourFileHandle = fopen($ourFileName, 'w') or die("cant open file");
+				fwrite($ourFileHandle, "<?php $text?>");
+				fclose($ourFileHandle);		
+				$connect = mysqli_connect("$server", "$user", "$pass");
+				if (mysqli_select_db($connect,"$db") == false){				
+					echo "<td><span class=\"successValue elusive icon-remove glyphIcon\"></span></td>";
+					$GLOBALS["fail"]++;		
+					$GLOBALS["ERRORS"]["DB"] = "Could not establish connection to database";				
+					return;	
+				}else{			
+					echo "<td><span class=\"successValue elusive icon-ok glyphIcon\"></span></td>";
+					inst_create_DataBase_Structure($user,$pass,$server,$db);
+				}
+			}
+			else{
+				$GLOBALS["ERRORS"]["DB"] = "Could not write Database config";	
+					echo "<td><span class=\"successValue elusive icon-remove glyphIcon\"></span></td>";
 			}
 		}
 		catch (Exception $e){
-			echo "<img src = './Images/exclamation.png'> Config file failed<br>";
+			echo "<td><span class=\"successValue elusive icon-remove glyphIcon\"></span></td>";
+			$GLOBALS["ERRORS"]["DB"] = "Could not write Database config";	
 			$GLOBALS["fail"]++;
 		}
 	}
@@ -51,83 +57,126 @@
 		catch (Exception $e)
 		{
 			$GLOBALS["fail"]++;
+			$GLOBALS["ERRORS"]["DB"] = "Could not import database dump.";	
 		}
 	}
 	function inst_check_directory_rights($storage,$temp,$snapshots)
 	{
-		if ($GLOBALS["fail"] > 0)
-		{
-			echo "Aborting...<br>";		
-			return;			
+		try{			
+			if (file_exists($storage."/") && is_writable($storage."/") == true)
+			{
+				echo "<tr><td><span class=\"successValue elusive icon-ok glyphIcon\"></span></td><td>Storage access</td></tr>";
+				inst_sec_check($storage."/");
+			} 
+			else
+			{
+				echo "<tr><td><span class=\"successValue elusive icon-remove glyphIcon\"></span></td><td>Storage access</td></tr>";
+				$GLOBALS["fail"]++;
+				if (file_exists($storage."/"))
+					$GLOBALS["ERRORS"]["STORAGE"] = "Storage directory is not readable or does not exists";	
+				else
+					$GLOBALS["ERRORS"]["STORAGE"] = "Storage directory is does not exists";	
+			}
+			
+			if (file_exists($temp."/") && is_writable($temp."/") == true)
+			{
+				echo "<tr><td><span class=\"successValue elusive icon-ok glyphIcon\"></span></td><td>Temp access</td></tr>";
+				inst_sec_check($temp."/");
+			} 
+			else
+			{
+				echo "<tr><td><span class=\"successValue elusive icon-remove glyphIcon\"></span><td>Temp access</td></tr>";
+				$GLOBALS["fail"]++;
+				if (file_exists($temp."/"))
+					$GLOBALS["ERRORS"]["TEMP"] = "Temp directory is not readable or does not exists";	
+				else
+					$GLOBALS["ERRORS"]["TEMP"] = "Temp directory is does not exists";	
+			}
+			if (file_exists($snapshots."/") && is_writable($snapshots."/") == true)
+			{
+				echo "<tr><td><span class=\"successValue elusive icon-ok glyphIcon\"></span></td><td>Snapshots access</td></tr>";
+				inst_sec_check($snapshots."/");
+			} 
+			else
+			{
+				echo "<tr><td><span class=\"successValue elusive icon-remove glyphIcon\"></span></td><td>Snapshots access</td></tr>";
+				$GLOBALS["fail"]++;
+				if (file_exists($snapshots."/"))
+					$GLOBALS["ERRORS"]["SNAPSHOTS"] = "Snapshots directory is not readable";	
+				else
+					$GLOBALS["ERRORS"]["SNAPSHOTS"] = "Snapshots directory does not exists";	
+			}
 		}
-		if (is_writable($storage."/") == true)
+		catch (Exception $e)
 		{
-			echo "<img src = './Images/accept.png' alt = 'ok'> Storage Access<br>";
-		} 
-		else
-		{
-			echo "<img src = './Images/exclamation.png' alt = 'ok'> Storage Access<br>";
-			$GLOBALS["fail"]++;
-		}
-		if (is_writable($temp."/") == true)
-		{
-			echo "<img src = './Images/accept.png' alt = 'ok'> Temp Access<br>";
-		} 
-		else
-		{
-			echo "<img src = './Images/exclamation.png' alt = 'ok'> Temp Access<br>";
-			$GLOBALS["fail"]++;
-		}
-		if (is_writable($snapshots."/") == true)
-		{
-			echo "<img src = './Images/accept.png' alt = 'ok'> Snapshots Access<br>";
-		} 
-		else
-		{
-			echo "<img src = './Images/exclamation.png' alt = 'ok'> Snapshots Access<br>";
-			$GLOBALS["fail"]++;
+			$GLOBALS["ERRORS"]["DIRS"] = "Please check the integrity of your installation";	
 		}
 	}
 	function inst_apply_configuration($program_dir,$storage,$temp,$snapshots)
 	{
-		if ($GLOBALS["fail"] > 0)
-		{
-			echo "Aborting...<br>";		
-			return;			
-		}
-			
 		try{
-			$myFile = $program_dir."Redundancy.conf";
-			$fh = fopen($myFile, 'r');
-			$theData = "";
-			while (!feof($fh)) {
-				$theData = $theData .fgets($fh);			
+			if (file_exists($program_dir."Redundancy.conf")){
+				$myFile = $program_dir."Redundancy.conf";
+				$fh = fopen($myFile, 'r');
+				$theData = "";
+				while (!feof($fh)) {
+					$theData = $theData .fgets($fh);			
+				}
+				fclose($fh);
+				if (strpos($theData,"##") === false){	
+					
+					$fh = fopen("./config.txt", 'r');
+					$theData = "";
+					while (!feof($fh)) {
+						$theData = $theData .fgets($fh);			
+					}
+					fclose($fh);						
+				}				
+				$theData = str_replace("##dir##",$program_dir,$theData);	
+				$theData = str_replace("##storage##",$storage,$theData);	
+				$theData = str_replace("##temp##",$temp,$theData);	
+				$theData = str_replace("##snapshots##",$snapshots,$theData);
+				$fh = fopen($myFile, 'w') or die("can't open file");	
+				fwrite($fh, $theData);
+				fclose($fh);			
+				echo "<tr><td><span class=\"successValue elusive icon-ok glyphIcon\"></span></td><td>Configuration creation successfull</td></tr>";
 			}
-		
-			fclose($fh);
-		
-			$theData = str_replace("##dir##",$program_dir,$theData);	
-			$theData = str_replace("##storage##",$storage,$theData);	
-			$theData = str_replace("##temp##",$temp,$theData);	
-			$theData = str_replace("##snapshots##",$snapshots,$theData);	
-			
-			$fh = fopen($myFile, 'w') or die("can't open file");	
-			fwrite($fh, $theData);
-			fclose($fh);
-			echo "<img src = './Images/accept.png' alt = 'ok'> Configuration creation successfull<br>";
+			else
+			{
+				echo "<tr><td><span class=\"successValue elusive icon-remove glyphIcon\"></span></td><td>Configuration creation failed</td></tr>";
+				$GLOBALS["ERRORS"]["CONF"] = "Redundancy.conf does not exists";	
+				$GLOBALS["fail"]++;
+			}
 		}
 		catch (Exception $e)
 		{
-			echo "<img src = './Images/exclamation.png' alt = 'ok'> Configuration creation failed<br>";
+			echo "<tr><td><span class=\"successValue elusive icon-remove glyphIcon\"></span></td><td>Configuration creation failed</td></tr>";
 			$GLOBALS["fail"]++;
+			$GLOBALS["ERRORS"]["CONF"] = "Please check if Redundancy.conf is writable by PHP";	
 		}		
 	}
 	function inst_check()
 	{
 		if ($GLOBALS["fail"] == 0){			
-			echo"<i><b>Note:</b> Please delete the directory /Installer/ and its contents</i>";
-		}else
-			echo "One or more steps failed. Please check your configuration";
+			echo"<br><div class = 'alert alert-info'>Please delete the directory /Installer/ and its contents. The installation was successfully.</div>";
+		}else{
+			echo "<br><div class = 'alert alert-danger'>One or more steps failed. Please check your values<br>";
+			echo "<ul>";
+			foreach ($GLOBALS["ERRORS"] as $key => $value)
+			{
+				echo "<li>[$key] $value</li>";
+			}
+			echo "</ul>";			
+			
+			echo "Use the navigation of your browser to go back or retry the installation</div>";
+		}
+	}
+	function inst_sec_check($dir)
+	{
+		if (file_exists($dir.".htaccess") == false)
+		{
+			echo "<div style = 'word-wrap: break-word;' class = 'alert alert-info'>Your data in dir \"$dir\" is maybe accessible from the internet. You can use a \".htaccess\" file to avoid access from the internet</div>";
+		}
 	}
 	function inst_create_root($name,$pass)
 	{		
@@ -153,11 +202,13 @@
 			$ergebnis = mysqli_query($connect,"Select * from Users where  User = '$user' or Email = '$email'") or die("Error: 021 ".mysqli_error($connect));
 			if (mysqli_affected_rows($connect) > 0)
 			{
-				echo "<img src = './Images/exclamation.png' alt = 'ok'> Root user was not created<br>";
+				echo "<td><span class=\"successValue elusive icon-remove glyphIcon\"></span></td>";
+				$GLOBALS["ERRORS"]["ROOT"] = "A root user already exists";	
+					$GLOBALS["fail"]++;
 			}
 			else		
 			{
-				echo "<img src = './Images/accept.png' alt = 'ok'> Root user was created<br>";
+				echo "<td><span class=\"successValue elusive icon-ok glyphIcon\"></span></td>";
 				$ergebnis = mysqli_query($connect,"Insert into Users (User, Email,Password,Salt,Registered,Role,Storage,Enabled,API_Key,Enable_API) Values('$user','$email','$safetypass','$salt','$registered','$role',$storage,$enabled,'$api_key',1)") or die("Error: 019 ".mysqli_error($connect));
 			}	
 			
