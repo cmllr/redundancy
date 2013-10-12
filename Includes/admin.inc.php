@@ -176,7 +176,7 @@ $(function(){
 						<div class=\"col-lg-9\">
 							<p>
 								<input value = \"";
-									echo user_get_storage($_POST["username_info"])."\"type=\"text\" class=\"form-control\" placeholder=\"".$GLOBALS["Program_Language"]["user_storage_in_mb"]."\" \"storage\" data-toggle=\"tooltip\" data-placement=\"right\" id=\"inputStorage\" title data-original-title=\"Minimum: ".fs_get_fitting_DisplayStyle(round(getUsedSpace($_POST["username_info"]),0,PHP_ROUND_HALF_UP))."\">";
+									echo user_get_storage($_POST["username_info"])."\"type=\"text\" class=\"form-control\" placeholder=\"".$GLOBALS["Program_Language"]["user_storage_in_mb"]."\" name=\"storage\" data-toggle=\"tooltip\" data-placement=\"right\" id=\"inputStorage\" title data-original-title=\"Minimum: ".fs_get_fitting_DisplayStyle(round(getUsedSpace($_POST["username_info"]),0,PHP_ROUND_HALF_UP))."\">";
 						echo "</p>
 						</div>
 				</div>
