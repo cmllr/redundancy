@@ -26,7 +26,7 @@
 	if (isset($_SESSION) == false)
 			session_start();
 	//Remember a new date
-	$uploadtime= date("D M j G:i:s T Y",time());
+	$uploadtime= date("Y-m-d H:i:s",time());
 	$success = false;
 	$redir ="";
 	//Split between moving a file and moving a dir

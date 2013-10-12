@@ -625,7 +625,7 @@
 	function moveContents($source,$target)
 	{	
 		error_reporting(E_ALL);
-		$uploadtime= date("D M j G:i:s T Y",time());
+		$uploadtime= date("Y-m-d H:i:s",time());
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);		
 		$getfiles_select = mysqli_query($connect,"Select * from Files where Directory like '$source' and UserID = '$user' ");	
