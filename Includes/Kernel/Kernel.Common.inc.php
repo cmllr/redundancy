@@ -99,8 +99,9 @@
 	 * @return A random string with for usage as a pass
 	 */
 	function getRandomPass($length) {
-		$randomString = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#-+?/"), 0, $length);
-		return $randomString;
+
+		$pass = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#-+?/"), 0, $length);		
+		return $pass;
     }
 	/**
 	 * startsWith determines if a haystack ends with a needle

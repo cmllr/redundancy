@@ -265,7 +265,7 @@
 	function fs_getShareLink($file)
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$result = mysqli_query($connect,"Select * from Share where Hash = '".mysqli_real_escape_string($connect,$file)."' limit 1") or die("Error: 024: ".mysqli_error($connect));
+		$result = mysqli_query($connect,"Select Extern_ID from Share where Hash = '".mysqli_real_escape_string($connect,$file)."' limit 1") or die("Error: 024: ".mysqli_error($connect));
 		$share_dir = str_replace("index.php","",$_SERVER["PHP_SELF"]);
 		if ($row = mysqli_fetch_object($result)){
 				if ($GLOBALS["config"]["Program_HTTPS_Redirect"] == 1)			
@@ -321,10 +321,13 @@
 			session_start();
 		$dirSize = 0;
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."'") or die("Error 025: ".mysqli_error($connect));
-		while ($row = mysqli_fetch_object($result)) {
-				if (startsWith($row->Directory,$value))
-					$dirSize += $row->Size;
+		$dirID = getDirectoryID($value);
+		$result = mysqli_query($connect,"Select Size, Filename,Displayname from Files where UserID = '".$_SESSION["user_id"]."' and Directory_ID = '$dirID'") or die("Error 025: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($result)) {	
+			if ($row->Filename != $row->Displayname)
+				$dirSize += $row->Size;
+			else
+				$dirSize += getDirectorySize($row->Filename);
 		}
 		mysqli_close($connect);	
 		return $dirSize;
@@ -339,11 +342,12 @@
 	{
 		if (isset($_SESSION) == false)
 			session_start();
-		$dirSize = 0;
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and Displayname = '$value' and Directory = '$dir'") or die("Error 025: ".mysqli_error($connect));
+		$dirSize = 0;
+		$dirID = getDirectoryID($value);	
+		$result = mysqli_query($connect,"Select Size from Files where UserID = '".$_SESSION["user_id"]."' and Displayname = '$value' and Directory = '$dir' and Directory_ID ='$dirID'") or die("Error 025: ".mysqli_error($connect));
 		while ($row = mysqli_fetch_object($result)) {
-				if (startsWith($row->Directory,$value))
+				//if (startsWith($row->Directory,$value))
 					$dirSize += $row->Size;
 		}
 		mysqli_close($connect);	
@@ -382,7 +386,7 @@
 			$filename_mime = "";
 			while ($row = mysqli_fetch_object($result)) {
 				$filename_mime = $row->MimeType;
-			}					
+			}				
 			return $filename_mime;
 		}		
 	}
@@ -412,13 +416,35 @@
 	 */
 	function fs_file_exists($file,$directory )
 	{
-		echo "param $file and dir $directory<br>";
+		//echo "param $file and dir $directory<br>";
 		if (isset($_SESSION) == false)
 			session_start();	
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		$owner_ID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
-		$result = mysqli_query($connect,"Select * from Files where UserID = '".$owner_ID."' and (Filename_only = '$file' or Displayname = '$file'  or Hash = '$file')and Directory = '$directory'") or die("Error 025: ".mysqli_error($connect));
+		$file = mysqli_real_escape_string($connect,$file);
+		$directory =  mysqli_real_escape_string($connect,$directory);
+		$result = mysqli_query($connect,"Select ID from Files where UserID = '".$owner_ID."' and (Filename_only = '$file' or Displayname = '$file'  or Hash = '$file')and Directory = '$directory'") or die("Error 025: ".mysqli_error($connect));
 		
+		if (mysqli_affected_rows($connect) > 0)
+			return true;
+		else
+			return false;
+	}
+	/**
+	 * fs_file_exists checks if a file or dir exists on the filesystem
+	 * @param $directory the directory
+	 * @return True or false
+	 */
+	function fs_dir_exists($directory ) 
+	{			
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		if ($directory == "/")
+			return true;
+		$owner_ID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);	
+		$directory =  mysqli_real_escape_string($connect,$directory);
+		//echo $owner_ID;
+		$result = mysqli_query($connect,"Select ID from Files where UserID = '".$owner_ID."' and Displayname = '$directory' ") or die("Error 025: ".mysqli_error($connect));
+		//echo "rows:".mysqli_affected_rows($connect) ;
 		if (mysqli_affected_rows($connect) > 0)
 			return true;
 		else
@@ -436,7 +462,7 @@
 		$filename = "";
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		$hashSafe = mysqli_real_escape_string($connect,$hash);
-		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and Hash = '$hashSafe' limit 1") or die("Error 025: ".mysqli_error($connect));
+		$result = mysqli_query($connect,"Select Displayname from Files where UserID = '".$_SESSION["user_id"]."' and Hash = '$hashSafe' limit 1") or die("Error 025: ".mysqli_error($connect));
 		while ($row = mysqli_fetch_object($result)) {
 			$filename = $row->Displayname;
 		}			
@@ -454,7 +480,28 @@
 			session_start();
 		$filename = "";
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and Displayname = '$file' limit 1") or die("Error 025: ".mysqli_error($connect));
+		$result = mysqli_query($connect,"Select Hash from Files where UserID = '".$_SESSION["user_id"]."' and Displayname = '$file' limit 1") or die("Error 025: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($result)) {
+			$filename = $row->Hash;
+		}			
+		return $filename;
+	}
+	/**
+	 * getHashByFile the opposite function of @see getFileByHash
+	 * @param $file the displayname
+	 * @param $dir the directory
+	 * @return the hash
+	 * @todo possible bug because no directory is delivered
+	 */
+	function getHashByFileAndDir($file,$dir)
+	{
+		if (isset($_SESSION) == false)
+			session_start();
+		$filename = "";
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$file = mysqli_real_escape_string($connect,$file);
+		$dir = mysqli_real_escape_string($connect,$dir);
+		$result = mysqli_query($connect,"Select Hash from Files where UserID = '".$_SESSION["user_id"]."' and (Displayname = '$file' or Displayname = '/$file/') and Directory = '$dir' limit 1") or die("Error 025: ".mysqli_error($connect));
 		while ($row = mysqli_fetch_object($result)) {
 			$filename = $row->Hash;
 		}			
@@ -471,44 +518,17 @@
 			session_start();
 		$dir = "";
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$result = mysqli_query($connect,"Select * from Files where UserID = '".$_SESSION["user_id"]."' and Hash = '$hash' limit 1") or die("Error 025: ".mysqli_error($connect));
+		$result = mysqli_query($connect,"Select Directory_ID from Files where UserID = '".$_SESSION["user_id"]."' and Hash = '$hash' limit 1") or die("Error 025: ".mysqli_error($connect));
 		while ($row = mysqli_fetch_object($result)) {
 			$dir = $row->Directory_ID;
 		}	
 		$res = "";
-		$result = mysqli_query($connect,"Select * from Files where ID = '$dir' limit 1") or die("Error 025: ".mysqli_error($connect));
+		$result = mysqli_query($connect,"Select Displayname from Files where ID = '$dir' limit 1") or die("Error 025: ".mysqli_error($connect));
 		while ($row = mysqli_fetch_object($result)) {
 			$res = $row->Displayname;
 		}		
 		return $res;
-	}
-	//obsolete since 1.9.5
-	function moveDir_old($source,$target,$old_root)
-	{
-		$uploadtime= date("D M j G:i:s T Y",time());
-		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);		
-		$getfiles_select = mysqli_query($connect,"Select * from Files where Directory like '$old_root%' and UserID = '$user' ");	
-		while ($row = mysqli_fetch_object($getfiles_select) ) {		
-			if ($row->Filename != $target && (startsWith($row->Filename,$source) || startsWith($row->Directory,$source) )){			
-				if ($row->Displayname == $row->Filename){							
-						$displayname = str_replace("//","/",$target.str_replace($old_root,"/",$row->Displayname));;
-						$directory = str_replace("//","/",$target.str_replace($old_root,"/",$row->Directory));	
-						echo "<br>new dir:".$displayname;
-						echo "<br>new root:".$directory;
-						include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-						mysqli_query($connect,"Update Files SET Displayname ='$displayname', Filename ='$displayname',Directory='$directory',Directory_ID = ".getDirectoryID($directory)." where ID =".$row->ID) or die("Error: 016: ".mysqli_error($connect));	
-				}			
-				else
-				{				
-						echo "<br>new file:".$row->Filename;
-					
-						$directory =str_replace("//","/",$target.str_replace($old_root,"/",$row->Directory));			
-							echo "<br>new root:".$directory;
-						moveFile($row->ID,$directory);
-				}
-			}			
-		}		
-	}
+	}	
 	/**
 	 * moveDir moves a directory
 	 * @param $dir the dir
@@ -544,18 +564,22 @@
 			$filename_only = $row->Filename_only;
 			if ($row->Filename == $row->Displayname && strpos($row->Filename,$dir) !== false && strpos($row->Filename,$dir) !== false && fs_file_exists($row->Displayname,$target) == false)
 			{
-				//Directory			
-				echo "<br>param root".$old_root;	
-				echo "<br>target ".$target;	
+				//Directory		
+				if ($GLOBALS["config"]["Program_Debug"] == 1 ){				
+					echo "<br>param root".$old_root;	
+					echo "<br>target ".$target;
+				}				
 				$newDir = $target;
 				$newName = str_replace($old_root,$target,$row->Displayname,$temp = 1);
 				$newDir_ID = getDirectoryID($target);
 				$insert = "Insert";
 				$dir_id = getDirectoryID($target);
-				echo "<br>Old entry name:".$row->Displayname;
-				echo "<br>NEW entry name:".$target.$row->Filename_only."/";
-				echo "<br>Old directory".$old_root;
-				echo "<br>New Directory".$target;	
+				if ($GLOBALS["config"]["Program_Debug"] == 1 ){
+					echo "<br>Old entry name:".$row->Displayname;
+					echo "<br>NEW entry name:".$target.$row->Filename_only."/";
+					echo "<br>Old directory".$old_root;
+					echo "<br>New Directory".$target;	
+				}
 				$displayname = $target.$row->Filename_only."/";
 				mysqli_query($connect,"Update Files SET Displayname ='$displayname', Filename ='$displayname',Directory='$target',Directory_ID = ".getDirectoryID($target)." where ID =".$row->ID) or die("Error: 016: ".mysqli_error($connect));	
 					
@@ -565,15 +589,19 @@
 			else if (strpos($row->Directory,$dir) !== false && fs_file_exists($row->Displayname,$target) == false)
 			{
 				//File
-				echo "<br>param root".$old_root;	
-				echo "<br>target ".$target;	
+				if ($GLOBALS["config"]["Program_Debug"] == 1 ){
+					echo "<br>param root".$old_root;	
+					echo "<br>target ".$target;	
+				}
 				$newDir = $target;
 				$newName = str_replace($old_root,$target,$row->Displayname,$temp = 1);			
 				$insert = "Insert";
-				echo "<br>Old entry name:".$row->Displayname;
-				echo "<br>NEW entry name:".$target.$row->Displayname;
-				echo "<br>Old directory".$old_root;
-				echo "<br>New Directory".$target;	
+				if ($GLOBALS["config"]["Program_Debug"] == 1 ){
+					echo "<br>Old entry name:".$row->Displayname;
+					echo "<br>NEW entry name:".$target.$row->Displayname;
+					echo "<br>Old directory".$old_root;
+					echo "<br>New Directory".$target;	
+				}
 				moveFile($row->ID,$target);
 			}
 		}	
@@ -596,6 +624,7 @@
 	 */
 	function moveContents($source,$target)
 	{	
+		error_reporting(E_ALL);
 		$uploadtime= date("D M j G:i:s T Y",time());
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);		
@@ -604,16 +633,20 @@
 		while ($row = mysqli_fetch_object($getfiles_select) ) {		
 				if ($row->Filename == $row->Displayname)
 				{					
-					echo "<br>found dir".$row->Filename;
-					echo "<br>new dir:" .$target."/".$row->Filename_only."/";
-					echo "<br>new root:".$target."/";								
+					if ($GLOBALS["config"]["Program_Debug"] == 1 ){
+						echo "<br>found dir".$row->Filename;
+						echo "<br>new dir:" .$target."/".$row->Filename_only."/";
+						echo "<br>new root:".$target."/";	
+					}					
 					mysqli_query($connect,"Update Files set Filename ='".$target."/".$row->Filename_only."/"."', Displayname = '".$target."/".$row->Filename_only."/"."', Directory = '".$target."/"."',Directory_ID=".$new_id." where Hash = '".$row->Hash."'"); 	
 					moveContents($row->Filename,$target."/".$row->Filename_only);
 				}
 				else
 				{
-					echo "<br>found file".$row->Filename;
-					echo "<br>new filedir:" .$target."/";
+					if ($GLOBALS["config"]["Program_Debug"] == 1 ){
+						echo "<br>found file".$row->Filename;
+						echo "<br>new filedir:" .$target."/";
+					}
 					$file_id = getDirectoryID($target."/");
 					mysqli_query($connect,"Update Files set Directory = '".$target."/"."',Directory_ID = ".$file_id." where Hash = '".$row->Hash."'"); 
 				}
@@ -627,55 +660,50 @@
 	function createDir($currentdir,$directory)
 	{
 		//an easy possibility to avoid xss 
+		$success = true;
 		if (strpos("<",$directory) === false){
 			//include the dataBase file
 			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+			$currentdir = mysqli_real_escape_string($connect,$currentdir);
+			$directory = mysqli_real_escape_string($connect,$directory);
 			//remember the user id, the new directory, the current directory, the directory without path timestamp hash and so on...
 			$userid = mysqli_real_escape_string($connect,$_SESSION['user_id']);		
 			$newdirectory =  $currentdir . $directory."/";			
 			$uploaddirectory = $currentdir;
 			$filenameonly = $directory;
 			$timestamp = time();
-			$uploadtime= date("D M j G:i:s T Y", $timestamp);
+			$uploadtime= date("Y-m-d H:i:s", $timestamp);
 			$hash = md5($newdirectory.$uploadtime.$userid);	
 			$client_ip = getIP();	
-			$dir_id = getDirectoryID($uploaddirectory); 		
+			$dir_id = getDirectoryID($uploaddirectory); 	
+				
 			if (fs_file_exists($directory,$uploaddirectory) == false)
 			{			
 				//create the new directory
 				$insert = "INSERT INTO Files (Filename,Displayname,Filename_only,Hash,UserID,IP,Uploaded,Size,Directory,Directory_ID,Client,ReadOnly) VALUES ('$newdirectory','$newdirectory','$filenameonly','$hash','$userid','$client_ip','$uploadtime',0,'$uploaddirectory','$dir_id','".$_SERVER['HTTP_USER_AGENT']."',0)";			
 				$inserquery = mysqli_query($connect,$insert) or die("Error: 004 ".mysqli_error($connect));						
-			}			
+				$success = true;
+			}		
+			else{
+				$success = false;
+			}
 			mysqli_close($connect);		
 		}
-		if ($GLOBALS["config"]["Program_Redirect_NewDir"] == 1){
-			if ($GLOBALS["config"]["Program_Debug"] != 1)
-				header("Location: ./index.php?module=list&dir=".$currentdir.$directory."/&result=1&from=createdir");
-		}			
-	}
-	//obsolete
-	function createBin($currentdir,$directory)
-	{
-		//include the dataBase file
-			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
-			//remember the user id, the new directory, the current directory, the directory without path timestamp hash and so on...
-			$userid = mysqli_real_escape_string($connect,$_SESSION['user_id']);		
-			$newdirectory =  $currentdir . $directory."/";			
-			$uploaddirectory = $currentdir;
-			$filenameonly = $directory;
-			$timestamp = time();
-			$uploadtime= date("D M j G:i:s T Y", $timestamp);
-			$hash = md5($newdirectory.$uploadtime);	
-			$client_ip = getIP();	
-			$dir_id = getDirectoryID($uploaddirectory); 		
-			if (fs_file_exists($directory,$uploaddirectory) == false)
-			{			
-				//create the new directory
-				$insert = "INSERT INTO Files (Filename,Displayname,Filename_only,Hash,UserID,IP,Uploaded,Size,Directory,Directory_ID,Client,ReadOnly) VALUES ('$newdirectory','$newdirectory','$filenameonly','$hash','$userid','$client_ip','$uploadtime',0,'$uploaddirectory','$dir_id','".$_SERVER['HTTP_USER_AGENT']."',1)";			
-				$inserquery = mysqli_query($connect,$insert) or die("Error: 004 ".mysqli_error($connect));						
+		if (isset($_POST["ACK"]) == false){
+			if ($GLOBALS["config"]["Program_Redirect_NewDir"] == 1){
+				if ($GLOBALS["config"]["Program_Debug"] != 1)
+					header("Location: ./index.php?module=list&dir=".$currentdir.$directory."/&result=1&from=createdir");
+			}	
+		}	
+		else{
+			if ($success == true){
+				echo "true";
+			}
+			else{
+				echo "false";
 			}			
-			mysqli_close($connect);			
-	}
+		}
+	}	
 	/**
 	 * fs_CopyDir copies a dir
 	 * @param $dir the directory
@@ -703,7 +731,7 @@
 			$Filename = $row->Filename;
 			$Displayname = $row->Displayname;
 			$timestamp = time();
-			$uploadtime= date("D M j G:i:s T Y", $timestamp);
+			$uploadtime= date("Y-m-d H:i:s", $timestamp);
 			$Hash = md5($Displayname.$uploadtime);	
 			$UserID = $row->UserID;
 			$IP = $row->IP;
@@ -715,18 +743,22 @@
 			$filename_only = $row->Filename_only;
 			if ($row->Filename == $row->Displayname && strpos($row->Filename,$dir) !== false && strpos($row->Filename,$dir) !== false && fs_file_exists($row->Displayname,$target) == false)
 			{
-				//Directory			
-				echo "<br>param root".$old_root;	
-				echo "<br>target ".$target;	
+				//Directory		
+				if ($GLOBALS["config"]["Program_Debug"] == 1 ){
+					echo "<br>param root".$old_root;	
+					echo "<br>target ".$target;	
+				}
 				$newDir = $target;
 				$newName = str_replace($old_root,$target,$row->Displayname,$temp = 1);
 				$newDir_ID = getDirectoryID($target);
 				$insert = "Insert";
 				$dir_id = getDirectoryID($target);
-				echo "<br>Old entry name:".$row->Displayname;
-				echo "<br>NEW entry name:".$target.$row->Filename_only."/";
-				echo "<br>Old directory".$old_root;
-				echo "<br>New Directory".$target;	
+				if ($GLOBALS["config"]["Program_Debug"] == 1 ){
+					echo "<br>Old entry name:".$row->Displayname;
+					echo "<br>NEW entry name:".$target.$row->Filename_only."/";
+					echo "<br>Old directory".$old_root;
+					echo "<br>New Directory".$target;	
+				}
 				$insertDir = "Insert into Files (Filename, Displayname,Filename_only, Hash, UserID, IP, Uploaded, Size, Directory,Directory_ID ) Values ('".$target.$row->Filename_only."/"."','".$target.$row->Filename_only."/"."','$filename_only','$Hash',$UserID,'$IP','$Uploaded',$Size,'$target',$dir_id)";
 				mysqli_query($connect,$insertDir);
 			
@@ -736,15 +768,19 @@
 			else if (strpos($row->Directory,$dir) !== false && fs_file_exists($row->Displayname,$target) == false)
 			{
 				//File
-				echo "<br>param root".$old_root;	
-				echo "<br>target ".$target;	
+				if ($GLOBALS["config"]["Program_Debug"] == 1 ){
+					echo "<br>param root".$old_root;	
+					echo "<br>target ".$target;	
+				}
 				$newDir = $target;
 				$newName = str_replace($old_root,$target,$row->Displayname,$temp = 1);			
 				$insert = "Insert";
-				echo "<br>Old entry name:".$row->Displayname;
-				echo "<br>NEW entry name:".$target.$row->Displayname;
-				echo "<br>Old directory".$old_root;
-				echo "<br>New Directory".$target;	
+				if ($GLOBALS["config"]["Program_Debug"] == 1 ){
+					echo "<br>Old entry name:".$row->Displayname;
+					echo "<br>NEW entry name:".$target.$row->Displayname;
+					echo "<br>Old directory".$old_root;
+					echo "<br>New Directory".$target;	
+				}
 				fs_copyFile($row->Hash,$target);
 			}
 		}
@@ -766,7 +802,7 @@
 			$Filename =$row->Filename;
 			$Displayname = $row->Displayname;
 			$timestamp = time();
-			$uploadtime= date("D M j G:i:s T Y", $timestamp);
+			$uploadtime= date("Y-m-d H:i:s", $timestamp);
 			$Hash = md5($Filename.$uploadtime);	
 			$UserId = $row->UserID;
 			$IP = getIP();
@@ -807,6 +843,7 @@
 	 */
 	function deleteDir($dirname)
 	{
+			echo "running";
 		//Create a session if needed
 		if (isset($_SESSION) == false)
 			session_start();
@@ -819,19 +856,24 @@
 			//get the Filename of the file
 			$localfilename = $row->Filename;
 			$hash = $row->Hash;
+		
 			if ($row->ReadOnly == 1	)
 				return;
 			//If the filename is equal to the displayname, we have a dictonary
 			if ($row->Filename == $row->Displayname)
 			{
 				//Process dir delete recursively
-				echo "found dir ".$row->Filename."<br>";
+				if ($GLOBALS["config"]["Program_Debug"] == 1 ){
+					echo "found dir ".$row->Filename."<br>";
+				}
 				deleteDir($row->Filename);				
 			}
 			else
 			{
 				//Process dir delete recursively
-				echo "found file ".$row->Displayname."<br>";
+				if ($GLOBALS["config"]["Program_Debug"] == 1 ){
+					echo "found file ".$row->Displayname."<br>";
+				}
 				deleteFile($localfilename,$dir,$hash);	
 			}
 		}
@@ -840,7 +882,9 @@
 		//Delete the directory itself
 		mysqli_query($connect,"delete from `Files` where   UserID = '".$_SESSION['user_id']."' and Filename = '$dir' and Displayname = '$dir'") or die("Error: 012 ".mysqli_error($connect));	
 		//close connection
-		echo "dir $dir deleted";
+		if ($GLOBALS["config"]["Program_Debug"] == 1 ){
+			echo "dir $dir deleted";
+		}
 		mysqli_close($connect);
 	}
 	/**
@@ -1173,7 +1217,7 @@
 		echo "</div>";
 		mysqli_close($connect);		
 	}
-	
+	//dev only
 	function fs_transform_timestamp()
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
@@ -1182,22 +1226,27 @@
 		while ($row = mysqli_fetch_object($result)) {		
 			$datum = new DateTime($row->Uploaded);
 			$datum_string = $datum->Format("d.m.y H:i:s");	
-			$query = mysqli_query($connect,"Update Files SET Uploaded = '$datum_string' where Hash = '".$row->Hash."'");
-			echo "Transformed ".$row->Displayname.".<br>";
+				//2008-08-07 18:11:31"
+			echo "Transformed ".$row->Displayname." ".$row->Uploaded."->".$datum_string."->".$datum->Format("y-m-d H:i:s")."<br>";
+			$datum_db = $datum->Format("y-m-d H:i:s");
+			$query = mysqli_query($connect,"Update Files SET Uploaded = '$datum_db' where Hash = '".$row->Hash."'");			
 		}	
 		mysqli_close($connect);				
 	}
+	/**
+	 * get the statistics about the filesystem usage
+	 */
 	function fs_get_stats()
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
-		$result = mysqli_query($connect,"Select * from Files where UserID = '$userID'")  or die("Error 023: ".mysqli_error($connect));
+		$result = mysqli_query($connect,"Select Filename,Displayname from Files where UserID = '$userID'")  or die("Error 023: ".mysqli_error($connect));
 		$array = array ();			
 		while ($row = mysqli_fetch_object($result)) {
 			if ($row->Filename != $row->Displayname){
 				
 				$extension = explode(".",$row->Displayname);				
-				$extension = $extension[count($extension)-1];
+				$extension = strtolower($extension[count($extension)-1]);
 				if (isset($array[$extension]) == false)
 				{
 					$array[$extension] = 1;
@@ -1213,5 +1262,15 @@
 			echo "['.".$key."',$val],";
 		}
 		mysqli_close($connect);	
+	}
+	/**
+	 * correct the extension of a file (for statistics)
+	 */
+	function fs_get_filename_lowercase_extension($displayname)
+	{
+		$extension = explode(".",$displayname);		
+		$oldextension = $extension[count($extension)-1];
+		$extension = strtolower($extension[count($extension)-1]);
+		return str_replace($oldextension,$extension,$displayname);
 	}
 ?>

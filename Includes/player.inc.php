@@ -21,6 +21,10 @@
 	 * This file allows a preview of readable files.
 	 */
 	if (isset($_SESSION) == false)
-		session_start();			
+		session_start();
+	if (strpos($_SERVER["PHP_SELF"],".inc.php") === false) {	
+		header('Content-type: text/html; charset=utf-8');
+	}		
+	
 	readfile($_SESSION["current_file"]);
 ?>

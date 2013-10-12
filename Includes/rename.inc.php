@@ -21,8 +21,8 @@
 	 * A file can be renamed using the dialog of this file.
 	 */
 	 //Include uri check
-	require_once ("checkuri.inc.php");
-	//start a session if needed
+	//require_once ("checkuri.inc.php");
+	//start a session if needed	
 	if (isset($_SESSION) == false)
 			session_start();
 	$success = false;
@@ -33,20 +33,32 @@
 		if (isset($_SESSION['user_id']))
 		{		
 			if (isset($_POST["newname"]) && strpos($_POST["newname"],"<") === false){
-				if (isset($_GET["source"]) && isset($_GET["old_root"])){
+				if ((isset($_GET["source"]) && isset($_GET["old_root"])) || (isset($_POST["source"]) && isset($_POST["old_root"]))){
+					
 					include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
-					$source = mysqli_real_escape_string($connect,$_GET["source"]);
+					if (isset($_GET["source"]))
+						$source = mysqli_real_escape_string($connect,$_GET["source"]);
+					else
+						$source = mysqli_real_escape_string($connect,$_POST["source"]);
 					$target = mysqli_real_escape_string($connect,$_POST["newname"]);
-					$old_root= mysqli_real_escape_string($connect,$_GET["old_root"]);
+					if (isset($_GET["old_root"]))
+						$old_root= mysqli_real_escape_string($connect,$_GET["old_root"]);
+					else
+						$old_root= mysqli_real_escape_string($connect,$_POST["old_root"]);
+					echo "Source: $source, old_root: $old_root, newname: $target currentdir: ".$_SESSION["currentdir"]." length: ".$GLOBALS["config"]["Program_FileSystem_Name_Max_Length"];
+					
 					if (fs_file_exists($target,$old_root) == false && strlen($target) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]){
 						createDir($old_root,$target);
-						$Dir_ID = getDirectoryID($source);
-						//TODO: DIR renmae
+						//$Dir_ID = getDirectoryID($source);
+						//TODO: DIR rename
 						//Step 1 create new dir (new name) - check
+						
 						moveContents($source,$_SESSION["currentdir"].$target);
+						
 						//Step 2 move contents -check					
 						//STep 3 delete old dir
 						deleteDir($source);
+					
 						$success = true;
 					}
 					else
@@ -56,8 +68,10 @@
 				}
 				else{
 					//include the dataBase file
-					include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
-					$newname = mysqli_real_escape_string($connect,$_POST["newname"]);
+					include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";			
+					
+					$newname = 	mysqli_real_escape_string($connect, $_POST["newname"]);		
+					
 					if (isset($_GET["file"]))
 						$hash = mysqli_real_escape_string($connect,$_GET["file"]);
 					else
@@ -65,12 +79,18 @@
 					if (fs_file_exists($newname,$_SESSION["currentdir"]) == false && strlen($newname) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]) {
 						$insert = mysqli_query($connect,"Update Files Set Displayname='$newname' where Hash ='$hash'") or die("Error: 017 ".mysqli_error($connect));	
 						$success = true;
-					}				
+					}
+					else	
+						$success = false;
+					
 				}
-				if (isset($_POST["api_key"]))
+				if (isset($_POST["ACK"]))
 				{		
-					echo "Command_Result:Done";
-					exit;		
+					if ($success == false)
+						echo "false";
+					else
+						echo "true";
+					exit;	
 				}
 				else{	
 					if ($GLOBALS["config"]["Program_Debug"] != 1){						

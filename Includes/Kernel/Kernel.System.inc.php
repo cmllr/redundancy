@@ -121,4 +121,38 @@
 		$query = "Insert into Banned (IP,Client,Date,Reason) Values('".$client_ip."','".$client."','$date','$reason')";
 		mysqli_query($connect,$query);
 	}	
+	/**
+	 * banUser ban an user
+	 * @param $client_ip the ip of the user
+	 * @param $client the user agent
+	 * @param $reason the reason
+	 */
+	function is_Banned()
+	{
+		//Create new database isntance
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$client_ip = getIP();
+		$query = "Select ID from Banned where IP = '$client_ip'";
+		$ergebnis = mysqli_query($connect,$query);
+		if (mysqli_affected_rows($connect) > 0){
+			mysqli_close($connect);
+			return true;
+		}		
+		else{
+			mysqli_close($connect);
+			return false;
+		}
+	}	
+	/**
+	 * get the link for activation
+	 * @returns the activation link
+	 */
+	function getActivationLink(){
+		$dir = str_replace("index.php","",$_SERVER["PHP_SELF"]);
+		if ($GLOBALS["config"]["Program_HTTPS_Redirect"] == 1)			
+			$link = "https://".$_SERVER["SERVER_NAME"].$dir."index.php?module=activate";
+		else
+			$link = "http://".$_SERVER["SERVER_NAME"].$dir."index.php?module=activate";
+		return $link;
+	}
 ?>

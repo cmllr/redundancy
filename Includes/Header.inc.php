@@ -117,13 +117,13 @@
 				<a href="index.php?module=list"><span class="elusive icon-file glyphIcon"></span><?php echo $GLOBALS["Program_Language"]["Files"];?></a>
 			</li>
 			<li>
-				<a href="index.php?module=changes"><span class="elusive icon-time-alt glyphIcon"></span><?php echo $GLOBALS["Program_Language"]["changes"];?></a>
+				<a href="index.php?module=changes"><span class="elusive icon-time glyphIcon"></span><?php echo $GLOBALS["Program_Language"]["changes"];?></a>
 			</li>
 			<li>
-				<a href="index.php?module=search"><span class="elusive icon-search-alt glyphIcon"></span><?php echo $GLOBALS["Program_Language"]["Search"];?></a>
+				<a href="index.php?module=search"><span class="elusive icon-search glyphIcon"></span><?php echo $GLOBALS["Program_Language"]["Search"];?></a>
 			</li>
 			<li>
-				<a href="index.php?module=upload"><span class="elusive icon-file-new-alt glyphIcon"></span><?php echo $GLOBALS["Program_Language"]["Upload"];?></a>
+				<a href="index.php?module=upload"><span class="elusive icon-file-new glyphIcon"></span><?php echo $GLOBALS["Program_Language"]["Upload"];?></a>
 			</li>
 			<li>
 				<a href="index.php?module=createdir"><span class="elusive icon-folder glyphIcon"></span><?php echo $GLOBALS["Program_Language"]["New_Directory_Short"];?></a>

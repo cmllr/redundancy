@@ -61,9 +61,9 @@ else
 <div class="panel-body">
 	<form class="form-horizontal" role="form" method="POST" action="index.php?module=login">
 		<div class="form-group">
-			<label for="inputEmail" class="col-lg-3 control-label"><?php echo $GLOBALS["Program_Language"]["Email"];?></label>
+			<label for="inputEmail" class="col-lg-3 control-label"><?php echo $GLOBALS["Program_Language"]["Username"];?></label>
 			<div class="col-lg-9">
-				<input type="text" class="form-control" id="user" name="user" placeholder="Email">
+				<input type="text" class="form-control" id="user" name="user" placeholder="<?php echo $GLOBALS["Program_Language"]["Username"];?>">
 			</div>
 		</div>
 		<div class="form-group">

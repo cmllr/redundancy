@@ -21,7 +21,7 @@
 	 * This file triggeres the Kernel.FileSystem.inc.php copy functions
 	 */
 	//Include uri check
-	require_once ("checkuri.inc.php");
+	//require_once ("checkuri.inc.php");
 	if (isset($_SESSION) == false)
 			session_start();
 	$success = false;
@@ -105,9 +105,12 @@
 			}
 		}
 	}
-	if (isset($_POST["api_key"]))
+	if (isset($_POST["ACK"]))
 	{		
-		echo "Command_Result:{$success}";
+		if ($success == false)
+			echo "false";
+		else
+			echo "true";
 		exit;		
 	}
 	else{	

@@ -21,12 +21,13 @@
 	 * This file is used for deleting files or folders
 	 */
 	//Include uri check
-	require_once ("checkuri.inc.php");
+	//require_once ("checkuri.inc.php");
 	//Create a session if needed
 	if (isset($_SESSION) == false)
 		 session_start();
 	//Case 1: the user wants to delete a file
 	//echo var_dump($_SERVER);
+	$success = false;
 	if (isset($_GET["s"]) == false && isset($_POST["s"]) == false)
 	{
 		$agreed = false;
@@ -67,7 +68,8 @@
 			while ($row = mysqli_fetch_object($result)) {
 				$localfilename = $row->Filename;
 				$dir = $row->Directory;
-				echo $localfilename."<br>";
+				if ($GLOBALS["config"]["Program_Debug"] == 1)
+					echo $localfilename."<br>";
 			}	
 			mysqli_close($connect);	
 			if ($localfilename != "" && $dir != "")
@@ -87,9 +89,12 @@
 			$success = true;		
 		}
 	}
-	if (isset($_POST["api_key"]))
+	if (isset($_POST["ACK"]))
 	{		
-		echo "Command_Result:{$success}";
+		if ($success == false)
+			echo "false";
+		else
+			echo "true";
 		exit;		
 	}
 	else{	

@@ -32,13 +32,16 @@
 	$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
 	//Searh for a file with this hash
 	$ergebnis = mysqli_query($connect,"Select Filename,Displayname,Uploaded,Client,Hash,MimeType,Directory,Size from Files  where Hash = '$hash' and UserID = '$userID' limit 1") or die("Error: ".mysqli_error($connect));	
-	while ($row = mysqli_fetch_object($ergebnis)) {
+		if (mysqli_affected_rows($connect) ==  0){			
+			header("Location: index.php?module=list&dir=".$_SESSION["currentdir"]."&message=File_not_found");
+	}
+	while ($row = mysqli_fetch_object($ergebnis)) {		
 		$_SESSION["currentdir"] = $row->Directory;
 		//Remember the file for further processes
 		$_SESSION["current_file"] = $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$row->Filename;
 		$_SESSION["current_file_hash"] = $row->Hash;	
 		include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
-		echo "<h1>".htmlentities(utf8_decode($row->Displayname))."</h1>";
+		echo "<h1>".htmlentities(fs_get_filename_lowercase_extension($row->Displayname))."</h1>";
 	
 		if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 &&(fs_isImage($row->Filename) == 1 || fs_isVideo($row->Filename) == true || fs_isAudio($row->Filename) == true || fs_isText($row->Filename) == true  ||fs_isVector($row->Filename) == true)){
 				echo "<div class = \"panel panel-default\">";

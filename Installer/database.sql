@@ -15,23 +15,25 @@ CREATE TABLE IF NOT EXISTS `Files` (
   `Hash` text CHARACTER SET utf8,
   `UserID` int(11) NOT NULL,
   `IP` text CHARACTER SET utf8 NOT NULL,
-  `Uploaded` text CHARACTER SET utf8 NOT NULL,
+  `Uploaded` datetime NOT NULL,
   `Size` int(11) NOT NULL,
   `Directory` text CHARACTER SET utf8 NOT NULL,
   `Directory_ID` int(11) DEFAULT NULL,
-  `Client` text,
+  `Client` text CHARACTER SET latin1,
   `ReadOnly` tinyint(1) NOT NULL,
-  `MimeType` text,
+  `MimeType` text CHARACTER SET latin1,
   `Bin` tinyint(1) NOT NULL DEFAULT '0',
   `Crypted` int(11) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;##
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;##
+
 CREATE TABLE IF NOT EXISTS `Mails` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `Text` text NOT NULL,
   `Description` text NOT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;##
+
 CREATE TABLE IF NOT EXISTS `Pass_History` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `Changed` text COLLATE utf8_bin,
@@ -39,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `Pass_History` (
   `Who` int(11) NOT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;##
+
 CREATE TABLE IF NOT EXISTS `Settings` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `UserID` int(11) NOT NULL,
@@ -48,6 +51,7 @@ CREATE TABLE IF NOT EXISTS `Settings` (
   `Program_Enable_Preview` int(11) NOT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;##
+
 CREATE TABLE IF NOT EXISTS `Share` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `Hash` text NOT NULL,
@@ -57,6 +61,7 @@ CREATE TABLE IF NOT EXISTS `Share` (
   PRIMARY KEY (`ID`),
   UNIQUE KEY `ID` (`ID`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;##
+
 CREATE TABLE IF NOT EXISTS `Users` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `User` text,

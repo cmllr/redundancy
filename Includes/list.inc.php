@@ -1,6 +1,3 @@
-<div class="alert alert-danger">                       
-<strong>Achtung!</strong> Redundancy's Design wird umgestellt. Die Funktion&auml;lit&auml;t ist stark eingeschr&auml;nkt
-</div>
 <?php
 	/**
 	 * @file
@@ -39,12 +36,18 @@
 	*/
 	if (isset($_GET["dir"])){
 		$dir = $_GET["dir"];
+		if (fs_dir_exists($dir) == false)
+		{		
+			header("Location: index.php?module=list&dir=".$_SESSION["currentdir"]."&message=Dir_not_found");
+		}
 		$_SESSION["currentdir"]	= $dir;	
 	}
 	else
 		$dir = $_SESSION["currentdir"];
+	
 	//Includes DataBase and broadcrumbs and DataBase
 	include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+	
 	if (isset($_POST["searchquery"]) == false){
 		include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";	
 		$id = getDirectoryID(mysqli_real_escape_string($connect,$dir));
@@ -232,7 +235,7 @@
 				$shared = " <span class = 'label label-primary'>".$GLOBALS["Program_Language"]["Share_Title"]."</span>";
 			echo str_replace(
 				array("##imagepath","##hash","##directory","##displayname","##hash","##croppeddisplayname","##uploaded","##size"),
-				array($imagepath,$row->Hash,$row->Directory,$row->Displayname,$row->Hash,htmlentities(utf8_decode(ui_get_cropped_displayname($row->Displayname))).$shared,date("d.m.y H:i:s",$date),fs_get_fitting_DisplayStyle($row->Size)),
+				array($imagepath,$row->Hash,$row->Directory,$row->Displayname,$row->Hash,htmlentities((ui_get_cropped_displayname(fs_get_filename_lowercase_extension($row->Displayname)))).$shared,date("d.m.y H:i:s",$date),fs_get_fitting_DisplayStyle($row->Size)),
 				$_SESSION["template"]["Table_File_template"]
 				);
 			if (isset($_SESSION["user_logged_in"]) && $GLOBALS["config"]["Program_Enable_Action_Buttons"] == 1 && isset($fileToCopyOrToMove) == false  && isset($search) == false && $_SESSION["template"]["Actions"] == true)

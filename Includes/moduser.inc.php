@@ -28,14 +28,27 @@
 	{
 		if ($_GET["task"] == "delete")
 		{
-			
-			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
-			$user = mysqli_real_escape_string($connect, $_GET["user"]);
-			user_delete($user);
-		}
+			if (isset($_GET["s"]) && $_GET["s"] = true){
+				include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+				$user = mysqli_real_escape_string($connect, $_GET["user"]);
+				user_delete($user);
+			}
+			else{
+				echo "<h3>".$GLOBALS["Program_Language"]["Delete_Account"]." (".$_GET["user"].")?</h3>";
+				echo "<a class = 'btn btn-danger' href = 'index.php?module=moduser&task=delete&user=".$_GET["user"]."&s=true'>".$GLOBALS["Program_Language"]["Delete_OK"]."</a>";
+			}
+		}		
 	}
 	else
 	{
 		echo "You don't have enought permissions";
+	}
+	if (isset($_GET["task"]) && $_GET["task"] == "newtoken"){
+		if (user_set_new_api_token($_SESSION["user_name"])){
+			header("Location: index.php?module=account&message=token_refreshed_success");
+		}
+		else{			
+			header("Location: index.php?module=account&message=token_refresh_fail");
+		}
 	}
 ?>

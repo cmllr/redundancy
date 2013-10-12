@@ -86,7 +86,7 @@
 <?php
 	//Internet Explorer fix
 	if (isset($_FILES,$_POST) == false)
-		header('Content-type: text/html; charset=utf8');
+		header('Content-type: text/html; charset=utf-8');
 ?>
 <?php if ($GLOBALS["config"]["Program_Display_Generator_Tag"] == 1): ?>
 <meta name="generator" content="<?php echo $GLOBALS["config"]["Program_Name_ALT"]." ".$GLOBALS["Program_Version"];?>" />
@@ -109,10 +109,10 @@
 <?php
 	
 	//Check session if ok.
-	if (xss_check() == true)
+	if (xss_check() == true || ($GLOBALS["config"]["Program_Enable_Banning"] && is_Banned()))
 	{
-		echo "XSS Attack found</title>";
-		echo "<center><img src = \"./Images/AnimatedStop.gif\"><div style = 'visibility:visible;' id = 'warning'>You did an XSS attack. Redundancy will stop here.<br>*<br>This violation was reported<br>*<br>Dieser Verstoß wurde berichtet<br></div></center><body></body></html>";
+		echo "Attack found</title>";
+		echo "<center><img src = \"./Images/AnimatedStop.gif\"><div style = 'visibility:visible;' id = 'warning'>You did an attack or your IP is banned. Redundancy will stop here.<br>*<br>This violation was reported<br>*<br>Dieser Vorgang wurde berichtet<br></div></center><body></body></html>";
 		exit;
 	}	
 	if (isset($GLOBALS["Program_language"]) == false)
@@ -153,8 +153,6 @@
 	}
 ?>
 </title>
-<script type="text/javascript" src="Core.js">
-</script>
 </head>
 <body> 
 <?php 

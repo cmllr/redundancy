@@ -25,7 +25,7 @@ Status_template_shared = "<a class = 'hidden-xs' href = 'index.php?module=share&
 Status_template_share = "<a class = 'hidden-xs' href = 'index.php?module=share&file=##hash&new=true'><span class=\"elusive icon-remove-sign glyphIcon\"></span></a>";
 Table_Item_Definition = "<tr>";
 Table_Item_template = "<td><img  src='##imagepath'></td><td   id = '##hash' >##dirlink</td><td>##uploaded</td><td class ='size hidden-xs'>##size</td>";
-Table_Item_Search_template = "<td class =  'actions' ><a class = 'fileActions' title = '##open' href ='index.php?##modulelink'><img  src = './Images/door_open.png'></a></td>";
+Table_Item_Search_template = "<td class =  'actions' ><a class = 'fileActions' title = '##open' href ='index.php?##modulelink'><span class=\"elusive icon-folder-open glyphIcon\"></span></a></td>";
 Table_File_Definition = "<tr>";
 Table_File_template = "<td><img src='##imagepath'></td><td  id = '##hash' ><a class = 'filelink' title = '##directory##displayname' href = 'index.php?module=file&file=##hash'>##croppeddisplayname</a></td><td>##uploaded</td><td class ='size hidden-xs'>##size</td>";
 Share_Link = "<a class = 'hidden-xs' href ='##link'><span class=\"elusive icon-share-alt glyphIcon\"></a>";

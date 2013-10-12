@@ -19,18 +19,7 @@
 	 * @section DESCRIPTION
 	 *
 	 * This file contains function for creating the interface
-	 */
-	/**
-	 * ui_create_copybutton get a flash copy button
-	 * @todo Not finished
-	 * @param $hashcode the hash of the file	
-	 * @return a copybutton
-	 */
-	function ui_create_copybutton($hashcode){
-		echo "<object title = 'Sharelink' classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000' height='31' id='clippy' >";	
-		echo "<embed src='./Lib/clippy.swf' height='31' name='clippy' quality='high' allowScriptAccess='always' type='application/x-shockwave-flash' pluginspage='http://www.macromedia.com/go/getflashplayer' FlashVars='text=$hashcode' bgcolor='#F0F0F0'";
-		echo "/></object>";	
-	}
+	 */	
 	/**
 	 * ui_create_contextmenu create a JQuery based context menu
 	 * @param $hashcode the hash of the file	

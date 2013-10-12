@@ -37,7 +37,18 @@
 		echo "<b>".$GLOBALS["Program_Language"]["Email"].": </b> ".$row->Email;	
 		echo "<br><b>".$GLOBALS["Program_Language"]["Username"].": </b> ".$row->User;
 		if ($_SESSION["role"] != 3 && $GLOBALS["config"]["Api_Enable"])
-			echo "<br><b>API Token </b><input type ='text' cols='70' rows='2' value ='".$row->API_Key."'></input></p>";
+		echo"
+		<div class=\"form-group\">
+			<div class=\"input-group\" >
+				<span class=\"input-group-addon\">API Token</span>
+				<input type=\"text\" class=\"form-control\" value ='".$row->API_Key."'> 
+				<span class=\"input-group-btn\">
+					<button class=\"btn btn-default\" type=\"submit\"><a href = \"index.php?module=moduser&task=newtoken\"<span class=\"elusive icon-refresh glyphIcon\"></a>
+				</span></button>
+			</span>
+			</div>
+		</div>		
+		";
 	}	
 	echo "<h2>".$GLOBALS["Program_Language"]["Password_Management"]."</h2>";	
 	echo "<h3>".$GLOBALS["Program_Language"]["Pass_Changes"]."</h2>";
@@ -116,7 +127,7 @@ $(document).ready(function(){
 		include $GLOBALS["Program_Dir"]."Includes/settings.inc.php";	
 ?>
 <?php
-	if ($_SESSION["role"] == 3)
+	if ($_SESSION["role"] == 3 || is_guest())
 		exit;
 ?>
 <p>

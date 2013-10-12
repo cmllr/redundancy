@@ -21,7 +21,7 @@
 	 * The upload process is runned out of this file
 	 */
 	 //Include uri check
-	require_once ("checkuri.inc.php");
+	//require_once ("checkuri.inc.php");
 if (isset($_SESSION) == false)
 	session_start();
 	$success = false;
@@ -58,7 +58,7 @@ if (isset($_SESSION) == false)
 						$hash = md5($newfilename);	
 						$client_ip = getIP();
 						$timestamp = time();
-						$uploadtime= date("D M j G:i:s T Y",$timestamp);
+						$uploadtime= date("d.m.y H:i:s",$timestamp);//"D M j G:i:s T Y",$timestamp);
 						$dir = $_SESSION['currentdir'];				
 						$oldfilename = mysqli_real_escape_string($connect,($_FILES['userfile']['name'][$key]));
 						$size = filesize($_FILES['userfile']['tmp_name'][$key]);
@@ -87,7 +87,8 @@ if (isset($_SESSION) == false)
 						}
 						else if (fs_file_exists($oldfilename,$dir) == false)
 						{
-							header("Location: index.php?message=nospace");
+							if (!isset($_POST["ACK"]))
+								header("Location: index.php?message=nospace");
 						}
 						else if (fs_file_exists($oldfilename,$dir) != false)
 						{
@@ -96,7 +97,8 @@ if (isset($_SESSION) == false)
 						}
 						
 					} else {
-						header("Location: index.php?message=notallowed");
+						if (!isset($_POST["ACK"]))
+							header("Location: index.php?message=notallowed");
 					}
 				}				
 			}			
@@ -104,11 +106,15 @@ if (isset($_SESSION) == false)
 	}
 	else
 	{
+		if (!isset($_POST["ACK"]))
 			header("Location: index.php?message=readonly");
 	}
-	if (isset($_POST["api_key"]))
+	if (isset($_POST["ACK"]))
 	{
-		echo "Command_Result:{$success}";
+		if ($success == false)
+			echo "false";
+		else
+			echo "true";
 		exit;	
 	}		
 	else

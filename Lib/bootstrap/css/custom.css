@@ -13,6 +13,9 @@ li.disabled a {
 .glyphIcon {
 	margin-right: 6px;
 }
+.sidebar-nav-fixed .glyphIcon {
+	font-size: 1.1em;
+}
 .nav>li>a:hover, .nav>li>a:focus{
 	color: white;
 	background: #2c557d;

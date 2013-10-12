@@ -93,90 +93,150 @@ Add admin remarks here
 <div class="tab-pane fade" id="Edit">
 <div class="panel panel-default">
 <div class="panel-body">
-<form method="POST" action="index.php?module=admin" >
 <?php if (isset($_POST["username_info"])) : ?>
 <script>
 $(function(){
 	$('#dataTabs li:eq(2) a').tab('show');
 });
+$(function(){
+	$('#inputStorage').tooltip('toggle');
+	$('#inputStorage').tooltip('hide');
+	$('#buttonDeleteUser').tooltip('toggle');
+	$('#buttonDeleteUser').tooltip('hide');
+});
 </script>
 <?php	
+	
 		if (isset($_POST["username_info"])){
 			if (isExisting("",$_POST["username_info"]) == false)
 			{
 				echo "No such user";
+				echo "<div class=\"form-group\">
+						<div class=\"col-lg-offset-0 col-lg-9\">
+							<a class=\"btn btn-default\" href=\"index.php?module=admin\">".$GLOBALS["Program_Language"]["Back"]."</a>
+						</div>
+					</div>";
 				exit;
 			}		
 			if (isset($_POST["role"]) == false )
 			{			
-				echo "<input type=\"text\" name=\"username_info\" value=\"".$_POST["username_info"]."\" READONLY/><br>";
-				echo "<p>".$GLOBALS["Program_Language"]["role"];
-				echo " <input type=\"radio\" name=\"role\" value=\"0\"";
-				if (user_get_role($_POST["username_info"]) == 0)
-					echo "CHECKED />";
-				else
-					echo "/>";
-				echo "Administrator ";
-				echo "<input type=\"radio\" name=\"role\" value=\"1\"";
-				if (user_get_role($_POST["username_info"]) == 1)
-					echo "CHECKED />";
-				else
-					echo "/>";
-				echo "User ";
-				echo "<input type=\"radio\" name=\"role\" value=\"3\"";
-				if (user_get_role($_POST["username_info"]) == 3)
-					echo "CHECKED />";
-				else
-					echo "/>";
-				echo "Guest ";	
-				echo "</p>";
-			
-				echo "<p><input type=\"checkbox\" name=\"lock\"";
-				if (user_get_enabled($_POST["username_info"]) == 1)
-					echo " checked=\"checked\"/> ".$GLOBALS["Program_Language"]["enabled_user"]."</p>";
-				else
-					echo "/> ".$GLOBALS["Program_Language"]["enabled_user"]."</p>";
-				//TODO: bootstrap
-				//echo "<br><a type=\"a\" href = 'index.php?module=admin#Edit 'class=\"btn btn-default\"><span class=\"elusive icon-user glyphIcon\"></span>Edit Other</a>";
+				echo"
+			<form class=\"form-horizontal\" role=\"form\" method=\"POST\" action=\"index.php?module=admin\">				
+				<input type=\"hidden\" class=\"form-control\" name=\"username_info\" value=\"".$_POST["username_info"]."\">		
+
+<div class=\"form-group\">
+					<label class=\"col-lg-3 control-label\">".$GLOBALS["Program_Language"]["Username"]."</label><div class=\"col-lg-9\"><p class=\"form-control-static\">".$_POST["username_info"]."</p>
+					</div>
+				</div>
+				
+				<div class=\"form-group\">
+					<label class=\"col-lg-3 control-label\">".$GLOBALS["Program_Language"]["user_group"]."</label>
+					<div class=\"col-lg-9\">
+						<label class=\"radio-inline\">
+							<input type=\"radio\" name=\"role\" value = \"0\"";
+							if (user_get_role($_POST["username_info"]) == 0)
+										echo "CHECKED />";
+									else
+										echo "/>";
+									echo "Administrator ";
+						echo"</label>
+						<label class=\"radio-inline\">
+							<input type=\"radio\" name=\"role\" value=\"1\"";		  
+							  if (user_get_role($_POST["username_info"]) == 1)
+										echo "CHECKED />";
+									else
+										echo "/>";
+									echo "User ";
+						echo"</label>
+						<label class=\"radio-inline\">
+							<input type=\"radio\" name=\"role\" value=\"3\"";
+							  if (user_get_role($_POST["username_info"]) == 3)
+										echo "CHECKED />";
+									else
+										echo "/>";
+									echo "Guest ";			 
+						echo"</label>
+					</div>
+				</div>
+				<div class=\"form-group\">
+					<div class=\"col-lg-offset-3 col-lg-9\">
+						<div class=\"checkbox\">
+							<label>
+								<input type=\"checkbox\" name=\"lock\"";
+								if (user_get_enabled($_POST["username_info"]) == 1)
+										echo " checked=\"checked\"/> ".$GLOBALS["Program_Language"]["enabled_user"];
+									else
+										echo "/> ".$GLOBALS["Program_Language"]["enabled_user"];
+					echo "</label>
+						</div>
+					</div>
+				</div>
+				<div class=\"form-group\">
+					<label class=\"col-lg-3 control-label\">".$GLOBALS["Program_Language"]["user_storage_in_mb"]."</label>
+						<div class=\"col-lg-9\">
+							<p>
+								<input value = \"";
+									echo user_get_storage($_POST["username_info"])."\"type=\"text\" class=\"form-control\" placeholder=\"".$GLOBALS["Program_Language"]["user_storage_in_mb"]."\" \"storage\" data-toggle=\"tooltip\" data-placement=\"right\" id=\"inputStorage\" title data-original-title=\"Minimum: ".fs_get_fitting_DisplayStyle(round(getUsedSpace($_POST["username_info"]),0,PHP_ROUND_HALF_UP))."\">";
+						echo "</p>
+						</div>
+				</div>
+				<div class=\"form-group\">
+					<label class=\"col-lg-3 control-label\">".$GLOBALS["Program_Language"]["Password"]."</label>
+						<div class=\"col-lg-9\">
+							<input type=\"text\" class=\"form-control\" name=\"user_new_pass\" placeholder=\"".$GLOBALS["Program_Language"]["Password"]."\">
+						</div>
+				</div>
+				<div class=\"form-group\">
+					<label class=\"col-lg-3 control-label\">".$GLOBALS["Program_Language"]["pass_hint"]."</label>";
+					echo "<div class=\"col-lg-9\"><p class=\"form-control-static\">";
+					echo "".getRandomPass($GLOBALS["config"]["User_Recover_Password_Length"]);  
+					echo "</p>
+					</div>
+				</div>
+				<div class=\"form-group\">
+					<label class=\"col-lg-3 control-label\">".$GLOBALS["Program_Language"]["user_save"]."</label>		
+					<div class=\"col-lg-9\">
+							<input type=\"submit\" class=\"btn btn-default\" name=\"submit\" value=\"".$GLOBALS["Program_Language"]["Save"]."\">
+					</div>
+				</div>
+			</form>						
+			<form class=\"form-horizontal\" method=\"POST\" action=\"index.php?module=moduser&task=delete&user=".$_POST["username_info"]."\">
+				<div class=\"form-group\">
+						<label class=\"col-lg-3 control-label\">".$GLOBALS["Program_Language"]["user_delete_admin"]."</label>				
+						<div class=\"col-lg-9\">								
+							<input type=\"submit\" id=\"buttonDeleteUser\" class=\"btn btn-danger\" data-toggle=\"tooltip\" data-placement=\"right\" title data-original-title=\"".$GLOBALS['Program_Language']['user_delete_warning']."\" value=\"".$GLOBALS["Program_Language"]["Delete"]."\">
+						</div>
+				</div>
+			</form>	
+			<div class=\"form-group\">
+				<div class=\"col-lg-12\">
+					<a class=\"btn btn-default\" href=\"index.php?module=admin\">".$GLOBALS["Program_Language"]["Back"]."</a>
+				</div>
+			</div>				
+			";
 			}			
 			if (isset($_POST["role"]) )
-			{				
+			{					
 				user_save_administration();			
 			}
 		}		
 ?>
- 
-  <?php echo $GLOBALS["Program_Language"]["Size"];?>
- <input name="storage" value="<?php
-	echo user_get_storage($_POST["username_info"]);
-  ?>"/>
-  Minimum: <?php echo fs_get_fitting_DisplayStyle(round(getUsedSpace($_POST["username_info"]),0,PHP_ROUND_HALF_UP));?>
-<br>
-    <?php echo $GLOBALS["Program_Language"]["New_Pass"];?> <input name="user_new_pass">
-<?php
-	echo $GLOBALS["Program_Language"]["pass_hint"].": ".getRandomPass($GLOBALS["config"]["User_Recover_Password_Length"]);  
-?>
-<br>
-<input type=submit name=submit value="<?php echo $GLOBALS["Program_Language"]["Save"];?>">
-<br>
-</form>
-<form method="POST" action="index.php?module=moduser&task=delete&user=<?php echo $_POST["username_info"]?>">
-<?php echo $GLOBALS["Program_Language"]["user_delete_admin"];?><input type="submit" value="<?php echo $GLOBALS["Program_Language"]["Delete"]; ?>" />
-</form>
 <?php endif;?>
 <?php if (isset($_POST["username_info"]) == false): ?>
 <form role="form" method="POST" action="index.php?module=admin">
+
   <div class="form-group">
     <label for="inputUsername"><?php echo $GLOBALS["Program_Language"]["get_user_info"];?></label>
       <div class="input-group" id="inputUsername">
-  <span class="input-group-addon">User</span>
-  <input name="username_info" type="text" class="form-control" placeholder="Benutzername">
+  <span class="input-group-addon"><?php echo $GLOBALS["Program_Language"]["Username"];?></span>
+  <input name="username_info" type="text" class="form-control" placeholder="">
   <span class="input-group-btn">
-        <button class="btn btn-default" type="submit"><?php echo $GLOBALS["Program_Language"]["get_user_info"];?></button>
+        <button class="btn btn-default" type="submit"><?php echo $GLOBALS["Program_Language"]["Search"];?></button>
       </span>
 </div>
   </div>
 </form>
+
 <?php endif;?>	
 </div>
 </div>
@@ -211,14 +271,20 @@ $(function(){
 <form role="form" method="POST" action="index.php?module=admin">
   <div class="form-group">
     <label for="inputUsername"><?php echo $GLOBALS["Program_Language"]["Username"]; ?></label>
-    <input type="text" name="user_create" class="form-control" id="inputUsername" placeholder="<?php echo $GLOBALS["Program_Language"]["Username"]; ?>">
+      <div class="input-group" id="inputUsername">
+  <span class="input-group-addon">Benutzername</span>
+     <input type="text" name="user_create" class="form-control" id="inputUsername">
+</div>
   </div>
-  <div class="form-group">
-    <label for="inputPassword"><?php echo $GLOBALS["Program_Language"]["Password"]; ?></label>
-    <input type="password" name="pass_create" class="form-control" id="inputPassword" placeholder="<?php echo $GLOBALS["Program_Language"]["Password"]; ?>">
+ <div class="form-group">
+      <div class="input-group" id="inputPassword">
+  <span class="input-group-addon"><?php echo $GLOBALS["Program_Language"]["Password"]; ?></span>
+     <input type="password" name="pass_create" class="form-control" id="inputPassword">
+</div>
   </div>
-  <button type="submit" class="btn btn-default"><?php echo $GLOBALS["Program_Language"]["Save"];?></button>
+  <button type="submit" class="btn btn-primary btn-block"><?php echo $GLOBALS["Program_Language"]["Save"];?></button>
 </form>
+
 </div>
 </div>
 </div>

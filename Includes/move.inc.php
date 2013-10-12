@@ -21,7 +21,7 @@
 	 * The movement of files or folders is managed over this file
 	 */
 	 //Include uri check
-	require_once ("checkuri.inc.php");
+	//require_once ("checkuri.inc.php");
 	//start a session if needed
 	if (isset($_SESSION) == false)
 			session_start();
@@ -45,7 +45,9 @@
 				$file = mysqli_real_escape_string($connect,$_POST["file"]);
 			$sql = "UPDATE Files SET Directory='$dir',Directory_ID=".getDirectoryID($dir).",Uploaded='$uploadtime' WHERE Hash='$file'";
 			$displayname = getFileByHash($file);
-			echo $displayname;	
+			if ($GLOBALS["config"]["Program_Debug"] == 1 ){
+				echo $displayname;	
+			}
 			$success = true;
 			if (fs_file_exists($displayname,$dir) == false)
 				mysqli_query($connect,$sql) or die("Error: 015 ".mysqli_error($connect));	
@@ -59,7 +61,7 @@
 		else if ((isset($_GET["source"]) && isset($_GET["target"]) && isset($_GET["old_root"])) || (isset($_POST["source"]) && isset($_POST["target"]) && isset($_POST["old_root"])))				
 		{
 			//TODO: More testing.
-			if ($_GET["source"] != $_GET["target"]){
+			if ((isset($_GET["source"]) && ($_GET["source"] != $_GET["target"])) || (isset($_POST["source"]) && ($_POST["source"] != $_POST["target"]))){ 
 				//Include database file
 				include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 				/*$source = mysqli_real_escape_string($connect,$_GET["source"]); //directory to be moved
@@ -87,9 +89,12 @@
 			}
 		}
 	}
-	if (isset($_POST["api_key"]))
+	if (isset($_POST["ACK"]))
 	{
-		echo "Command_Result:{$success}";
+		if ($success == false)
+			echo "false";
+		else
+			echo "true";
 		exit;	
 	}	
 	//Redirect the user if needed

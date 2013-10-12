@@ -31,27 +31,31 @@
 	{		
 		//start a new session
 		if (isset($_SESSION) == false)
-			session_start();
-		//Include database file
+			session_start();		
 		if (strpos($pUser,"<") === false && strpos($pPass,"<") === false)
 		{
-			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";			
+			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+			//Get the user and pass cleaned from any dangerous contents
 			$user = mysqli_real_escape_string($connect,$pUser);
 			$pass = mysqli_real_escape_string($connect,$pPass);		
 			$tries = 0;
 			$email ="";
 			$name = "";
 			$enabled = 1;
-			$ergebnis = mysqli_query($connect,"Select ID, User, Email, Password, Salt,Storage,Role, Enabled,Failed_Logins,Session_Closed from Users where User = '$user' or Email = '$user' limit 1") or die("Error: 018 ".mysqli_error($connect));
+			$loginQuery = "Select ID, User, Email, Password, Salt,Storage,Role, Enabled,Failed_Logins,Session_Closed from Users where User = '$user' or Email = '$user' limit 1";
+			$ergebnis = mysqli_query($connect,$loginQuery) or die("Error: Could not execute query to log in the user. Error message: ".mysqli_error($connect));
 			while ($row = mysqli_fetch_object($ergebnis)) {	
+				//Remember data of the current tuple
 				$internalpassword = $row->Password;	
 				$tries = $row->Failed_Logins;
 				$email = $row->Email;
 				$name = $row->User;
 				$enabled = $row->Enabled;
+				//Compare the given password on the database with the user input
 				if ($internalpassword == hash('sha512',$pass.$row->Salt."thehoursedoesnoteatchickenandbacon") && $row->Enabled == 1)
 				{			
 					if ($login == true){
+						//Set the current session values
 						$_SESSION['user_id'] = $row->ID;
 						$_SESSION['user_name'] = $row->User;
 						$_SESSION['user_email'] = $row->Email;
@@ -64,24 +68,28 @@
 						$_SESSION["fs_hash"] = hash('sha512',$pass.$row->Salt.$row->Email.$pass);
 						$_SESSION["Session_Closed"] = $row->Session_Closed;
 						//Reset Login counter;
-						mysqli_query($connect,"Update Users Set Failed_logins=0,Session_Closed =0 where Email ='$user' or User='$user'");
+						$resetQuery = "Update Users Set Failed_logins=0,Session_Closed =0 where Email ='$user' or User='$user'";
+						mysqli_query($connect,$resetQuery);
 						mysqli_close($connect);	
 					}					
 					return true;		
 				}							
 			}
-			
-		}		
-		if ($tries == $GLOBALS["config"]["User_Max_Fails"]){
-			if ($enabled != 0){
-				mysqli_query($connect,"Update Users Set Enabled=0 where Email ='$user' or User='$user'");		
-				sendMail($email,3,$name,getIP2(),"","");		
-			}
-		}		
-		$tries = $tries +1;		
-		mysqli_query($connect,"Update Users Set Failed_logins=$tries where Email ='$user' or User='$user'");		
-		mysqli_close($connect);
-		return false;
+			//Update the error counter and lock the account if needed
+			if ($tries == $GLOBALS["config"]["User_Max_Fails"]){
+				if ($enabled != 0){
+					$disableQuery = "Update Users Set Enabled=0 where Email ='$user' or User='$user'";
+					mysqli_query($connect,$disableQuery);		
+					if ($GLOBALS["config"]["Program_Enable_Mail"] == 1)
+						sendMail($email,3,$name,getIP2(),"","");		
+				}
+			}		
+			$tries = $tries +1;		
+			$updateTriesQuery = "Update Users Set Failed_logins=$tries where Email ='$user' or User='$user'";
+			mysqli_query($connect,$updateTriesQuery);		
+			mysqli_close($connect);
+			return false;
+		}			
 	}
 	/**
 	 * getNewUserName create a new user name
@@ -90,15 +98,16 @@
 	 */
 	function getNewUserName($pEmail){
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		//cleanup parameter
 		$pEmail = mysqli_real_escape_string($connect,$pEmail);
 		$result = "";
 		$go = true;
+		//create user with the first part of the email. If already used, add a number and increment this number again if this combination is already given
 		$parts = explode("@",$pEmail);
 		$result = $parts[0];
-		$try = 0;
-			
+		$try = 0;			
 		do{
-			$ergebnis = mysqli_query($connect,"Select ID, User, Email, Password, Salt,Storage,Role, Enabled,Failed_Logins from Users where User = '$result' or Email = '$pEmail' limit 1") or die("Error: 018 ".mysqli_error($connect));
+			$ergebnis = mysqli_query($connect,"Select ID from Users where User = '$result' or Email = '$pEmail' limit 1") or die("Error: 018 ".mysqli_error($connect));
 			if (mysqli_affected_rows($connect) == 0)
 				$go = false;
 			else{
@@ -181,7 +190,7 @@
 		//Send a activation mail when the account is not activated automatically	
 		if ($ergebnis == true){
 			if ($GLOBALS["config"]["User_Registration_AutoDisable"] == 1 && $pSystem != 1 )
-				sendMail($email,1,$user,"Redundancy",$GLOBALS["config"]["User_Activation_Link"]."&email=".$email,"Redundancy");
+				sendMail($email,1,$user,"Redundancy",getActivationLink()."&email=".$email,"Redundancy");
 			return true;
 		}
 		else
@@ -199,21 +208,23 @@
 	function sendMail($pEmail,$pMessageID,$arg0,$arg1,$arg2,$arg3)
 	{
 		//Start a new session if needed
-		if (isset($_SESSION) == false)
-			session_start();
-		//Include database file
-		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
-		$result = mysqli_query($connect,"Select * from Mails where  ID = '$pMessageID' limit 1") or die("Error 020 ". mysqli_error($connect));
-		while ($row = mysqli_fetch_object($result)) {			
-			$text = sprintf ($row->Text,$arg0,$arg1,$arg2,$arg3);
-			$name = $GLOBALS["config"]["User_Activation_Link_Sender"];
-			$name_email = $GLOBALS["config"]["User_Activation_Link_Sender_Email"];
-			//Only send the email if configured
-			if ($name != "" && $name_email != "")
-				mail($pEmail, "Redundancy", $text, "From: $name <$name_email>");
+		if ($GLOBALS["config"]["Program_Enable_Mail"] == 1){
+			if (isset($_SESSION) == false)
+				session_start();
+			//Include database file
+			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+			$result = mysqli_query($connect,"Select * from Mails where  ID = '$pMessageID' limit 1") or die("Error 020 ". mysqli_error($connect));
+			while ($row = mysqli_fetch_object($result)) {			
+				$text = sprintf ($row->Text,$arg0,$arg1,$arg2,$arg3);
+				$name = "Server";			
+				$name_email = "server@".$_SERVER['SERVER_NAME'];
+				//Only send the email if configured
+				if ($name != "" && $name_email != "")
+					mail($pEmail, "Redundancy", $text, "From: $name <$name_email>");
+			}
+			//close connection
+			mysqli_close($connect);
 		}
-		//close connection
-		mysqli_close($connect);
 	}
 	/**
 	 * isExisting check if the user is already registered
@@ -251,7 +262,8 @@
 		$email = mysqli_real_escape_string($connect,$pEmail);		
 		if (isExisting($email,"") && strpos("<",$email) === false)
 		{		
-			if ($GLOBALS["config"]["User_Enable_Recover"] == 1){
+			if ($GLOBALS["config"]["User_Enable_Recover"] == 1){			
+			
 				$pass = getRandomPass($GLOBALS["config"]["User_Recover_Password_Length"]);
 				
 				$query = mysqli_query($connect,"Select ID,User, Email, Password, Salt from Users where Email ='$email' limit 1");
@@ -268,9 +280,10 @@
 						mysqli_query($connect,"Update Users Set Enabled=1 where Email ='$email'");
 				mysqli_query($connect,$query);
 				$history = "Insert into Pass_History (Changed,IP,Who) Values ('".date("D M j G:i:s T Y", time())."','".getIP()."',$id)";
-				mysqli_query($connect,$history);				
-				sendMail($email,2,$name,"Redundancy",$pass,"Redundancy");				
-				//header("Location: ./index.php?module=recover&msg=success");
+				mysqli_query($connect,$history);		
+				if ($GLOBALS["config"]["Program_Enable_Mail"])
+					sendMail($email,2,$name,"Redundancy",$pass,"Redundancy");				
+				header("Location: ./index.php?module=recover&msg=success");
 			}
 			else
 				header("Location: ./index.php?module=recover&msg=nosuccess");
@@ -659,7 +672,7 @@
 		return $status;
 	}
 	/**
-	 * gets the user status if enabled
+	 * sets the user status if enabled
 	 * @param $user the username or Email
 	 * @param $enabled the status as boolean
 	 */
@@ -675,5 +688,25 @@
 		
 		mysqli_close($connect);	
 		
+	}
+	/**
+	 * sets a new user api token
+	 * @param $user the username 	
+	 * @return the result of the operation
+	 */
+	function user_set_new_api_token($user){
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$salt = getRandomKey(200);		
+		$user = mysqli_real_escape_string($connect,$user);	
+		$api_key = hash('sha512',$user.$salt.$user);	
+		$query = "Update Users SET API_Key='$api_key' where User = '$user' limit 1";
+		mysqli_query($connect,$query);
+		if (mysqli_affected_rows($connect) ==  0){		
+			mysqli_close($connect);
+			return false;
+		}
+		else{
+			return true;
+		}		
 	}
 ?>

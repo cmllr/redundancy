@@ -27,4 +27,8 @@
 	//replace db with your database
 	$connect = mysqli_connect("localhost", "user", "pass") or die(header("Location: ./Installer/"));//die("Error: 005 ".mysqli_error());
 	mysqli_select_db($connect,"db") or die("Error: 006 ".mysqli_error()); 	
+	if (isset($_POST["ACK"])){
+		mysqli_query($connect,"SET NAMES 'utf8'");
+		mysqli_query($connect,"SET CHARACTER SET 'utf8'");
+	}
 ?>
