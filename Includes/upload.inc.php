@@ -25,7 +25,10 @@
 if (isset($_SESSION) == false)
 	session_start();
 	$success = false;
+	$toobig = false;
 	$alreadyExisting = false;
+	$max_upload = (int)(ini_get('upload_max_filesize'));
+	$config_size = $max_upload*1024*1024;
 	if ($_SESSION["role"] != 3){
 		$filecount = 0;
 		if (isset($_FILES["userfile"]))
@@ -35,7 +38,11 @@ if (isset($_SESSION) == false)
 				$filecount++;
 			}
 			foreach ($_FILES['userfile']['tmp_name'] as $key => $tmp_name ){
-				if (isset($_FILES["userfile"]) && file_exists($_FILES['userfile']['tmp_name'][$key]))
+				if ($config_size < filesize($_FILES['userfile']['tmp_name'][$key])){
+					$success = false;
+					$toobig =true;
+				}
+				if ($toobig == false && isset($_FILES["userfile"]) && file_exists($_FILES['userfile']['tmp_name'][$key]))
 				{				
 					$basepath = $GLOBALS["Program_Dir"];		
 					$uploaddir =$basepath.$GLOBALS["config"]["Program_Storage_Dir"]."/";
@@ -94,8 +101,7 @@ if (isset($_SESSION) == false)
 						{
 							$success == false;
 							$alreadyExisting = true;
-						}
-						
+						}					
 					} else {
 						if (!isset($_POST["ACK"]))
 							header("Location: index.php?message=notallowed");
@@ -127,13 +133,17 @@ if (isset($_SESSION) == false)
 		{
 			header("Location: index.php?module=list&message=upload_success");
 		}	
-		else if ($success == false&& $GLOBALS["config"]["Program_Redirect_Upload"] == 1 && $filecount != 0 && $alreadyExisting == false)
+		else if ($success == false&& $GLOBALS["config"]["Program_Redirect_Upload"] == 1 && $filecount != 0 && $alreadyExisting == false && $toobig == false)
 		{
 			header("Location: index.php?module=list&message=upload_fail");
 		}
-		else if ($success == false&& $GLOBALS["config"]["Program_Redirect_Upload"] == 1 && $filecount != 0 && $alreadyExisting == true)
+		else if ($success == false&& $GLOBALS["config"]["Program_Redirect_Upload"] == 1 && $filecount != 0 && $alreadyExisting == true  && $toobig == false)
 		{
 			header("Location: index.php?module=list&message=file_exists");
+		}
+		else if ($success == false&& $GLOBALS["config"]["Program_Redirect_Upload"] == 1 && $filecount != 0 && $toobig == true)
+		{
+			header("Location: index.php?module=list&message=phpini");
 		}
 	}
 ?>
@@ -148,6 +158,6 @@ if (isset($_SESSION) == false)
 <p> 
 	<input class = 'btn btn-default'  name="userfile[]" type="file" multiple/>
 </p>
-<small><?php echo $GLOBALS["Program_Language"]["Upload_SubTitle"];?></small>
+<small>Maximum: <?php echo fs_get_fitting_DisplayStyle($config_size).". ". $GLOBALS["Program_Language"]["Upload_SubTitle"];?></small>
     <input class = 'btn btn-default'  type='submit' value='<?php echo $GLOBALS["Program_Language"]["Upload"];?>'>	
 </form>
