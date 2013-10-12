@@ -79,13 +79,13 @@ error_reporting(E_ALL);
 <div class="panel-body">
 <form class="form-horizontal" role="form" method="POST" action="index.php">
 		<div class="form-group">
-			<label for="inputEmail" class="col-lg-3 control-label">Username</label>
+			<label for="inputEmail" class="col-lg-3 control-label">Database user</label>
 			<div class="col-lg-9">
 				<input type="text" class="form-control" id="user" name="user" placeholder="user">
 			</div>
 		</div>
 		<div class="form-group">
-			<label for="inputPassword" class="col-lg-3 control-label">Password</label>
+			<label for="inputPassword" class="col-lg-3 control-label">Database user password</label>
 			<div class="col-lg-9">
 				<input type="password" class="form-control" id="pass" name = "pass" placeholder="Password">
 			</div>
@@ -111,13 +111,13 @@ error_reporting(E_ALL);
 			</div>
 		</div>
 		<div class="form-group">
-			<label for="inputEmail" class="col-lg-3 control-label">Root User</label>
+			<label for="inputEmail" class="col-lg-3 control-label">Admin user</label>
 			<div class="col-lg-9">
 				<input type="text" class="form-control" id="rootname" name="rootname" >
 			</div>
 		</div>
 		<div class="form-group">
-			<label for="inputEmail" class="col-lg-3 control-label">Root pass</label>
+			<label for="inputEmail" class="col-lg-3 control-label">Admin password</label>
 			<div class="col-lg-9">
 				<input type="password" class="form-control" id="rootpass" name="rootpass" >
 			</div>
