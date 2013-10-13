@@ -316,7 +316,7 @@
 	 * @return the size in Byte
 	 */
 	function getDirectorySize($value)
-	{
+	{		
 		if (isset($_SESSION) == false)
 			session_start();
 		$dirSize = 0;

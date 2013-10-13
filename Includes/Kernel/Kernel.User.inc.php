@@ -552,10 +552,40 @@
 					user_set_enabled($user,true);
 				else
 					user_set_enabled($user,false);
-				log_event("info","user_save_administration","new role $role, new storage $storage, new pass $newpass");
+				if ($_POST["user_new_name"] != "")
+					user_rename($user,mysqli_real_escape_string($connect,$_POST["user_new_name"]));
+				if ($GLOBALS["config"]["Program_Enable_Logging"] == 1)
+					log_event("info","user_save_administration","new role $role, new storage $storage, new pass $newpass");
 				header("Location: index.php?module=admin&message=user_changes_success");
 			}				
 		}				
+	}
+	/**
+	 * renames the user
+	 * @param $old the username (old)
+	 * @param $new the new username
+	 */
+	function user_rename($old,$new){
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		if (isExisting("",$new) == false){
+			$ergebnis = mysqli_query($connect,"Update Users SET User='$new' where User = '$old' limit 1") or die("Error: 018 ".mysqli_error($connect));	
+		}
+	}
+	/**
+	 * renames the session value about the username if needed
+	 */
+	function rename_session(){
+		if (!isset($_SESSION))
+			session_start();
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$id = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		if (isExisting("",$username) == false){
+			$ergebnis = mysqli_query($connect,"Select User from  Users where ID = '$id' limit 1") or die("Error: 018 ".mysqli_error($connect));	
+			while ($row = mysqli_fetch_object($ergebnis)) {		
+				$_SESSION['user_name'] = $row->User;
+			}	
+			mysqli_close($connect);	
+		}		
 	}
 	/**
 	 * saves changes at the user profiles	
@@ -708,5 +738,28 @@
 		else{
 			return true;
 		}		
+	}
+	/**
+	 * prints a list of the currently registered users with an edit button	
+	 */
+	function list_users(){
+		if (is_admin()){
+			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
+			$res = mysqli_query($connect,"Select * from Users");	
+			while ($row = mysqli_fetch_object($res)){	
+			
+			echo "<form class=\"form-horizontal\" method=\"POST\" action=\"index.php?module=admin\">
+						<div class=\"form-group\">
+							<label class=\"col-lg-2 control-label\">".$row->User."</label>
+							<label class=\"col-lg-3 control-label\">".$row->Registered."</label>	
+								<div class=\"col-lg-3\">															
+								<input type=\"hidden\" name = \"username_info\" value = '".$row->User."'>
+								<input type=\"submit\" id=\"buttonDeleteUser\" class=\"btn btn-primary\"  value=\"Edit\">
+								</div>
+						</div>
+					</form>	";		
+			}
+			mysqli_close($connect);
+		}
 	}
 ?>

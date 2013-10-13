@@ -21,7 +21,23 @@ $(function(){
 <div class="tab-pane" id="Administration">
 <div class="panel panel-default">
 <div class="panel-body">
-Add admin remarks here	
+<?php	
+	if (is_admin()){
+		if (isset($_POST["list_users"]))
+			list_users();
+		else{
+			echo "<h3>".$GLOBALS["Program_Language"]["list_users"]."</h3>";
+			echo "<form class=\"form-horizontal\" method=\"POST\" action=\"index.php?module=admin\">
+			<input type=\"hidden\" id=\"list_users\" class=\"btn btn-primary\"  value=\"hello\" name = \"list_users\">
+			<input type=\"submit\" id=\"buttonDeleteUser\" class=\"btn btn-primary\"  value=\"".$GLOBALS["Program_Language"]["run_action"]."\">							
+			</form>	";	
+		}
+	}
+	else
+	{
+		echo "You don't have the rights to access this page or the web interface is disabled";
+	}
+?>
 </div>
 </div>
 </div>
@@ -78,15 +94,16 @@ Add admin remarks here
 			echo "<span class=\"successValue elusive icon-remove glyphIcon\"></span>0 Snapshots<br>";
 		else
 			echo "<span class=\"successValue elusive icon-ok glyphIcon\"></span>".$snapshotcount ." Snapshot(s) (".$last.")<br>";	
+		echo "<a type=\"a\" href = 'index.php?module=snapshot' class=\"btn btn-default\"><span class=\"elusive icon-camera glyphIcon\"></span>Snapshot</a>";
+
 	}		
 	else
 	{
 		echo "You don't have the rights to access this page or the web interface is disabled";
-		exit;
+		
 	}
 	echo "<br>";
 ?>
-<a type="a" href = 'index.php?module=snapshot' class="btn btn-default"><span class="elusive icon-camera glyphIcon"></span>Snapshot</a>
 </div>
 </div>
 </div>
@@ -103,10 +120,14 @@ $(function(){
 	$('#inputStorage').tooltip('hide');
 	$('#buttonDeleteUser').tooltip('toggle');
 	$('#buttonDeleteUser').tooltip('hide');
+	$('#user_new_name').tooltip('toggle');
+	$('#user_new_name').tooltip('hide');
+	
 });
 </script>
 <?php	
-	
+	if ($_SESSION["role"] == 0 && is_admin() && $GLOBALS["config"]["Program_Enable_Web_Administration"] == 1)
+	{
 		if (isset($_POST["username_info"])){
 			if (isExisting("",$_POST["username_info"]) == false)
 			{
@@ -194,6 +215,12 @@ $(function(){
 					</div>
 				</div>
 				<div class=\"form-group\">
+					<label class=\"col-lg-3 control-label\">".$GLOBALS["Program_Language"]["new_user_name"]."</label>
+						<div class=\"col-lg-9\">
+							<input type=\"text\" \"type=\"text\" class=\"form-control\" name=\"user_new_name\" data-toggle=\"tooltip\" data-placement=\"right\" id=\"user_new_name\" title data-original-title=\"".$GLOBALS["Program_Language"]["new_user_name_desc"]."\">
+						</div>
+				</div>
+				<div class=\"form-group\">
 					<label class=\"col-lg-3 control-label\">".$GLOBALS["Program_Language"]["user_save"]."</label>		
 					<div class=\"col-lg-9\">
 							<input type=\"submit\" class=\"btn btn-default\" name=\"submit\" value=\"".$GLOBALS["Program_Language"]["Save"]."\">
@@ -219,10 +246,16 @@ $(function(){
 			{					
 				user_save_administration();			
 			}
-		}		
+		}
+	}
+	else
+	{
+		echo "You don't have the rights to access this page or the web interface is disabled";
+		
+	}
 ?>
 <?php endif;?>
-<?php if (isset($_POST["username_info"]) == false): ?>
+<?php if (is_admin() && isset($_POST["username_info"]) == false): ?>
 <form role="form" method="POST" action="index.php?module=admin">
 
   <div class="form-group">
@@ -236,8 +269,13 @@ $(function(){
 </div>
   </div>
 </form>
-
 <?php endif;?>	
+<?php
+	if (is_admin() == false)
+	{
+		echo "You don't have the rights to access this page or the web interface is disabled";		
+	}
+?>
 </div>
 </div>
 </div>
@@ -268,6 +306,7 @@ $(function(){
 		}
 	}
 ?>
+<?php if (is_admin()): ?>
 <form role="form" method="POST" action="index.php?module=admin">
   <div class="form-group">
     <label for="inputUsername"><?php echo $GLOBALS["Program_Language"]["Username"]; ?></label>
@@ -284,7 +323,13 @@ $(function(){
   </div>
   <button type="submit" class="btn btn-primary btn-block"><?php echo $GLOBALS["Program_Language"]["Save"];?></button>
 </form>
-
+<?php endif; ?>
+<?php
+	if (is_admin() == false)
+	{
+		echo "You don't have the rights to access this page or the web interface is disabled";		
+	}
+?>
 </div>
 </div>
 </div>

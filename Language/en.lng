@@ -129,3 +129,7 @@ user_storage_in_mb = "Storage in MB";
 user_delete_warning = "The complete data will be delted, too!";
 user_group = "Group";
 phpini = "One or more files are above the maximum upload size of your server's configuration (php.ini).";
+list_users = "List current users";
+run_action = "Run action";
+new_user_name = "new username";
+new_user_name_desc = "Keep empty for no changes";

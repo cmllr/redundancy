@@ -130,3 +130,7 @@ user_storage_in_mb = "Speicher in MB";
 user_delete_warning = "Diese Funktion l&ouml;scht alle Daten des Benutzers";
 user_group = "Gruppe";
 phpini = "Eine oder mehrere Dateien &uuml;bersteigen die maximale Hochladegr&ouml&szlig;e auf diesem Server (php.ini)";
+list_users = "Benutzer des Systems auflisten";
+run_action = "Aktion ausf&uuml;hren";
+new_user_name = "Neuer Benutzername";
+new_user_name_desc = "Leer lassen f&uuml;r keine &Auml;nderung";

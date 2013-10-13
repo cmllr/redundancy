@@ -20,8 +20,8 @@
 	 *
 	 * Program entry point
 	 */
-	$GLOBALS["Program_Version"] = "1.9.11-git-beta1-r0";	
-	$GLOBALS["Program_Release"] = "12.10.2013";
+	$GLOBALS["Program_Version"] = "1.9.11-git-beta1-r1";	
+	$GLOBALS["Program_Release"] = "13.10.2013";
 	$GLOBALS["Program_Codename"] = "Cumulus";
 	$GLOBALS["config_dir"] = "./";	
 	Include "Kernel/Kernel.User.inc.php";

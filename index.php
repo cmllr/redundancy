@@ -33,9 +33,13 @@
 	$GLOBALS["Program_Dir"] = $GLOBALS["config"]["Program_Path"];
 	if ($GLOBALS["config"]["use_buffer"] == 1)
 		ob_start();
+	//Rename the user name value if the user is logged in and do a check if needed
+	if (isset($_SESSION["user_name"]))
+		rename_session();
+	//Load user defined options from the database if enabled by config
 	if (isset($_SESSION["user_name"]) && $GLOBALS["config"]["Program_Enable_User_Settings"] == 1)
 		user_load_settings();
-	//Exceptions, where only the blank content should be displayed 
+	//******************************Modules, which can be included directly*************************
 	if (isset($_GET["module"]) && $_GET["module"] == "image" )
 	{
 		include "./Includes/image.inc.php";			
@@ -52,11 +56,8 @@
 	{
 		include "./Includes/Source.inc.php";
 		exit;
-	}
-	//API redirection
-	if (isset($_GET["api"]) && $_GET["api"] == true)
-		header("Location: ./Includes/API/api.inc.php");
-	//Exceptions for dynamically loaded content
+	}	
+	//****************************Exceptions for dynamically loaded content//**************************
 	if (isset($_GET["search"]) == true || isset($_GET["upload"]) == true || isset($_GET["newdir"]) == true)
 	{
 		if (isset($GLOBALS["Program_language"]) == false)
@@ -91,11 +92,7 @@
 <?php if ($GLOBALS["config"]["Program_Display_Generator_Tag"] == 1): ?>
 <meta name="generator" content="<?php echo $GLOBALS["config"]["Program_Name_ALT"]." ".$GLOBALS["Program_Version"];?>" />
 <?php endif;?>
-<?php if ($GLOBALS["config"]["Program_Embed_GPL_Header"] == 1) include "./Includes/gpl.inc.php";?>
-<?php
-	$style = "Lib/bootstrap/css/bootstrap.min.css";
-?>
-<link rel = "stylesheet" href="./<?php echo $style?>" type = "text/css"/>
+<link rel = "stylesheet" href="./Lib/bootstrap/css/bootstrap.min.css" type = "text/css"/>
 <?php	
 	if ($GLOBALS["config"]["Program_Enable_JQuery"] == 1)
 		include "./Lib/JQuery.inc.php";
@@ -106,15 +103,15 @@
 ?>
 <link rel="icon" href="./favicon.ico" >
 <title>
-<?php
-	
-	//Check session if ok.
+<?php	
+	//Check xss problems and check if the user could be banned
 	if (xss_check() == true || ($GLOBALS["config"]["Program_Enable_Banning"] && is_Banned()))
 	{
 		echo "Attack found</title>";
 		echo "<center><img src = \"./Images/AnimatedStop.gif\"><div style = 'visibility:visible;' id = 'warning'>You did an attack or your IP is banned. Redundancy will stop here.<br>*<br>This violation was reported<br>*<br>Dieser Vorgang wurde berichtet<br></div></center><body></body></html>";
 		exit;
 	}	
+	//Language settings
 	if (isset($GLOBALS["Program_language"]) == false)
 	{	
 		if (isset($_SESSION["language"]) && strpos($_SESSION["language"],"..") === false)
@@ -155,19 +152,10 @@
 </title>
 </head>
 <body> 
-<?php 
-	echo "<div class = 'container'>";
-		echo "<div class = 'row'>";
-?>
-<!--
-<div class="alert alert-danger alert-dismissable">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-                            ×
-                        </button>
-                        <strong>Achtung!</strong> Redundancy's Design wird umgestellt. Die Funktionalität ist stark eingeschränkt
-                    </div>-->
+<div class = 'container'>
+<div class = 'row'>
 <?php	
-	//Include the plugins if enabled
+	//Pre plugin loading
 	if ($GLOBALS["config"]["Program_Enable_Plugins"] == 1)
 	{
 		$handle=opendir ($GLOBALS["Program_Dir"]."Includes/Plugins/BeforeModule/");
@@ -197,15 +185,15 @@
 	}
 	if (isset($_SESSION["user_logged_in"]))
 	{		
+		//apply user informations
 		user_apply_Informations();
-		//Include the status bar and menu and the wanted file
-	
+		//Include the status bar and menu and the wanted file	
 		include "./Includes/Header.inc.php";
 		//Display content itself		
 		echo "<div class=\"panel panel-default\"> " ;
 		echo "<div class=\"panel-body\">";
+			//Include the requested file	
 		if (isset($_GET["module"]) && strpos($_GET["module"],"..") === false && strpos($_GET["module"],".") === false){
-			//Include the requested file			
 			$path = $GLOBALS["Program_Dir"]."Includes/".$_GET["module"].".inc.php";			
 			if (file_exists($path))
 				include $path;		
@@ -235,6 +223,7 @@
 ?>
 </div>
 <?php
+	//Post plugin loading
 	if ($GLOBALS["config"]["Program_Enable_Plugins"] == 1)
 	{
 		$handle=opendir ($GLOBALS["Program_Dir"]."Includes/Plugins/AfterModule/");
@@ -245,7 +234,7 @@
 		closedir($handle);
 	}
 ?>
-<!--Display the right container-->
+<!--Display the right container, but only if logged in-->
 <?php if (isset($_SESSION["user_logged_in"])): ?>
 <div class="col-lg-2 col-md-2 visible-md visible-lg">
 <div data-spy="affix" data-offset-top="140" class="affix-top">
