@@ -65,7 +65,7 @@ if (isset($_SESSION) == false)
 						$hash = md5($newfilename);	
 						$client_ip = getIP();
 						$timestamp = time();
-						$uploadtime= date("d.m.y H:i:s",$timestamp);//"D M j G:i:s T Y",$timestamp);
+						$uploadtime= date("Y-m-d H:i:s",$timestamp);//"D M j G:i:s T Y",$timestamp);
 						$dir = $_SESSION['currentdir'];				
 						$oldfilename = mysqli_real_escape_string($connect,($_FILES['userfile']['name'][$key]));
 						$size = filesize($_FILES['userfile']['tmp_name'][$key]);

@@ -64,3 +64,4 @@ Program_Share_Link_Length = 7;
 Program_FileSystem_Name_Max_Length = 255;
 Program_Enable_Mail = 0;
 Program_Enable_Banning = 1;
+Program_Enable_Chart = 1;

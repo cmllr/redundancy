@@ -290,4 +290,42 @@
 			}	
 		}
 	}
+	/**
+	 * prints account details by the given id
+	 * @param $userid the id of the user
+	 */
+	function ui_get_account_details($userid)
+	{	
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		//get the current user id an search for users with this id
+		$id = mysqli_real_escape_string($connect,$userid);
+		//Get the informations to get displayed for the user
+		$result = mysqli_query($connect,"Select ID,Email,User,API_Key from Users  where ID = '$id' limit 1") or die("DataBase Error: 001 ".mysqli_error($connect));
+		//Display the user informations (Email, Username, API_Key, User changes)
+		while ($row = mysqli_fetch_object($result)) {
+			echo "<b>".$GLOBALS["Program_Language"]["Email"].": </b> ".$row->Email;	
+			echo "<br><b>".$GLOBALS["Program_Language"]["Username"].": </b> ".$row->User;
+			//Display the api token 
+			if ($_SESSION["role"] != 3 && is_guest() == false && $GLOBALS["config"]["Api_Enable"] == 1)
+			echo"
+			<div class=\"form-group\">
+				<div class=\"input-group\" >
+					<span class=\"input-group-addon\">API Key</span>
+					<input type=\"text\" class=\"form-control\" value ='".$row->API_Key."'> 
+					<span class=\"input-group-btn\">
+						<button class=\"btn btn-default\" type=\"submit\"><a href = \"index.php?module=moduser&task=newtoken\"<span class=\"elusive icon-refresh glyphIcon\"></a>
+					</span></button>
+				</span>
+				</div>
+			</div>";
+			echo "<h2>".$GLOBALS["Program_Language"]["Password_Management"]."</h2>";	
+			echo "<h3>".$GLOBALS["Program_Language"]["Pass_Changes"]."</h2>";
+			$result = mysqli_query($connect,"Select IP ,Changed from Pass_History  where Who = '".$row->ID."' limit 10") or die("DataBase Error: 001 ".mysqli_error($connect));
+			while ($row = mysqli_fetch_object($result)) {		
+				echo $row->Changed." - " .$row->IP."<br>";
+			}	
+		}
+		mysqli_close($connect);			
+	}
+	
 ?>

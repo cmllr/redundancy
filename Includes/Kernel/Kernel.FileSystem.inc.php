@@ -795,7 +795,7 @@
 		if (isset($_SESSION) == false)
 			session_start();
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
-		$uploadtime= date("D M j G:i:s T Y",time());
+		$uploadtime= date("Y-m-d H:i:s",time());
 		$owner_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);
 		$result = mysqli_query($connect,"Select * from Files  where Hash = '$file' and UserID = '$owner_id'") or die("Error: ".mysqli_error($connect));
 		while ($row = mysqli_fetch_object($result)) {
@@ -1180,14 +1180,12 @@
 		if (isset($_SESSION) == false)
 			session_start();
 		$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
-		$result = mysqli_query($connect,"Select * from Files where UserID = '$userID'")  or die("Error 023: ".mysqli_error($connect));
+		$result = mysqli_query($connect,"Select * from Files where UserID = '$userID' order by Uploaded desc limit ".$changes)  or die("Error 023: ".mysqli_error($connect));
 		$array = array ();
 		while ($row = mysqli_fetch_object($result)) {		
-			$datum = strtotime($row->Uploaded);
-			$array[$row->Displayname] = date("m.d.y",$datum);				
+			$datum = date($row->Uploaded);
+			$array[$row->Displayname] = date("d.m.y",strtotime($row->Uploaded));	
 		}		
-		arsort($array);
-		$i = 0;
 		echo   "<script>
 		  $(function() {
 			$( \"#accordion\" ).accordion();
@@ -1200,17 +1198,15 @@
 			if ($current_data != $val){
 				if ($i != 0)
 					echo "</ul></div>";
-				$current_data = $val;
-				$parts = explode(".",$val);
-				echo "<h3>".$parts[1].".".$parts[0].".".$parts[2]."</h3>";
+				$current_data = $val;				
+				echo "<h3>".$val."</h3>";
 				echo "<div>";
 				echo "<ul>";
 			}				
 		
 			echo "<li>$key</li>";
 			$i++;
-			if ($i >= $changes)
-				break;
+			
 		}
 		if (count($array) != 0)
 			echo "</div>";

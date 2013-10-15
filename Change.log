@@ -1,8 +1,8 @@
 <h1>Redundancy 1.9.11 Changelog</h1>
 <h2>Overview</h2> 
 <span class="label label-success">7 Bugfixes</span>
-<span class="label label-warning">1 Security Bugfixes</span>
-<span class="label label-info">8 Feature Additions</span>
+<span class="label label-warning">3 Security Bugfixes</span>
+<span class="label label-info">9 Feature Additions</span>
 <span class="label label-important" style="background:#b94a48">4 Features removed</span>
 <h2>Bugfixes</h2>
 - Fixed a bug when copy- or moving a file when a image was missing<br>
@@ -12,8 +12,11 @@
 - Changed a column type in the database to allow sorting by date<br>
 - Fixed a bug causing that the contingent could not be set<br>
 - Fixed a bug loosing the date at moving a file or dir<br>
+- Fixed a bug which caused wrong set of the timestamps<br>
 <h2>Security Bugfixes</h2>
 - Added a security question when deleting an account from the administration panel<br>
+- Fixed a security vulnerability which allowed under some cases to see the api token while be logged in as a guest<br>
+- Added an .htaccess file for the Includes directory<br>
 <h2>Feature additions/ Improvements</h2>
 - Added a display correction if the extension is uppercase<br>
 - Added an error message when a file is not found<br>
@@ -23,6 +26,7 @@
 - Program_Enable_Mail added to control mail support<br>
 - Program_Enable_Banning to control banning<br>
 - New API added (still work in progress! Not recommended to use yet)<br>
+- Program_Enable_Chart added to control drawing of the chart<br>
 <h2>Features removed</h2>
 - User_Activation_Link removed<br>
 - User_Activation_Link_Sender removed<br>

@@ -1,6 +1,6 @@
 <ul class="nav nav-tabs" id="dataTabs">
 <li >
-	<a href="#Administration" data-toggle="tab">Administration</a>
+	<a href="#Administration" data-toggle="tab"><?php echo $GLOBALS["Program_Language"]["list_users"];?></a>
 </li>
 <li>
 	<a href="#Status" data-toggle="tab">Status</a>
@@ -231,7 +231,7 @@ $(function(){
 				<div class=\"form-group\">
 						<label class=\"col-lg-3 control-label\">".$GLOBALS["Program_Language"]["user_delete_admin"]."</label>				
 						<div class=\"col-lg-9\">								
-							<input type=\"submit\" id=\"buttonDeleteUser\" class=\"btn btn-danger\" data-toggle=\"tooltip\" data-placement=\"right\" title data-original-title=\"".$GLOBALS['Program_Language']['user_delete_warning']."\" value=\"".$GLOBALS["Program_Language"]["Delete"]."\">
+							<input type=\"submit\" name=\"buttonDeleteUser\" id=\"buttonDeleteUser\" class=\"btn btn-danger\" data-toggle=\"tooltip\" data-placement=\"right\" title data-original-title=\"".$GLOBALS['Program_Language']['user_delete_warning']."\" value=\"".$GLOBALS["Program_Language"]["Delete"]."\">
 						</div>
 				</div>
 			</form>	
