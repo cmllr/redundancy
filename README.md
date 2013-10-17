@@ -8,7 +8,7 @@ Requirements
 ------------
 
 for server:
-- PHP 5
+- PHP 5.3 is recommended
 - PHP GD modules
 - PHP zip modules
 - MySQL(i) or equivalent
