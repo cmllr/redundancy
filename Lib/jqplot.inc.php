@@ -10,7 +10,7 @@
 <script>
 $(document).ready(function(){
   var data = [
-    <?php echo fs_get_stats();?>
+    <?php echo getFileSystemStats();?>
   ];
   var plot1 = jQuery.jqplot ('chartdiv', [data], 
     { 
@@ -23,7 +23,7 @@ $(document).ready(function(){
           showDataLabels: true,
 		  sortData: true,
 		  showLabel: true,
-		  dataLabels: [<?php echo fs_get_stats();?>],
+		  dataLabels: [<?php echo getFileSystemStats();?>],
 		  dataLabelNudge: 30,	
 		  varyBarColor: true,
 		  cursor:{ 
