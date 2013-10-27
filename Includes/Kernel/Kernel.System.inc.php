@@ -199,12 +199,17 @@
 			}
 			if ($mimetype == "image/png"){		
 				$im = imagecreatefrompng($_SESSION["current_file"]);
+				imagesavealpha ($im,true);
 				if (isset($_GET["t"]) && $_GET["t"] == 1)
 				{
-					list($width, $height) = getimagesize($_SESSION["current_file"]);
+					list($width, $height) = getimagesize($_SESSION["current_file"]);							
 					$newimage = imagecreatetruecolor(32,32);
-					imagecopyresampled($newimage,$im,0,0,0,0,32,32,$width,$height);
+					imagealphablending($newimage, false);
+					imagesavealpha ($newimage,true);					
+					imagecopyresampled($newimage,$im,0,0,0,0,32,32,$width,$height);		
+				
 					imagepng($newimage);
+					
 					imagedestroy($newimage);
 					imagedestroy($im);
 				}
