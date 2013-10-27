@@ -23,5 +23,7 @@
 	 //Include uri check
 	require_once ("checkuri.inc.php");
 ?>
-<img src="./Images/bootstrapped_logo.png" style="margin: 0 auto;" class="img-responsive">
-<h1 class="text-center">Redundancy<sup>2</sup></h1>
+<img src="<?php echo $GLOBALS["config"]["Program_Branding"];?>" style="margin: 0 auto;" class="img-responsive">
+<h1 class="text-center">
+	<?php echo $GLOBALS["config"]["Program_Name_ALT"];?>
+</h1>

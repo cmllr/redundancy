@@ -21,11 +21,11 @@
 	 * This file contains function for creating the interface
 	 */	
 	/**
-	 * ui_create_contextmenu create a JQuery based context menu
+	 * create a JQuery based context menu
 	 * @param $hashcode the hash of the file	
 	 * @param $count the current number of context menus already created	
 	 */
-	function ui_create_contextmenu($hashcode,$count)
+	function createContextMenu($hashcode,$count)
 	{
 		++$count;
 		$shared = isShared(str_replace("#","",$hashcode));
@@ -33,7 +33,7 @@
 			$Share_Status = "<a class = 'shared' href = 'index.php?module=share&file=".str_replace("#","",$hashcode)."&delete=true'><span class=\"elusive icon-share glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Shared"]."</a>";
 		else
 			$Share_Status = "<a href = 'index.php?module=share&file=".str_replace("#","",$hashcode)."&new=true'><span class=\"elusive icon-share glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Share"]."</a>";
-		$folder = fs_is_Dir(str_replace("#","",$hashcode));
+		$folder = isDirectory(str_replace("#","",$hashcode));
 		echo "<ul id='context_menu$count' style='position:fixed;font-size:small;width:150px'>";
 		if ($folder == true)
 		{
@@ -87,11 +87,11 @@
 		</script>";
 	}
 	/**
-	 * ui_get_cropped_displayname create a JQuery based context menu
+	 * shorten the display name
 	 * @param $displayname the long displayname
 	 * @return a cropped displayname
 	 */
-	function ui_get_cropped_displayname($displayname)
+	function getShortenedDisplayname($displayname)
 	{
 		$extension = explode(".",$displayname);
 		$ext = $extension[count($extension)-1];
@@ -104,39 +104,42 @@
 		}
 	}
 	/**
-	 * ui_get_dirlink get the file link
+	 * get the file link
 	 * @param $Displayname the long displayname
 	 * @param $Filename the filename (ending with .dat)
 	 * @param $Filename_only the filename of the dir (only short name)
 	 * @param $hash the hashcode of the file
 	 * @return the displaylink for the several cases (listing, copying, moving)
 	 */
-	function ui_get_dirlink($Displayname,$Filename,$Filename_only,$hash)
+	function getDirectoryHyperlink($Displayname,$Filename,$Filename_only,$hash)
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$dirlink = "";
 		$shared = "";
 		$shared = isShared($hash);
+	
 		if ($shared)
 			$shared = " <span class = 'label label-primary'>".$GLOBALS["Program_Language"]["Share_Title"]."</span>";
 		if (isset($_GET["move"]) && isset($_GET["file"]))
-			$dirlink = "<a title = '".$Displayname."'  href = 'index.php?module=move&dir=".$Displayname."&file=".mysqli_real_escape_string($connect,$_GET["file"])."'>".ui_get_cropped_displayname($Filename_only)."$shared</a>";
+			$dirlink = "<a title = '".$Displayname."'  href = 'index.php?module=move&dir=".$Displayname."&file=".mysqli_real_escape_string($connect,$_GET["file"])."'>".getShortenedDisplayname($Filename_only)."$shared</a>";
 		else if (isset($_GET["copy"]) && isset($_GET["file"]))
-			$dirlink = "<a title = '".$Displayname."' ' href = 'index.php?module=copy&dir=".$Displayname."&file=".mysqli_real_escape_string($connect,$_GET["file"])."'>".ui_get_cropped_displayname($Filename_only)."$shared</a>";
-		else if (isset($_GET["move"]) && isset($_GET["source"]))
-			$dirlink = "<a title = '".$Displayname."'  href = 'index.php?module=move&source=".$_GET["source"]."&target=".$Displayname."&old_root=".$_GET["old_root"]."'>".ui_get_cropped_displayname($Filename_only)."$shared</a>";
-		else if (isset($_GET["copy"]) && isset($_GET["source"]))
-			$dirlink = "<a title = '".$Displayname."'  href = 'index.php?module=copy&source=".$_GET["source"]."&target=".$Displayname."&old_root=".$_GET["old_root"]."'>".ui_get_cropped_displayname($Filename_only)."$shared</a>";
+			$dirlink = "<a title = '".$Displayname."' ' href = 'index.php?module=copy&dir=".$Displayname."&file=".mysqli_real_escape_string($connect,$_GET["file"])."'>".getShortenedDisplayname($Filename_only)."$shared</a>";
+		else if (isset($_GET["move"]) && isset($_GET["source"]) && isset($_GET["source"]) && $_GET["source"] !=  $Displayname)
+			$dirlink = "<a title = '".$Displayname."'  href = 'index.php?module=move&source=".$_GET["source"]."&target=".$Displayname."&old_root=".$_GET["old_root"]."'>".getShortenedDisplayname($Filename_only)."$shared</a>";
+		else if (isset($_GET["copy"]) && isset($_GET["source"]) && isset($_GET["source"]) && $_GET["source"] !=  $Displayname)
+			$dirlink = "<a title = '".$Displayname."'  href = 'index.php?module=copy&source=".$_GET["source"]."&target=".$Displayname."&old_root=".$_GET["old_root"]."'>".getShortenedDisplayname($Filename_only)."$shared</a>";
+		else if (isset($_GET["source"]) && $_GET["source"] ==  $Displayname)
+			$dirlink = "<a title = '".$Displayname."'  href = 'index.php?module=list&dir=".$_GET["source"]."'>".getShortenedDisplayname($Filename_only)."$shared</a>";
 		else
-			$dirlink = "<a title = '".$Displayname."'  href = 'index.php?module=list&dir=".$Displayname."'>".ui_get_cropped_displayname(getDisplayName($Filename_only,$Filename))."$shared</a>";
+			$dirlink = "<a title = '".$Displayname."'  href = 'index.php?module=list&dir=".$Displayname."'>".getShortenedDisplayname(getDisplayName($Filename_only,$Filename))."$shared</a>";
 		return $dirlink;
 	}
 	/**
-	 * ui_get_modulelink get the file module link
+	 * get the file module link
 	 * @param $Displayname the long displayname	
 	 * @return the dthe link with the several parameters for several cases
 	 */
-	function ui_get_modulelink($Displayname)
+	function getFileHyperlink($Displayname)
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$modulelink = "";
@@ -146,33 +149,18 @@
 				$modulelink = "module=list&dir=".$Displayname."&move=true&file=".mysqli_real_escape_string($connect,$_GET["file"])."&dir=".$Displayname;
 		else if (isset($_GET["copy"]) && isset($_GET["file"]))
 				$modulelink = "module=list&dir=".$Displayname."&copy=true&file=".mysqli_real_escape_string($connect,$_GET["file"])."&dir=".$Displayname;
-		else if (isset($_GET["copy"]) && isset($_GET["source"]))
+		else if (isset($_GET["copy"]) && isset($_GET["source"]) && $_GET["source"] != $Displayname)
 				$modulelink = "module=list&dir=".$Displayname."&copy=true&source=".mysqli_real_escape_string($connect,$_GET["source"])."&old_root=".mysqli_real_escape_string($connect,$_GET["old_root"])."&target=".$Displayname;
 		else if (isset($_GET["move"]) && isset($_GET["source"]))
 				$modulelink = "module=list&dir=".$Displayname."&move=true&source=".mysqli_real_escape_string($connect,$_GET["source"])."&old_root=".mysqli_real_escape_string($connect,$_GET["old_root"])."&target=".$Displayname;
 		return $modulelink;
-	}
-	/**
-	 * ui_get_Styles prints a list of styles
-	 * @param $stylesdir the directory containing the styles
-	 */
-	function ui_get_Styles($stylesdir)
-	{
-		$languages = scandir($stylesdir);
-		echo "<select class=\"selectpicker\" id = 'Style' name = 'Style'>";
-		foreach($languages as $entry) {
-			if (is_file($stylesdir.$entry) && endsWith($entry,".css") && $entry == "Bootstrap.css"){
-				echo "<option value='Styles/$entry'>".str_replace(".css","",$entry)."</option>";			
-			}				
-		}
-		echo "</select>";
 	}	
 	/**
 	 * get the share status as a link from a hashcode
 	 * @param $hashcode the hashcode
 	 * @return the share link or -1
 	 */
-	function ui_get_Share_Status($hashcode)
+	function getShareStatus($hashcode)
 	{
 		$shared = isShared($hashcode);	
 		$Share_Status = "-1";		
@@ -191,7 +179,7 @@
 		}
 		return $Share_Status;
 	}
-	function ui_enable_keyhooks()
+	function enableKeyHooks()
 	{
 		if ($GLOBALS["config"]["Program_Enable_JQuery"] == 1)
 		{
@@ -249,7 +237,7 @@
 	 * prints a title for the query
 	 * @param $query the search term
 	 */
-	function ui_create_query_title($query)
+	function createQueryTitle($query)
 	{
 		echo "<ol class = 'breadcrumb'>";
 		echo "<li ><a href= '#'><span class=\"elusive icon-search alt glyphIcon\"></span>".$GLOBALS["Program_Language"]["Search_to"]." \"".$query."\""."</a></li>";
@@ -259,7 +247,7 @@
 	 * prints a list of languages
 	 * @param $languages the directory containing the languages
 	 */
-	function ui_get_Langs($languages)
+	function getLanguages($languages)
 	{
 		$languages = scandir($languages);	
 		foreach($languages as $entry) {
@@ -271,7 +259,7 @@
 	/**
 	*prints a message
 	*/ 
-	function ui_get_messages()
+	function getMessage()
 	{
 		if (isset($_GET["message"]) && isset($GLOBALS["Program_Language"][$_GET["message"]]))
 		{		
@@ -282,6 +270,10 @@
 			if (strpos($message,"success") === false){
 			
 				echo "<div class='alert alert-danger'>".$GLOBALS["Program_Language"][$message]."<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button></div>";
+			}	
+			else if (strpos($message,"information") !== false){
+			
+				echo "<div class='alert alert-info'>".$GLOBALS["Program_Language"][$message]."<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button></div>";
 			}	
 			else
 			{
@@ -294,7 +286,11 @@
 	 * prints account details by the given id
 	 * @param $userid the id of the user
 	 */
+<<<<<<< HEAD
 	function ui_get_account_details($userid)
+=======
+	function getAccountDetails($userid)
+>>>>>>> Update to 1.9.11-git-beta1-r3
 	{	
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		//get the current user id an search for users with this id
@@ -306,7 +302,11 @@
 			echo "<b>".$GLOBALS["Program_Language"]["Email"].": </b> ".$row->Email;	
 			echo "<br><b>".$GLOBALS["Program_Language"]["Username"].": </b> ".$row->User;
 			//Display the api token 
+<<<<<<< HEAD
 			if ($_SESSION["role"] != 3 && is_guest() == false && $GLOBALS["config"]["Api_Enable"] == 1)
+=======
+			if ($_SESSION["role"] != 3 && isGuest() == false && $GLOBALS["config"]["Api_Enable"] == 1)
+>>>>>>> Update to 1.9.11-git-beta1-r3
 			echo"
 			<div class=\"form-group\">
 				<div class=\"input-group\" >

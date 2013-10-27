@@ -33,5 +33,6 @@
 		//Update the data row
 		mysqli_query($sql) or die("DataBase Error: 002 ".mysqli_error($connect));
 		header("Location: ./index.php?message=user_enabled");
+		exit;
 	}
 ?>

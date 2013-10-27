@@ -20,6 +20,7 @@
 	 *
 	 * Program start point
 	 */
+	 
 	$start = microtime(true);
 	//first - start a session if needed
 	if (isset($_SESSION) == false)
@@ -31,14 +32,19 @@
 	$GLOBALS["config"] = parse_ini_file($GLOBALS["config_dir"]."Redundancy.conf");
 	//Set the program path (very important)
 	$GLOBALS["Program_Dir"] = $GLOBALS["config"]["Program_Path"];
+	if ($GLOBALS["config"]["Program_Enable_ErrorHandler"] == 1)
+		setExceptionHandler();
 	if ($GLOBALS["config"]["use_buffer"] == 1)
 		ob_start();
 	//Rename the user name value if the user is logged in and do a check if needed
-	if (isset($_SESSION["user_name"]))
-		rename_session();
+	if (isset($_SESSION["user_name"])){
+		renameUserSessionIfNeeded();
+		if (isset($_SESSION["begin"])  == false || !checkSessionTimeout($_SESSION["begin"]))
+			logoutUser("session_stopped_fail");
+	}
 	//Load user defined options from the database if enabled by config
 	if (isset($_SESSION["user_name"]) && $GLOBALS["config"]["Program_Enable_User_Settings"] == 1)
-		user_load_settings();
+		loadUserSettings();
 	//******************************Modules, which can be included directly*************************
 	if (isset($_GET["module"]) && $_GET["module"] == "image" )
 	{
@@ -105,7 +111,7 @@
 <title>
 <?php	
 	//Check xss problems and check if the user could be banned
-	if (xss_check() == true || ($GLOBALS["config"]["Program_Enable_Banning"] && is_Banned()))
+	if (isXSS() == true || ($GLOBALS["config"]["Program_Enable_Banning"] && isBanned()))
 	{
 		echo "Attack found</title>";
 		echo "<center><img src = \"./Images/AnimatedStop.gif\"><div style = 'visibility:visible;' id = 'warning'>You did an attack or your IP is banned. Redundancy will stop here.<br>*<br>This violation was reported<br>*<br>Dieser Vorgang wurde berichtet<br></div></center><body></body></html>";
@@ -131,10 +137,10 @@
 	echo $GLOBALS["config"]["Program_Name_ALT"];
 	if (isset($_SESSION["user_name"])){
 		//Set the user contingent and refresh the information about used space
-		fs_setUsedSpace($_SESSION['user_name']);	
+		setUsedStorage($_SESSION['user_name']);	
 		//Check the user session if any sql injections are done
 		//if the $_SESSION value differs with the value result of mysqli_real_escape_string
-		if (user_check_session() == true)
+		if (isSessionCorrupted() == true)
 		{
 			echo "SQL Injection found</title>";
 			echo "<div style = 'visibility:visible;' id = 'warning'>SQL Injection found.</div><body></body></html>";
@@ -145,7 +151,7 @@
 	if ($GLOBALS["config"]["Program_HTTPS_Redirect"] == 1)
 	{
 		if(!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == ""){			
-			header("Location: $redirect"."https://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+			header("Location: https://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 		}
 	}
 ?>
@@ -186,7 +192,7 @@
 	if (isset($_SESSION["user_logged_in"]))
 	{		
 		//apply user informations
-		user_apply_Informations();
+		loadUserChanges();
 		//Include the status bar and menu and the wanted file	
 		include "./Includes/Header.inc.php";
 		//Display content itself		
@@ -246,7 +252,7 @@
 			<li>
 				<a href="?module=account"><?php echo $GLOBALS["Program_Language"]["My_Account"];?></a>
 			</li>
-			<?php if ($_SESSION["role"] == 0 && is_admin()): ?>
+			<?php if ($_SESSION["role"] == 0 && isAdmin()): ?>
 				<li>
 				<a href="?module=admin"><?php echo $GLOBALS["Program_Language"]["Administration"];?></a>
 			</li>

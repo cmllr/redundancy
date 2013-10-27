@@ -1,4 +1,5 @@
-<?php	/**
+<?php	
+	/**
 	 * @file
 	 * @author  squarerootfury <fury224@googlemail.com>	 
 	 *
@@ -28,78 +29,16 @@
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		$filename = "";
 		$result = mysqli_query($connect,"Select * from Files  where Hash = '".mysqli_real_escape_string($connect,$_GET["file"])."' limit 1");	
-		//echo $_SESSION["current_file"];
 		while ($row = mysqli_fetch_object($result)) {
 			$filename = $GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$row->Filename;
 		}	
-		//Set the current file
-		//echo $filename;	
+		//Set the current file		
 		$_SESSION["current_file"] = $filename;
-		//Delete database connection and display the image		
-		display();
+		//Display the image itself
+		displayImage($_SESSION["current_file"]);
 	}	
 	else if (isset($_SESSION["current_file"]) && $_SESSION["current_file"] != "-1"){			
 		
-		display();	
-	}
-	function display()
-	{			
-		//Display image if existing
-		//supported are: jpeg,jpg,bmp,png (atm)
-		if (file_exists($_SESSION["current_file"])){
-			header('Content-Type: ' .mime_content_type($_SESSION["current_file"]));		
-			$mimetype = mime_content_type($_SESSION["current_file"]);		
-			if ($mimetype == "image/jpeg"){
-				$im = imagecreatefromjpeg($_SESSION["current_file"]);	
-				if (isset($_GET["t"]) && $_GET["t"] == 1)
-				{
-					list($width, $height) = getimagesize($_SESSION["current_file"]);
-					$newimage = imagecreatetruecolor(32,32);
-					imagecopyresampled($newimage,$im,0,0,0,0,32,32,$width,$height);
-					imagejpeg($newimage);
-					imagedestroy($newimage);
-					imagedestroy($im);
-				}
-				else
-				{
-					imagejpeg($im);					
-					imagedestroy($im);	
-				}				
-			}
-			if ($mimetype == "image/bmp"){					
-				$im = imagecreatefromwbmp($_SESSION["current_file"]);
-				if (isset($_GET["t"]) && $_GET["t"] == 1)
-				{
-					list($width, $height) = getimagesize($_SESSION["current_file"]);
-					$newimage = imagecreatetruecolor(32,32);
-					imagecopyresampled($newimage,$im,0,0,0,0,32,32,$width,$height);
-					imagewbmp($newimage);
-					imagedestroy($newimage);
-					imagedestroy($im);
-				}
-				else
-				{
-					imagewbmp($im);
-					imagedestroy($im);		
-				}				
-			}
-			if ($mimetype == "image/png"){		
-				$im = imagecreatefrompng($_SESSION["current_file"]);
-				if (isset($_GET["t"]) && $_GET["t"] == 1)
-				{
-					list($width, $height) = getimagesize($_SESSION["current_file"]);
-					$newimage = imagecreatetruecolor(32,32);
-					imagecopyresampled($newimage,$im,0,0,0,0,32,32,$width,$height);
-					imagepng($newimage);
-					imagedestroy($newimage);
-					imagedestroy($im);
-				}
-				else
-				{
-					imagepng($im);
-					imagedestroy($im);		
-				}			 		
-			}			
-		}		
-	}
+		displayImage($_SESSION["current_file"]);	
+	}	
 ?> 

@@ -30,7 +30,7 @@
 	$success = false;
 	$redir ="";
 	//Split between moving a file and moving a dir
-	if ($_SESSION["role"] != 3){
+	if ($_SESSION["role"] != 3 && isGuest() == false){
 		if ((isset($_GET["file"]) && isset($_GET["dir"])) || (isset($_POST["file"]) && isset($_POST["dir"]))){
 			//Include database file
 			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
@@ -49,7 +49,7 @@
 				echo $displayname;	
 			}
 			$success = true;
-			if (fs_file_exists($displayname,$dir) == false)
+			if (isFileExisting($displayname,$dir) == false)
 				mysqli_query($connect,$sql) or die("Error: 015 ".mysqli_error($connect));	
 			else 
 				$success = false;
@@ -81,7 +81,7 @@
 					$old_root = mysqli_real_escape_string($connect,$_POST["old_root"]); // old root dir
 				$redir = $target;
 				$success = true;
-				if (fs_file_exists($target.getDisplayName($source,$source)."/",$target) == false)
+				if (isFileExisting($target.getDisplayName($source,$source)."/",$target) == false)
 					moveDir($source,$target,$old_root);
 				else 
 					$success = false;
@@ -89,7 +89,7 @@
 			}
 		}
 	}
-	if (isset($_POST["ACK"]))
+	if (isset($_POST["method"]))
 	{
 		if ($success == false)
 			echo "false";

@@ -67,11 +67,17 @@
 						$_SESSION["role"] = $row->Role;
 						$_SESSION["fs_hash"] = hash('sha512',$pass.$row->Salt.$row->Email.$pass);
 						$_SESSION["Session_Closed"] = $row->Session_Closed;
+						$_SESSION["begin"] = time();
 						//Reset Login counter;
 						$resetQuery = "Update Users Set Failed_logins=0,Session_Closed =0 where Email ='$user' or User='$user'";
 						mysqli_query($connect,$resetQuery);
 						mysqli_close($connect);	
-					}					
+					}	
+					else{
+						$_SESSION['user_id'] = $row->ID;
+						$_SESSION['user_name'] = $row->User;
+						$_SESSION['user_email'] = $row->Email;
+					}
 					return true;		
 				}							
 			}
@@ -170,7 +176,7 @@
 		}
 		$salt = getRandomKey(200);
 		$safetypass = hash('sha512',$pass.$salt."thehoursedoesnoteatchickenandbacon");	
-		$registered= date("D M j G:i:s T Y",time());
+		$registered= date("Y-m-d H:i:s",time());
 		$role = $GLOBALS["config"]["User_Default_Role"];		
 		$storage = $GLOBALS["config"]["User_Contingent"];
 		$api_key = hash('sha512',$Email.$salt.$user."thehoursedoesnoteatchickenandbacon");	
@@ -344,10 +350,10 @@
 		}
 	}
 	/**
-	 * is_admin check if the logged in user is administrator
+	 * check if the logged in user is administrator
 	 * @return if the user is admin
 	 */
-	function is_admin()
+	function isAdmin()
 	{
 		if (!isset($_SESSION))
 			session_start();
@@ -368,9 +374,9 @@
 	}
 	/**
 	 * check if the logged in user is a guest
-	 * @return if the user is a guest
+	 * @return true if  the user is a guest otherwise false
 	 */
-	function is_guest()
+	function isGuest()
 	{
 		if (!isset($_SESSION))
 			session_start();
@@ -380,7 +386,7 @@
 		$user_email = mysqli_real_escape_string($connect,$_SESSION['user_email']);
 		$query = "Select ID, User, Email, Role from Users where Email = '$user_email' and User = '$user_name' and ID = '$user_id'";
 		$mysql = mysqli_query($connect,$query);
-		while ($row = mysqli_fetch_object($mysql)) {					
+		while ($row = mysqli_fetch_object($mysql)) {				
 			if ($row->Role == 3)
 				$result = true;
 			else
@@ -390,9 +396,9 @@
 		return $result;
 	}
 	/**
-	 * is_adminuser_apply_Informations re apply storage and role informations	
+	 * re-apply storage and role informations	
 	 */
-	function user_apply_Informations()
+	function loadUserChanges()
 	{
 		if (!isset($_SESSION))
 			session_start();
@@ -407,9 +413,9 @@
 		mysqli_close($connect);		
 	}
 	/**
-	 * user_check_session check the user session
+	 * check the user session
 	 */
-	function user_check_session()
+	function isSessionCorrupted()
 	{
 		if (!isset($_SESSION))
 			session_start();
@@ -429,9 +435,9 @@
 		return $found;
 	}
 	/**
-	 * user_load_settings load user settings
+	 * load user settings
 	 */
-	function user_load_settings()
+	function loadUserSettings()
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		if (!isset($_SESSION))
@@ -450,9 +456,9 @@
 		mysqli_close($connect);		
 	}
 	/**
-	 * user_save_settings save user settings
+	 * save user settings
 	 */
-	function user_save_settings()
+	function saveUserSettings()
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		if (!isset($_SESSION))
@@ -476,17 +482,17 @@
 		mysqli_close($connect);		
 	}
 	/**
-	 * user_delete_settings delete user settings
+	 * delete the user settings
 	 */
-	function user_delete_settings()
+	function deleteUserSettings()
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-			if (!isset($_SESSION))
+		if (!isset($_SESSION))
 		{
 			exit;
 		}
 		$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
-		$ergebnis = mysqli_query($connect,"Delete from Settings where UserID=userID",$query) or die("Error: 018 ".mysqli_error($connect));
+		$ergebnis = mysqli_query($connect,"Delete from Settings where UserID='userID' limit 1",$query) or die("Error: 018 ".mysqli_error($connect));
 		mysqli_close($connect);	
 	}
 	/**
@@ -494,7 +500,7 @@
 	 * @param $username the username or the id
 	 * @return returns the role or -1
 	 */
-	function user_get_role($username)
+	function getUserRole($username)
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		$user = mysqli_real_escape_string($connect,$username);		
@@ -511,7 +517,7 @@
 	 * @param $username the username or the id
 	 * @return returns the role or -1
 	 */
-	function user_get_storage($username)
+	function getUserStorage($username)
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		$user = mysqli_real_escape_string($connect,$username);		
@@ -526,7 +532,7 @@
 	/**
 	 * saves changes at the user profiles	
 	 */
-	function user_save_administration()
+	function saveUserChanges()
 	{		
 		if (!isset($_SESSION))
 			session_start();
@@ -534,7 +540,7 @@
 		$user = "";
 		$storage = 0;
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
-		if (is_admin())
+		if (isAdmin())
 		{
 			if (isset($_POST["role"]) && $_POST["username_info"] != "")
 			{
@@ -542,20 +548,18 @@
 				$user = mysqli_real_escape_string($connect,$_POST["username_info"]);
 				$storage = mysqli_real_escape_string($connect,$_POST["storage"]);
 				$newpass = mysqli_real_escape_string($connect,$_POST["user_new_pass"]);
-				user_set_storage($user,$storage);				
+				setUserStorage($user,$storage);				
 				if ($_POST["user_new_pass"] != "")
 				{					
 					setNewPassword($user,$newpass,$newpass,0,1);
 				}				
-				user_set_role($user,$role);
+				setUserRole($user,$role);
 				if (isset($_POST["lock"]))
-					user_set_enabled($user,true);
+					enableUser($user,true);
 				else
-					user_set_enabled($user,false);
+					enableUser($user,false);
 				if ($_POST["user_new_name"] != "")
-					user_rename($user,mysqli_real_escape_string($connect,$_POST["user_new_name"]));
-				if ($GLOBALS["config"]["Program_Enable_Logging"] == 1)
-					log_event("info","user_save_administration","new role $role, new storage $storage, new pass $newpass");
+					renameUser($user,mysqli_real_escape_string($connect,$_POST["user_new_name"]));			
 				header("Location: index.php?module=admin&message=user_changes_success");
 			}				
 		}				
@@ -565,7 +569,7 @@
 	 * @param $old the username (old)
 	 * @param $new the new username
 	 */
-	function user_rename($old,$new){
+	function renameUser($old,$new){
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		if (isExisting("",$new) == false){
 			$ergebnis = mysqli_query($connect,"Update Users SET User='$new' where User = '$old' limit 1") or die("Error: 018 ".mysqli_error($connect));	
@@ -574,11 +578,12 @@
 	/**
 	 * renames the session value about the username if needed
 	 */
-	function rename_session(){
+	function renameUserSessionIfNeeded(){
 		if (!isset($_SESSION))
 			session_start();
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		$id = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		$username = mysqli_real_escape_string($connect,$_SESSION['user_name']);
 		if (isExisting("",$username) == false){
 			$ergebnis = mysqli_query($connect,"Select User from  Users where ID = '$id' limit 1") or die("Error: 018 ".mysqli_error($connect));	
 			while ($row = mysqli_fetch_object($ergebnis)) {		
@@ -592,7 +597,7 @@
 	 * @param $user the username or email
 	 * @param $newstorage the new amount of the storage in MB
 	 */
-	function user_set_storage($user,$newstorage)
+	function setUserStorage($user,$newstorage)
 	{
 		$used_storage =getUsedSpace($user); 
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
@@ -623,7 +628,7 @@
 	 * @param $role the user role
 	 * @return returns the role or -1
 	 */
-	function user_set_role($username,$role)
+	function setUserRole($username,$role)
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		$user = mysqli_real_escape_string($connect,$username);		
@@ -635,7 +640,7 @@
 	 * deletes a user
 	 * @param $username the username or Email or ID
 	 */
-	function user_delete($username)
+	function deleteUser($username)
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		$userID = mysqli_real_escape_string($connect,user_get_id($username));	
@@ -671,7 +676,7 @@
 	 * gets the user id
 	 * @param $username the username or Email
 	 */
-	function user_get_id($username)
+	function getUserID($username)
 	{
 		$id = -1;
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
@@ -688,7 +693,7 @@
 	 * gets the user status if enabled
 	 * @param $username the username or Email
 	 */
-	function user_get_enabled($username)
+	function isUserEnabled($username)
 	{
 		$status = -1;
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
@@ -706,7 +711,7 @@
 	 * @param $user the username or Email
 	 * @param $enabled the status as boolean
 	 */
-	function user_set_enabled($user,$enabled)
+	function enableUser($user,$enabled)
 	{	
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		$userID = mysqli_real_escape_string($connect,$user);	
@@ -724,7 +729,7 @@
 	 * @param $user the username 	
 	 * @return the result of the operation
 	 */
-	function user_set_new_api_token($user){
+	function generateToken($user){
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		$salt = getRandomKey(200);		
 		$user = mysqli_real_escape_string($connect,$user);	
@@ -742,8 +747,8 @@
 	/**
 	 * prints a list of the currently registered users with an edit button	
 	 */
-	function list_users(){
-		if (is_admin()){
+	function getUserList(){
+		if (isAdmin()){
 			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
 			$res = mysqli_query($connect,"Select * from Users");	
 			while ($row = mysqli_fetch_object($res)){	
@@ -760,6 +765,107 @@
 					</form>	";		
 			}
 			mysqli_close($connect);
+		}
+	}
+	/**
+	 * get the api key by a user id
+	 * @param $userid the numeric user id
+	 * @return the key of the user or ""
+	 */
+	function getKeyByID($userid){
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$id = mysqli_real_escape_string($connect,$userid);
+		$Key = "";
+		$res = mysqli_query($connect,"Select API_Key from Users where ID = '$id' limit 1");	
+		while ($row = mysqli_fetch_object($res)){	
+			$Key = $row->API_Key;	
+		}
+		mysqli_close($connect);
+		return $Key;
+	}
+	/**
+	 * get the user id by the name of the user
+	 * @param $user the username or email
+	 * @return the id of the user or -1
+	 */
+	function getIDByUsername($user){
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$name = mysqli_real_escape_string($connect,$user);
+		$ID = -1;
+		$res = mysqli_query($connect,"Select ID from Users where User = '$name' or Email = '$name' limit 1");	
+		while ($row = mysqli_fetch_object($res)){	
+			$ID = $row->ID;	
+		}
+		mysqli_close($connect);
+		return $ID;
+	}
+	/**
+	 * get the user key by the name of the user
+	 * @param $user the username or email
+	 * @param $password the password
+	 * @return the key of the user or false
+	 */
+	function getKeyByUsername($user,$password){
+		if (login($user,$password,false) == true){	
+			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+			$name = mysqli_real_escape_string($connect,$user);
+			$key = "false";
+			$res = mysqli_query($connect,"Select API_Key from Users where User = '$name' or Email = '$name' limit 1");	
+			while ($row = mysqli_fetch_object($res)){	
+				$key = $row->API_Key;	
+			}
+			mysqli_close($connect);
+			return $key;
+		}
+		else{
+			return "";
+		}
+	}
+	/**
+	 * logs the user out, kills the session
+	 * @param $message an optional parameter to get displayed
+	 */
+	function logoutUser($message = ""){
+		if (isset($_SESSION) == false)
+			session_start();		
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$id = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		if ($GLOBALS["config"]["Program_Debug"] != 1){	
+			echo $id;
+		}
+		$query = "Update Users SET Session_Closed = '1' where ID = ".$id;
+		if ($GLOBALS["config"]["Program_Debug"] != 1){	
+			echo $query;
+		}
+		$erg = mysqli_query($connect,$query) or die ("error".mysqli_error($connect));
+		if ($GLOBALS["config"]["Program_Debug"] != 1){	
+			echo "Result:".$erg;
+		}
+		mysqli_close($connect);
+		//exit everything	
+		session_unset();
+		session_destroy();
+		if ($message == "")
+			header('Location: ./index.php');
+		else
+			header("Location: ./index.php?message=$message");
+	}
+	/**
+	 * Check if the session is to old and should be terminated due security reasons
+	 * @param $sessionBegin the begin of the session as a time object
+	 * @return the result of the checking
+	 */
+	function checkSessionTimeout($sessionBegin){
+		$datetime1 = $sessionBegin;
+		$datetime2 = time();
+		$interval  = abs($datetime2 - $datetime1);
+		$minutes   = round($interval / 60);	
+		if ($minutes < $GLOBALS["config"]["Program_Session_Timeout"] || $GLOBALS["config"]["Program_Session_Timeout"] == -1){
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 ?>

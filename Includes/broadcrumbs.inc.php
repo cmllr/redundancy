@@ -1,4 +1,3 @@
-<ol class = 'breadcrumb'>
 <?php
 	/**
 	 * @file
@@ -44,16 +43,20 @@
 				else if (isset($_GET["move"]) && isset($_GET["source"]))
 			$suffix = "module=list&dir=/&move=true&source=".mysqli_real_escape_string($connect,$_GET["source"])."&old_root=".mysqli_real_escape_string($connect,$_GET["old_root"])."&target=/";
 	else
-			$suffix = "module=list&dir=/";
-	//Display home link
-	echo "<li><a href= 'index.php?$suffix'>Home</a></li>";
-	//Display the links as a part of the broadcrumb navigation
-	for ($i = 0; $i < count($dirs); $i++)
-	{
-		if ($dirs[$i] != ""){
-			echo "<li><a href= 'index.php?$suffix".$parts_before.$dirs[$i]."/'>".$dirs[$i]."</a></li>";
-			$parts_before = $parts_before.$dirs[$i]."/";
-		}	
-	}
+			$suffix = "module=list&dir=/";	
 ?>
+<ol class = 'breadcrumb'>
+	<li>
+		<a href= 'index.php?<?php echo $suffix;?>'>Home</a>
+	</li>		
+	<?php for ($i = 0; $i < count($dirs); $i++) :?>
+		<?php if ($dirs[$i] != "") :?>
+			<li>
+				<a href= 'index.php?<?php echo $suffix.$parts_before.$dirs[$i];?>/'><?php echo $dirs[$i];?></a>
+				<?php 
+					$parts_before = $parts_before.$dirs[$i]."/";
+				?>
+			</li>
+		<?php endif ;?>
+	<?php endfor;?>
 </ol>

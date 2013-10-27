@@ -21,34 +21,34 @@
 	 * Redundancy's system functions (security functions also) are located here
 	 */
 	/**
-	 * xss_check logs an event
+	 * check if xss is given
 	 * @return if something is wrong with $_GET/$_POST/$_SESSION/$_REQUEST/$_COOKIE
 	 */
-	function xss_check()
+	function isXSS()
 	{
 		$found = false;		
 		if (isset($_GET)){
-			$found = check($_GET);
+			$found = checkArray($_GET);
 		}
 		if (isset($_POST)){
 			if ($found != true)
-				$found = check($_POST);
+				$found = checkArray($_POST);
 		}		
 		if (isset($_FILES)){
 			if ($found != true)
-				$found = check($_POST);
+				$found = checkArray($_POST);
 		}
 		if (isset($_SESSION)){
 			if ($found != true)
-				$found = check($_POST);
+				$found = checkArray($_POST);
 		}	
 		if (isset($_REQUEST)){
 			if ($found != true)
-				$found = check($_POST);
+				$found = checkArray($_POST);
 		}	
 		if (isset($_COOKIE)){
 			if ($found != true)
-				$found = check($_POST);
+				$found = checkArray($_POST);
 		}	
 		if ($found == true){
 			banUser(getIP(),$_SERVER['HTTP_USER_AGENT'],"XSS");
@@ -57,11 +57,11 @@
 		return $found;
 	}
 	/**
-	 * check logs an event
+	 * check an array if any suspicios values are given (XSS protection)
 	 * @param $array the array to be checked
 	 * @return if something is wrong with the array
 	 */
-	function check($array)
+	function checkArray($array)
 	{
 		$result = false;
 		foreach($array as $key => $value) {			
@@ -122,12 +122,9 @@
 		mysqli_query($connect,$query);
 	}	
 	/**
-	 * banUser ban an user
-	 * @param $client_ip the ip of the user
-	 * @param $client the user agent
-	 * @param $reason the reason
+	 * check if a user is banned
 	 */
-	function is_Banned()
+	function isBanned()
 	{
 		//Create new database isntance
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
@@ -155,4 +152,85 @@
 			$link = "http://".$_SERVER["SERVER_NAME"].$dir."index.php?module=activate";
 		return $link;
 	}
+	/**
+	 * create an image by a full path
+	 * @param $imagepath the path of the image
+	 */
+	function displayImage($imagepath)
+	{			
+		//Display image if existing
+		//supported are: jpeg,jpg,bmp,png (atm)
+		if (file_exists($_SESSION["current_file"])){
+			header('Content-Type: ' .mime_content_type($_SESSION["current_file"]));		
+			$mimetype = mime_content_type($_SESSION["current_file"]);		
+			if ($mimetype == "image/jpeg"){
+				$im = imagecreatefromjpeg($_SESSION["current_file"]);	
+				if (isset($_GET["t"]) && $_GET["t"] == 1)
+				{
+					list($width, $height) = getimagesize($_SESSION["current_file"]);
+					$newimage = imagecreatetruecolor(32,32);
+					imagecopyresampled($newimage,$im,0,0,0,0,32,32,$width,$height);
+					imagejpeg($newimage);
+					imagedestroy($newimage);
+					imagedestroy($im);
+				}
+				else
+				{
+					imagejpeg($im);					
+					imagedestroy($im);	
+				}				
+			}
+			if ($mimetype == "image/bmp"){					
+				$im = imagecreatefromwbmp($_SESSION["current_file"]);
+				if (isset($_GET["t"]) && $_GET["t"] == 1)
+				{
+					list($width, $height) = getimagesize($_SESSION["current_file"]);
+					$newimage = imagecreatetruecolor(32,32);
+					imagecopyresampled($newimage,$im,0,0,0,0,32,32,$width,$height);
+					imagewbmp($newimage);
+					imagedestroy($newimage);
+					imagedestroy($im);
+				}
+				else
+				{
+					imagewbmp($im);
+					imagedestroy($im);		
+				}				
+			}
+			if ($mimetype == "image/png"){		
+				$im = imagecreatefrompng($_SESSION["current_file"]);
+				if (isset($_GET["t"]) && $_GET["t"] == 1)
+				{
+					list($width, $height) = getimagesize($_SESSION["current_file"]);
+					$newimage = imagecreatetruecolor(32,32);
+					imagecopyresampled($newimage,$im,0,0,0,0,32,32,$width,$height);
+					imagepng($newimage);
+					imagedestroy($newimage);
+					imagedestroy($im);
+				}
+				else
+				{
+					imagepng($im);
+					imagedestroy($im);		
+				}			 		
+			}			
+		}		
+	}
+	function setExceptionHandler(){
+		set_exception_handler('exception_handler');
+		setErrorHandler();
+	}
+	function setErrorHandler(){
+		set_error_handler('error_handler');
+	}
+	function error_handler($errno, $errstr, $errfile, $errline){
+		if ($GLOBALS["config"]["Program_Enable_Logging"] == 1){		
+			log_event("error","$errno: \"$errstr\" in \"$errfile\" on $errline");
+		}	
+	}
+	function exception_handler($exception) {
+		if ($GLOBALS["config"]["Program_Enable_Logging"] == 1){		
+			log_event("exception",$exception->getFile()." : Error on line \"".$exception->getLine()."\" Message: \"".$exception->getMessage()."\"");
+		}		
+	}	
 ?>

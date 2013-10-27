@@ -33,25 +33,20 @@
 		$GLOBALS["config"] = parse_ini_file("../"."Redundancy.conf");
 		$GLOBALS["Program_Dir"] = $GLOBALS["config"]["Program_Path"];
 	}
-	
-	
 	//get the display- and filename
-	$result = mysqli_query($connect,"Select * from Files  where UserID = \"" .  $_SESSION['user_id'] . "\" and Directory = \"" .$_SESSION['currentdir']."\" and Hash = \"".mysqli_real_escape_string($connect,$_GET["file"])."\"") or die("Error 013: ".mysqli_error($connect));
+	$result = mysqli_query($connect,"Select Filename,Displayname,MimeType from Files  where UserID = \"" .  $_SESSION['user_id'] . "\" and Directory = \"" .$_SESSION['currentdir']."\" and Hash = \"".mysqli_real_escape_string($connect,$_GET["file"])."\"") or die("Error 013: ".mysqli_error($connect));
 	while ($row = mysqli_fetch_object($result)) {																	
-		$filenamenew = $row->Filename;
-		$displayname = $row->Displayname;
-		$crypted = $row->Crypted;
+		$localfilename = $row->Filename;
+		$displayname = $row->Displayname;	
+		$mimetype = $row->MimeType;
 	}	
 	//close databse connection
 	mysqli_close($connect);
-	$fullPath = $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$filenamenew; 
-	//Create the download if the file is existant
-	$file = file_get_contents($fullPath);
-	$finfo = new finfo(FILEINFO_MIME_TYPE);		
-	
+	//Start the download
+	$fullPath = $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$localfilename; 	
 	if (file_exists($fullPath)) {
 		header('Content-Description: File Transfer');
-		header('Content-Type: ' . $finfo->buffer($file)); 
+		header('Content-Type: ' . $mimetype); 
 		header("Content-Disposition: attachment; filename=".$displayname."");
 		header('Content-Transfer-Encoding: binary');
 		header('Expires: 0');

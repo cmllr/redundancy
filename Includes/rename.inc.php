@@ -46,9 +46,10 @@
 					else
 						$old_root= mysqli_real_escape_string($connect,$_POST["old_root"]);
 					echo "Source: $source, old_root: $old_root, newname: $target currentdir: ".$_SESSION["currentdir"]." length: ".$GLOBALS["config"]["Program_FileSystem_Name_Max_Length"];
+					$old_hash = getHashByFile($source,$old_root);
 					
-					if (fs_file_exists($target,$old_root) == false && strlen($target) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]){
-						createDir($old_root,$target);
+					if (isFileExisting($target,$old_root) == false && strlen($target) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]){
+						createDir($old_root,$target,$old_hash);
 						//$Dir_ID = getDirectoryID($source);
 						//TODO: DIR rename
 						//Step 1 create new dir (new name) - check
@@ -76,7 +77,7 @@
 						$hash = mysqli_real_escape_string($connect,$_GET["file"]);
 					else
 						$hash = mysqli_real_escape_string($connect,$_POST["file"]);
-					if (fs_file_exists($newname,$_SESSION["currentdir"]) == false && strlen($newname) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]) {
+					if (isFileExisting($newname,$_SESSION["currentdir"]) == false && strlen($newname) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]) {
 						$insert = mysqli_query($connect,"Update Files Set Displayname='$newname' where Hash ='$hash'") or die("Error: 017 ".mysqli_error($connect));	
 						$success = true;
 					}
@@ -84,7 +85,7 @@
 						$success = false;
 					
 				}
-				if (isset($_POST["ACK"]))
+				if (isset($_POST["method"]))
 				{		
 					if ($success == false)
 						echo "false";
@@ -95,11 +96,11 @@
 				else{	
 					if ($GLOBALS["config"]["Program_Debug"] != 1){						
 						if ($success == true){
-							header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=rename_success");
+							//header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=rename_success");
 						}
 						else
 						{
-							header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=rename_fail");
+							//header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=rename_fail");
 						}
 					}	
 					

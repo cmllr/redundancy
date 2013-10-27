@@ -41,19 +41,19 @@
 				$last = $_SESSION["currentdir"];
 				for ($x = 0; $x < count($dir_parts);$x++)
 				{
-					if ($dir_parts[$x] != ""){
+					if ($dir_parts[$x] != "" && empty($dir_parts[$x]) == false){
 						echo "dir".$dir_parts[$x]."<br>";					
 						echo "in ".$dir_parts_before."<br>";					
-						$exists = fs_file_exists($dir_parts[$x],$dir_parts_before);
+						$exists = isFileExisting($dir_parts[$x],$dir_parts_before);
 						if ($exists == true)
 							$failed = true;
 						
 						if (strlen($dir_parts[$x]) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]){
+							
 							createDir(mysqli_real_escape_string($connect,$dir_parts_before),mysqli_real_escape_string($connect,$dir_parts[$x]));			
 						}
 						else
-						{
-							$failed = true;
+						{									
 							break;
 						}
 						$dir_parts_before .= $dir_parts[$x]."/";		
@@ -67,11 +67,13 @@
 			}
 			if ($failed == true)
 			{
-				header("Location: ./index.php?module=list&message=createdir_fail");
+				if (isset($_POST["method"]) == false)
+					header("Location: ./index.php?module=list&message=createdir_fail");
 			}
 			else
 			{
-				header("Location: ./index.php?module=list&message=createdir_success");
+				if (isset($_POST["method"]) == false)
+					header("Location: ./index.php?module=list&message=createdir_success");
 			}
 		}		
 	}
@@ -82,16 +84,16 @@
 	else if ($_SESSION["role"] == 3)
 	{
 		header("Location: index.php?module=list&message=readonly");
-	}
-	
+	}	
 ?>
 <form method="POST" action="index.php?module=createdir" >
-<small>
-<?php
-	echo $GLOBALS["Program_Language"]["multiple_dirs"];
-?>
-</small>
-<br>
-<?php echo $GLOBALS["Program_Language"]["New_Directory"]." ". $_SESSION["currentdir"];?><input name="directory">
-<input class = 'btn btn-default' type=submit name=submit value="<?php echo $GLOBALS["Program_Language"]["New_Directory_Button"];?>">
+	<small>
+		<?php
+			echo $GLOBALS["Program_Language"]["multiple_dirs"];
+		?>
+	</small>
+	<br>
+	<?php echo $GLOBALS["Program_Language"]["New_Directory"]." ". $_SESSION["currentdir"];?>
+	<input name="directory">
+	<input class = 'btn btn-default' type=submit name=submit value="<?php echo $GLOBALS["Program_Language"]["New_Directory_Button"];?>">
 </form>

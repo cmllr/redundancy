@@ -1,13 +1,29 @@
 <?php
-	//Include uri check
-	require_once ("checkuri.inc.php");
+//Include uri check
+require_once ("checkuri.inc.php");
 ?>
 <html>
-<head>
-
-</head>
-<body>
-<?php
-	echo "<center><img src = \"./Images/AnimatedStop.gif\"><div style = 'visibility:visible;' id = 'warning'>Redundancy is in mainteance mode.<br>*<br>Redundancy befindet sich im Wartungsmodus<br>*<br>Bitte haben Sie etwas Gedult.<br>*<br>Please be patient.<br></div></center><body></body></html>";
-	
-	?>
+	<body> 
+		<div class = 'container'>
+			<div class = 'row'>
+				<div class="col-md-4 hidden-xs"></div>
+				<div class="col-md-4 col-xs-12">
+					<img src="./Images/bootstrapped_logo.png" style="margin: 0 auto;" class="img-responsive">
+					<h1 class="text-center">Redundancy</h1>		
+					<div class="form-group ">						
+						<div class="text-center">
+							<span class="label label-important" style="background:#b94a48">
+								<?php 
+								if (isset($GLOBALS["Program_Language"]))
+									echo $GLOBALS["Program_Language"]["mainteance"];
+								else
+									echo "Mainteance is on";
+								?>
+							</span>
+						</div>
+					</div>	
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

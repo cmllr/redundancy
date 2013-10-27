@@ -26,7 +26,10 @@
 	$config = parse_ini_file("../../Redundancy.conf");
 	$GLOBALS["Program_Dir"] = $GLOBALS["config"]["Program_Path"];
 	include "../Program.inc.php";
-	$authentificated = false;
+	setExceptionHandler();
+	if (isset($_SESSION) == false)
+				session_start();	
+	$_SESSION["authentificated"] = false;
 	$token;
 	if ($config["Api_Enable"] != 1)
 	{
@@ -35,8 +38,9 @@
 	}
 	else
 	{
-		if ($authentificated == false)
+		if(isset($_POST["method"]))
 		{
+<<<<<<< HEAD
 			$authentificated = acknowledge($_POST["ACK"]);
 			if (isset($_POST["ACKONLY"]))
 				echo $authentificated;	
@@ -105,6 +109,154 @@
 				delete();
 			}
 			
+=======
+			$method = $_POST["method"];
+			switch($method)
+			{
+				case "getApiKey":
+					echo getKey($_POST["userName"],$_POST["password"]);
+					break;
+				case "getFiles":
+					$dir = $_POST["dir"];
+					$token = $_POST["key"];
+					echo getFiles($dir,$token);
+					break;
+				case "getFileHeadsAsXML":
+					$dir = $_POST["dir"];
+					$token = $_POST["key"];
+					echo getFileHeadsAsXML($dir, $token);
+					break;
+				case "getPropertiesAsXML":
+					$id = $_POST["id"];
+					$token = $_POST["key"];
+					echo getPropertiesAsXML($id,$token);
+					break;
+				case "getContent":
+					$id = $_POST["id"];
+					$token = $_POST["key"];
+					getContent($id,$token);
+					break;
+				case "getName":
+					$id = $_POST["id"];
+					$token = $_POST["key"];
+					echo getName($id,$token);
+					break;
+				case "getVersion":
+					getVersion();
+					break;
+				case "uploadFile":
+					uploadFile();
+					break;					
+				case "renameFile":	
+					renameFile();
+					break;
+				case "renameFolder":	
+					renameFolder();
+					break;
+				case "copy":	
+					copyFileOrFolder();
+					break;
+				case "move":	
+					moveFileOrFolder();
+					break;
+				case "getHash":	
+					getHash();
+					break;
+				case "exists":
+					exists();
+					break;
+				case "createDir":	
+					newDir();
+					break;	
+				case "deleteFile":
+				case "deleteFolder":	
+					delete();
+					break;
+			}
+>>>>>>> Update to 1.9.11-git-beta1-r3
 		}
+		
+		// if ($_SESSION["authentificated"] == false)
+		// {
+			// $_SESSION["authentificated"] = login($_POST["userName"],$_POST["password"],false);
+			// //if (isset($_POST["keyOnly"]))
+			// {
+				// if ($_SESSION["authentificated"] == true)
+					// echo getKey($_POST["userName"]/*,$_POST["password"]*/);
+				// else
+					// echo "12";
+			// }							
+			// $token = getKeyByID(getIDByUsername($_POST["userName"]));
+			
+		// }			
+		// foreach ($_POST as $keyValue => $value)
+		// {
+			// switch($value)
+			// {
+				// case "getFiles":
+					// $dir = $_POST["dir"];
+					// echo getFiles($dir,$token);
+					// break;
+				// // case "getFileIDsWithDisplaynamesAndFilenamesAndUploadDate":
+					// // $dir = $_POST["dir"];
+					// // echo getFileIDsWithDisplaynamesAndFilenamesAndUploadDate($dir, $token);
+					// // break;
+				// case "getFileHeadsAsXML":
+					// $dir = $_POST["dir"];
+					// $token = $_POST["token"];
+					// echo getFileHeadsAsXML($dir, $token);
+					// break;
+				// // case "getProperties":
+					// // $id = $_POST["id"];
+					// // echo getProperties($id,$token);
+					// // break;
+				// case "getPropertiesAsXML":
+					// $id = $_POST["id"];
+					// echo getPropertiesAsXML($id,$token);
+					// break;
+				// case "getContent":
+					// $id = $_POST["id"];
+					// getContent($id,$token);
+					// break;
+				// case "getName":
+					// $id = $_POST["id"];
+					// echo getName($id,$token);
+					// break;
+				// case "getVersion":
+					// getVersion();
+					// break;
+				// case "uploadFile":
+					// uploadFile();
+					// break;					
+				// case "renameFile":	
+					// renameFile();
+					// break;
+				// case "renameFolder":	
+					// renameFolder();
+					// break;
+				// case "copy":	
+					// copyFileOrFolder();
+					// break;
+				// case "move":	
+					// moveFileOrFolder();
+					// break;
+				// case "getHash":	
+					// getHash();
+					// break;
+				// case "exists":
+					// exists();
+					// break;
+				// case "createDir":	
+					// newDir();
+					// break;	
+				// case "getLatestFiles":
+					// getLatestFiles($_POST["entries"],$token);
+					// break;
+				// case "deleteFile":
+				// case "deleteFolder":	
+					// delete();
+					// break;
+			// }
+		// }
 	}
 ?>

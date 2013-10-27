@@ -26,7 +26,7 @@
 			session_start();
 	$success = false;
 	//Only progress if the user account is not a guest account
-	if ($_SESSION["role"] != 3){
+	if ($_SESSION["role"] != 3 && isGuest() == false){
 		/*
 			Case 1: User wants to copy a single file.
 			Params: $_GET["file"] or $_POSt ["file"] -> source file			
@@ -48,11 +48,11 @@
 			//Get Display name of the file to check if the file is existing in the target directory.
 			$fileDisplayName = getFileByHash($file);
 			//Check if file exists
-			if (fs_file_exists($fileDisplayName,$dir) == false){
+			if (isFileExisting($fileDisplayName,$dir) == false){
 				$success = true;
 				//Check if user has enough space left.
-				if (fs_enough_space($dir) == true)
-					fs_copyFile($file,$dir);		
+				if (isSpaceLeft($dir) == true)
+					copyFile($file,$dir);		
 				else
 					$success = false;
 			}
@@ -87,13 +87,13 @@
 				else
 					$old_root = mysqli_real_escape_string($connect,$_POST["old_root"]); // old root dir
 				//Only progress if the directory did not exists in the target directory
-				if (fs_file_exists($target.getDisplayName($source,$source)."/",$target) == false)
+				if (isFileExisting($target.getDisplayName($source,$source)."/",$target) == false)
 				{
 					$success = true;
 					//Check if enought space is available
-					if (fs_enough_space($source))
+					if (isSpaceLeft($source))
 					{
-						fs_copyDir($source,$target,$old_root);	
+						copyDir($source,$target,$old_root);	
 						$success = true;
 					}
 					else
@@ -105,7 +105,7 @@
 			}
 		}
 	}
-	if (isset($_POST["ACK"]))
+	if (isset($_POST["method"]))
 	{		
 		if ($success == false)
 			echo "false";

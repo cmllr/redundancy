@@ -23,54 +23,68 @@
 	 //Include uri check
 	require_once ("checkuri.inc.php");
 ?> 
-
-<br style='clear:both'>
-  </p>
-  <img src="./Images/bootstrapped_logo.png" style="margin: 0 auto;" class="img-responsive">
-<h1 class="text-center">Redundancy<sup>2</sup></h1>
+<img src="./Images/bootstrapped_logo.png" style="margin: 0 auto;" class="img-responsive">
+<h1 class="text-center">
+	Redundancy<sup>2</sup>
+</h1>
 <div class="panel panel-default">
-  <div class="panel-body">
-	<form class="form-horizontal" role="form">
-   <div class="form-group">
-    <label class="col-lg-2 control-label">Version</label>
-		<div class="col-lg-8">
-		  <p class="form-control-static"><?php echo $GLOBALS["Program_Version"];?></p>
-			<div class="col-lg-2"></div>
-		</div>
+	<div class="panel-body">
+		<form class="form-horizontal" role="form">
+			<div class="form-group">
+				<label class="col-lg-2 control-label">Version</label>
+					<div class="col-lg-8">
+					<p class="form-control-static">
+						<?php echo $GLOBALS["Program_Version"];?>
+					</p>
+					<div class="col-lg-2"></div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-lg-2 control-label">Status</label>
+					<div class="col-lg-8">
+						<p class="form-control-static">
+							<?php 
+							if (strpos($GLOBALS["Program_Version"],"nightly" !== false) || strpos($GLOBALS["Program_Version"],"beta") !== false)
+								echo "<span class=\"label label-warning\">".$GLOBALS["Program_Language"]["Unstable"]."</span>";
+							else
+								echo "<span class=\"label label-success\">".$GLOBALS["Program_Language"]["Stable"]."</span>";
+							?>
+						</p>
+						<div class="col-lg-2"></div>
+					</div>
+			</div> 
+			<div class="form-group">
+				<label class="col-lg-2 control-label">
+					<?php echo $GLOBALS["Program_Language"]["Source"];?></label>
+					<div class="col-lg-8">
+						<p class="form-control-static">
+							<?php echo $GLOBALS["Program_Release"];?>
+						</p>
+					</div>
+				<div class="col-lg-2"></div>
+			</div> 
+			<div class="form-group">
+				<label class="col-lg-2 control-label">Codename</label>
+				<div class="col-lg-8">
+					<p class="form-control-static">
+						<i>
+							<?php echo $GLOBALS["Program_Codename"];?>
+						</i>
+					</p>
+				</div>
+				<div class="col-lg-2"></div>
+			</div> 
+			<div class="form-group">
+				<label class="col-lg-2 control-label">Bugtracker</label>
+				<div class="col-lg-8">
+					<p class="form-control-static">
+						<a href = "https://github.com/squarerootfury/redundancy/issues">
+						<?php echo $GLOBALS["Program_Language"]["Bugreport"]?>
+						</a>
+					</p>
+				</div>
+				<div class="col-lg-2"></div>
+			</div> 
+		</form>
 	</div>
-	 <div class="form-group">
-    <label class="col-lg-2 control-label">Status</label>
-		<div class="col-lg-8">
-		  <p class="form-control-static"><?php 
-			if (strpos($GLOBALS["Program_Version"],"nightly" !== false) || strpos($GLOBALS["Program_Version"],"beta") !== false)
-				echo "<span class=\"label label-warning\">".$GLOBALS["Program_Language"]["Unstable"]."</span>";
-			else
-					echo "<span class=\"label label-success\">".$GLOBALS["Program_Language"]["Stable"]."</span>";
-		  ?></p>
-			<div class="col-lg-2"></div>
-		</div>
-	</div> 
-  <div class="form-group">
-    <label class="col-lg-2 control-label"><?php echo $GLOBALS["Program_Language"]["Source"];?></label>
-    <div class="col-lg-8">
-      <p class="form-control-static"><?php echo $GLOBALS["Program_Release"];?></p>
-    </div>
-	<div class="col-lg-2"></div>
-  </div> 
-   <div class="form-group">
-    <label class="col-lg-2 control-label">Codename</label>
-    <div class="col-lg-8">
-      <p class="form-control-static"><i><?php echo $GLOBALS["Program_Codename"];?></i></p>
-    </div>
-	<div class="col-lg-2"></div>
-  </div> 
-    <div class="form-group">
-    <label class="col-lg-2 control-label">Bugtracker</label>
-    <div class="col-lg-8">
-      <p class="form-control-static"><a href = "https://github.com/squarerootfury/redundancy/issues"><?php echo $GLOBALS["Program_Language"]["Bugreport"]?></a></p>
-    </div>
-	<div class="col-lg-2"></div>
-  </div> 
-</form>
-</div>
 </div>

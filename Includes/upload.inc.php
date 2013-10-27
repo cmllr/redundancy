@@ -29,8 +29,8 @@ if (isset($_SESSION) == false)
 	$alreadyExisting = false;
 	$max_upload = (int)(ini_get('upload_max_filesize'));
 	$config_size = $max_upload*1024*1024;
-	if ($_SESSION["role"] != 3){
-		$filecount = 0;
+	$filecount = 0;
+	if ($_SESSION["role"] != 3 && isGuest() == false){		
 		if (isset($_FILES["userfile"]))
 		{		
 			$move_process = false;			
@@ -64,7 +64,17 @@ if (isset($_SESSION) == false)
 						$userid = $_SESSION['user_id'];	
 						$hash = md5($newfilename);	
 						$client_ip = getIP();
+<<<<<<< HEAD
 						$timestamp = time();
+=======
+						
+						if (isset($_POST["timestamp"]) == true){
+							$timestamp 	= strtotime(mysqli_real_escape_string($connect,$_POST["timestamp"]));
+						}
+						else{
+							$timestamp = time();
+						}						
+>>>>>>> Update to 1.9.11-git-beta1-r3
 						$uploadtime= date("Y-m-d H:i:s",$timestamp);//"D M j G:i:s T Y",$timestamp);
 						$dir = $_SESSION['currentdir'];				
 						$oldfilename = mysqli_real_escape_string($connect,($_FILES['userfile']['name'][$key]));
@@ -74,7 +84,7 @@ if (isset($_SESSION) == false)
 						$finfo = new finfo(FILEINFO_MIME_TYPE);		
 						$mimetype =  $finfo->buffer($file_mime);
 						//TODO FIX ERROR HERE
-						if ((getUsedSpace($_SESSION["user_id"])  + $size < $_SESSION["space"] * 1024 * 1024) && fs_file_exists($oldfilename,$dir) == false){
+						if ((getUsedSpace($_SESSION["user_id"])  + $size < $_SESSION["space"] * 1024 * 1024) && isFileExisting($oldfilename,$dir) == false){
 							include $dbpath;	
 							$insert = "INSERT INTO Files (Filename,Displayname,Hash,UserID,IP,Uploaded,Size,Directory,Directory_ID, Client,MimeType) VALUES ('$newfilename','$oldfilename','$hash','$userid','$client_ip','$uploadtime','$size','$dir','$directory_id','".$_SERVER['HTTP_USER_AGENT']."','$mimetype')";
 							//echo $insert;
@@ -91,19 +101,31 @@ if (isset($_SESSION) == false)
 							mysqli_close($connect);	
 							if ($move_process != false)							
 								$success =true;
+							else{
+								if ($GLOBALS["config"]["Program_Debug"] == 1)
+									echo "fail:File could not be moved";
+							}
 						}
-						else if (fs_file_exists($oldfilename,$dir) == false)
+						else if (isFileExisting($oldfilename,$dir) == false)
 						{
-							if (!isset($_POST["ACK"]))
+							if ($GLOBALS["config"]["Program_Debug"] == 1){
+								echo "fail: No space left";
+								var_dump($_SESSION);
+								}
+							if (!isset($_POST["method"]))
 								header("Location: index.php?message=nospace");
 						}
-						else if (fs_file_exists($oldfilename,$dir) != false)
+						else if (isFileExisting($oldfilename,$dir) != false)
 						{
-							$success == false;
+							if ($GLOBALS["config"]["Program_Debug"] == 1)
+								echo "fail: File exists";
+							$success = false;
 							$alreadyExisting = true;
 						}					
 					} else {
-						if (!isset($_POST["ACK"]))
+						if ($GLOBALS["config"]["Program_Debug"] == 1)
+								echo "fail: Not allowed";
+						if (!isset($_POST["method"]))
 							header("Location: index.php?message=notallowed");
 					}
 				}				
@@ -112,16 +134,15 @@ if (isset($_SESSION) == false)
 	}
 	else
 	{
-		if (!isset($_POST["ACK"]))
+		if (!isset($_POST["method"]))
 			header("Location: index.php?message=readonly");
 	}
-	if (isset($_POST["ACK"]))
+	if (isset($_POST["method"]))
 	{
-		if ($success == false)
-			echo "false";
-		else
-			echo "true";
-		exit;	
+		$doc = new SimpleXMLElement("<value></value>");
+		$doc[0] = $success ? "true" : "false";
+		echo $doc->asXML();
+		exit();
 	}		
 	else
 	{
@@ -158,6 +179,6 @@ if (isset($_SESSION) == false)
 <p> 
 	<input class = 'btn btn-default'  name="userfile[]" type="file" multiple/>
 </p>
-<small>Maximum: <?php echo fs_get_fitting_DisplayStyle($config_size).". ". $GLOBALS["Program_Language"]["Upload_SubTitle"];?></small>
+<small>Maximum: <?php echo measurementCorrection($config_size).". ". $GLOBALS["Program_Language"]["Upload_SubTitle"];?></small>
     <input class = 'btn btn-default'  type='submit' value='<?php echo $GLOBALS["Program_Language"]["Upload"];?>'>	
 </form>

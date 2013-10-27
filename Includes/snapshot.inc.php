@@ -24,8 +24,8 @@
 	require_once ("checkuri.inc.php");
 if (isset($_SESSION) == false)
 			session_start();	
-	if ($_SESSION["role"] == 0 && is_admin())
+	if ($_SESSION["role"] == 0 && isAdmin())
 	{
-		create_fs_snapshot();
+		createSnapshot();
 	}
 ?>

@@ -23,15 +23,14 @@
 	/**
 	 * log_event logs an event
 	 * @param $event_name the name of the event
-	 * @param $method the name of the method
 	 * @param $content what happened?
 	 */
-	function log_event($event_name,$method,$content)
+	function log_event($event_name,$content)
 	{
 		if ($GLOBALS["config"]["Program_Enable_Logging"] == 1){
 			$file = fopen($GLOBALS["Program_Dir"]."System.log","a+");		
-			$date= date("D M j G:i:s T Y", time());
-			fwrite($file, "[$date] function $method() - $event_name: $content\n");
+			$date= date("Y-m-d H:i:s", time());
+			fwrite($file, "[$date] function - $event_name: $content\n");
 			fclose($file);
 		}
 	}

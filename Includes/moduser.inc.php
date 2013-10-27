@@ -24,14 +24,14 @@
 	require_once ("checkuri.inc.php");
 	 if (isset($_SESSION) == false)
 			session_start();	
-	if (isset($_GET["task"]) && $_SESSION["role"] == 0 && is_admin() && $GLOBALS["config"]["Program_Enable_Web_Administration"] == 1)
+	if (isset($_GET["task"]) && $_SESSION["role"] == 0 && isAdmin() && $GLOBALS["config"]["Program_Enable_Web_Administration"] == 1)
 	{
 		if ($_GET["task"] == "delete")
 		{
 			if (isset($_GET["s"]) && $_GET["s"] = true){
 				include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 				$user = mysqli_real_escape_string($connect, $_GET["user"]);
-				user_delete($user);
+				deleteUser($user);
 			}
 			else{
 				echo "<h3>".$GLOBALS["Program_Language"]["Delete_Account"]." (".$_GET["user"].")?</h3>";
@@ -44,7 +44,7 @@
 		echo "You don't have enought permissions";
 	}
 	if (isset($_GET["task"]) && $_GET["task"] == "newtoken"){
-		if (user_set_new_api_token($_SESSION["user_name"])){
+		if (generateToken($_SESSION["user_name"])){
 			header("Location: index.php?module=account&message=token_refreshed_success");
 		}
 		else{			
