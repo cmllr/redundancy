@@ -223,7 +223,15 @@
 							array($GLOBALS["Program_Language"]["Open"],$modulelink),
 							$_SESSION["template"]["Table_Item_Search_template"]
 					);
-				}				
+				}
+				else if (isset($_GET["source"]) == false)
+				{
+					echo str_replace(
+							array("##open","##modulelink"),
+							array($GLOBALS["Program_Language"]["Open"],$modulelink),
+							$_SESSION["template"]["Table_Item_Search_template"]
+					);
+				}
 			}			
 		}			
 		else
