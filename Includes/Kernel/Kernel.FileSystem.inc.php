@@ -1262,14 +1262,6 @@
 		if (isset($_SESSION) == false)
 			session_start();
 		$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
-<<<<<<< HEAD
-		$result = mysqli_query($connect,"Select * from Files where UserID = '$userID' order by Uploaded desc limit ".$changes)  or die("Error 023: ".mysqli_error($connect));
-		$array = array ();
-		while ($row = mysqli_fetch_object($result)) {		
-			$datum = date($row->Uploaded);
-			$array[$row->Displayname] = date("d.m.y",strtotime($row->Uploaded));	
-		}		
-=======
 		$result = mysqli_query($connect,"Select Displayname,Uploaded from Files where UserID = '$userID' order by Uploaded asc limit ".$changes)  or die("Error 023: ".mysqli_error($connect));
 		
 		$array = array ();
@@ -1282,7 +1274,6 @@
 			header("Location: index.php?message=no_changes_information");
 			exit;
 		}
->>>>>>> Update to 1.9.11-git-beta1-r3
 		echo   "<script>
 		  $(function() {
 			$( \"#accordion\" ).accordion();

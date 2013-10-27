@@ -40,76 +40,6 @@
 	{
 		if(isset($_POST["method"]))
 		{
-<<<<<<< HEAD
-			$authentificated = acknowledge($_POST["ACK"]);
-			if (isset($_POST["ACKONLY"]))
-				echo $authentificated;	
-			$token = $_POST["ACK"];
-		}			
-		foreach ($_POST as $keyValue => $value) 
-		{		
-			if ($value == "getFiles")
-			{
-				$dir = $_POST["dir"];
-				echo getFiles($dir,$token);
-			}
-			if ($value == "getProperty")
-			{
-				$id = $_POST["id"];
-				echo getProperty($id,$token);
-			}
-			if ($value == "getContent")
-			{
-				$id = $_POST["id"];
-				getContent($id,$token);
-			}
-			if ($value == "getName")
-			{
-				$id = $_POST["id"];
-				echo getName($id,$token);
-			}
-			if ($value == "getVersion")
-			{
-				getVersion();
-			}
-			if ($value == "uploadFile")
-			{			
-				uploadFile();			
-			}
-			if ($value == "renameFile")
-			{		
-				renameFile();
-			}
-			if ($value == "renameFolder")
-			{		
-				renameFolder();
-			}
-			if ($value == "copy")
-			{		
-				copyFileOrFolder();
-			}
-			if ($value == "move")
-			{		
-				moveFileOrFolder();
-			}
-			if ($value == "getHash")
-			{		
-				getHash();
-			}
-			if ($value == "exists")
-			{		
-				exists();
-			}
-			if ($value == "createDir")
-			{		
-				newDir();
-			}		
-			if ($value == "deleteFile" || $value == "deleteFolder")
-			{		
-				delete();
-			}
-			
-=======
 			$method = $_POST["method"];
 			switch($method)
 			{
@@ -173,7 +103,6 @@
 					delete();
 					break;
 			}
->>>>>>> Update to 1.9.11-git-beta1-r3
 		}
 		
 		// if ($_SESSION["authentificated"] == false)

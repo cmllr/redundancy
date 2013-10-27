@@ -11,7 +11,7 @@
 Enable_register = 0;
 Enable =  1;
 ;Default user configuraton in Megabytes
-User_Contingent = 10;
+User_Contingent = 5;
 ; User role 
 ; 0 - Admin
 ; 1 - User
@@ -25,8 +25,8 @@ User_Enable_Recover = 0;
 User_Unlock_Recover = 1;
 User_Recover_Send_Password = 1;
 User_Recover_Password_Length = 10;
-User_Max_Fails = 5;
-User_NoLogout_Warning = 0;
+User_Max_Fails = 10;
+User_NoLogout_Warning = 1;
 ;========================================Program settings========================================
 Program_Path = "##dir##";
 Program_Name_ALT = "Redundancy";
@@ -40,11 +40,11 @@ Program_Language = "en";
 Program_Privacy_Mask = 0;
 Program_HTTPS_Redirect = 0;
 Program_Mime_Use_DataBase = 1;
-Program_Enable_Plugins = 1;
+Program_Enable_Plugins = 0;
 Program_Enable_JQuery = 1;
 Program_Share_Anonymously = 1;
 Program_Crypt_DataBase = 1;
-Program_Crypt_FileSystem = 0;
+Program_Crypt_FileSystem = 1;
 Program_Enable_Preview = 1;
 Program_Max_Displayname_Length = 20;
 Program_Storage_Dir = "##storage##";
@@ -64,9 +64,6 @@ Program_FileSystem_Name_Max_Length = 255;
 Program_Enable_Mail = 0;
 Program_Enable_Banning = 1;
 Program_Enable_Chart = 1;
-<<<<<<< HEAD
-=======
 Program_Branding = "./Images/bootstrapped_logo.png";
 Program_Enable_ErrorHandler = 1;
 Program_Session_Timeout = -1; 
->>>>>>> Update to 1.9.11-git-beta1-r3

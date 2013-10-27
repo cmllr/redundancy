@@ -27,7 +27,7 @@
 	 */
 	function checkApiKey($key)
 	{
-		include "../DataBase.inc.php";	
+		include "../DataBase.inc.php";			
 		$key = mysqli_real_escape_string($connect,$key);	
 		$result = mysqli_query($connect,"Select * from Users  where API_Key = '$key' limit 1") or die("Error: ".mysqli_error($connect));
 		if (isset($_SESSION) == false)
@@ -38,33 +38,60 @@
 			$_SESSION['user_id'] = $row->ID;	
 			$_SESSION["user_name"] = $row->User;
 			$_SESSION["role"] = $row->Role;		
-			if ($row->Enabled != 1 || $row->Enable_API != 1)							
+			if ($row->Enabled != 1 || $row->Enable_API != 1)
+			{								
 				$_SESSION["acknowledge"] = false;				
-			else		
+			}
+			else
+			{			
 				$_SESSION["acknowledge"] = true;
+			}
 		}
 		mysqli_close($connect);
-
-		$doc = new SimpleXMLElement("<value></value>");
-		$doc[0]= $_SESSION["acknowledge"] ? "true" : "false";
-		echo $doc->asXML();
+		if ($_SESSION["acknowledge"] == true)
+			return "true";
+		else
+			return "false";
 	}
-	
-	function setSession($key)
-	{
+	function setSession($key){
 			include "../DataBase.inc.php";			
 		$key = mysqli_real_escape_string($connect,$key);	
 		$result = mysqli_query($connect,"Select * from Users  where API_Key = '$key' limit 1") or die("Error: ".mysqli_error($connect));
 		if (isset($_SESSION) == false)
 				session_start();	
-		while ($row = mysqli_fetch_object($result))
-		{
+		while ($row = mysqli_fetch_object($result)) {
+				
 			$_SESSION['user_id'] = $row->ID;	
 			$_SESSION["user_name"] = $row->User;
 			$_SESSION["role"] = $row->Role;	
-			$_SESSION["space"] = $row->Storage;	
+			$_SESSION["space"] = $row->Space;
+			
 		}
+		
 		mysqli_close($connect);
+	}
+	/**
+	 * get the files of a dir
+	 * @param $dir the wanted directory
+	 * @param $key the api key	
+	 * @return and string containing the file IDs concatenated with ";"
+	 */
+	function getFiles($dir,$key)
+	{
+		include "../DataBase.inc.php";
+		$files = "";
+		$id = "";
+		$dir = mysqli_real_escape_string($connect,$dir);
+		$result = mysqli_query($connect,"Select * from Users  where API_Key = '$key' limit 1") or die("Error: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($result)) {
+			$id = $row->ID;
+		}			
+		$result = mysqli_query($connect,"Select ID  from Files  where UserID = '$id' and Directory = '$dir'") or die("Error: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($result)) {		
+			$files .= $row->ID.";";
+		}			
+		mysqli_close($connect);
+		return $files;
 	}
 
 	function getFileHeadsAsXML($dir,$key)
@@ -78,8 +105,7 @@
 			$id = $row->ID;
 		}			
 		$result = mysqli_query($connect,"Select ID, Displayname, Filename, Uploaded from Files where UserID = '$id' and Directory = '$dir'") or die("Error: ".mysqli_error($connect));
-		while ($row = mysqli_fetch_object($result))
-		{
+		while ($row = mysqli_fetch_object($result)) {
 			$child = $doc->addChild('entry');
 			$child->addAttribute('id', $row->ID);
 			$child->addAttribute('displayName', ($row->Displayname));
@@ -90,6 +116,11 @@
 		return $doc->asXML();
 	}
 	
+	function getQuotedString($text)
+	{
+		return '"'.$text.'"';
+	}
+	
 	function getPropertiesAsXML($id,$key)
 	{
 		include "../DataBase.inc.php";		
@@ -97,9 +128,9 @@
 		$doc = new SimpleXMLElement("<entry></entry>");
 		$id = mysqli_real_escape_string($connect,$id);	
 		$result = mysqli_query($connect,"Select * from Files  where ID = '$id' limit 1") or die("Error: ".mysqli_error($connect));
-		while ($row = mysqli_fetch_object($result))
-		{	
-			$doc->addAttribute('id', ($row->ID));
+		while ($row = mysqli_fetch_object($result)) {	
+			
+			//$files .= '"'.$row->ID.";".utf8_encode ($row->Filename).";".utf8_encode ($row->Displayname).";".utf8_encode ($row->Filename_only).";".$row->Hash.";".$row->Uploaded.";".$row->Size.";".str_replace(";",",",$row->Client).";".$row->MimeType.";".$row->Directory;
 			$doc->addAttribute('fileName',  ($row->Filename));
 			$doc->addAttribute('displayName', ($row->Displayname));
 			$doc->addAttribute('fileNameOnly',  ($row->Filename_only));
@@ -113,15 +144,20 @@
 		mysqli_close($connect);
 		return $doc->asXML();	
 	}
-
+	/**
+	 * Gets the content of an file by the id
+	 * @param $id the file's ID
+	 * @param $key the api key	
+	 * @return a stream containing the file content
+	 */
 	function getContent($id,$key)
 	{		
 		include "../DataBase.inc.php";		
 		$filename = "";
 		$id = mysqli_real_escape_string($connect,$id);	
 		$result = mysqli_query($connect,"Select * from Files  where ID = '$id' limit 1") or die("Error: ".mysqli_error($connect));
-		while ($row = mysqli_fetch_object($result))
-		{	
+		while ($row = mysqli_fetch_object($result)) {	
+			
 			$filename = $row->Filename;
 		}			
 		mysqli_close($connect);
@@ -139,16 +175,41 @@
 		readfile($fullpath);
 		exit;
 	}
-
-	function getVersion()
-	{		
-		$doc = new SimpleXMLElement("<value></value>");
-		$doc[0]=($GLOBALS["Program_Version"]);
-		echo $doc->asXML();
+	/**
+	 * Get the name of an file by the ID
+	 * @param $id the file's ID
+	 * @param $key the api key	
+	 * @return the filename or ""
+	 */
+	function getName($id,$key)
+	{
+		include "../DataBase.inc.php";		
+		$filename = "";
+		$id = mysqli_real_escape_string($connect,$id);	
+		$result = mysqli_query($connect,"Select Displayname from Files  where ID = '$id' limit 1") or die("Error: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($result)) {	
+			
+			$filename = $row->Displayname;
+			
+		}	
+		return $filename;
 	}
-
-	function uploadFile()
-	{	
+	/**
+	 * Get the server version
+	 * @return the server's version
+	 */
+	function getVersion()
+	{			
+		echo $GLOBALS["Program_Version"];
+	}
+	/**
+	 * Upload of a file
+	 * Sets $_SESSION["space"] and $_SESSION["currentdir"]
+	 * Needs $_FILES['userfile'], and the $_SESSION values (filled at login/ acknoledge)
+	 * @return the result of the action
+	 */
+	function uploadFile(){
+		//		
 		$_SESSION["currentdir"] = $_POST["currentdir"];		
 		
 		setSession($_POST["key"]);		
@@ -161,8 +222,7 @@
 	 * Folder: Example hello_world, /home/hello, /home/
 	 * @return the result of the action
 	 */
-	function renameFile()
-	{
+	function renameFile(){
 		$_SESSION["currentdir"] = $_POST["currentdir"];		
 		include "../rename.inc.php";			
 	}
@@ -173,8 +233,7 @@
 	 * Folder: hello_world.txt 412421a421409412c04 (md5 hash)
 	 * @return the result of the action
 	 */
-	function renameFolder()
-	{
+	function renameFolder(){
 		$_SESSION["currentdir"] = $_POST["currentdir"];	
 		renameFile();		
 	}
@@ -187,8 +246,7 @@
 	 * File: 423424124ac4214f (md 5hash)
 	 * @return the result of the action
 	 */
-	function copyFileOrFolder()
-	{
+	function copyFileOrFolder(){
 		$_SESSION["space"] = getUsedSpace($_SESSION["user_id"]) ;	
 		include "../copy.inc.php";		
 	}
@@ -201,8 +259,7 @@
 	 * File: 423424124ac4214f (md 5hash)
 	 * @return the result of the action
 	 */
-	function moveFileOrFolder()
-	{
+	function moveFileOrFolder(){
 		$_SESSION["space"] = getUsedSpace($_SESSION["user_id"]) ;	
 		include "../move.inc.php";		
 	}
@@ -210,8 +267,7 @@
 	 * Get the file hash (print's it to default output via echo)
 	 * @return the result of the action
 	 */
-	function getHash()
-	{		
+	function getHash(){		
 		echo getHashByFileAndDir($_POST["file"],$_POST["dir"]);
 	}
 	/**
@@ -220,8 +276,7 @@
 	 * Dirs: Use the name of the folder, not the path, for example at the dir /home/test/ use test as $_POST["entry"] and for $_POST["dir"] "/home/" to check if the folder test exists in the dir "/home/"
 	 * @return result will be printed to default output via echo
 	 */
-	function exists()
-	{	
+	function exists(){	
 		$res = isFileExisting($_POST["entry"],$_POST["dir"]);
 		if ($res == true)
 			echo "true";
@@ -234,8 +289,7 @@
 	 * Example "/hello/" and "hello"
 	 * @return the result will be printed in the output
 	 */
-	function newDir()
-	{
+	function newDir(){
 		createDir($_POST["dir"],$_POST["entry"]);
 	}
 	/**
@@ -244,21 +298,15 @@
 	 * Folders: $_POST["dir"] complete path
 	 * @return the result will be printed in the output
 	 */
-	function delete()
-	{
+	function delete(){
 		include "../delete.inc.php";		
 	}
-	
-	function getKey($username,$password)
-	{
+	function getKey($username,$password){
 		$key = false;	
 		$key = getKeyByUsername($username,$password);		
 		if ($key != "false")
 			setSession($key);
-		
-		$doc = new SimpleXMLElement("<value></value>");
-		$doc[0] = $key;
-		return $doc->asXML();
+		return $key;
 	}
 	
 ?>

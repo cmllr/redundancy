@@ -286,11 +286,7 @@
 	 * prints account details by the given id
 	 * @param $userid the id of the user
 	 */
-<<<<<<< HEAD
-	function ui_get_account_details($userid)
-=======
 	function getAccountDetails($userid)
->>>>>>> Update to 1.9.11-git-beta1-r3
 	{	
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		//get the current user id an search for users with this id
@@ -302,11 +298,7 @@
 			echo "<b>".$GLOBALS["Program_Language"]["Email"].": </b> ".$row->Email;	
 			echo "<br><b>".$GLOBALS["Program_Language"]["Username"].": </b> ".$row->User;
 			//Display the api token 
-<<<<<<< HEAD
-			if ($_SESSION["role"] != 3 && is_guest() == false && $GLOBALS["config"]["Api_Enable"] == 1)
-=======
 			if ($_SESSION["role"] != 3 && isGuest() == false && $GLOBALS["config"]["Api_Enable"] == 1)
->>>>>>> Update to 1.9.11-git-beta1-r3
 			echo"
 			<div class=\"form-group\">
 				<div class=\"input-group\" >
