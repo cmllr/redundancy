@@ -45,19 +45,19 @@ fi
 
 {
 	echo 0
-	CONFR=$(chmod 777 ./Redundancy.conf)
+	CONFR=$(chmod 770 ./Redundancy.conf)
 	check_returncode
 	echo 20
-	DATABASER=$(chmod 777 ./Includes/DataBase.inc.php)
+	DATABASER=$(chmod 770 ./Includes/DataBase.inc.php)
 	check_returncode
 	echo 40
-	STORAGER=$(chmod 777 -R ./Storage/)
+	STORAGER=$(chmod 770 -R ./Storage/)
 	check_returncode
 	echo 60
-	TEMPR=$(chmod 777 -R ./Temp/)
+	TEMPR=$(chmod 770 -R ./Temp/)
 	check_returncode
 	echo 80
-	SNAPSHOTSR=$(chmod 777 -R ./Snapshots/)
+	SNAPSHOTSR=$(chmod 770 -R ./Snapshots/)
 	check_returncode
 	echo 100
 } | whiptail --title "$Title" --gauge "$Action" 8 78 0
