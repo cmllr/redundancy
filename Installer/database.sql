@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `Files` (
   `MimeType` text CHARACTER SET latin1,
   `Bin` tinyint(1) NOT NULL DEFAULT '0',
   `Crypted` int(11) NOT NULL,
+  `lastWrite` datetime NOT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;##
 

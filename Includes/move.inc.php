@@ -43,20 +43,26 @@
 				$file = mysqli_real_escape_string($connect,$_GET["file"]);	
 			else
 				$file = mysqli_real_escape_string($connect,$_POST["file"]);
-			$sql = "UPDATE Files SET Directory='$dir',Directory_ID=".getDirectoryID($dir).",Uploaded='$uploadtime' WHERE Hash='$file'";
-			$displayname = getFileByHash($file);
-			if ($GLOBALS["config"]["Program_Debug"] == 1 ){
-				echo $displayname;	
+			if (Guard::copyOrMoveFileValidator($file,$dir) == 0){
+				$timestamp = time();
+				$modified= date("Y-m-d H:i:s",$timestamp);	
+				$sql = "UPDATE Files SET Directory='$dir',lastWrite='$modified',Directory_ID=".getDirectoryID($dir)." WHERE Hash='$file'";
+				$displayname = getFileByHash($file);
+				if ($GLOBALS["config"]["Program_Debug"] == 1 ){
+					echo $displayname;	
+				}
+				$success = true;
+				if (isFileExisting($displayname,$dir) == false)
+					mysqli_query($connect,$sql) or die("Error: 015 ".mysqli_error($connect));	
+				else 
+					$success = false;
+				mysqli_close($connect);
+				$redir = $dir;
 			}
-			$success = true;
-			if (isFileExisting($displayname,$dir) == false)
-				mysqli_query($connect,$sql) or die("Error: 015 ".mysqli_error($connect));	
-			else 
+			else			
+			{
 				$success = false;
-			mysqli_close($connect);
-			$redir = $dir;
-		
-			//TODO: move check
+			}
 		}
 		else if ((isset($_GET["source"]) && isset($_GET["target"]) && isset($_GET["old_root"])) || (isset($_POST["source"]) && isset($_POST["target"]) && isset($_POST["old_root"])))				
 		{
@@ -81,7 +87,7 @@
 					$old_root = mysqli_real_escape_string($connect,$_POST["old_root"]); // old root dir
 				$redir = $target;
 				$success = true;
-				if (isFileExisting($target.getDisplayName($source,$source)."/",$target) == false)
+				if (Guard::copyOrMoveFolderValidator($source,$old_root,$target) == 0 && isFileExisting($target.getDisplayName($source,$source)."/",$target) == false)
 					moveDir($source,$target,$old_root);
 				else 
 					$success = false;

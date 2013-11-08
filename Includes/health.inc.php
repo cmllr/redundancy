@@ -19,6 +19,7 @@
 				?>
 			</td>
 			<td>Zip Support</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>
@@ -34,6 +35,7 @@
 				?>
 			</td>
 			<td>Image Support</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>
@@ -49,6 +51,7 @@
 				?>
 			</td>
 			<td>FileSystem Support</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>
@@ -64,6 +67,7 @@
 				?>
 			</td>
 			<td>MySQLi Support</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>
@@ -79,6 +83,7 @@
 				?>
 			</td>
 			<td>Storage Access</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>
@@ -94,6 +99,7 @@
 				?>
 			</td>
 			<td>Temp Access</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>
@@ -109,6 +115,7 @@
 				?>
 			</td>
 			<td>Snapshots Access</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>
@@ -213,6 +220,7 @@
 				?>
 			</td>
 			<td>Register</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>
@@ -224,6 +232,7 @@
 				?>
 			</td>
 			<td>HTTPS</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>
@@ -235,6 +244,7 @@
 				?>
 			</td>
 			<td>API</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>
@@ -246,6 +256,7 @@
 				?>
 			</td>
 			<td>Password recovery</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>
@@ -257,6 +268,7 @@
 				?>
 			</td>
 			<td>Plugins</td>
+			<td></td>
 		</tr>
 		<tr>
 			<td>
@@ -269,6 +281,7 @@
 				?>
 			</td>
 			<td>Debug mode</td>
+			<td></td>
 		</tr>
 	</table>
 </div>
@@ -280,14 +293,14 @@
 			if ($file != "." && $file != ".." && endsWith($file,".zip") )
 			{		
 				$snapshotcount++;
-				$last = date ("H:i:s d.m.y", filemtime($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Snapshots_Dir"]."/".$file));
+				$last = date ("d.m.Y H:i:s", filemtime($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Snapshots_Dir"]."/".$file));
 			}
 		}		
 	}
 	closedir($handle);	
 	if ($snapshotcount == 0)
-		echo "<span class=\"successValue elusive icon-remove glyphIcon\"></span>0 Snapshots<br>";
+		echo "<p><span class=\"successValue elusive icon-remove glyphIcon\"></span>0 Snapshots</p>";
 	else
-		echo "<span class=\"successValue elusive icon-ok glyphIcon\"></span>".$snapshotcount ." Snapshot(s) (".$last.")<br>";	
+		echo "<p><span class=\"successValue elusive icon-ok glyphIcon\"></span>".$snapshotcount.($snapshotcount == 1 ? " Snapshot" : " Snapshots"). " (last from ".$last.")</p>";	
 	echo "<a type=\"a\" href = 'index.php?module=snapshot' class=\"btn btn-default\"><span class=\"elusive icon-camera glyphIcon\"></span>Snapshot</a>";
 ?>

@@ -145,3 +145,7 @@ file_delete_fail = "The entry was not deleted.";
 mainteance = "This server is currently under mainteance.";
 no_changes_information  = "No last changes could be registered";
 session_stopped_fail = "Your session has timed out";
+upload_finished_title ="Result of the file upload";
+upload_exists = "The file was already existing.";
+upload_toobig = "The file size exceeded your storage quota.";
+upload_done = "The file was stored";

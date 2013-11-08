@@ -45,10 +45,11 @@
 						$old_root= mysqli_real_escape_string($connect,$_GET["old_root"]);
 					else
 						$old_root= mysqli_real_escape_string($connect,$_POST["old_root"]);
-					echo "Source: $source, old_root: $old_root, newname: $target currentdir: ".$_SESSION["currentdir"]." length: ".$GLOBALS["config"]["Program_FileSystem_Name_Max_Length"];
 					$old_hash = getHashByFile($source,$old_root);
+					$res = Guard::renameDirValidator($source,$old_root,$target);					
+					//echo "Source: $source, old_root: $old_root, newname: $target currentdir: ".$_SESSION["currentdir"]." length: ".$GLOBALS["config"]["Program_FileSystem_Name_Max_Length"];
 					
-					if (isFileExisting($target,$old_root) == false && strlen($target) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]){
+					if ($res== 0 && isFileExisting($target,$old_root) == false && strlen($target) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]){
 						createDir($old_root,$target,$old_hash);
 						//$Dir_ID = getDirectoryID($source);
 						//TODO: DIR rename
@@ -59,7 +60,7 @@
 						//Step 2 move contents -check					
 						//STep 3 delete old dir
 						deleteDir($source);
-					
+						updateLastWriteOfDirectory(getDirectoryID($old_root));
 						$success = true;
 					}
 					else
@@ -68,6 +69,7 @@
 					}
 				}
 				else{
+					
 					//include the dataBase file
 					include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";			
 					
@@ -77,13 +79,19 @@
 						$hash = mysqli_real_escape_string($connect,$_GET["file"]);
 					else
 						$hash = mysqli_real_escape_string($connect,$_POST["file"]);
-					if (isFileExisting($newname,$_SESSION["currentdir"]) == false && strlen($newname) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]) {
-						$insert = mysqli_query($connect,"Update Files Set Displayname='$newname' where Hash ='$hash'") or die("Error: 017 ".mysqli_error($connect));	
-						$success = true;
-					}
-					else	
+						
+					if (Guard::renameFileValidator($newname,$hash,$_SESSION["currentdir"]) == 0){
+						if (isFileExisting($newname,$_SESSION["currentdir"]) == false && strlen($newname) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]) {
+							$insert = mysqli_query($connect,"Update Files Set Displayname='$newname' where Hash ='$hash'") or die("Error: 017 ".mysqli_error($connect));	
+							updateLastWriteOfDirectory(getRootDirectoryByEntryHash($hash));
+							$success = true;
+						}
+						else	
+							$success = false;
+						}
+					else{
 						$success = false;
-					
+					}
 				}
 				if (isset($_POST["method"]))
 				{		

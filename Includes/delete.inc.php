@@ -80,7 +80,7 @@
 			$success = getFileByHashAndDelete($hash,$userid);
 		}
 		//Case 2: the user wants to delete a directory
-		else if (isset($_SESSION["user_name"]) &&  ((isset($_GET["dir"]) ) || (isset($_POST["dir"]) && $_POST["dir"] != "/")))
+		else if (isset($_SESSION["user_name"]) &&  ((isset($_GET["dir"]) ) || isset($_POST["dir"]) ))
 		{			
 			if (isset($_GET["dir"]))
 					$todelete = $_GET["dir"];

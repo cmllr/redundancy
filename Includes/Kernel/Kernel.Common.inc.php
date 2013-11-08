@@ -119,4 +119,15 @@
 		else
 			return false;		
 	}	
+	/**
+	 * return a text as a xml document
+	 * @param $text -the text
+	 * @return the xml document
+	 */	
+	function getSingleNodeXMLDoc($text)
+	{	
+		$doc = new SimpleXMLElement("<value></value>");
+		$doc[0]= $text;
+		return $doc->asXML();
+	}
 ?>

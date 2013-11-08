@@ -237,5 +237,5 @@
 		if ($GLOBALS["config"]["Program_Enable_Logging"] == 1){		
 			log_event("exception",$exception->getFile()." : Error on line \"".$exception->getLine()."\" Message: \"".$exception->getMessage()."\"");
 		}		
-	}	
+	}
 ?>

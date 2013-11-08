@@ -1,48 +1,16 @@
-<h1>Redundancy 1.9.11 Changelog</h1>
+<h1>Redundancy 1.9.12 Changelog</h1>
 <h2>Overview</h2> 
-<span class="label label-success">10 Bugfixes</span>
-<span class="label label-warning">6 Security Bugfixes</span>
-<span class="label label-info">17 Feature Additions or bugfixes</span>
-<span class="label label-important" style="background:#b94a48">4 Features removed</span>
+<span class="label label-success">2 Bugfixes</span>
+<span class="label label-warning">0 Security Bugfixes</span>
+<span class="label label-info">2 Feature Additions or bugfixes</span>
+<span class="label label-important" style="background:#b94a48">0 Features removed</span>
 <h2>Bugfixes</h2>
-- Fixed a bug when copy- or moving a file when a image was missing<br>
-- Fixed a bug producing wrong filesystem stats when a extension is lower(".png") or uppercase ".PNG". The case is now ignored<br>
-- Fixed a bug when a login was stopped because of XSS content a wrong input will be executed in the database<br>
-- Fixed the possibility of a wrong calculation of a size in getDirectorySize()<br>
-- Changed a column type in the database to allow sorting by date<br>
-- Fixed a bug causing that the contingent could not be set<br>
-- Fixed a bug loosing the date at moving a file or dir<br>
-- Fixed a bug which caused wrong set of the timestamps<br>
-- Fixed a bug which caused no redirection after logout<br>
-- The user can't paste the source folder into itself anymore from web interface<br>
-- 58 methods where improved<br>
+- Fixed a bug causing an internal warning<br>
+- Fixed a bug (#31) which caused wrong display of the transparency channel of a PNG file<br>
 <h2>Security Bugfixes</h2>
-- Added a security question when deleting an account from the administration panel<br>
-- Fixed a security vulnerability which allowed under some cases to see the api token while be logged in as a guest<br>
-- Added an .htaccess file for the Includes directory<br>
-- Fixed a bug in https redirecting causing a warning on the server<br>
-- Fixed a sql injection leak in several methods<br>
-- Added Program_Session_Timeout to set a timeout for killing a too old session<br>
+
 <h2>Feature additions/ Improvements</h2>
-- Added a display correction if the extension is uppercase<br>
-- Added an error message when a file is not found<br>
-- Added an error message when a dir is not found<br>
-- Added the function to set a new api token<br>
-- The administration panel is now bootstrap powered<br>
-- Program_Enable_Mail added to control mail support<br>
-- Program_Enable_Banning to control banning<br>
-- New API added (still work in progress! Not recommended to use yet)<br>
-- Program_Enable_Chart added to control drawing of the chart<br>
-- Added missing translations at the admin panel<br>
-- Added Program_Branding to control the path of the branding logo<br>
-- Added a message after deleting a filesystem entry<br>
-- Replaced the deprecated call to get the mimetype in download.inc.php with the regular call from the kernel<br>
-- In the mobile view, the current page is selected in the menu<br>
-- Added Program_Enable_ErrorHandler to control internal error handler which logs into System.log<br>
-- The error handler logs internal warnings and errors<br>
-- Added an error message for the changes module when no changes could be determined<br>
+- The changes page now display's the kind of the entry (changed or new entry)<br>
+- Added a guard module to check filesystem operations before they get executed<br>
 <h2>Features removed</h2>
-- User_Activation_Link removed<br>
-- User_Activation_Link_Sender removed<br>
-- User_Activation_Link_Sender_Email removed<br>
-- Removed Program_Embed_GPL_Header<br>
+

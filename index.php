@@ -164,10 +164,18 @@
 	//Pre plugin loading
 	if ($GLOBALS["config"]["Program_Enable_Plugins"] == 1)
 	{
-		$handle=opendir ($GLOBALS["Program_Dir"]."Includes/Plugins/BeforeModule/");
+		$handle=opendir ($GLOBALS["Program_Dir"]."Includes/Plugins/");
 		while ($file = readdir ($handle)) {
-			if (strpos($file,"inc.php") !== false)
-				include $GLOBALS["Program_Dir"]."Includes/Plugins/BeforeModule/".$file;
+			if (strpos($file,"inc.php") !== false){				
+				if (isset($GLOBALS["plugins"]) == false){
+					$title = file_get_contents ($GLOBALS["Program_Dir"]."Includes/Plugins/".str_replace(".inc.php",".nav.php",$file));
+					$GLOBALS["plugins"] = array($title => "Plugins/".str_replace(".inc.php","",$file) );
+				}					
+				else if (isset($GLOBALS["plugins"][$file]) == false){
+					$title = file_get_contents ($GLOBALS["Program_Dir"]."Includes/Plugins/".str_replace(".inc.php",".nav.php",$file));
+					$GLOBALS["plugins"][$title] = "Plugins/".str_replace(".inc.php","",$file) ;
+				}
+			}
 		}
 		closedir($handle);
 	}	
@@ -228,18 +236,6 @@
 		include "./Includes/Login.inc.php";		
 ?>
 </div>
-<?php
-	//Post plugin loading
-	if ($GLOBALS["config"]["Program_Enable_Plugins"] == 1)
-	{
-		$handle=opendir ($GLOBALS["Program_Dir"]."Includes/Plugins/AfterModule/");
-		while ($file = readdir ($handle)) {
-			if (strpos($file,"inc.php") !== false)
-				include $GLOBALS["Program_Dir"]."Includes/Plugins/AfterModule/".$file;
-		}
-		closedir($handle);
-	}
-?>
 <!--Display the right container, but only if logged in-->
 <?php if (isset($_SESSION["user_logged_in"])): ?>
 <div class="col-lg-2 col-md-2 visible-md visible-lg">
@@ -251,7 +247,7 @@
 		<ul class="dropdown-menu" role="menu">
 			<li>
 				<a href="?module=account"><?php echo $GLOBALS["Program_Language"]["My_Account"];?></a>
-			</li>
+			</li>		
 			<?php if ($_SESSION["role"] == 0 && isAdmin()): ?>
 				<li>
 				<a href="?module=admin"><?php echo $GLOBALS["Program_Language"]["Administration"];?></a>

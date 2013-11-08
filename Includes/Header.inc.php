@@ -74,6 +74,15 @@
 					<?php echo $GLOBALS["Program_Language"]["My_Account"];?>
 				</a>
 			</li>
+			<?php if (isset($GLOBALS["plugins"])) :?>
+			<?php foreach ($GLOBALS["plugins"] as $key => $value) :?>				
+				<li <?php if (isset($_GET["module"]) == true && $_GET["module"] == $value): ?> <?php echo "class=\"active\"";?> <?php endif;?>>
+					<a href="index.php?module=<?php echo $value;?>">
+						<?php echo $key;?>
+					</a>
+				</li>				
+			<?php endforeach; ?>
+			<?php endif; ?>
 			<?php if ($_SESSION["role"] == 0 && isAdmin()): ?>
 				<li <?php if (isset($_GET["module"]) == true && $_GET["module"] == "admin"): ?> <?php echo "class=\"active\"";?> <?php endif;?>>
 				<a href="index.php?module=admin">
@@ -119,7 +128,7 @@
 						<a href="?module=account">
 							<?php echo $GLOBALS["Program_Language"]["My_Account"];?>
 						</a>
-					</li>
+					</li>					
 					<?php if ($_SESSION["role"] == 0 && isAdmin()): ?>
 						<li>
 						<a href="?module=admin">
@@ -177,6 +186,15 @@
 					<?php echo $GLOBALS["Program_Language"]["New_Directory_Short"];?>
 				</a>
 			</li>
+			<?php if (isset($GLOBALS["plugins"])) :?>
+			<?php foreach ($GLOBALS["plugins"] as $key => $value) :?>				
+				<li>
+					<a href="index.php?module=<?php echo $value;?>">						
+						<?php echo $key;?>
+					</a>
+				</li>				
+			<?php endforeach; ?>
+			<?php endif ;?>
 			<?php if ($GLOBALS["config"]["Program_Display_Version"] == 1): ?>
 			<li class="disabled">
 				<a><?php echo $GLOBALS["Program_Version"];?></a>

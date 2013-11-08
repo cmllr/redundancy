@@ -27,7 +27,7 @@
 	 */
 	function createContextMenu($hashcode,$count)
 	{
-		++$count;
+		++$count; 
 		$shared = isShared(str_replace("#","",$hashcode));
 		if ($shared)
 			$Share_Status = "<a class = 'shared' href = 'index.php?module=share&file=".str_replace("#","",$hashcode)."&delete=true'><span class=\"elusive icon-share glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Shared"]."</a>";

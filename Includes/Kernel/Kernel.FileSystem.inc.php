@@ -595,7 +595,10 @@
 					echo "<br>New Directory".$target;	
 				}
 				$displayname = $target.$row->Filename_only."/";
-				mysqli_query($connect,"Update Files SET Displayname ='$displayname', Filename ='$displayname',Directory='$target',Directory_ID = ".getDirectoryID($target)." where ID =".$row->ID) or die("Error: 016: ".mysqli_error($connect));	
+				$timestamp = time();
+				$modified= date("Y-m-d H:i:s",$timestamp);	
+				updateLastWriteOfDirectory(getDirectoryID($target));
+				mysqli_query($connect,"Update Files SET Displayname ='$displayname', Filename ='$displayname',Directory='$target',Directory_ID = ".getDirectoryID($target).",lastWrite='$modified' where ID =".$row->ID) or die("Error: 016: ".mysqli_error($connect));	
 					
 				moveDir($row->Filename,$target.$row->Filename_only."/",$row->Displayname);
 					
@@ -629,8 +632,12 @@
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
-		$newdir = mysqli_real_escape_string($connect,$newdir);
-		mysqli_query($connect,"Update Files Set Directory='$newdir',Directory_ID = ".getDirectoryID($newdir)." where ID =".$ID." and UserID = '$user'") or die("Error: 017 ".mysqli_error($connect));	
+		$timestamp = time();
+		$modified= date("Y-m-d H:i:s",$timestamp);						
+		$newdir = mysqli_real_escape_string($connect,$newdir);	
+		$dir_id = getDirectoryID($newdir);
+		updateLastWriteOfDirectory($dir_id);
+		mysqli_query($connect,"Update Files Set Directory='$newdir',lastWrite='$modified', Directory_ID = ".getDirectoryID($newdir)." where ID =".$ID." and UserID = '$user'") or die("Error: 017 ".mysqli_error($connect));	
 	}
 	/**
 	 * moveContents move the contents of a directory
@@ -659,7 +666,7 @@
 						echo "<br>new dir:" .$target."/".$row->Filename_only."/"."<br>";
 						echo "<br>new root:".$target."/"."<br>";	
 					}					
-					mysqli_query($connect,"Update Files set Filename ='".$target."/".$row->Filename_only."/"."', Displayname = '".$target."/".$row->Filename_only."/"."', Directory = '".$target."/"."',Directory_ID=".$new_id." where Hash = '".$row->Hash."'"); 	
+					mysqli_query($connect,"Update Files set Filename ='".$target."/".$row->Filename_only."/"."', Displayname = '".$target."/".$row->Filename_only."/"."', Directory = '".$target."/"."',lastWrite='$uploadtime',Directory_ID=".$new_id." where Hash = '".$row->Hash."'"); 	
 					moveContents($row->Filename,$target."/".$row->Filename_only);
 				}
 				else
@@ -669,7 +676,7 @@
 						echo "<br>new file dir:" .$target."/"."<br>";
 					}
 					$file_id = getDirectoryID($target."/");
-					mysqli_query($connect,"Update Files set Directory = '".$target."/"."',Directory_ID = ".$file_id." where Hash = '".$row->Hash."'"); 
+					mysqli_query($connect,"Update Files set Directory = '".$target."/"."',Directory_ID = ".$file_id.",lastWrite='$uploadtime' where Hash = '".$row->Hash."'"); 
 				}
 		}		
 	}
@@ -684,6 +691,8 @@
 		//an easy possibility to avoid xss 
 		$success = true;
 		if (strpos("<",$directory) === false){
+			if (isset($_SESSION) == false)
+				session_start();
 			//include the dataBase file
 			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 			$currentdir = mysqli_real_escape_string($connect,$currentdir);
@@ -705,8 +714,9 @@
 			if (isFileExisting($directory,$uploaddirectory) == false)
 			{			
 				//create the new directory
-				$insert = "INSERT INTO Files (Filename,Displayname,Filename_only,Hash,UserID,IP,Uploaded,Size,Directory,Directory_ID,Client,ReadOnly) VALUES ('$newdirectory','$newdirectory','$filenameonly','$hash','$userid','$client_ip','$uploadtime',0,'$uploaddirectory','$dir_id','".$_SERVER['HTTP_USER_AGENT']."',0)";			
+				$insert = "INSERT INTO Files (Filename,Displayname,Filename_only,Hash,UserID,IP,Uploaded,Size,Directory,Directory_ID,Client,ReadOnly,lastWrite) VALUES ('$newdirectory','$newdirectory','$filenameonly','$hash','$userid','$client_ip','$uploadtime',0,'$uploaddirectory','$dir_id','".$_SERVER['HTTP_USER_AGENT']."',0,'$uploadtime')";			
 				$inserquery = mysqli_query($connect,$insert) or die("Error: 004 ".mysqli_error($connect));						
+				updateLastWriteOfDirectory($dir_id);
 				$success = true;
 			}		
 			else{
@@ -714,19 +724,16 @@
 			}
 			mysqli_close($connect);		
 		}
-		if (isset($_POST["method"]) == false){
+		if (isset($_POST["method"]) == false)
+		{
 			if ($GLOBALS["config"]["Program_Redirect_NewDir"] == 1){
 				if ($GLOBALS["config"]["Program_Debug"] != 1)
 					header("Location: ./index.php?module=list&dir=".$currentdir.$directory."/&result=1&from=createdir");
 			}	
 		}	
-		else{
-			if ($success == true){
-				echo "true";
-			}
-			else{
-				echo "false";
-			}			
+		else
+		{
+			echo getSingleNodeXMLDoc($success ? "true" : "false");			
 		}
 	}	
 	/**
@@ -787,9 +794,9 @@
 					echo "<br>Old directory".$old_root;
 					echo "<br>New Directory".$target;	
 				}
-				$insertDir = "Insert into Files (Filename, Displayname,Filename_only, Hash, UserID, IP, Uploaded, Size, Directory,Directory_ID ) Values ('".$target.$row->Filename_only."/"."','".$target.$row->Filename_only."/"."','$filename_only','$Hash',$UserID,'$IP','$Uploaded',$Size,'$target',$dir_id)";
+				$insertDir = "Insert into Files (Filename, Displayname,Filename_only, Hash, UserID, IP, Uploaded, Size, Directory,Directory_ID,lastWrite ) Values ('".$target.$row->Filename_only."/"."','".$target.$row->Filename_only."/"."','$filename_only','$Hash',$UserID,'$IP','$Uploaded',$Size,'$target',$dir_id,'$Uploaded')";
 				mysqli_query($connect,$insertDir);
-			
+				updateLastWriteOfDirectory($dir_id);
 				copyDir($row->Filename,$target.$row->Filename_only."/",$row->Displayname);
 					
 			}
@@ -862,10 +869,26 @@
 		$newfilename = $code.".dat";	
 		$uploaddir =$GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/";	
 		$dir_id = getDirectoryID($dir);
-		$insert = "Insert into Files (Filename, Displayname, Hash, UserID, IP, Uploaded, Size, Directory,Directory_ID,MimeType,Client ) Values ('$newfilename','$Displayname','$hash_new',$UserId,'$IP','$uploadtime',$Size,'$dir',$dir_id,'$MimeType','$Client')";
+		$insert = "Insert into Files (Filename, Displayname, Hash, UserID, IP, Uploaded, Size, Directory,Directory_ID,MimeType,Client,lastWrite ) Values ('$newfilename','$Displayname','$hash_new',$UserId,'$IP','$uploadtime',$Size,'$dir',$dir_id,'$MimeType','$Client','$uploadtime')";
 		$insertquery = mysqli_query($connect,$insert);
-		if ($insertquery == true)
+		if ($insertquery == true){
+			//Set the change date of the parent directoy
+			updateLastWriteOfDirectory($dir_id);
 			copy($uploaddir.$Filename,$uploaddir.$newfilename);	
+		}
+	}
+	/**
+	 * update the last write date of a directory
+	 * @param $id the dir id
+	 */
+	function updateLastWriteOfDirectory($id){
+		if ($id != -1){
+			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";				
+			$id = mysqli_real_escape_string($connect,$id);
+			$lastWrite= date("Y-m-d H:i:s",time());
+			$update = "Update Files set lastWrite = '$lastWrite' where ID = '$id'";		
+			mysqli_query($connect,$update);
+		}
 	}
 	/**
 	 * deleteDir deletes a directory
@@ -911,6 +934,9 @@
 		$owner_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);			
 		$result = mysqli_query($connect,"Select * from Files  where Directory = '$dir' and UserID = '".$owner_id."'") or die("Error: 010 ".mysqli_error($connect));
 		$success = false;
+		if ($GLOBALS["config"]["Program_Debug"] == 1 ){
+			echo "entry dir ".$dirname."<br>";					
+		}
 		while ($row = mysqli_fetch_object($result)) {
 			//get the Filename of the file
 			$localfilename = $row->Filename;
@@ -939,16 +965,21 @@
 		//delete the directory entry itself (database)
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		//Delete the directory itself
-		mysqli_query($connect,"delete from `Files` where  UserID = '$owner_id' and Filename = '$dir' and Displayname = '$dir' limit 1") or die("Error: 012 ".mysqli_error($connect));	
+		$res = mysqli_query($connect,"delete from `Files` where  UserID = '$owner_id' and Filename = '$dir' and Displayname = '$dir' limit 1") or die("Error: 012 ".mysqli_error($connect));	
 		//check if a row was affected. If not, the action failed
-		if (mysqli_affected_rows($connect) != 0){			
+		if (mysqli_affected_rows($connect) == 0){			
 			$success = false;
+			//Only for the base dir
+			if ($dir == "/")
+				$success = true;
 		}
 		else{
 			$success = true;
 		}
 		if ($GLOBALS["config"]["Program_Debug"] == 1 ){
 			echo "dir $dir deleted";
+			if ($success == true)
+				echo "success";			
 		}
 		mysqli_close($connect);
 		return $success;
@@ -1262,18 +1293,10 @@
 		if (isset($_SESSION) == false)
 			session_start();
 		$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
-		$result = mysqli_query($connect,"Select Displayname,Uploaded from Files where UserID = '$userID' order by Uploaded asc limit ".$changes)  or die("Error 023: ".mysqli_error($connect));
+		$result = mysqli_query($connect,"Select Displayname,Uploaded,lastWrite from Files where UserID = '$userID' order by Uploaded desc limit ".$changes)  or die("Error 023: ".mysqli_error($connect));
 		
 		$array = array ();
-		while ($row = mysqli_fetch_object($result)) {		
-			//$datum = date($row->Uploaded);
-			$array[$row->Displayname] = date("d.m.y",strtotime($row->Uploaded));	
-		}		
-		if (count($array) == 0)
-		{
-			header("Location: index.php?message=no_changes_information");
-			exit;
-		}
+		$timestamps = array();
 		echo   "<script>
 		  $(function() {
 			$( \"#accordion\" ).accordion();
@@ -1282,24 +1305,37 @@
 		echo "<div id=\"accordion\">";
 		$current_data = "";
 		$i = 0;
-		foreach($array as $key => $val) {
-			
-			if ($current_data != $val){
-				if ($i != 0)
-					echo "</ul></div>";
-				$current_data = $val;				
-				echo "<h3>".$val."</h3>";
-				echo "<div>";
-				echo "<ul class=\"list-group\">";
-			}				
 		
-			echo "<li class=\"list-group-item\">$key</li>";
+		while ($row = mysqli_fetch_object($result)) {			
+			$array[$row->Displayname] = date("d.m.y",strtotime($row->Uploaded));
+			if (isset($timestamps[ date("d.m.y",strtotime($row->Uploaded))]) == false){
+				 if ($i != 0)
+                echo "</ul></div>";
+				echo "<h2>". date("d.m.y",strtotime($row->Uploaded))."</h2>";
+				echo "<div>";
+                echo "<ul class=\"list-group\">";
+			}
+			$timestamps[ date("d.m.y",strtotime($row->Uploaded))]++;
+			echo "<li style='list-style-type: none;'>";
+			if ($row->Uploaded != $row->lastWrite){
+				echo "<span class=\"elusive icon-edit\"></span> ";		
+				echo $row->Displayname." (".date("d.m.y H:i:s",strtotime($row->lastWrite)).")";
+			}
+			else
+			{
+				echo "<span class=\"elusive icon-file-new\"></span> ";
+				echo $row->Displayname." (".date("d.m.y H:i:s",strtotime($row->Uploaded)).")";
+			}
+		
+			echo "</li>";	
 			$i++;
-			
-		}
-		if (count($array) != 0)
-			echo "</div>";
-		echo "</div>";
+		}		
+		if (count($array) == 0)
+		{
+			header("Location: index.php?message=no_changes_information");
+			exit;
+		}			
+		echo "</div></div>";
 		mysqli_close($connect);		
 	}
 	//dev only
@@ -1376,6 +1412,24 @@
 		}
 		return $parentDirectory;
 		mysqli_close($connect);	
+	}
+	/**
+	 * get the root of a dir
+	 * @param $hash the h ash of an entry
+	 * @param the root directory id
+	 */
+	function getRootDirectoryByEntryHash($hash){
+		if (isset($_SESSION) == false)
+			session_start();
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
+		$hash = mysqli_real_escape_string($connect,$hash);			
+		$result = mysqli_query($connect,"Select Directory_ID from Files  where Hash = '$hash' limit 1") or die("Error: 010 ".mysqli_error($connect));
+		$parentDirectory = -1;
+		while ($row = mysqli_fetch_object($result)) {
+			$parentDirectory = $row->Directory_ID;
+		}		
+		mysqli_close($connect);	
+		return $parentDirectory;
 	}
 	/**
 	 * Share a fileystem entry (external)
@@ -1473,7 +1527,7 @@
 				if (file_exists($fullPath)) {
 				
 						header('Content-Description: File Transfer');
-						header('Content-Type: ' .mime_content_type($filenamenew)); 
+						header('Content-Type: ' .mime_content_type($fullPath)); 
 						if ($viewonly == false)
 							header('Content-Disposition: attachment; filename='.$displayname);
 						header('Content-Transfer-Encoding: binary');
@@ -1502,5 +1556,23 @@
 			header("Location: index.php?message=DeadLink"); 
 		}
 		mysqli_close($connect);	
+	}
+	/**
+	 * get an free name for the internal storage folder
+	 * @return an sting e. g. 12424892749724729.dat
+	 */
+	function getFreeStorageFileName(){		
+		$found =false;
+		$code = getRandomKey(50);
+		do{				
+			include $basepath ."Includes/DataBase.inc.php";
+			mysqli_query($connect,"Select ID  from `Files` where  Filename = '$code.dat'");
+			if (mysqli_affected_rows($connect) > 0)
+			{
+				$code = getRandomKey(50);
+				$found = true;					
+			}
+		}while($found == true );			
+		return $code;
 	}
 ?>

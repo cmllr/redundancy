@@ -45,9 +45,7 @@
 		}
 		mysqli_close($connect);
 
-		$doc = new SimpleXMLElement("<value></value>");
-		$doc[0]= $_SESSION["acknowledge"] ? "true" : "false";
-		echo $doc->asXML();
+		echo getSingleNodeXMLDoc($_SESSION["acknowledge"] ? "true" : "false");
 	}
 	
 	function setSession($key)
@@ -142,15 +140,12 @@
 
 	function getVersion()
 	{		
-		$doc = new SimpleXMLElement("<value></value>");
-		$doc[0]=($GLOBALS["Program_Version"]);
-		echo $doc->asXML();
+		echo getSingleNodeXMLDoc($GLOBALS["Program_Version"]);
 	}
 
 	function uploadFile()
 	{	
-		$_SESSION["currentdir"] = $_POST["currentdir"];		
-		
+		$_SESSION["currentdir"] = $_POST["currentdir"];				
 		setSession($_POST["key"]);		
 		include "../upload.inc.php";		
 	}
@@ -162,8 +157,9 @@
 	 * @return the result of the action
 	 */
 	function renameFile()
-	{
+	{	
 		$_SESSION["currentdir"] = $_POST["currentdir"];		
+		setSession($_POST["key"]);
 		include "../rename.inc.php";			
 	}
 	/**
@@ -176,6 +172,7 @@
 	function renameFolder()
 	{
 		$_SESSION["currentdir"] = $_POST["currentdir"];	
+		setSession($_POST["key"]);
 		renameFile();		
 	}
 	/**
@@ -190,6 +187,7 @@
 	function copyFileOrFolder()
 	{
 		$_SESSION["space"] = getUsedSpace($_SESSION["user_id"]) ;	
+		setSession($_POST["key"]);
 		include "../copy.inc.php";		
 	}
 	/**
@@ -203,7 +201,8 @@
 	 */
 	function moveFileOrFolder()
 	{
-		$_SESSION["space"] = getUsedSpace($_SESSION["user_id"]) ;	
+		$_SESSION["space"] = getUsedSpace($_SESSION["user_id"]) ;
+		setSession($_POST["key"]);
 		include "../move.inc.php";		
 	}
 	/**
@@ -212,6 +211,7 @@
 	 */
 	function getHash()
 	{		
+		setSession($_POST["key"]);
 		echo getHashByFileAndDir($_POST["file"],$_POST["dir"]);
 	}
 	/**
@@ -222,6 +222,7 @@
 	 */
 	function exists()
 	{	
+		setSession($_POST["key"]);
 		$res = isFileExisting($_POST["entry"],$_POST["dir"]);
 		if ($res == true)
 			echo "true";
@@ -236,6 +237,7 @@
 	 */
 	function newDir()
 	{
+			setSession($_POST["key"]);
 		createDir($_POST["dir"],$_POST["entry"]);
 	}
 	/**
@@ -246,6 +248,7 @@
 	 */
 	function delete()
 	{
+		setSession($_POST["key"]);
 		include "../delete.inc.php";		
 	}
 	
@@ -256,9 +259,7 @@
 		if ($key != "false")
 			setSession($key);
 		
-		$doc = new SimpleXMLElement("<value></value>");
-		$doc[0] = $key;
-		return $doc->asXML();
+		echo getSingleNodeXMLDoc($key);
 	}
 	
 ?>

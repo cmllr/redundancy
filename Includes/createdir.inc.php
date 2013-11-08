@@ -41,7 +41,10 @@
 				$last = $_SESSION["currentdir"];
 				for ($x = 0; $x < count($dir_parts);$x++)
 				{
-					if ($dir_parts[$x] != "" && empty($dir_parts[$x]) == false){
+					$basedir = mysqli_real_escape_string($connect,$dir_parts_before);
+					$newdir = mysqli_real_escape_string($connect,$dir_parts[$x]);
+					$validatorResult = Guard::createDirValidator($basedir,$newdir);					
+					if ($dir_parts[$x] != "" && empty($dir_parts[$x]) == false && $validatorResult == 0){
 						echo "dir".$dir_parts[$x]."<br>";					
 						echo "in ".$dir_parts_before."<br>";					
 						$exists = isFileExisting($dir_parts[$x],$dir_parts_before);

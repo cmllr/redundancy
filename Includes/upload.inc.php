@@ -1,4 +1,8 @@
 <?php
+	if (isset($_GET["upload"]) == false && isset($_FILES["userfile"]) == false)
+		include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
+?>
+<?php
 	/**
 	 * @file
 	 * @author  squarerootfury <fury224@googlemail.com>	 
@@ -22,6 +26,7 @@
 	 */
 	 //Include uri check
 	//require_once ("checkuri.inc.php");
+
 if (isset($_SESSION) == false)
 	session_start();
 	$success = false;
@@ -30,100 +35,111 @@ if (isset($_SESSION) == false)
 	$max_upload = (int)(ini_get('upload_max_filesize'));
 	$config_size = $max_upload*1024*1024;
 	$filecount = 0;
-	if ($_SESSION["role"] != 3){		
+	$results = array();
+	if ($_SESSION["role"] != 3 && isGuest() == false){		
 		if (isset($_FILES["userfile"]))
 		{		
 			$move_process = false;			
+			//Get the amount of files 			
 			foreach($_FILES['userfile']['tmp_name'] as $key => $tmp_name ){			
 				$filecount++;
 			}
+			
 			foreach ($_FILES['userfile']['tmp_name'] as $key => $tmp_name ){
+				//Check if the file is to big for the configured size
+				//If true, remark
 				if ($config_size < filesize($_FILES['userfile']['tmp_name'][$key])){
 					$success = false;
-					$toobig =true;
+					$toobig = true;
 				}
+				//The next steps are only processed if the following conditions are true
+				//File not to big
+				//$_FILES['userfile'] set
+				//The temp file is existing
 				if ($toobig == false && isset($_FILES["userfile"]) && file_exists($_FILES['userfile']['tmp_name'][$key]))
 				{				
+					//**********************File diectories**********************
 					$basepath = $GLOBALS["Program_Dir"];		
 					$uploaddir =$basepath.$GLOBALS["config"]["Program_Storage_Dir"]."/";
-					$time = date("Ymdhs", time());
-					$found =false;
-					$code = getRandomKey(50);
-					do{				
-						include $basepath ."Includes/DataBase.inc.php";
-						mysqli_query($connect,"Select ID  from `Files` where  Filename = '$code.dat'");
-						if (mysqli_affected_rows($connect) > 0)
-						{
-							$code = getRandomKey(50);
-							$found = true;					
-						}
-					}while($found == true );			
-					$newfilename = $code.".dat";//$time.".dat"; 
-					if ($_FILES['userfile']['name'][$key] != ".htaccess" && $_FILES['userfile']['name'][$key] != "index.php" && $_FILES['userfile']['name'][$key] != "index.html" && strpos($_FILES['userfile']['name'][$key],"<") === false) { 	
-						$dbpath = $basepath ."Includes/DataBase.inc.php";					
-						$userid = $_SESSION['user_id'];	
-						$hash = md5($newfilename);	
-						$client_ip = getIP();
-						
-						if (isset($_POST["timestamp"]) == true){
-							$timestamp 	= strtotime(mysqli_real_escape_string($connect,$_POST["timestamp"]));
-						}
-						else{
-							$timestamp = time();
-						}						
-						$uploadtime= date("Y-m-d H:i:s",$timestamp);//"D M j G:i:s T Y",$timestamp);
-						$dir = $_SESSION['currentdir'];				
-						$oldfilename = mysqli_real_escape_string($connect,($_FILES['userfile']['name'][$key]));
-						$size = filesize($_FILES['userfile']['tmp_name'][$key]);
-						$directory_id =  getDirectoryID($dir);				
-						$file_mime = file_get_contents($_FILES['userfile']['tmp_name'][$key]); 
-						$finfo = new finfo(FILEINFO_MIME_TYPE);		
-						$mimetype =  $finfo->buffer($file_mime);
-						//TODO FIX ERROR HERE
-						if ((getUsedSpace($_SESSION["user_id"])  + $size < $_SESSION["space"] * 1024 * 1024) && isFileExisting($oldfilename,$dir) == false){
-							include $dbpath;	
-							$insert = "INSERT INTO Files (Filename,Displayname,Hash,UserID,IP,Uploaded,Size,Directory,Directory_ID, Client,MimeType) VALUES ('$newfilename','$oldfilename','$hash','$userid','$client_ip','$uploadtime','$size','$dir','$directory_id','".$_SERVER['HTTP_USER_AGENT']."','$mimetype')";
-							//echo $insert;
-							$inser_query = mysqli_query($connect,$insert) or die ("Error: 030:" .mysqli_error());
-							
-							if ($inser_query == true)
-								$move_process = move_uploaded_file($_FILES['userfile']['tmp_name'][$key], $uploaddir.$newfilename);
-							
-							if ($move_process == false)
-							{
-								$remove = "Delete from Files where Filename = '$newfilename'";								
-								mysqli_query($connect,$remove);
-							}							
-							mysqli_close($connect);	
-							if ($move_process != false)							
-								$success =true;
-							else{
-								if ($GLOBALS["config"]["Program_Debug"] == 1)
-									echo "fail:File could not be moved";
-							}
-						}
-						else if (isFileExisting($oldfilename,$dir) == false)
-						{
-							if ($GLOBALS["config"]["Program_Debug"] == 1){
-								echo "fail: No space left";
-								var_dump($_SESSION);
-								}
-							if (!isset($_POST["method"]))
-								header("Location: index.php?message=nospace");
-						}
-						else if (isFileExisting($oldfilename,$dir) != false)
-						{
-							if ($GLOBALS["config"]["Program_Debug"] == 1)
-								echo "fail: File exists";
-							$success = false;
-							$alreadyExisting = true;
-						}					
-					} else {
-						if ($GLOBALS["config"]["Program_Debug"] == 1)
-								echo "fail: Not allowed";
-						if (!isset($_POST["method"]))
-							header("Location: index.php?message=notallowed");
+					//**********************Get a fitting name for the internal filesystem**********************
+					$time = date("Ymdhs", time());					
+					$code = getFreeStorageFileName();
+					$newfilename = $code.".dat";					
+					$dbpath = $basepath ."Includes/DataBase.inc.php";	
+					include "$dbpath";
+					$userid = $_SESSION['user_id'];	
+					//**********************Get the file properties**********************
+					$hash = md5($newfilename);	
+					$client_ip = getIP();					
+					if (isset($_POST["timestamp"]) == true){
+						$timestamp 	= strtotime(mysqli_real_escape_string($connect,$_POST["timestamp"]));
 					}
+					else{
+						$timestamp = time();
+					}						
+					$uploadtime= date("Y-m-d H:i:s",$timestamp);
+					$dir = $_SESSION['currentdir'];				
+					$oldfilename = mysqli_real_escape_string($connect,($_FILES['userfile']['name'][$key]));					
+					$size = filesize($_FILES['userfile']['tmp_name'][$key]);
+					$directory_id =  getDirectoryID($dir);				
+					$file_mime = file_get_contents($_FILES['userfile']['tmp_name'][$key]); 
+					$finfo = new finfo(FILEINFO_MIME_TYPE);		
+					$mimetype =  $finfo->buffer($file_mime);
+					
+					//**********************Insert file into filessytem**********************
+					if ((getUsedSpace($_SESSION["user_id"])  + $size < $_SESSION["space"] * 1024 * 1024) && isFileExisting($oldfilename,$dir) == false){
+						include $dbpath;	
+						$insert = "INSERT INTO Files (Filename,Displayname,Hash,UserID,IP,Uploaded,Size,Directory,Directory_ID, Client,MimeType,lastWrite) VALUES ('$newfilename','$oldfilename','$hash','$userid','$client_ip','$uploadtime','$size','$dir','$directory_id','".$_SERVER['HTTP_USER_AGENT']."','$mimetype','$uploadtime')";
+						//Insert file into db
+						$insert_query = mysqli_query($connect,$insert) or die ("Error: 030:" .mysqli_error());
+						//Was the action successfull?
+						if ($insert_query == true){
+							$move_process = move_uploaded_file($_FILES['userfile']['tmp_name'][$key], $uploaddir.$newfilename);
+							if ($move_process != true)
+								updateLastWriteOfDirectory($dir_id);
+						}
+						if ($move_process == false)
+						{
+							//if the file can't be moved, the file will be removed out of the filesystem
+							$remove = "Delete from Files where Filename = '$newfilename'";								
+							mysqli_query($connect,$remove);							
+						}							
+						mysqli_close($connect);	
+						//Remark the result of the process
+						if ($move_process != false){							
+							$success =true;
+							$results[$dir.$oldfilename] = Result::OK;
+						}else{
+							if ($GLOBALS["config"]["Program_Debug"] == 1)
+								echo "fail:File could not be moved";
+							$success = false;
+						}
+					}
+					else if (isFileExisting($oldfilename,$dir) == false)
+					{
+						//Second case: The file is to big. Nothing was done.
+						//Remember the reason.
+						$success = false;
+						$toobig = true;						
+						if ($GLOBALS["config"]["Program_Debug"] == 1){
+							echo "fail: No space left";
+							var_dump($_SESSION);
+						}
+						if (!isset($_POST["method"]))
+							header("Location: index.php?message=nospace");
+						$results[$dir.$oldfilename] = Result::TooBig;
+					}
+					else if (isFileExisting($oldfilename,$dir) != false)
+					{
+						//Third case: The file was already existing
+						//Remember the reason
+						$success = false;
+						$toobig = false;
+						$alreadyExisting = true;
+						if ($GLOBALS["config"]["Program_Debug"] == 1)
+							echo "fail: File exists";		
+						$results[$dir.$oldfilename] = Result::FileIsExisting;
+					}					
 				}				
 			}			
 		}		
@@ -135,38 +151,68 @@ if (isset($_SESSION) == false)
 	}
 	if (isset($_POST["method"]))
 	{
-		$doc = new SimpleXMLElement("<value></value>");
-		$doc[0] = $success ? "true" : "false";
-		echo $doc->asXML();
+		echo getSingleNodeXMLDoc($success ? "true" : "false");
 		exit();
 	}		
-	else
-	{
-		if ($success == true && $GLOBALS["config"]["Program_Redirect_Upload"] == 1 && $filecount == 1 )
-		{
-			header("Location: index.php?module=file&file=$hash&message=upload_success");
+	else if (isset($_POST["method"]) == false && isset($_FILES["userfile"]))
+	{		
+		if ($GLOBALS["config"]["Program_Redirect_Upload"] == 1){
+			if ($success == true){			
+				if ($filecount == 1)
+				{
+					header("Location: index.php?module=file&file=$hash&message=upload_success");
+					exit();
+				}
+				else
+				{
+					header("Location: index.php?module=list&message=upload_success");
+					exit();
+				}			
+			}
+			else{				
+				if ($toobig == false){				
+					if ($alreadyExisting == false){
+						header("Location: index.php?module=list&message=upload_failx");
+						exit();
+					}
+					else{
+						header("Location: index.php?module=list&message=file_exists");
+						exit();
+					}
+				}
+				else{
+					header("Location: index.php?module=list&message=phpini");
+					exit();
+				}				
+			}
 		}
-		else if ($success == true && $GLOBALS["config"]["Program_Redirect_Upload"] == 1 && $filecount != 1)
-		{
-			header("Location: index.php?module=list&message=upload_success");
-		}	
-		else if ($success == false&& $GLOBALS["config"]["Program_Redirect_Upload"] == 1 && $filecount != 0 && $alreadyExisting == false && $toobig == false)
-		{
-			header("Location: index.php?module=list&message=upload_fail");
-		}
-		else if ($success == false&& $GLOBALS["config"]["Program_Redirect_Upload"] == 1 && $filecount != 0 && $alreadyExisting == true  && $toobig == false)
-		{
-			header("Location: index.php?module=list&message=file_exists");
-		}
-		else if ($success == false&& $GLOBALS["config"]["Program_Redirect_Upload"] == 1 && $filecount != 0 && $toobig == true)
-		{
-			header("Location: index.php?module=list&message=phpini");
+		else{
+			?>
+				<h2><?php echo $GLOBALS["Program_Language"]["upload_finished_title"]; ?></h2>
+				<ul>
+				<?php				
+				foreach ($results as $key => $value ){
+					?>
+						<?php if($value != 0) :?>
+							<li style='list-style: none;'><span class="errorValue elusive icon-remove glyphIcon"></span>
+						<?php else :?>
+							<li style='list-style: none;'><span class=" elusive icon-ok glyphIcon"></span>
+						<?php endif;?>
+					<?php						
+					echo $key.": ";
+					if ($value == Result::TooBig)
+						echo $GLOBALS["Program_Language"]["upload_toobig"];
+					else if ($value == Result::FileIsExisting)
+						echo $GLOBALS["Program_Language"]["upload_exists"];
+					else if ($value == Result::OK)
+						echo $GLOBALS["Program_Language"]["upload_done"];
+					echo "</li>";
+				}
+				?>
+				</ul>
+			<?php			
 		}
 	}
-?>
-<?php
-	if (isset($_GET["upload"]) == false)
-		include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
 ?>
 <?php	
 	echo "<h2>".$GLOBALS["Program_Language"]["Upload_Title"]." ".$_SESSION['currentdir'].".</h2>";

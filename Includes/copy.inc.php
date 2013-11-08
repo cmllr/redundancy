@@ -48,7 +48,7 @@
 			//Get Display name of the file to check if the file is existing in the target directory.
 			$fileDisplayName = getFileByHash($file);
 			//Check if file exists
-			if (isFileExisting($fileDisplayName,$dir) == false){
+			if (Guard::copyOrMoveFileValidator($file,$dir) == 0 && isFileExisting($fileDisplayName,$dir) == false){
 				$success = true;
 				//Check if user has enough space left.
 				if (isSpaceLeft($dir) == true)
@@ -87,7 +87,7 @@
 				else
 					$old_root = mysqli_real_escape_string($connect,$_POST["old_root"]); // old root dir
 				//Only progress if the directory did not exists in the target directory
-				if (isFileExisting($target.getDisplayName($source,$source)."/",$target) == false)
+				if (Guard::copyOrMoveFolderValidator($source,$old_root,$target) == 0 &&  isFileExisting($target.getDisplayName($source,$source)."/",$target) == false)
 				{
 					$success = true;
 					//Check if enought space is available

@@ -147,3 +147,7 @@ file_delete_fail = "Der Eintrag konnte nicht gel&ouml;scht werden";
 mainteance = "Dieser Server befindet sich derzeit im Wartungsmodus";
 no_changes_information  = "Es konnten keine letzten &Auml;nderungen ermittelt werden";
 session_stopped_fail = "Ihre Sitzung ist abgelaufen";
+upload_finished_title ="Ergebnis des Dateiuploads";
+upload_exists = "Die Datei war bereits vorhanden";
+upload_toobig = "Die Datei hat Ihren Kontingentspeicher überschritten";
+upload_done = "Die Datei wurde erfolgreich gespeichert";
