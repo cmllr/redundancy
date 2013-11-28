@@ -48,8 +48,11 @@
 				$GLOBALS["config"]["Program_Enable_Preview"] = 1;
 			else
 				$GLOBALS["config"]["Program_Enable_Preview"] = 0;	
-				
-			saveUserSettings();
+			if (isset($_POST["Program_Enable_KeyHooks"]))	
+				$GLOBALS["config"]["Program_Enable_KeyHooks"] = 1;
+			else
+				$GLOBALS["config"]["Program_Enable_KeyHooks"] = 0;	
+			saveUserSettings(false);
 		}
 	?>
 	<form method="POST" action="index.php?module=account" >
@@ -69,6 +72,10 @@
 			if ($GLOBALS["config"]["Program_Enable_Preview"] == 1)
 				echo "checked=\"true\"";	
 		?>> <?php echo $GLOBALS["Program_Language"]["Program_Enable_Preview"];?><br>
+		<input type= "checkbox" name="Program_Enable_KeyHooks" <?php
+			if ($GLOBALS["config"]["Program_Enable_KeyHooks"] == 1)
+				echo "checked=\"true\"";	
+		?>> <?php echo $GLOBALS["Program_Language"]["Program_Enable_KeyHooks"];?><br>
 		 <input class="btn btn-default" type="submit" value="<?php echo $GLOBALS["Program_Language"]["Save"]; ?>" /> 
 	</form>
 	</p>

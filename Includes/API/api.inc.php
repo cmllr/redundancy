@@ -22,6 +22,8 @@
 	 * If new functions should be added, an exception must be added in this file, too.
 	 */
 	header("Content-Type: text/html; charset=utf-8");
+	//Debug, only if you want to use js based api clients
+	//header('Access-Control-Allow-Origin: *');
 	error_reporting(E_ALL);	
 	$config = parse_ini_file("../../Redundancy.conf");
 	$GLOBALS["Program_Dir"] = $GLOBALS["config"]["Program_Path"];

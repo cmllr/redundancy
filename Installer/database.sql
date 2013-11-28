@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS `Settings` (
   `Program_Display_Icons_if_needed` int(11) NOT NULL,
   `Program_Enable_JQuery` int(11) NOT NULL,
   `Program_Enable_Preview` int(11) NOT NULL,
+  `Program_Enable_KeyHooks` int(11) NOT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;##
 
@@ -60,7 +61,8 @@ CREATE TABLE IF NOT EXISTS `Share` (
   `Extern_ID` text NOT NULL,
   `Used` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID`),
-  UNIQUE KEY `ID` (`ID`)
+  UNIQUE KEY `ID` (`ID`),
+  KEY `ID_2` (`ID`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;##
 
 CREATE TABLE IF NOT EXISTS `Users` (

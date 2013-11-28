@@ -103,7 +103,8 @@
 	 * @return a generated user name
 	 */
 	function getNewUserName($pEmail){
-		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		if (isset($connect) == false)
+			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		//cleanup parameter
 		$pEmail = mysqli_real_escape_string($connect,$pEmail);
 		$result = "";
@@ -357,7 +358,9 @@
 	{
 		if (!isset($_SESSION))
 			session_start();
-		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		if (isset($connect) == false)
+			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		
 		$user_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);
 		$user_name = mysqli_real_escape_string($connect,$_SESSION['user_name']);
 		$user_email = mysqli_real_escape_string($connect,$_SESSION['user_email']);
@@ -380,7 +383,14 @@
 	{
 		if (!isset($_SESSION))
 			session_start();
-		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		if (isset($connect) == false)
+			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		if (isset($_SESSION["user_email"]) == false)
+			return true;
+		if (isset($_SESSION["user_name"]) == false)
+			return true;	
+		if (isset($_SESSION["user_id"]) == false)
+			return true;	
 		$user_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);
 		$user_name = mysqli_real_escape_string($connect,$_SESSION['user_name']);
 		$user_email = mysqli_real_escape_string($connect,$_SESSION['user_email']);
@@ -451,7 +461,8 @@
 			$GLOBALS["config"]["User_NoLogout_Warning"] = $row->User_NoLogout_Warning;
 			$GLOBALS["config"]["Program_Display_Icons_if_needed"] = $row->Program_Display_Icons_if_needed;
 			$GLOBALS["config"]["Program_Enable_JQuery"] = $row->Program_Enable_JQuery;
-			$GLOBALS["config"]["Program_Enable_Preview"] = $row->Program_Enable_Preview;			
+			$GLOBALS["config"]["Program_Enable_Preview"] = $row->Program_Enable_Preview;	
+			$GLOBALS["config"]["Program_Enable_KeyHooks"] = $row->Program_Enable_KeyHooks;		
 		}							
 		mysqli_close($connect);		
 	}
@@ -470,13 +481,14 @@
 		$Program_Display_Icons_if_needed = mysqli_real_escape_string($connect,$GLOBALS["config"]["Program_Display_Icons_if_needed"]);
 		$Program_Enable_JQuery = mysqli_real_escape_string($connect,$GLOBALS["config"]["Program_Enable_JQuery"]);
 		$Program_Enable_Preview = mysqli_real_escape_string($connect,$GLOBALS["config"]["Program_Enable_Preview"]);
+		$Program_Enable_KeyHooks = mysqli_real_escape_string($connect,$GLOBALS["config"]["Program_Enable_KeyHooks"]);
 		$query = "Select * from Settings where UserID = $userID";
 		$ergebnis = mysqli_query($connect,$query) or die("Error: 018 ".mysqli_error($connect));
 
 		if (mysqli_affected_rows($connect) ==  0)
-			$query = "Insert into Settings (UserID,User_NoLogout_Warning,Program_Display_Icons_if_needed,Program_Enable_JQuery,Program_Enable_Preview) values ($userID,'$User_NoLogout_Warning','$Program_Display_Icons_if_needed','$Program_Enable_JQuery','$Program_Enable_Preview')";
+			$query = "Insert into Settings (UserID,User_NoLogout_Warning,Program_Display_Icons_if_needed,Program_Enable_JQuery,Program_Enable_Preview,Program_Enable_KeyHooks) values ($userID,'$User_NoLogout_Warning','$Program_Display_Icons_if_needed','$Program_Enable_JQuery','$Program_Enable_Preview','$Program_Enable_KeyHooks')";
 		else			
-			$query = "Update Settings SET User_NoLogout_Warning = $User_NoLogout_Warning ,Program_Display_Icons_if_needed=$Program_Display_Icons_if_needed,Program_Enable_JQuery=$Program_Enable_JQuery,Program_Enable_Preview=$Program_Enable_Preview where UserID = $userID";
+			$query = "Update Settings SET User_NoLogout_Warning = $User_NoLogout_Warning ,Program_Display_Icons_if_needed=$Program_Display_Icons_if_needed,Program_Enable_JQuery=$Program_Enable_JQuery,Program_Enable_Preview=$Program_Enable_Preview,Program_Enable_KeyHooks=$Program_Enable_KeyHooks where UserID = $userID";
 		
 		$ergebnis = mysqli_query($connect,$query) or die("Error: 018 ".mysqli_error($connect));
 		mysqli_close($connect);		
@@ -532,7 +544,7 @@
 	/**
 	 * saves changes at the user profiles	
 	 */
-	function saveUserChanges()
+	function saveUserChanges($admin = true)
 	{		
 		if (!isset($_SESSION))
 			session_start();
@@ -540,7 +552,7 @@
 		$user = "";
 		$storage = 0;
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
-		if (isAdmin())
+		if (isAdmin() || $admin == false)
 		{
 			if (isset($_POST["role"]) && $_POST["username_info"] != "")
 			{
@@ -559,9 +571,19 @@
 				else
 					enableUser($user,false);
 				if ($_POST["user_new_name"] != "")
-					renameUser($user,mysqli_real_escape_string($connect,$_POST["user_new_name"]));			
-				header("Location: index.php?module=admin&message=user_changes_success");
-			}				
+					renameUser($user,mysqli_real_escape_string($connect,$_POST["user_new_name"]));	
+				if ($admin == true)
+					header("Location: index.php?module=admin&message=user_changes_success");
+				else
+					header("Location: index.php?module=account&message=user_changes_success");
+			}
+			else
+			{
+				if ($admin == true)
+					header("Location: index.php?module=admin&message=user_changes_failed");
+				else
+					header("Location: index.php?module=account&message=user_changes_failed");
+			}
 		}				
 	}
 	/**

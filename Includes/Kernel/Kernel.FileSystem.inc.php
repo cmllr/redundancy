@@ -287,7 +287,7 @@
 	{
 		$measure = "B";	
 		$value = $value * $offset;		
-		if ($value > 1024 && $value  < 1024 * 1024)
+		if ($value > 1024 && $value  <= 1024 * 1024)
 		{
 			$measure = "KB";
 			$value = $value /1024;
@@ -381,7 +381,7 @@
 		if (isset($filename) == false || empty($filename) == true)
 			return "null";
 		if ($GLOBALS["config"]["Program_Mime_Use_DataBase"] == 0){
-			$file = file_get_contents($GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$filename);
+			$file = file_get_contents(getStoragePath().$filename);
 			$finfo = new finfo(FILEINFO_MIME_TYPE);		
 			return $finfo->buffer($file);
 		}
@@ -851,8 +851,10 @@
 		}
 		if(getUsedSpace("/") + $Size >= $_SESSION["space"] * 1024 * 1024)
 		{
-			header("Location: ./index.php?module=list&dir=$dir");
-			exit;
+			if (isset($_POST["method"]) == false){
+				header("Location: ./index.php?module=list&dir=$dir");
+				exit;
+			}
 		}
 		$found =false;
 		$code = getRandomKey(50);
@@ -867,7 +869,7 @@
 		}while($found == true );	
 		$hash_new = md5($code.".dat");	
 		$newfilename = $code.".dat";	
-		$uploaddir =$GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/";	
+		$uploaddir =getStoragePath();
 		$dir_id = getDirectoryID($dir);
 		$insert = "Insert into Files (Filename, Displayname, Hash, UserID, IP, Uploaded, Size, Directory,Directory_ID,MimeType,Client,lastWrite ) Values ('$newfilename','$Displayname','$hash_new',$UserId,'$IP','$uploadtime',$Size,'$dir',$dir_id,'$MimeType','$Client','$uploadtime')";
 		$insertquery = mysqli_query($connect,$insert);
@@ -1010,7 +1012,7 @@
 		if ($success = true && mysqli_affected_rows($connect) == 1){			
 			$result = mysqli_query($connect,"DELETE FROM `Share` WHERE `Hash` = '".$hash."' and UserID = '".$owner_id."' limit 1") or die("Error: 012 ".mysqli_error($connect));	
 			if ($result == true)
-				unlink ( $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$filename);	
+				unlink ( getStoragePath().$filename);	
 		}
 		else{
 			$success = false;
@@ -1028,17 +1030,17 @@
 		$filecount = 0;
 		$date = date("H:i:s d.m.y", time());		
 		$zipfile = new ZipArchive();	
-		$fullPath = $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Snapshots_Dir"]."/".$date.".zip";
+		$fullPath = getSnapshotsPath().$date.".zip";
 		if ($zipfile->open($fullPath, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE)!==TRUE) {
 			exit("cannot open <$filename>\n");
 		}
 		
-		if ($handle = opendir($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/")) {
+		if ($handle = opendir(getStoragePath())) {
 			while (false !== ($file = readdir($handle))) {			
 				if ($file != "." && $file != "..")
 				{		
 					echo date("D M j G:i:s T Y", time()).": Adding \"".$file."\" to snapshot<br>"; 
-					$zipfile->addFile($GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$file,$file);	
+					$zipfile->addFile(getStoragePath().$file,$file);	
 					$filecount++;
 				}
 			}		
@@ -1131,7 +1133,7 @@
 			}
 			else
 			{				
-				$zipfile->addFile($GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$row->Filename,(substr( $dir.$row->Displayname, 1 )));
+				$zipfile->addFile(getStoragePath().$row->Filename,(substr( $dir.$row->Displayname, 1 )));
 			}
 		}		
 	}
@@ -1145,7 +1147,7 @@
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		
 		$zipfile = new ZipArchive();	
-		$fullPath = $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Temp_Dir"]."/".getRandomKey(50).".zip";
+		$fullPath = getTempPath().getRandomKey(50).".zip";
 		if ($zipfile->open($fullPath, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE)!==TRUE) {
 			exit("cannot open <$filename>\n");
 		}
@@ -1194,11 +1196,11 @@
 		{
 			$size = getDirectorySize($dir);	
 		}
-		echo "Size: ".$size;
+		//echo "Size: ".$size;
 		
 		$complete = $size  + getUsedSpace($_SESSION["user_id"]);
-		echo "Complete used space including new file: ".$complete;
-		echo "Space available: ".$_SESSION["space"] * 1024 * 1024;
+		//echo "Complete used space including new file: ".$complete;
+		//echo "Space available: ".$_SESSION["space"] * 1024 * 1024;
 		if ($complete < $_SESSION["space"] * 1024 * 1024 )
 			$value = true;
 		else
@@ -1243,7 +1245,7 @@
 			{		
 				if ($thumb == 1){
 					if (isShared($Hash))
-							$imagepath = "index.php?module=image&file=".$Hash."&e=s&t=1";
+						$imagepath = "index.php?module=image&file=".$Hash."&e=s&t=1";
 					else
 						$imagepath = "index.php?module=image&file=".$Hash."&t=1";
 				}
@@ -1308,14 +1310,15 @@
 		
 		while ($row = mysqli_fetch_object($result)) {			
 			$array[$row->Displayname] = date("d.m.y",strtotime($row->Uploaded));
-			if (isset($timestamps[ date("d.m.y",strtotime($row->Uploaded))]) == false){
+			if (isset($timestamps[date("d.m.y",strtotime($row->Uploaded))]) == false){
 				 if ($i != 0)
                 echo "</ul></div>";
 				echo "<h2>". date("d.m.y",strtotime($row->Uploaded))."</h2>";
 				echo "<div>";
                 echo "<ul class=\"list-group\">";
+				$timestamps[date("d.m.y",strtotime($row->Uploaded))] = 1;
 			}
-			$timestamps[ date("d.m.y",strtotime($row->Uploaded))]++;
+			$timestamps[date("d.m.y",strtotime($row->Uploaded))]++;
 			echo "<li style='list-style-type: none;'>";
 			if ($row->Uploaded != $row->lastWrite){
 				echo "<span class=\"elusive icon-edit\"></span> ";		
@@ -1377,10 +1380,20 @@
 					$array[$extension]++;
 				}
 			}
-		}			
-		foreach($array as $key => $val)
+		}
+		if (count($array) != 0 ){
+			$i = 0;
+			foreach($array as $key => $val)
+			{
+				echo "['.".$key."',$val],";
+				$i++;
+				if ($i == 200)
+					break;
+			}
+		}
+		else
 		{
-			echo "['.".$key."',$val],";
+				echo "";
 		}
 		mysqli_close($connect);	
 	}
@@ -1543,12 +1556,12 @@
 			else
 			{
 				//include $GLOBALS["Program_Dir"]."Includes/Program.inc.php";
+				//TODO: Possibility to leak by foreign user id?
 				echo $filenamenew;
 				startZipCreation($filenamenew);
 				if (!isset($_SESSION["user_logged_in"]))
 					$_SESSION["user_id"] = -1;
-			}
-			
+			}			
 		} 
 		
 		if (mysqli_affected_rows($connect) == 0)
@@ -1565,7 +1578,7 @@
 		$found =false;
 		$code = getRandomKey(50);
 		do{				
-			include $basepath ."Includes/DataBase.inc.php";
+			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 			mysqli_query($connect,"Select ID  from `Files` where  Filename = '$code.dat'");
 			if (mysqli_affected_rows($connect) > 0)
 			{
@@ -1574,5 +1587,50 @@
 			}
 		}while($found == true );			
 		return $code;
+	}
+	/**
+	* get the current storage path
+	* When a directory exists in the local path, the program assumes that the storage dir is in the current dir
+	* otherwise, the path will be assumed as absolute path
+	* @return a storage path
+	*/
+	function getStoragePath(){
+		if (file_exists($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]) == true){
+			return $GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/";
+		}
+		else
+		{
+			return $GLOBALS["config"]["Program_Storage_Dir"];
+		}
+	}
+	/**
+	* get the current snapshots path
+	* When a directory exists in the local path, the program assumes that the snapshots dir is in the current dir
+	* otherwise, the path will be assumed as absolute path
+	* @return a snapshots path
+	*/
+	function getSnapshotsPath(){
+		if (file_exists($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Snapshots_Dir"]) == true){
+			return $GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Snapshots_Dir"]."/";
+		}
+		else
+		{
+			return $GLOBALS["config"]["Program_Snapshots_Dir"];
+		}
+	}
+	/**
+	* get the current temp path
+	* When a directory exists in the local path, the program assumes that the temp dir is in the current dir
+	* otherwise, the path will be assumed as absolute path
+	* @return a temp path
+	*/
+	function getTempPath(){
+		if (file_exists($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Temp_Dir"]) == true){
+			return $GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Temp_Dir"]."/";
+		}
+		else
+		{
+			return $GLOBALS["config"]["Program_Temp_Dir"];
+		}
 	}
 ?>

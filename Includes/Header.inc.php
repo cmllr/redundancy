@@ -59,8 +59,8 @@
 					<?php echo $GLOBALS["Program_Language"]["Search"];?>
 				</a>
 			</li>
-			<li <?php if (isset($_GET["module"]) == true && $_GET["module"] == "upload"): ?> <?php echo "class=\"active\"";?> <?php endif;?>>
-				<a href="index.php?module=upload">
+			<li <?php if (isset($_GET["module"]) == true && $_GET["module"] == $GLOBALS["config"]["Program_Upload_Module"]): ?> <?php echo "class=\"active\"";?> <?php endif;?>>
+				<a href="index.php?module=<?php echo $GLOBALS["config"]["Program_Upload_Module"];?>">
 					<?php echo $GLOBALS["Program_Language"]["Upload"];?>
 				</a>
 			</li>
@@ -175,7 +175,7 @@
 				</a>
 			</li>
 			<li>
-				<a href="index.php?module=upload">
+				<a href="index.php?module=<?php echo $GLOBALS["config"]["Program_Upload_Module"];?>">
 				<span class="elusive icon-file-new glyphIcon"></span>
 					<?php echo $GLOBALS["Program_Language"]["Upload"];?>
 				</a>
@@ -220,8 +220,14 @@
 				<span class="label label-info">
 				<?php echo measurementCorrection(memory_get_usage());?> Memory
 				</span>
+			</li>	
+			<?php endif;?>
+			<?php if ($GLOBALS["config"]["Program_Display_Connection_Amount"] == 1) :?>
+			<li>
+				<span class="label label-info">					
+					DB_Connections: <?php echo $GLOBALS["connections"];?>	
+				</span>
 			</li>			
-			
 			<?php endif ;?>			
 		</ul>
 		

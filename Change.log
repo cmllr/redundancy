@@ -1,16 +1,23 @@
 <h1>Redundancy 1.9.12 Changelog</h1>
 <h2>Overview</h2> 
-<span class="label label-success">2 Bugfixes</span>
+<span class="label label-success">4 Bugfixes</span>
 <span class="label label-warning">0 Security Bugfixes</span>
-<span class="label label-info">2 Feature Additions or bugfixes</span>
-<span class="label label-important" style="background:#b94a48">0 Features removed</span>
+<span class="label label-info">7 Feature Additions or bugfixes</span>
+<span class="label label-important" style="background:#b94a48">1 Features removed</span>
 <h2>Bugfixes</h2>
 - Fixed a bug causing an internal warning<br>
 - Fixed a bug (#31) which caused wrong display of the transparency channel of a PNG file<br>
+- Fixed a bug causing an internal warning at the changes module<br>
+- Fixed a bug causing a wrong calculation of a storage when 1024*1024 Bytes large<br>
 <h2>Security Bugfixes</h2>
 
 <h2>Feature additions/ Improvements</h2>
 - The changes page now display's the kind of the entry (changed or new entry)<br>
 - Added a guard module to check filesystem operations before they get executed<br>
+- Added new upload module using Dropzone.js<br>
+- Added support to store data on a external drive<br>
+- The file dialog displayes now an shortened displayname if too long<br>
+- Added new user setting to control if keyboard shortcuts should be used<br>
+- Added setting Program_Upload_Module to enable or disable the new upload module (old: upload, new: upload2)<br>
 <h2>Features removed</h2>
-
+- Removed share feature for base dir ("/")<br>

@@ -42,12 +42,12 @@
 		//Remember file and set the current directory to the file's root if the file is an image
 		//needed to show images without any parameters
 		$_SESSION["currentdir"] = $row->Directory;		
-		$_SESSION["current_file"] = $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$row->Filename;
+		$_SESSION["current_file"] = getStoragePath().$row->Filename;
 		$_SESSION["current_file_hash"] = $row->Hash;	
 		//Display the folder navigation bar
 		include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
 		//Display the headline
-		echo "<h1>".getFilenameWithLowercasedExtension($row->Displayname)."</h1>";
+		echo "<h1>".getShortenedDisplayname(getFilenameWithLowercasedExtension($row->Displayname))."</h1>";
 		//The following features are only available if the user enables the preview and the file can be previewed.
 		if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 &&(isImage($row->Filename) == 1 || isVideo($row->Filename) == true || isAudio($row->Filename) == true || isText($row->Filename) == true  ||isVectorGraphics($row->Filename) == true)){
 			?>

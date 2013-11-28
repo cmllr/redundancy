@@ -242,7 +242,7 @@
 				return Result::FileNotExisting;	
 			//*****************Check 4: File already in target dir?*******
 			$name = getFileByHash($hash);			
-			echo $name;
+			//echo $name;
 			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 			$owner_ID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);	
 			$hash = mysqli_real_escape_string($connect,$hash);	

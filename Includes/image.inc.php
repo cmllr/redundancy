@@ -28,9 +28,11 @@
 		//Include DataBase file
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		$filename = "";
-		$result = mysqli_query($connect,"Select * from Files  where Hash = '".mysqli_real_escape_string($connect,$_GET["file"])."' limit 1");	
+		$hash = mysqli_real_escape_string($connect,$_GET["file"]);
+		$result = mysqli_query($connect,"Select Filename from Files  where Hash = '".$hash."' limit 1");	
+		
 		while ($row = mysqli_fetch_object($result)) {
-			$filename = $GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$row->Filename;
+			$filename = getStoragePath().$row->Filename;
 		}	
 		//Set the current file		
 		$_SESSION["current_file"] = $filename;

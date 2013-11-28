@@ -123,7 +123,7 @@
 			$filename = $row->Filename;
 		}			
 		mysqli_close($connect);
-		$fullpath = $GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/$filename";	
+		$fullpath = getStoragePath().$filename;	
 		header('Content-Description: File Transfer');
 		header('Content-Type: application/octet-stream');
 		header('Content-Disposition: attachment; filename='.basename($fullpath));

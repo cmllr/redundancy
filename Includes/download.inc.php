@@ -43,7 +43,7 @@
 	//close databse connection
 	mysqli_close($connect);
 	//Start the download
-	$fullPath = $GLOBALS["Program_Dir"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$localfilename; 	
+	$fullPath = getStoragePath().$localfilename; 	
 	if (file_exists($fullPath)) {
 		header('Content-Description: File Transfer');
 		header('Content-Type: ' . $mimetype); 

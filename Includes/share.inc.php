@@ -27,6 +27,7 @@
 	include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 	if (isset($_GET["file"]))
 		$file = mysqli_real_escape_string($connect,$_GET["file"]);
+
 	if (isset($_SESSION["user_id"]))
 		$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);	
 	$code = "";

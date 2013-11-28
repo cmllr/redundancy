@@ -21,7 +21,7 @@
 	 * This file creates the navigation for switching between several directories
 	 */
 	//Include uri check
-	require_once ("checkuri.inc.php");
+	//require_once ("checkuri.inc.php");
 	//start a session if needed
 	if (isset($_SESSION) == false)
 		session_start();	

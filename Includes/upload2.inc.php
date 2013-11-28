@@ -39,6 +39,10 @@ if (isset($_SESSION) == false)
 	$config_size = $max_upload*1024*1024;
 	$filecount = 0;
 	$results = array();
+	if ($GLOBALS["config"]["Program_Debug"] == 1){
+		log_event("upload",print_r($_FILES, true));
+		log_event("upload",isset($_FILES));
+	}
 	if ($_SESSION["role"] != 3 && isGuest() == false){		
 		if (isset($_FILES["userfile"]))
 		{		
@@ -82,7 +86,7 @@ if (isset($_SESSION) == false)
 					}						
 					$uploadtime= date("Y-m-d H:i:s",$timestamp);
 					$dir = $_SESSION['currentdir'];				
-					$oldfilename = mysqli_real_escape_string($connect,($_FILES['userfile']['name'][$key]));					
+					$oldfilename = mysqli_real_escape_string($connect,utf8_decode($_FILES['userfile']['name'][$key]));					
 					$size = filesize($_FILES['userfile']['tmp_name'][$key]);
 					$directory_id =  getDirectoryID($dir);				
 					$file_mime = file_get_contents($_FILES['userfile']['tmp_name'][$key]); 
@@ -154,11 +158,6 @@ if (isset($_SESSION) == false)
 	}
 	if (isset($_POST["method"]))
 	{
-		if ($GLOBALS["config"]["Program_Debug"] == 1){
-			echo "success:".($success ? "true" : "false");
-			echo "toobig:".($toobig ? "true" : "false");
-			echo "already:".($alreadyExisting? "true" : "false");
-		}
 		echo getSingleNodeXMLDoc($success ? "true" : "false");
 		exit();
 	}		
@@ -195,29 +194,23 @@ if (isset($_SESSION) == false)
 			}
 		}
 		else{
-			?>
+			?>	
 				<h2><?php echo $GLOBALS["Program_Language"]["upload_finished_title"]; ?></h2>
-				<ul>
-				<?php				
-				foreach ($results as $key => $value ){
-					?>
-						<?php if($value != 0) :?>
-							<li style='list-style: none;'><span class="errorValue elusive icon-remove glyphIcon"></span>
-						<?php else :?>
-							<li style='list-style: none;'><span class=" elusive icon-ok glyphIcon"></span>
-						<?php endif;?>
-					<?php						
+				##<?php				
+				foreach ($results as $key => $value ){										
 					echo $key.": ";
 					if ($value == Result::TooBig)
 						echo $GLOBALS["Program_Language"]["upload_toobig"];
 					else if ($value == Result::FileIsExisting)
 						echo $GLOBALS["Program_Language"]["upload_exists"];
 					else if ($value == Result::OK)
-						echo $GLOBALS["Program_Language"]["upload_done"];
-					echo "</li>";
+						echo $GLOBALS["Program_Language"]["upload_done"];	
+					if ($value == 0)
+						header("HTTP/1.0 200 OK");	
+					else
+						header("HTTP/1.0 409 Conflict");		
 				}
-				?>
-				</ul>
+				?>##
 			<?php			
 		}
 	}
@@ -225,10 +218,43 @@ if (isset($_SESSION) == false)
 <?php	
 	echo "<h2>".$GLOBALS["Program_Language"]["Upload_Title"]." ".$_SESSION['currentdir'].".</h2>";
 ?>
-<form enctype="multipart/form-data" action="index.php?module=upload" method="POST">
-<p> 
-	<input class = 'btn btn-default'  name="userfile[]" type="file" multiple/>
-</p>
-<small>Maximum: <?php echo measurementCorrection($config_size).". ". $GLOBALS["Program_Language"]["Upload_SubTitle"];?></small>
-    <input class = 'btn btn-default'  type='submit' value='<?php echo $GLOBALS["Program_Language"]["Upload"];?>'>	
+
+<div id = "result">
+
+</div>
+
+<div class="panel panel-default">
+	<?php
+		echo "<h3 class=\"text-center\">";	
+		echo $GLOBALS["Program_Language"]["dictUploadTitle"]."</h3>";
+	?>
+<form class ="dropzone panel-body" id = "my-awesome-dropzone" action="index.php?module=upload2" method="POST" >
+ <div class = "dz-message">
+	<center>
+		<span class="elusive icon-file-new glyphIcon text-center"></span>
+	</center>
+ </div>
+	<div class="fallback">
+    <input name="userfile" type="file" multiple />
+  </div>
 </form>
+
+</div>
+<script>
+Dropzone.options.myAwesomeDropzone = {
+  paramName: "userfile", 
+  uploadMultiple: true,
+  addRemoveLinks: true,
+  parallelUploads: 1,
+  accept: function(file, done) {
+    if (file.name == "Weltherrschaft-ToDo.rtf") {
+      done("Naha, you don't.");
+    }
+    else { done(); }
+  },
+  dictRemoveFile: "<?php echo $GLOBALS["Program_Language"]["dictRemoveFile"];?>",
+  dictCancelUpload: "<?php  echo $GLOBALS["Program_Language"]["dictCancelUpload"];?>",
+  dictDefaultMessage: "<?php  echo $GLOBALS["Program_Language"]["dictDefaultMessage"];?>",  
+  dictCancelUploadConfirmation: "<?php  echo $GLOBALS["Program_Language"]["dictCancelUploadConfirmation"];?>",  
+};
+</script>

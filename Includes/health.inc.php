@@ -72,7 +72,7 @@
 		<tr>
 			<td>
 				<?php
-				if (is_writable($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/") == true)
+				if (is_writable(getStoragePath()) == true)
 					{
 						echo "<span class=\"successValue elusive icon-ok glyphIcon\">";
 					}	
@@ -88,7 +88,7 @@
 		<tr>
 			<td>
 				<?php
-				if (is_writable($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Temp_Dir"]."/") == true)
+				if (is_writable(getTempPath()) == true)
 				{
 					echo "<span class=\"successValue elusive icon-ok glyphIcon\">";
 				}	
@@ -104,7 +104,7 @@
 		<tr>
 			<td>
 				<?php
-				if (is_writable($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Snapshots_Dir"]."/") == true)
+				if (is_writable(getSnapshotsPath()) == true)
 				{
 					echo "<span class=\"successValue elusive icon-ok glyphIcon\">";
 				}	
@@ -127,7 +127,7 @@
 				while ($row = mysqli_fetch_object($query)) {		
 					if ($row->Filename != $row->Displayname){
 					$count++;			
-						if (file_exists($GLOBALS["config"]["Program_Path"].$GLOBALS["config"]["Program_Storage_Dir"]."/".$row->Filename) == false)
+						if (file_exists(getStoragePath().$row->Filename) == false)
 						{
 							$countMissing++;
 							echo "<span class=\"errorValue elusive icon-remove glyphIcon\"></span>- File \"".$row->Displayname."\" (".$row->Filename.") in database, but not on filesystem!<br>";

@@ -36,7 +36,8 @@
 	/*
 		Enable keyhooks for using the keyboard shortcuts (like STRG+F, STRG+D ...)
 	*/
-	enableKeyHooks();		
+	if (isset($GLOBALS["config"]["Program_Enable_KeyHooks"]) && $GLOBALS["config"]["Program_Enable_KeyHooks"] == 1)
+		enableKeyHooks();		
 	/*
 		Step 1 -> Determine the wanted directory. 
 		From $_GET parameter or given by session value
@@ -300,18 +301,22 @@
 		array($_SESSION["currentdir"],$GLOBALS["Program_Language"]["Delete_Folder"]),
 		$_SESSION["template"]["Delete_folder"]
 	);
-	if (isset($hashcode) && isShared($hashcode) && isset($_POST["searchquery"]) == false){
+	if ($_SESSION["currentdir"] != "/" && isset($hashcode) && isShared($hashcode) && isset($_POST["searchquery"]) == false){
 		if (isShared($hashcode))
 		{
 			$sharetext = getShareLink($hashcode);		
 		}		
 		echo "<a type=\"a\" href = 'index.php?module=share&file=".$hashcode."&delete=true'class=\"btn btn-default\"><span class=\"elusive icon-remove-sign glyphIcon\"></span>".$GLOBALS["Program_Language"]["Unshare"]."</a></div>";
 	}		
-	else if (isset($hashcode) && isShared($hashcode) == false && isset($_POST["searchquery"]) == false)
+	else if ($_SESSION["currentdir"] != "/" &&  isset($hashcode) && isShared($hashcode) == false && isset($_POST["searchquery"]) == false)
 	{
 		if (isShared($hashcode) == false)
 			echo "<a type=\"a\" href = 'index.php?module=download&module=share&file=".$hashcode."&new=true'class=\"btn btn-default\"><span class=\"elusive icon-share glyphIcon\"></span>".$GLOBALS["Program_Language"]["Share"]."</a></div>";
 	}	
+	else if ($_SESSION["currentdir"] == "/")
+	{	
+		echo "</div>";
+	}
 ?>
 <?php if (isset($hashcode) && isShared($hashcode) && isset($_POST["searchquery"]) == false):?>
 	<div class="panel panel-default">

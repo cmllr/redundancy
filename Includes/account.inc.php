@@ -47,7 +47,7 @@
 </div>
 <?php		
 	//Display percentage, the chart (if enabled) and the user settings (if enabled)
-	echo "&nbsp;".getUsedStoragePercentage()."&nbsp;(".getUsedStorageStatus().")";
+	echo "&nbsp;".getUsedStoragePercentage()."&nbsp;(".measurementCorrection(getUsedStorageStatus()).")";
 	//Include of the third party calls for drawing the chart
 	if ($GLOBALS["config"]["Program_Enable_Chart"] == 1)
 		include $GLOBALS["Program_Dir"]."Lib/jqplot.inc.php";
