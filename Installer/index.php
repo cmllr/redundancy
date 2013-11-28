@@ -26,8 +26,9 @@ error_reporting(E_ALL);
 			echo "<table>";
 			echo "<tr><th></th><th></th></tr>";
 			echo "<tr>";		
-			if (strlen($_POST["user"]) != 0 && strlen($_POST["pass"])  != 0 && strlen($_POST["server"])  != 0  && strlen($_POST["db"]) != 0 )
+			if (strlen($_POST["user"]) != 0 && strlen($_POST["server"])  != 0  && strlen($_POST["db"]) != 0 )
 			{	
+				
 				inst_create_DataBaseConfig($_POST["user"],$_POST["pass"],$_POST["server"],$_POST["db"]);		
 			}
 			else
