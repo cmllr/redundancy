@@ -5,7 +5,12 @@
 			$ourFileName = $_POST["dir"]."Includes/DataBase.inc.php";
 			if (is_writable($ourFileName)){
 				$escapedollar = "$";
-				$text = $escapedollar."connect = mysqli_connect('$server', '$user', '$pass') or die('Error: 005 '.mysqli_error());	mysqli_select_db(".$escapedollar."connect,'$db') or die('Error: 006 '.mysqli_error());";
+				$text = $escapedollar."connect = mysqli_connect('$server', '$user', '$pass') or die('Error: 005 '.mysqli_error());	
+				mysqli_select_db(\".$escapedollar.\"connect,'$db') or die('Error: 006 '.mysqli_error()); 
+				if (isset($escapedollar._POST[\"method\"])){
+					mysqli_query($escapedollar.connect,\"SET NAMES 'utf8'\");
+					mysqli_query($escapedollar.connect,\"SET CHARACTER SET 'utf8'\");
+				}";
 				
 				$ourFileHandle = fopen($ourFileName, 'w') or die("cant open file");
 				fwrite($ourFileHandle, "<?php $text?>");
