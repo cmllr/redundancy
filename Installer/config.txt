@@ -67,5 +67,5 @@ Program_Enable_Chart = 1;
 Program_Branding = "./Images/bootstrapped_logo.png";
 Program_Enable_ErrorHandler = 1;
 Program_Session_Timeout = -1; 
-Program_Display_Connection_Amount = 1;
+Program_Display_Connection_Amount = 0;
 Program_Upload_Module="upload2";

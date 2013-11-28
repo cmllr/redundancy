@@ -7,3 +7,5 @@
 <!-- Lightbox Image Modal Dialog -->
 <link rel="stylesheet" href="Lib/bootstrap/css/custom.css" type="text/css"/>
 <script src="./Lib/jquery.longclick.js"></script>
+<script src="./Lib/Dropzone.js/dropzone.js"  charset="UTF-8"></script>
+<link rel="stylesheet" href="Lib/Dropzone.js/css/dropzone.css" type="text/css"/>

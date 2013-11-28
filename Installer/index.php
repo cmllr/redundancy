@@ -20,7 +20,7 @@ $GLOBALS["fail"] = 0;
 $GLOBALS["ERRORS"] = array();
 error_reporting(E_ALL);
 	if (isset($_POST)){
-		if (isset($_POST["user"],$_POST["pass"],$_POST["server"],$_POST["db"],$_POST["dir"],$_POST["storage"],$_POST["temp"],$_POST["snapshots"],$_POST["rootname"],$_POST["rootpass"]) &&  !empty($_POST["user"]) && !empty($_POST["pass"]) && !empty($_POST["server"]) && !empty($_POST["db"]) && !empty($_POST["dir"]) && !empty($_POST["storage"]) && !empty($_POST["temp"]) && !empty($_POST["snapshots"]) && !empty($_POST["rootname"]) && !empty($_POST["rootpass"])){
+		if (isset($_POST["user"],$_POST["pass"],$_POST["server"],$_POST["db"],$_POST["dir"],$_POST["storage"],$_POST["temp"],$_POST["snapshots"],$_POST["rootname"],$_POST["rootpass"]) &&  !empty($_POST["user"]) && !empty($_POST["server"]) && !empty($_POST["db"]) && !empty($_POST["dir"]) && !empty($_POST["storage"]) && !empty($_POST["temp"]) && !empty($_POST["snapshots"]) && !empty($_POST["rootname"]) && !empty($_POST["rootpass"])){
 			include "Kernel.Installer.inc.php";	
 			echo "<h3 class=\"text-center\">Installation result</h3>";
 			echo "<table>";
