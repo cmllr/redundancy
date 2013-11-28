@@ -82,7 +82,11 @@
 						
 					if (Guard::renameFileValidator($newname,$hash,$_SESSION["currentdir"]) == 0){
 						if (isFileExisting($newname,$_SESSION["currentdir"]) == false && strlen($newname) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]) {
+							$lastWrite= date("Y-m-d H:i:s",time());
+							$newLastWrite = "Update Files set lastWrite = '$lastWrite' where Hash ='$hash'";	
+							mysqli_query($connect,$newLastWrite);
 							$insert = mysqli_query($connect,"Update Files Set Displayname='$newname' where Hash ='$hash'") or die("Error: 017 ".mysqli_error($connect));	
+							
 							updateLastWriteOfDirectory(getRootDirectoryByEntryHash($hash));
 							$success = true;
 						}
