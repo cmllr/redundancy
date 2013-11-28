@@ -1428,8 +1428,8 @@
 	}
 	/**
 	 * get the root of a dir
-	 * @param $hash the h ash of an entry
-	 * @param the root directory id
+	 * @param $hash the hash of an entry
+	 * @returns the parent directory
 	 */
 	function getRootDirectoryByEntryHash($hash){
 		if (isset($_SESSION) == false)
@@ -1444,6 +1444,42 @@
 		mysqli_close($connect);	
 		return $parentDirectory;
 	}
+	/**
+	 * get the upload date of a dir
+	 * @param $dir the dir of an entry
+	 * @returns the upload date
+	 */
+	function getUploadDateOfDir($dir){
+		if (isset($_SESSION) == false)
+			session_start();
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
+		$dir = mysqli_real_escape_string($connect,$dir);			
+		$owner_id = mysqli_real_escape_string($connect,$_SESSION["user_id"]);	
+		$result = mysqli_query($connect,"Select Uploaded from Files  where Filename = '$dir' and UserID = '$owner_id' limit 1") or die("Error: 010 ".mysqli_error($connect));
+		$uploaded = -1;
+		while ($row = mysqli_fetch_object($result)) {
+			$uploaded = $row->Uploaded;
+		}		
+		mysqli_close($connect);	
+		return $uploaded;
+	}
+	/**
+	 * set the upload date of a dir
+	 * @param $dir the dir of an entry
+	 * @param $uploaded the timestamp
+	 */
+	function setUploadDateOfDir($dir,$uploaded){
+		if (isset($_SESSION) == false)
+			session_start();
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";		
+		$dir = mysqli_real_escape_string($connect,$dir."/");			
+		$owner_id = mysqli_real_escape_string($connect,$_SESSION["user_id"]);	
+		$uploaded  = mysqli_real_escape_string($connect,$uploaded);			
+		$result = mysqli_query($connect,"Update Files SET Uploaded =  '$uploaded' where Filename = '$dir' and UserID = '$owner_id' limit 1") or die("Error: 010 ".mysqli_error($connect));
+				
+		mysqli_close($connect);	
+	}
+	
 	/**
 	 * Share a fileystem entry (external)
 	 * @param $file the hash

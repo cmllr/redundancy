@@ -54,12 +54,14 @@
 						//$Dir_ID = getDirectoryID($source);
 						//TODO: DIR rename
 						//Step 1 create new dir (new name) - check
-						
+						$uploaddate = getUploadDateOfDir($source);
 						moveContents($source,$_SESSION["currentdir"].$target);
 						
 						//Step 2 move contents -check					
 						//STep 3 delete old dir
 						deleteDir($source);
+						
+						setUploadDateOfDir($_SESSION["currentdir"].$target,$uploaddate);
 						updateLastWriteOfDirectory(getDirectoryID($old_root));
 						$success = true;
 					}
