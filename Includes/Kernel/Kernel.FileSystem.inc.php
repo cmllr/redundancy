@@ -285,9 +285,10 @@
 	 */
 	function measurementCorrection($value,$offset = 1)
 	{
+		
 		$measure = "B";	
 		$value = $value * $offset;		
-		if ($value > 1024 && $value  <= 1024 * 1024)
+		if ($value > 1024 && $value  < 1024 * 1024)
 		{
 			$measure = "KB";
 			$value = $value /1024;
@@ -1390,6 +1391,96 @@
 				if ($i == 200)
 					break;
 			}
+		}
+		else
+		{
+				echo "";
+		}
+		mysqli_close($connect);	
+	}
+	function rand_color() {
+		return '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT);
+	}
+	function getFileSystemStats2()
+	{
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		$result = mysqli_query($connect,"Select Filename,Displayname from Files where UserID = '$userID'")  or die("Error 023: ".mysqli_error($connect));
+		$array = array ();		
+		$allFiles = 0;
+		while ($row = mysqli_fetch_object($result)) {
+			if ($row->Filename != $row->Displayname){
+				
+				$extension = explode(".",$row->Displayname);				
+				$extension = strtolower($extension[count($extension)-1]);
+				if (isset($array[$extension]) == false)
+				{
+					$array[$extension] = 1;
+				}
+				else
+				{
+					$array[$extension]++;
+				}
+				$allFiles++;
+			}
+		}
+		$GLOBALS["colors"] = array();
+		if (count($array) != 0 ){
+			$i = 1;			
+			foreach($array as $key => $val)
+			{
+				
+				$GLOBALS["colors"][$key] = rand_color();
+				$color = $GLOBALS["colors"][$key];
+				echo "<div class=\"progress-bar\" title = \"*.$key: $val\" style=\"width: ".(100/($allFiles/$val))."%;background-color: ".$color.";\"><span class=\"sr-only\">test</span> </div>";
+				$i++;
+				if ($i == 200)
+					break;
+			}				
+		}
+		else
+		{
+				echo "";
+		}
+		mysqli_close($connect);	
+	}
+	function getFileSystemLegend()
+	{		
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		$result = mysqli_query($connect,"Select Filename,Displayname from Files where UserID = '$userID'")  or die("Error 023: ".mysqli_error($connect));
+		$array = array ();		
+		$allFiles = 0;
+		while ($row = mysqli_fetch_object($result)) {
+			if ($row->Filename != $row->Displayname){
+				
+				$extension = explode(".",$row->Displayname);				
+				$extension = strtolower($extension[count($extension)-1]);
+				if (isset($array[$extension]) == false)
+				{
+					$array[$extension] = 1;
+				}
+				else
+				{
+					$array[$extension]++;
+				}
+				$allFiles++;
+			}
+		}
+		if (count($array) != 0 ){
+			$i = 1;
+			
+			foreach($array as $key => $val)
+			{
+				echo "
+					 <li class=\"list-group-item\">
+						<span class=\"badge\" style=\"background-color: ".$GLOBALS["colors"][$key]."\"> $val</span>
+						*.$key
+					  </li>";
+				$i++;
+				if ($i == 200)
+					break;
+			}				
 		}
 		else
 		{

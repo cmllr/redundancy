@@ -23,7 +23,6 @@ License and components
 - Redundancy uses JQuery, it can be found on https://jquery.org/.
 - Redundancy uses parts of Faenza, it can be found on http://gnome-look.org/content/show.php?content=128143
 - Redundancy uses Twitter Bootstrap, licensed under the terms and conditions of Apache License 2.0
-- Redundancy uses jqPlot (http://www.jqplot.com/), licensed under the terms and conditions of  MIT and GPL version 2
 - Redundancy uses webfont Elusive (http://shoestrap.org/downloads/elusive-icons-webfont/), licensed under the terms and conditions of the SIL Open Font License (OFL)
 - Redundancy uses an image from http://subtlepatterns.com/
 

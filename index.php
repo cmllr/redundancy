@@ -39,8 +39,10 @@
 	//Rename the user name value if the user is logged in and do a check if needed
 	if (isset($_SESSION["user_name"])){
 		renameUserSessionIfNeeded();
-		if (isset($_SESSION["begin"])  == false || !checkSessionTimeout($_SESSION["begin"]))
-			logoutUser("session_stopped_fail");
+		if ($GLOBALS["config"]["Program_Session_Timeout"] != -1){
+			if (isset($_SESSION["begin"])  == false || !checkSessionTimeout($_SESSION["begin"]))
+				logoutUser("session_stopped_fail");
+		}
 	}
 	//Load user defined options from the database if enabled by config
 	if (isset($_SESSION["user_name"]) && $GLOBALS["config"]["Program_Enable_User_Settings"] == 1)
