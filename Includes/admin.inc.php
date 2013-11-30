@@ -1,3 +1,49 @@
+<script>
+  $(function() {
+    $( "#slider-range-max" ).slider({
+      range: "max",
+      min: <?php echo (round(getUsedSpace("fury")/1024/1024,0,PHP_ROUND_HALF_UP)); ?>,
+      max: 1000000,
+      value: <?php echo (round(getUsedSpace("fury")/1024/1024,0,PHP_ROUND_HALF_UP)); ?>,
+      slide: function( event, ui ) {        
+		$("#inputStorage" ).val( ui.value);
+      }
+    }); 
+	$("#inputStorage").keypress(function(e) {				
+		if (isNaN($("#inputStorage" ).val()) == true){			
+			e.preventDefault();			
+		}
+		else{	
+			if ($("#inputStorage" ).val() <= $( "#slider-range-max" ).slider( "option", "max" ))
+			{
+				$("#save").prop('disabled', false);
+			}
+			else
+			{				
+				e.preventDefault();						
+			}			
+		}
+	});
+	$("#inputStorage").keyup(function(e) {	
+		$( "#slider-range-max" ).slider( "value", $("#inputStorage" ).val() );		
+		if (isNaN($("#inputStorage" ).val()) == true ){
+			$("#save").prop('disabled', true);
+			e.preventDefault();			
+		}
+		else{	
+			if ($("#inputStorage" ).val() <= $( "#slider-range-max" ).slider( "option", "max" ))
+			{
+				$("#save").prop('disabled', false);
+			}
+			else
+			{
+				$("#save").prop('disabled', true);
+				e.preventDefault();						
+			}			
+		}
+	})
+  });
+  </script>
 <?php
 	/**
 	 * @file
@@ -180,6 +226,7 @@
 												<p>
 													<input value = "<?php echo getUserStorage($_POST["username_info"]); ?>" type="text" class="form-control" placeholder="<?php echo $GLOBALS["Program_Language"]["user_storage_in_mb"];  ?>" name="storage" data-toggle="tooltip" data-placement="right" id="inputStorage" title data-original-title="Minimum: <?php echo measurementCorrection(round(getUsedSpace($_POST["username_info"]),0,PHP_ROUND_HALF_UP)); ?>"/>
 												</p>
+												<div id="slider-range-max"></div>
 											</div>
 									</div>
 									<div class="form-group">
@@ -294,7 +341,7 @@
 					}
 				?>
 			<?php if (isAdmin()): ?>
-			<form role="form" method="POST" action="index.php?module=admin">
+			<form name = "send" role="form" method="POST" action="index.php?module=admin">
 				<div class="form-group">
 				<label for="inputUsername"><?php echo $GLOBALS["Program_Language"]["Username"]; ?></label>
 					<div class="input-group" id="inputUsername">
@@ -312,7 +359,7 @@
 							<input type="password" name="pass_create" class="form-control" id="inputPassword">
 					</div>
 				</div>
-				<button type="submit" class="btn btn-primary btn-block"><?php echo $GLOBALS["Program_Language"]["Save"];?></button>
+				<button id="save" type="submit" class="btn btn-primary btn-block"><?php echo $GLOBALS["Program_Language"]["Save"];?></button>
 			</form>
 			<?php endif; ?>
 			<?php
