@@ -161,3 +161,5 @@ QuickButtons = "Schnellzugriff";
 QuickButtons_Description = "H&auml;ufig genutzte Funktionalit&auml;ten";
 Stable_Description = "Danke, dass Sie Redundancy nutzen. In dieser Version wurden einige Fehler behoben und neue Funktionalit&auml;ten integriert. M&ouml;chten Sie sich mehr &uuml;ber die Entwicklungsfortschritte von Redundancy informieren, k&ouml;nnen Sie am unteren Ende dieser Seite das Changelog einsehen.";
 Unstable_Description = "Danke, dass Sie Redundancy nutzen. Bitte beachten Sie, dass es sich bei dieser Version um eine nicht stabile Testversion handelt. Durch unbehobene Fehler kann sich das Programm unerwartet verhalten. Bitte beachten Sie auch die Hinweise im <a href = 'https://github.com/squarerootfury/redundancy/wiki/Beta-notes'>Wiki</a>.";
+Account_Settings = "Kontoeinstellungen";
+Account_Storage_Info = "Speichernutzung";
