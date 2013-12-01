@@ -160,3 +160,5 @@ QuickButtons = "Quick access";
 QuickButtons_Description = "Frequently used functions";
 Stable_Description = "Thanks for using Redundancy. This version was shipped with many bugfixes and lots of improvements. If you want to get a deatailed list, you can check the menu entry Changelog at the bottom of this page.";
 Unstable_Description = "Thanks for using Redundancy. Warning: This version is an preview and is not stable. The possibility of loosing data is given. Also you can encounter lots of errors. This version is not in the state of an final preview. For more informations you can read the wiki page about the beta versions: <a href = 'https://github.com/squarerootfury/redundancy/wiki/Beta-notes'>link to github</a>";
+Account_Settings = "Account settings";
+Account_Storage_Info = "Storage informations";
