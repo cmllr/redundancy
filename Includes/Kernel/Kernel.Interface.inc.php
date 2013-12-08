@@ -319,5 +319,32 @@
 		}
 		mysqli_close($connect);			
 	}
-	
+	function getPagination($current,$max,$count,$dir){
+		echo "<ul class=\"pagination pagination-sm\">";
+			for ($i = 0; $i < round($count/$max,0,PHP_ROUND_HALF_UP ); $i++){			
+				$start = ($i*$max) ;
+								
+				
+				$end = (($i*$max)+$max)-1;
+				
+				echo "<li";
+				if ($current >= $start  && $current <= $end)
+					echo " class='active'";				
+				echo "><a href=\"?module=list&dir=$dir&start=$start&end=$end&current=".($start+1)."\">".($start)." - ".($end)."</a></li>";
+				//echo round($count/$max,0,PHP_ROUND_HALF_UP ) ;
+				//echo  $count/$max  ;			
+			}
+			if ($count/$max  > round($count/$max,0,PHP_ROUND_HALF_UP )  ){					
+				if (($count)%$max != 0){
+					$start = ++$end;
+						$end = $count - $i*max;
+					echo "<li";
+					if ($current >= $start  && $current <= $end)
+						echo " class='active'";		
+				
+					echo "><a href=\"?module=list&dir=$dir&start=".($start-1)."&end=$end&current=".($start)."\">".($start )."  - ".($end)."</a></li>";			
+				}
+			}
+		echo "</ul>";
+	}
 ?>

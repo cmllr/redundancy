@@ -74,8 +74,37 @@
 	//get the User
 	$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);	
 	//Determine the user ID and run the statement.
-	if (isset($_POST["searchquery"]) == false)
-		$result = mysqli_query($connect,"Select Uploaded,Displayname,Filename,Hash,MimeType,Filename_only,Size,Directory from Files  where UserID = $user and Directory_ID ='".$id."'") or die("Error: 014 ".mysqli_error($connect));
+	$current = -1;
+	$start = -1;
+	$end = -1;
+	$count = -1;
+	
+	if (isset($_POST["searchquery"]) == false){
+		$query = "Select Uploaded,Displayname,Filename,Hash,MimeType,Filename_only,Size,Directory from Files  where UserID = $user and Directory_ID ='".$id."'";
+		if ($GLOBALS["config"]["Program_Enable_Pagination"] == 1 ){
+			mysqli_query($connect,$query)  or die("Error: 014 ".mysqli_error($connect));
+			$count = mysqli_affected_rows($connect);			
+		}
+		if (isset($_GET["current"]) && isset($_GET["start"]) && isset($_GET["end"]))
+		{
+			if (!isset($_GET["move"]) &&  !isset($_GET["copy"])){
+				$current = mysqli_real_escape_string($connect,$_GET["current"]);
+				$start = mysqli_real_escape_string($connect,$_GET["start"]);
+				$end = $GLOBALS["config"]["Program_Pagination_Count"];			
+				$query .= " limit $start, $end";
+			}
+		}
+		else if ($GLOBALS["config"]["Program_Enable_Pagination"] == 1){
+			if (!isset($_GET["move"]) &&  !isset($_GET["copy"])){
+				$current = 0;
+				$start = 0;
+				$end = 	$GLOBALS["config"]["Program_Pagination_Count"];		
+				$query .= " limit $start, $end";	
+			}			
+		}
+		$result = mysqli_query($connect,$query) or die("Error: 014 ".mysqli_error($connect));
+		
+	}
 	else
 	{
 		$search = mysqli_real_escape_string($connect,$_POST["searchquery"]);
@@ -333,4 +362,9 @@
 			</form>
 		</div>
 	</div>
+<?php endif ;?>
+<?php if (isset($_POST["searchquery"]) == false && $GLOBALS["config"]["Program_Enable_Pagination"] == 1  && $start != -1 && $end != -1):?>
+<form class="form-horizontal" role="form">  	
+	<?php getPagination($current,$GLOBALS["config"]["Program_Pagination_Count"],$count,$_SESSION["currentdir"]); ?>
+</form>
 <?php endif ;?>
