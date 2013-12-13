@@ -183,7 +183,12 @@
 		echo "</tr>";
 	}
 	else{
-		echo "<br>";
+		echo "
+			<div class='alert alert-info alert-dismissable'>
+			  <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
+				".$GLOBALS["Program_Language"]["Dir_Empty"]."
+			</div>
+		";	
 		$emptyFolder = true;
 	}
 	/*

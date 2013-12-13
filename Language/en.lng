@@ -162,3 +162,4 @@ Stable_Description = "Thanks for using Redundancy. This version was shipped with
 Unstable_Description = "Thanks for using Redundancy. Warning: This version is an preview and is not stable. The possibility of loosing data is given. Also you can encounter lots of errors. This version is not in the state of an final preview. For more informations you can read the wiki page about the beta versions: <a href = 'https://github.com/squarerootfury/redundancy/wiki/Beta-notes'>link to github</a>";
 Account_Settings = "Account settings";
 Account_Storage_Info = "Storage informations";
+Dir_Empty = "This folder is empty.";

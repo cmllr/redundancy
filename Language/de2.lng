@@ -163,3 +163,4 @@ Stable_Description = "Danke, dass Sie Redundancy nutzen. In dieser Version wurde
 Unstable_Description = "Danke, dass Sie Redundancy nutzen. Bitte beachten Sie, dass es sich bei dieser Version um eine nicht stabile Testversion handelt. Durch unbehobene Fehler kann sich das Programm unerwartet verhalten. Bitte beachten Sie auch die Hinweise im <a href = 'https://github.com/squarerootfury/redundancy/wiki/Beta-notes'>Wiki</a>.";
 Account_Settings = "Kontoeinstellungen";
 Account_Storage_Info = "Speichernutzung";
+Dir_Empty = "Dieses Verzeichnis ist leer.";
