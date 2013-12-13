@@ -335,6 +335,10 @@
 		array($_SESSION["currentdir"],$GLOBALS["Program_Language"]["Delete_Folder"]),
 		$_SESSION["template"]["Delete_folder"]
 	);
+	echo  "<a type=\"a\" href = 'index.php?module=createdir' class=\"btn btn-default\">
+					<span class=\"elusive icon-folder glyphIcon\"></span>".$GLOBALS["Program_Language"]["New_Directory_Short"]."
+				</a>";
+	
 	if ($_SESSION["currentdir"] != "/" && isset($hashcode) && isShared($hashcode) && isset($_POST["searchquery"]) == false){
 		if (isShared($hashcode))
 		{
