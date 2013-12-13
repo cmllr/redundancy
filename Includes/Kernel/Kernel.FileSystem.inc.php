@@ -1296,7 +1296,7 @@
 		if (isset($_SESSION) == false)
 			session_start();
 		$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
-		$result = mysqli_query($connect,"Select Displayname,Uploaded,lastWrite from Files where UserID = '$userID' order by Uploaded desc limit ".$changes)  or die("Error 023: ".mysqli_error($connect));
+		$result = mysqli_query($connect,"Select Hash,Filename,Displayname,Uploaded,lastWrite from Files where UserID = '$userID' order by Uploaded desc limit ".$changes)  or die("Error 023: ".mysqli_error($connect));
 		
 		$array = array ();
 		$timestamps = array();
@@ -1323,13 +1323,20 @@
 			echo "<li style='list-style-type: none;'>";
 			if ($row->Uploaded != $row->lastWrite){
 				echo "<span class=\"elusive icon-edit\"></span> ";		
-				echo $row->Displayname." (".date("d.m.y H:i:s",strtotime($row->lastWrite)).")";
+				if ($row->Displayname != $row->Filename)
+					echo "<a href ='index.php?module=file&file=".$row->Hash."'>".$row->Displayname." (".date("d.m.y H:i:s",strtotime($row->lastWrite)).")</a>";
+				else
+					echo "<a href ='index.php?module=list&dir=".$row->Displayname."'>".$row->Displayname." (".date("d.m.y H:i:s",strtotime($row->lastWrite)).")</a>";
+				
 			}
 			else
 			{
 				echo "<span class=\"elusive icon-file-new\"></span> ";
-				echo $row->Displayname." (".date("d.m.y H:i:s",strtotime($row->Uploaded)).")";
-			}
+				if ($row->Displayname != $row->Filename)
+					echo "<a href ='index.php?module=file&file=".$row->Hash."'>".$row->Displayname." (".date("d.m.y H:i:s",strtotime($row->Uploaded)).")</a>";
+				else
+					echo "<a href ='index.php?module=list&dir=".$row->Displayname."'>".$row->Displayname." (".date("d.m.y H:i:s",strtotime($row->Uploaded)).")</a>";
+		}
 		
 			echo "</li>";	
 			$i++;
