@@ -23,11 +23,16 @@
 	//Include uri check
 	//require_once ("checkuri.inc.php");
 	//Create a session if needed
+
 	if (isset($_SESSION) == false)
 		 session_start();
 	//Case 1: the user wants to delete a file
 	//echo var_dump($_SERVER);
 	$success = false;
+	if (!isOwner($_GET["file"],$_SESSION["user_id"])){		
+		header("Location: ./index.php?module=list&message=file_delete_fail");
+		exit;
+	}
 	if (isset($_GET["s"]) == false && isset($_POST["s"]) == false)
 	{
 		$agreed = false;
@@ -68,6 +73,7 @@
 			$agreed = true;
 	}
 	if ($agreed = true && $_SESSION["role"] != 3 && isGuest() == false){
+		$success = false;
 		if (isset($_SESSION['user_name']) && (isset($_GET["file"]) || isset($_POST["file"]))) 
 		{ 	 	 
 			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
@@ -76,8 +82,10 @@
 				$hash = mysqli_real_escape_string($connect,$_GET["file"]);
 			else
 				$hash = mysqli_real_escape_string($connect,$_POST["file"]);				
-			$userid = mysqli_real_escape_string($connect,$_SESSION['user_id']);				
-			$success = getFileByHashAndDelete($hash,$userid);
+			$userid = mysqli_real_escape_string($connect,$_SESSION['user_id']);		
+			if (!isLocalShared($hash)){
+				$success = getFileByHashAndDelete($hash,$userid);
+			}			
 		}
 		//Case 2: the user wants to delete a directory
 		else if (isset($_SESSION["user_name"]) &&  ((isset($_GET["dir"]) ) || isset($_POST["dir"]) ))
@@ -90,7 +98,9 @@
 				echo $todelete."<br>";
 			if ($_SESSION['currentdir'] == $todelete)
 				$_SESSION["currentdir"] = getRootDirectory($_SESSION['currentdir'],$_SESSION["user_id"]);
-			$success= deleteDir($todelete);	
+			if (!isLocalShared($todelete)){
+				$success= deleteDir($todelete);	
+			}
 		}
 	}
 	if (isset($_POST["method"]))

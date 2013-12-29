@@ -76,10 +76,8 @@
 			if ($GLOBALS["config"]["Program_Enable_KeyHooks"] == 1)
 				echo "checked=\"true\"";	
 		?>> <?php echo $GLOBALS["Program_Language"]["Program_Enable_KeyHooks"];?><br>
+	</br>
 		 <input class="btn btn-default" type="submit" value="<?php echo $GLOBALS["Program_Language"]["Save"]; ?>" /> 
 	</form>
 	</p>
-	<form method="POST" action="index.php?module=setpass" >
-		<input type="submit" class="btn btn-default" value="<?php echo $GLOBALS["Program_Language"]["New_Pass"]; ?>" />
-	</form>
 </div>

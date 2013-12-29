@@ -43,6 +43,6 @@
 	else if (isset($_GET["share"]))
 	{
 		$share = mysqli_real_escape_string($connect,$_GET["share"]);
-		getExternalShare($share,isset($_GET["viewonly"]));		
+		getExternalShare($share,$GLOBALS["config"]["Program_Share_ViewOnly"] == 1 || isset($_GET["viewonly"]));	
 	}
 ?>

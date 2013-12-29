@@ -152,75 +152,7 @@
 			$link = "http://".$_SERVER["SERVER_NAME"].$dir."index.php?module=activate";
 		return $link;
 	}
-	/**
-	 * create an image by a full path
-	 * @param $imagepath the path of the image
-	 */
-	function displayImage($imagepath)
-	{			
-		//Display image if existing
-		//supported are: jpeg,jpg,bmp,png (atm)
-		if (file_exists($_SESSION["current_file"])){
-			header('Content-Type: ' .mime_content_type($_SESSION["current_file"]));		
-			$mimetype = mime_content_type($_SESSION["current_file"]);		
-			if ($mimetype == "image/jpeg"){
-				$im = imagecreatefromjpeg($_SESSION["current_file"]);	
-				if (isset($_GET["t"]) && $_GET["t"] == 1)
-				{
-					list($width, $height) = getimagesize($_SESSION["current_file"]);
-					$newimage = imagecreatetruecolor(32,32);
-					imagecopyresampled($newimage,$im,0,0,0,0,32,32,$width,$height);
-					imagejpeg($newimage);
-					imagedestroy($newimage);
-					imagedestroy($im);
-				}
-				else
-				{
-					imagejpeg($im);					
-					imagedestroy($im);	
-				}				
-			}
-			if ($mimetype == "image/bmp"){					
-				$im = imagecreatefromwbmp($_SESSION["current_file"]);
-				if (isset($_GET["t"]) && $_GET["t"] == 1)
-				{
-					list($width, $height) = getimagesize($_SESSION["current_file"]);
-					$newimage = imagecreatetruecolor(32,32);
-					imagecopyresampled($newimage,$im,0,0,0,0,32,32,$width,$height);
-					imagewbmp($newimage);
-					imagedestroy($newimage);
-					imagedestroy($im);
-				}
-				else
-				{
-					imagewbmp($im);
-					imagedestroy($im);		
-				}				
-			}
-			if ($mimetype == "image/png"){		
-				$im = imagecreatefrompng($_SESSION["current_file"]);
-				imagesavealpha ($im,true);
-				if (isset($_GET["t"]) && $_GET["t"] == 1)
-				{
-					list($width, $height) = getimagesize($_SESSION["current_file"]);							
-					$newimage = imagecreatetruecolor(32,32);
-					imagealphablending($newimage, false);
-					imagesavealpha ($newimage,true);					
-					imagecopyresampled($newimage,$im,0,0,0,0,32,32,$width,$height);		
-				
-					imagepng($newimage);
-					
-					imagedestroy($newimage);
-					imagedestroy($im);
-				}
-				else
-				{
-					imagepng($im);
-					imagedestroy($im);		
-				}			 		
-			}			
-		}		
-	}
+	
 	function setExceptionHandler(){
 		set_exception_handler('exception_handler');
 		setErrorHandler();

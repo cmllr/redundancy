@@ -28,6 +28,7 @@
 	function createContextMenu($hashcode,$count)
 	{
 		++$count; 
+		$lasthash = "";
 		$shared = isShared(str_replace("#","",$hashcode));
 		if ($shared)
 			$Share_Status = "<a class = 'shared' href = 'index.php?module=share&file=".str_replace("#","",$hashcode)."&delete=true'><span class=\"elusive icon-share glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Shared"]."</a>";
@@ -48,6 +49,8 @@
 				echo "<li><a class = 'delete' href = 'index.php?module=list&copy=true&source=".$row->Filename."&old_root=".$row->Directory."'><span class=\"elusive icon-tags glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Copy"]."</a></li>";
 				echo "<li><a class = 'delete'  href ='index.php?module=rename&source=".$row->Displayname."&old_root=".$_SESSION["currentdir"]."'><span class=\"elusive icon-edit glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Rename_title"]."</a></li>";
 				echo "<li><a href ='index.php?module=zip&dir=".$row->Displayname."'><span class=\"elusive icon-download-alt glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Zip"]."</a></li>";			
+				echo "<li>$Share_Status</li>";	
+				$lasthash = $row->Hash;
 			}			
 			mysqli_close($connect);	
 		}
@@ -55,7 +58,7 @@
 		{
 			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 			$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
-			$select = "Select Displayname,Filename,Directory,Hash from Files where UserID = '$user' and Hash = '".str_replace("#","",$hashcode)."' limit 1";
+			$select = "Select Displayname,Filename,Directory,Hash from Files where  Hash = '".str_replace("#","",$hashcode)."' limit 1";
 			$result= mysqli_query($connect,$select);
 			while ($row = mysqli_fetch_object($result)) {
 				echo "<li><a href ='index.php?module=file&file=".$row->Hash."'><span class=\"elusive icon-eye-open glyphIcon\"></span> ".$GLOBALS["Program_Language"]["open_generic"]."</a></li>";
@@ -64,10 +67,16 @@
 				echo "<li><a class = 'delete' href = 'index.php?module=list&copy=true&file=".$row->Hash."'><span class=\"elusive icon-tags glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Copy"]."</a></li>";
 				echo "<li><a class = 'delete'  href ='index.php?module=rename&file=".$row->Hash."'><span class=\"elusive icon-file-edit glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Rename_title"]."</a></li>";
 				echo "<li><a href ='index.php?module=download&file=".$row->Hash."'><span class=\"elusive icon-download-alt glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Download"]."</a></li>";			
+				if (isOwner($row->Hash,$_SESSION["user_id"])){
+					echo "<li><a href ='index.php?module=localshare&file=".$row->Hash."'><span class=\"elusive icon-share-alt glyphIcon\"></span> ".$GLOBALS["Program_Language"]["LocalShare"]."</a></li>";			
+					echo "<li>$Share_Status</li>";	
+				}					
+				$lasthash = $row->Hash;
 			}			
 			mysqli_close($connect);	
 		}
-		echo "<li >$Share_Status</li></ul>";
+
+		echo "</ul>";
 		echo "<script>$(function() {\$('#context_menu$count').menu();\$('#context_menu$count').toggle();\$('$hashcode').bind('contextmenu', function(e){var MouseX;var MouseY;e.preventDefault();MouseX = e.clientX ;MouseY = e.clientY;$('#context_menu$count').css({'position':'fixed','top':MouseY,'left':MouseX,'z-index':'10'});\$('#context_menu$count').toggle('clip', {}, 100 );return false;});";
 		echo "\$('#context_menu$count').mouseleave(function(){\$(this).hide();});});";  
 		echo "</script>";
@@ -116,8 +125,7 @@
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$dirlink = "";
 		$shared = "";
-		$shared = isShared($hash);
-	
+		$shared = isShared($hash);	
 		if ($shared)
 			$shared = " <span class = 'label label-primary'>".$GLOBALS["Program_Language"]["Share_Title"]."</span>";
 		if (isset($_GET["move"]) && isset($_GET["file"]))
@@ -144,7 +152,7 @@
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$modulelink = "";
 		$shared = "";
-	
+		
 		if (isset($_GET["move"]) && isset($_GET["file"]))
 				$modulelink = "module=list&dir=".$Displayname."&move=true&file=".mysqli_real_escape_string($connect,$_GET["file"])."&dir=".$Displayname;
 		else if (isset($_GET["copy"]) && isset($_GET["file"]))
@@ -162,7 +170,7 @@
 	 */
 	function getShareStatus($hashcode)
 	{
-		$shared = isShared($hashcode);	
+		$shared = isShared($hashcode);		
 		$Share_Status = "-1";		
 		if ($shared){
 			$Share_Status = str_replace(
@@ -267,7 +275,7 @@
 			$image = "./Images/error.png";			
 			if (isset($_GET["img"]))
 			$image = "./Images/".$_GET["img"].".png";			
-			if (strpos($message,"success") === false){
+			if (strpos($message,"success") === false && strpos($message,"Success")  === false){
 			
 				echo "<div class='alert alert-danger'>".$GLOBALS["Program_Language"][$message]."<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button></div>";
 			}	

@@ -390,7 +390,7 @@
 		{
 			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 			$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
-			$result = mysqli_query($connect,"Select MimeType from Files where UserID = '".$userID."' and Filename = '$filename' or Hash = '$filename' limit 1") or die("Error 025: ".mysqli_error($connect));
+			$result = mysqli_query($connect,"Select MimeType from Files where Filename = '$filename' or Hash = '$filename' limit 1") or die("Error 025: ".mysqli_error($connect));
 			$filename_mime = "";
 			while ($row = mysqli_fetch_object($result)) {
 				$filename_mime = $row->MimeType;
@@ -474,6 +474,43 @@
 		$result = mysqli_query($connect,"Select Displayname from Files where UserID = '".$userID."' and Hash = '$hashSafe' limit 1") or die("Error 025: ".mysqli_error($connect));
 		while ($row = mysqli_fetch_object($result)) {
 			$filename = $row->Displayname;
+		}			
+		return $filename;
+	}
+	/**
+	 * getFileByHash returns the displayname searched by a hash
+	 * @param $hash the hash
+	 * @return the ID or -1
+	 */
+	function getFileIDByHash($hash)
+	{
+		if (isset($_SESSION) == false)
+			session_start();
+		$filename = -1;
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$hashSafe = mysqli_real_escape_string($connect,$hash);
+		$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
+		$result = mysqli_query($connect,"Select ID from Files where  Hash = '$hashSafe' limit 1") or die("Error 025: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($result)) {
+			$filename = $row->ID;
+		}			
+		return $filename;
+	}
+	/**
+	 * getFileHashByID returns the hash searched by a id
+	 * @param $id the id
+	 * @return the hash or -1
+	 */
+	function getFileHashByID($id)
+	{
+		if (isset($_SESSION) == false)
+			session_start();
+		$filename = -1;
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$idSafe = mysqli_real_escape_string($connect,$id);		
+		$result = mysqli_query($connect,"Select Hash from Files where id = '$idSafe' limit 1") or die("Error 025: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($result)) {
+			$filename = $row->Hash;
 		}			
 		return $filename;
 	}
@@ -1001,7 +1038,10 @@
 		$owner_id = mysqli_real_escape_string($connect,$_SESSION['user_id']);	
 		$filename = mysqli_real_escape_string($connect,$filename);
 		$directory = mysqli_real_escape_string($connect,$directory);
-		$hash = mysqli_real_escape_string($connect,$hash);
+		$hash = mysqli_real_escape_string($connect,$hash);		
+		//Delete local share if given
+		$fileid = getFileIDByHash($hash);
+		deleteInternalShare($fileid);
 		$success = false;
 		mysqli_query($connect,"delete from `Files` where  `Filename` = '".$filename."' and UserID = '".$owner_id."' and Directory = '$directory'")or die("Error: 011 ".mysqli_error($connect));		
 		if (mysqli_affected_rows($connect) != 1){			
@@ -1287,7 +1327,6 @@
 	/**
 	 * get the last changes of the user's storage
 	 * @param $changes the amount of changes
-	
 	 */
 	function getLastFileSystemChanges($changes = 10)
 	{
@@ -1576,8 +1615,7 @@
 		$result = mysqli_query($connect,"Update Files SET Uploaded =  '$uploaded' where Filename = '$dir' and UserID = '$owner_id' limit 1") or die("Error: 010 ".mysqli_error($connect));
 				
 		mysqli_close($connect);	
-	}
-	
+	}	
 	/**
 	 * Share a fileystem entry (external)
 	 * @param $file the hash
@@ -1691,7 +1729,7 @@
 			{
 				//include $GLOBALS["Program_Dir"]."Includes/Program.inc.php";
 				//TODO: Possibility to leak by foreign user id?
-				echo $filenamenew;
+				//echo $filenamenew;
 				startZipCreation($filenamenew);
 				if (!isset($_SESSION["user_logged_in"]))
 					$_SESSION["user_id"] = -1;
@@ -1767,4 +1805,171 @@
 			return $GLOBALS["config"]["Program_Temp_Dir"];
 		}
 	}
+	/**
+	* Adds a new internal share for user $user
+	* @param $id the file id
+	* @param $user the user id
+	* @param $mode the permission mode
+	* @return the result of the action
+	*/
+	function createInternalShare($id,$user,$mode = 4)
+	{
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$id = mysqli_real_escape_string($connect,$id);
+		$user = mysqli_real_escape_string($connect,$user);		
+		$mode = mysqli_real_escape_string($connect,$mode);	
+		//echo "Insert into LocalShare (FileID,TargetUser,Mode) Values ($id,$user,$mode)";			
+		$res = mysqli_query($connect,"Insert into LocalShare (FileID,TargetUser,Mode) Values ($id,$user,$mode)") or die (mysqli_error($connect));		
+		if ($res === TRUE){			
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}	
+	/**
+	* Delete an existing internal share for user $user
+	* @param $id the file id
+	* @return the result of the action
+	*/
+	function deleteInternalShare($id)
+	{
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$id = mysqli_real_escape_string($connect,$id);			
+		$res = mysqli_query($connect,"Delete from LocalShare where FileID = '$id'") or die (mysqli_error($connect));		
+		if ($res === TRUE){			
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}	
+	/**
+	* Delete an existing internal share for user $user
+	* @param $id the file id
+	* @return the result of the action
+	*/
+	function deleteLocalShare($fileid, $userid)
+	{
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$id = mysqli_real_escape_string($connect,$fileid);			
+		$userid = mysqli_real_escape_string($connect,$userid);			
+		$res = mysqli_query($connect,"Delete from LocalShare where FileID = '$id' and TargetUser = '$userid'") or die (mysqli_error($connect));		
+		if (mysqli_affected_rows($connect) != 0){			
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	/**
+	* Check if a file is shared locally
+	* @param $hash the file hash
+	* @param $user the user id
+	* @return the result of the action
+	*/
+	function isLocalShared($hash,$user){
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$hash = mysqli_real_escape_string($connect,$hash);		
+		$user = mysqli_real_escape_string($connect,$user);		
+		
+		$res = mysqli_query($connect,"Select LocalShare.ID,TargetUser from LocalShare inner join Files f on f.ID = LocalShare.FileID where LocalShare.TargetUser = '$user' and f.Hash =  '$hash' or (LocalShare.TargetUser = '$user' and LocalShare.FileID = '$hash')") or die (mysqli_error($connect));		
+
+		if (mysqli_affected_rows($connect) !=  0){
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	/**
+	* Check if a file is shared locally
+	* @param $hash the file hash
+	* @param $user the user id
+	* @return the result of the action
+	*/
+	function isLocalSharedAnyUser($hash){
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$hash = mysqli_real_escape_string($connect,$hash);		
+		$user = mysqli_real_escape_string($connect,$user);		
+		
+		$res = mysqli_query($connect,"Select LocalShare.ID,TargetUser from LocalShare inner join Files f on f.ID = LocalShare.FileID where f.Hash =  '$hash' or (LocalShare.TargetUser = '$user' and LocalShare.FileID = '$hash')") or die (mysqli_error($connect));		
+
+		if (mysqli_affected_rows($connect) !=  0){
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	/**
+	* Get permissions on a file (0=nothing;4=r;6=w)
+	* @param $hash the file hash
+	* @return the result of the action
+	*/
+	function getLocalShareMode($hash){
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$hash = mysqli_real_escape_string($connect,$hash);			
+		$res = mysqli_query($connect,"Select LocalShare.Mode from LocalShare inner join Files f on f.ID = LocalShare.FileID where f.Hash =  '$hash'") or die (mysqli_error($connect));		
+
+		while ($row = mysqli_fetch_object($res)) {
+			return $row->Mode;
+		}
+		return 0;
+	}	
+	/**
+	* Get permissions on a file (0=nothing;4=r;6=w)
+	* @param $hash the file hash
+	* @return the result of the action
+	*/
+	function getLocalShares($hash){
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$hash = mysqli_real_escape_string($connect,$hash);			
+		$res = mysqli_query($connect,"Select LocalShare.TargetUser,LocalShare.FileID,u.User,f.Displayname from LocalShare inner join Files f on f.ID = LocalShare.FileID inner join Users u on u.ID = LocalShare.TargetUser where f.Hash =  '$hash'") or die (mysqli_error($connect));		
+		if (mysqli_affected_rows($connect) != 0)
+			echo "<h3>".sprintf($GLOBALS["Program_Language"]["ShareInfo"],getFileByHash($hash))."</h3>";
+		while ($row = mysqli_fetch_object($res)) {
+			echo $GLOBALS["Program_Language"]["Shared"]." - <b>".$GLOBALS["Program_Language"]["Username"].": ".$row->User."</b> <a href ='index.php?module=localshare&delete=true&user=".$row->TargetUser."&file=".$row->FileID."'>".$GLOBALS["Program_Language"]["Delete"]."</a><br>";
+		}		
+	}
+	/**
+	* Check if a user id is the user id of the owner of a file
+	* @param $hash the file hash
+	* @param $owner the owner id
+	* @return the result of the action
+	*/
+	function isOwner($hash,$owner){
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$hash = mysqli_real_escape_string($connect,$hash);	
+		$owner = mysqli_real_escape_string($connect,$owner);	
+		$res = mysqli_query($connect,"Select UserID from Files where Hash =  '$hash' and UserID = '$owner'") or die (mysqli_error($connect));		
+
+		if (mysqli_affected_rows($connect) !=  0){
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	/**
+	* Get the username of the owner of a file
+	* @param $hash the file hash
+	* @return the result of the action
+	*/
+	function getOwner($hash){
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$hash = mysqli_real_escape_string($connect,$hash);			
+		$res = mysqli_query($connect,"Select u.User from Files f inner join Users u on u.ID = f.UserID where f.Hash = '$hash'") or die (mysqli_error($connect));		
+		$user ="";
+		while ($row = mysqli_fetch_object($res)) {
+			$user = $row->User;
+		}	
+		return $user;
+	}	
 ?>

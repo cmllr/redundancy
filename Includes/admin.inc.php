@@ -154,6 +154,7 @@
 										<a class="btn btn-default" href="index.php?module=admin"><?php echo $GLOBALS["Program_Language"]["Back"];?></a>
 									</div>
 								</div>
+								<?php exit;?>
 							<?php endif;?>
 							<?php if (isset($_POST["role"]) == false ) :?>
 								<form class="form-horizontal" role="form" method="POST" action="index.php?module=admin">				

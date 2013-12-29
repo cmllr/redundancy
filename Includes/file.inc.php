@@ -31,17 +31,28 @@
 	$hash = mysqli_real_escape_string($connect,$_GET["file"]);
 	$userID = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
 	//Search for a file with this hash
+
+
 	$ergebnis = mysqli_query($connect,"Select Filename,Displayname,Uploaded,Client,Hash,MimeType,Directory,Size from Files  where Hash = '$hash' and UserID = '$userID' limit 1") or die("Error: ".mysqli_error($connect));	
 	//redirect the user to an error site if the file does not exists
-	if (mysqli_affected_rows($connect) ==  0)
-	{			
-		header("Location: index.php?module=list&dir=".$_SESSION["currentdir"]."&message=File_not_found");
-		exit;
+	if ( mysqli_affected_rows($connect) ==  0  )
+	{		
+		if (!isLocalShared($hash,$userID) && !isLocalSharedAnyUser($hash)){
+			header("Location: index.php?module=list&dir=".$_SESSION["currentdir"]."&message=File_not_found");			
+			exit;
+		}		
+		else{
+			$ergebnis = mysqli_query($connect,"Select Filename,Displayname,Uploaded,Client,Hash,MimeType,Directory,Size from Files  where Hash = '$hash' limit 1") or die("Error: ".mysqli_error($connect));	
+			$permissions = getLocalShareMode($hash);
+		}
 	}
+	
 	while ($row = mysqli_fetch_object($ergebnis)) {	
 		//Remember file and set the current directory to the file's root if the file is an image
 		//needed to show images without any parameters
-		$_SESSION["currentdir"] = $row->Directory;		
+		if (!isLocalShared($hash,$userID)){
+			$_SESSION["currentdir"] = $row->Directory;	
+		}		
 		$_SESSION["current_file"] = getStoragePath().$row->Filename;
 		$_SESSION["current_file_hash"] = $row->Hash;	
 		//Display the folder navigation bar
@@ -116,7 +127,7 @@
 			<div class = "btn-group" id = "fileActionBtnGroup">
 			<?php
 				//Display download link
-				?>
+				?>				
 				<a type="a" href = 'index.php?module=download&file=<?php echo $row->Hash;?>'class="btn btn-default">
 					<span class="elusive icon-download-alt glyphIcon">
 					</span>
@@ -124,30 +135,42 @@
 				</a>
 				<?php			
 				//Display sharelinks
-				if ($shared == false)
-				{
-					?>
-					<a type="a" href = 'index.php?module=share&file=<?php echo $row->Hash;?>&new=true' class="btn btn-default">
-						<span class="elusive icon-share glyphIcon">
-						</span>
-						<?php echo $GLOBALS["Program_Language"]["Share"];?>
-					</a>
-					<?php
-				}		
-				else
-				{
-					$sharetext = getShareLink($hash);	
-					//Display share link
-					?>
-					<a type="a" href = 'index.php?module=share&file=<?php echo $row->Hash;?>&delete=true' class="btn btn-default">
-						<span class="elusive icon-remove-sign glyphIcon">
-						</span>
-						<?php echo $GLOBALS["Program_Language"]["Unshare"];?>
-					</a>
-					<?php 
+				if (isset($permissions) == false || isset($permissions) && $permissions >= 6){
+					if ($shared == false)
+					{
+						?>
+						<a type="a" href = 'index.php?module=share&file=<?php echo $row->Hash;?>&new=true' class="btn btn-default">
+							<span class="elusive icon-share glyphIcon">
+							</span>
+							<?php echo $GLOBALS["Program_Language"]["Share"];?>
+						</a>
+						<?php
+					}		
+					else
+					{
+						$sharetext = getShareLink($hash);	
+						//Display share link
+						?>
+						<a type="a" href = 'index.php?module=share&file=<?php echo $row->Hash;?>&delete=true' class="btn btn-default">
+							<span class="elusive icon-remove-sign glyphIcon">
+							</span>
+							<?php echo $GLOBALS["Program_Language"]["Unshare"];?>
+						</a>
+						<?php 
+					}
 				}
 				//Display delete  and rename link	
 				?>
+				<?php if (isOwner($hash,$_SESSION["user_id"]))  :?>
+				<a type="a" href = 'index.php?module=localshare&file=<?php echo $row->Hash;?>&delete=true' class="btn btn-default">
+							<span class="elusive icon-share glyphIcon">
+							</span>
+							<?php echo $GLOBALS["Program_Language"]["LocalShare"];?>
+						</a>
+				<?php endif;?>
+				<?php
+				if (isset($permissions) == false || isset($permissions) && $permissions >= 6){
+					?>
 				<a type="a" href = 'index.php?module=delete&file=<?php echo $row->Hash;?>' class="btn btn-default">
 					<span class="elusive icon-trash glyphIcon">
 					</span>
@@ -158,6 +181,10 @@
 					</span>
 					<?php echo $GLOBALS["Program_Language"]["Rename_title"];?>
 				</a>
+				<?php 
+					}
+					?>
+
 			</div>
 			<?php 	
 	}
@@ -199,6 +226,19 @@
 				<input type="text" class="form-control" id="inputSharedLink" value="<?php echo $sharetext;?>">
 			</div>		
 		</div>   
+		<?php endif ;?>
+		<?php if (isLocalShared($hash,$userID)) :?>
+			<div class="form-group">
+			<label class="col-lg-2 control-label">
+				Status
+			</label>
+			<div class="col-lg-8">
+				<p class="form-control-static">
+					<?php echo sprintf($GLOBALS["Program_Language"]["SharedStatus"],getOwner($hash)); ?>
+				</p>
+			</div>
+			<div class="col-lg-2"></div>
+			</div>  
 		<?php endif ;?>
 	</form>
 	</div>

@@ -102,6 +102,11 @@
 				$query .= " limit $start, $end";	
 			}			
 		}
+		$query .= "UNION ALL 
+		Select Uploaded,Displayname,Filename,Hash,MimeType,Filename_only,Size,Directory 
+		from Files 		
+
+		inner join LocalShare ls on ls.FileID = Files.ID where ls.TargetUser = '$user'";
 		$result = mysqli_query($connect,$query) or die("Error: 014 ".mysqli_error($connect));
 		
 	}
@@ -226,7 +231,7 @@
 		$i++;		
 		/*
 			Display several kinds of links for cases like copy file, move filey, copy dir, move dir and the regular display
-		*/
+		*/	
 		$modulelink = getFileHyperlink($row->Displayname);
 		/*
 			Create the table content, based if it's a folder or a file
@@ -269,10 +274,14 @@
 				}
 			}			
 		}			
-		else
+		else 
 		{			
 			echo str_replace("##suffix",$suffix,$_SESSION["template"]["Table_File_Definition"]);		
 			$shared = isShared($row->Hash);
+			if ($shared == false){					
+				$shared = isLocalSharedAnyUser($row->Hash);
+			}
+			
 			if ($shared)
 				$shared = " <span class = 'label label-primary'>".$GLOBALS["Program_Language"]["Share_Title"]."</span>";
 			echo str_replace(

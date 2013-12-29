@@ -55,7 +55,7 @@ border: 0px;">
 			if ($GLOBALS["config"]["Program_Enable_User_Settings"] == 1)
 				include $GLOBALS["Program_Dir"]."Includes/settings.inc.php";	
 		?>
-		<p>
+		</br>
 		<?php if ($_SESSION["role"] != 3 && isGuest() == false):?>
 			<div class="btn-group">
 				<a class = 'btn btn-default' href = "index.php?module=zip&dir=/">

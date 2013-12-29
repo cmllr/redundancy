@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `Pass_History` (
   `IP` text COLLATE utf8_bin NOT NULL,
   `Who` int(11) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;##
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;##
 
 CREATE TABLE IF NOT EXISTS `Settings` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `Settings` (
   `Program_Enable_Preview` int(11) NOT NULL,
   `Program_Enable_KeyHooks` int(11) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;##
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;##
 
 CREATE TABLE IF NOT EXISTS `Share` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -80,4 +80,16 @@ CREATE TABLE IF NOT EXISTS `Users` (
   `Failed_Logins` int(11) NOT NULL DEFAULT '0',
   `Session_Closed` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;##
+CREATE TABLE IF NOT EXISTS `LocalShare` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `FileID` int(11) NOT NULL,
+  `TargetUser` int(11) NOT NULL,
+  `Mode` int(11) NOT NULL COMMENT 'See CHMOD',
+  PRIMARY KEY (`ID`),
+  KEY `FileID` (`FileID`),
+  KEY `TargetUser` (`TargetUser`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 ;
+ALTER TABLE `LocalShare`
+  ADD CONSTRAINT `LocalShare_ibfk_1` FOREIGN KEY (`FileID`) REFERENCES `Files` (`ID`),
+  ADD CONSTRAINT `LocalShare_ibfk_2` FOREIGN KEY (`TargetUser`) REFERENCES `Users` (`ID`);

@@ -51,7 +51,7 @@
 			if (Guard::copyOrMoveFileValidator($file,$dir) == 0 && isFileExisting($fileDisplayName,$dir) == false){
 				$success = true;
 				//Check if user has enough space left.
-				if (isSpaceLeft($dir) == true)
+				if (isSpaceLeft($dir) == true && isOwner($file,$_SESSION["user_id"]))
 					copyFile($file,$dir);		
 				else
 					$success = false;

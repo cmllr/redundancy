@@ -784,7 +784,7 @@
 								<input type=\"submit\" id=\"buttonDeleteUser\" class=\"btn btn-primary\"  value=\"Edit\">
 								</div>
 						</div>
-					</form>	";		
+					</form> ";
 			}
 			mysqli_close($connect);
 		}

@@ -23,7 +23,7 @@
 	//Include uri check
 	require_once ("checkuri.inc.php");
 	//start a session if needed
-	if (isset($_SESSION) == false);
+	if (!isset($_SESSION) == false);
 		session_start();
 	//Include database file
 	if (isset($GLOBALS["Program_Dir"]) != false)
@@ -34,16 +34,35 @@
 		$GLOBALS["Program_Dir"] = $GLOBALS["config"]["Program_Path"];
 	}
 	//get the display- and filename
-	$result = mysqli_query($connect,"Select Filename,Displayname,MimeType from Files  where UserID = \"" .  $_SESSION['user_id'] . "\" and Directory = \"" .$_SESSION['currentdir']."\" and Hash = \"".mysqli_real_escape_string($connect,$_GET["file"])."\"") or die("Error 013: ".mysqli_error($connect));
-	while ($row = mysqli_fetch_object($result)) {																	
-		$localfilename = $row->Filename;
-		$displayname = $row->Displayname;	
-		$mimetype = $row->MimeType;
+	$userID = mysqli_real_escape_string($connect,$_SESSION['user_id']);
+	$currentdir = mysqli_real_escape_string($connect,$_SESSION['currentdir']);
+	$hash = $_GET["file"];
+	$result;
+	$localfilename = "";
+	$displayname =  "";
+	$mimetype = "";
+	
+	if (isLocalShared(getFileIDByHash($hash),$userID) == true){	
+		$result = mysqli_query($connect,"Select Filename,Displayname,MimeType from Files  where  Hash = \"".mysqli_real_escape_string($connect,$_GET["file"])."\"") or die("Error 013: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($result)) {																	
+			$localfilename = $row->Filename;
+			$displayname = $row->Displayname;	
+			$mimetype = $row->MimeType;
+		}		
+	}
+	else{
+		$result = mysqli_query($connect,"Select Filename,Displayname,MimeType from Files  where UserID = \"" .  $userID . "\" and Directory = \"" .$currentdir."\" and Hash = \"".mysqli_real_escape_string($connect,$_GET["file"])."\"") or die("Error 013: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($result)) {																	
+			$localfilename = $row->Filename;
+			$displayname = $row->Displayname;	
+			$mimetype = $row->MimeType;
+		}
 	}	
 	//close databse connection
 	mysqli_close($connect);
 	//Start the download
-	$fullPath = getStoragePath().$localfilename; 	
+	$fullPath = getStoragePath().$localfilename; 
+		ob_clean();
 	if (file_exists($fullPath)) {
 		header('Content-Description: File Transfer');
 		header('Content-Type: ' . $mimetype); 

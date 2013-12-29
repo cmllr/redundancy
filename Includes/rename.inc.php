@@ -25,6 +25,10 @@
 	//start a session if needed	
 	if (isset($_SESSION) == false)
 			session_start();
+	if (isset($_GET["file"]) && !isOwner($_GET["file"],$_SESSION["user_id"])){		
+		header("Location: ./index.php?module=list&message=rename_fail");
+		exit;
+	}	
 	$success = false;
 	//only proceed if a post parameter is set
 	if ($_SESSION["role"] != 3  )
@@ -50,28 +54,29 @@
 					//echo "Source: $source, old_root: $old_root, newname: $target currentdir: ".$_SESSION["currentdir"]." length: ".$GLOBALS["config"]["Program_FileSystem_Name_Max_Length"];
 					
 					if ($res== 0 && isFileExisting($target,$old_root) == false && strlen($target) <= $GLOBALS["config"]["Program_FileSystem_Name_Max_Length"]){
-						createDir($old_root,$target,$old_hash);
-						//$Dir_ID = getDirectoryID($source);
-						//TODO: DIR rename
-						//Step 1 create new dir (new name) - check
-						$uploaddate = getUploadDateOfDir($source);
-						moveContents($source,$_SESSION["currentdir"].$target);
-						
-						//Step 2 move contents -check					
-						//STep 3 delete old dir
-						deleteDir($source);
-						
-						setUploadDateOfDir($_SESSION["currentdir"].$target,$uploaddate);
-						updateLastWriteOfDirectory(getDirectoryID($old_root));
-						$success = true;
+						if (!isLocalShared($old_hash)){
+							createDir($old_root,$target,$old_hash);
+							//$Dir_ID = getDirectoryID($source);
+							//TODO: DIR rename
+							//Step 1 create new dir (new name) - check
+							$uploaddate = getUploadDateOfDir($source);
+							moveContents($source,$_SESSION["currentdir"].$target);
+							
+							//Step 2 move contents -check					
+							//STep 3 delete old dir
+							deleteDir($source);
+							
+							setUploadDateOfDir($_SESSION["currentdir"].$target,$uploaddate);
+							updateLastWriteOfDirectory(getDirectoryID($old_root));
+							$success = true;
+						}						
 					}
 					else
 					{
 						$success = false;
 					}
 				}
-				else{
-					
+				else{					
 					//include the dataBase file
 					include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";			
 					
@@ -110,11 +115,11 @@
 				else{	
 					if ($GLOBALS["config"]["Program_Debug"] != 1){						
 						if ($success == true){
-							//header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=rename_success");
+							header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=rename_success");
 						}
 						else
 						{
-							//header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=rename_fail");
+							header("Location: ./index.php?module=list&dir=".$_SESSION["currentdir"]."&message=rename_fail");
 						}
 					}	
 					
