@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `LocalShare` (
   PRIMARY KEY (`ID`),
   KEY `FileID` (`FileID`),
   KEY `TargetUser` (`TargetUser`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 ;##
 ALTER TABLE `LocalShare`
   ADD CONSTRAINT `LocalShare_ibfk_1` FOREIGN KEY (`FileID`) REFERENCES `Files` (`ID`),
   ADD CONSTRAINT `LocalShare_ibfk_2` FOREIGN KEY (`TargetUser`) REFERENCES `Users` (`ID`);
