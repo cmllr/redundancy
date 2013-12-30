@@ -1,4 +1,3 @@
-# Latest table structure dump. 
 CREATE TABLE IF NOT EXISTS `Banned` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `IP` text,
