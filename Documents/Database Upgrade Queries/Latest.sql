@@ -1,3 +1,4 @@
+# Step one: Add tables if not existing
 CREATE TABLE IF NOT EXISTS `Banned` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `IP` text,
@@ -36,7 +37,9 @@ CREATE TABLE IF NOT EXISTS `LocalShare` (
   `Mode` int(11) NOT NULL COMMENT 'See CHMOD',
   PRIMARY KEY (`ID`),
   KEY `FileID` (`FileID`),
-  KEY `TargetUser` (`TargetUser`)
+  KEY `TargetUser` (`TargetUser`),
+  FOREIGN KEY (`FileID`) REFERENCES `Files` (`ID`),
+  FOREIGN KEY (`TargetUser`) REFERENCES `Users` (`ID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 
