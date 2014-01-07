@@ -35,11 +35,7 @@ CREATE TABLE IF NOT EXISTS `LocalShare` (
   `FileID` int(11) NOT NULL,
   `TargetUser` int(11) NOT NULL,
   `Mode` int(11) NOT NULL COMMENT 'See CHMOD',
-  PRIMARY KEY (`ID`),
-  KEY `FileID` (`FileID`),
-  KEY `TargetUser` (`TargetUser`),
-  FOREIGN KEY (`FileID`) REFERENCES `Files` (`ID`),
-  FOREIGN KEY (`TargetUser`) REFERENCES `Users` (`ID`)
+  PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 
@@ -100,3 +96,7 @@ CREATE TABLE IF NOT EXISTS `Users` (
   `Session_Closed` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+ALTER TABLE `LocalShare`
+    ADD CONSTRAINT `LocalShare_ibfk_1` FOREIGN KEY (`FileID`)  REFERENCES `Files` (`ID`),
+    ADD CONSTRAINT `LocalShare_ibfk_2` FOREIGN KEY (`TargetUser`)  REFERENCES `Users` (`ID`)
