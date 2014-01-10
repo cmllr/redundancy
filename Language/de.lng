@@ -187,3 +187,4 @@ UpdateFailed="Update fehlgeschlagen: ";
 DataBaseUpdated="Die Datenbank wurde aktualisiert.";
 UpdateDownloadError="Das Update konnte nicht heruntergeladen werden!";
 UpdateFilesFinished ="Die Aktualisierung der Dateien ist abgeschlossen";
+Update = "Nach Aktualisierungen suchen";

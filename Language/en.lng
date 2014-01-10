@@ -185,3 +185,4 @@ UpdateFailed="Update failed: ";
 DataBaseUpdated="The database was updated";
 UpdateDownloadError="The update could not be downloaded!";
 UpdateFilesFinished ="The update of the program files is finished.";
+Update = "Search for updates";
