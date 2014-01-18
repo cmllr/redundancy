@@ -96,7 +96,11 @@ CREATE TABLE IF NOT EXISTS `Users` (
   `Session_Closed` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
-
+#Step two: New table columns
+#New file table column
+Alter table  `Files`  ADD column  `lastWrite` datetime  NOT NULL;
+#Step three: Connections between tables
+#New connection between tables
 ALTER TABLE `LocalShare`
-    ADD CONSTRAINT `LocalShare_ibfk_1` FOREIGN KEY (`FileID`)  REFERENCES `Files` (`ID`),
-    ADD CONSTRAINT `LocalShare_ibfk_2` FOREIGN KEY (`TargetUser`)  REFERENCES `Users` (`ID`)
+    ADD  FOREIGN KEY (`FileID`)  REFERENCES `Files` (`ID`),
+    ADD  FOREIGN KEY (`TargetUser`)  REFERENCES `Users` (`ID`)
