@@ -96,6 +96,19 @@
 				</div>
 				<div class="col-lg-2"></div>
 			</div> 
+			<?php if (isAdmin()) :?>
+			<div class="form-group">
+				<label class="col-lg-2 control-label">Update</label>
+				<div class="col-lg-8">
+					<p class="form-control-static">
+						<a href = "?module=update">
+						<?php echo $GLOBALS["Program_Language"]["UpdateStart"]?>
+						</a>
+					</p>
+				</div>
+				<div class="col-lg-2"></div>
+			</div> 
+			<?php endif; ?>
 		</form>
 	</div>
 </div>
