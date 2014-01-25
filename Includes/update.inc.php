@@ -62,7 +62,7 @@
 		preg_match($versionRegex, $targetContent, $matchesRemote);	
 		$matchesLocal = array();
 		preg_match($versionRegex,$GLOBALS["Program_Version"],$matchesLocal);
-		$upgrade = isUpgradeNeeded($matchesRemote,$matchesLocal);
+		$upgrade = isUpgradeNeeded($matchesRemote,$matchesLocal) || isset($_GET["force"]);
 		$failedcounter = 0;
 		if ($upgrade){	
 			createNewConfig("Redundancy.conf",$GLOBALS["repopath"]."Redundancy.conf");		
@@ -74,7 +74,8 @@
 			successbox($GLOBALS["Program_Language"]["Updated"].$matchesRemote["version"] . "-" . $matchesRemote["repo"] . "-" . $matchesRemote["state"] . $matchesRemote["number"] . "-" . $matchesRemote["update"]);
 		}
 		else{
-			successbox($GLOBALS["Program_Language"]["AlreadyUpdated"]);
+			$forcelink = "<a href='index.php?module=update&branch=".$repo."&t=true&force=true'>".$GLOBALS["Program_Language"]["UpdateStart"]."</a>";
+			successbox($GLOBALS["Program_Language"]["AlreadyUpdated"].$forcelink);
 		}
 	}
 	//Create the new config
