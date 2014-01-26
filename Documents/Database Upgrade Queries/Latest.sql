@@ -101,6 +101,6 @@ CREATE TABLE IF NOT EXISTS `Users` (
 Alter table  `Files`  ADD column  `lastWrite` datetime  NOT NULL;
 #Step three: Connections between tables
 #New connection between tables
-ALTER TABLE `LocalShare`
-    ADD  FOREIGN KEY (`FileID`)  REFERENCES `Files` (`ID`),
-    ADD  FOREIGN KEY (`TargetUser`)  REFERENCES `Users` (`ID`)
+Alter table LocalShare
+add CONSTRAINT `LocalShare_ibfk_2` FOREIGN KEY (`FileID`) REFERENCES `Files` (`ID`),
+add CONSTRAINT `LocalShare_ibfk_3` FOREIGN KEY (`TargetUser`) REFERENCES `Users` (`ID`)
