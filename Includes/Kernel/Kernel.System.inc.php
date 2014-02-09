@@ -58,8 +58,8 @@
 			}	
 			else if (strpos($value,">") !== false || strpos($value,"<") !== false)
 			{				
-				
-				banUser(getIP2(),$_SERVER['HTTP_USER_AGENT'],"XSS");	
+				if ($GLOBALS["config"]["Program_Enable_Banning"] == 1 )
+					banUser(getIP2(),$_SERVER['HTTP_USER_AGENT'],"XSS");	
 				return true;	
 			}
 		}
