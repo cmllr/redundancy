@@ -1683,6 +1683,22 @@
 		else
 			header ("Location: index.php?module=list");
 	}
+		/**
+	 * get the hashcode from share
+	 * @param $hash the share id	 * 
+	 * @return the hashcode
+	 */
+	function getHashByShare($hash){
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$share = mysqli_real_escape_string($connect,$hash);
+		$result = mysqli_query($connect,"Select * from Share  where Extern_ID = '$share' limit 1") or die("Error: 029".mysqli_error($connect));	
+		$hash = "";
+		while ($row = mysqli_fetch_object($result)) {
+			$hash = $row->Hash;			
+		} 		
+		mysqli_close($connect);	
+		return $hash;
+	}
 	/**
 	 * get the external share
 	 * @param $share the share id
@@ -1704,11 +1720,13 @@
 				$user = $row->UserID;
 			}				
 			$used++;
+
 			if (!isset($_SESSION["user_logged_in"]))
 				$_SESSION["user_id"] = $user;
 			mysqli_query($connect,"Update Share set Used = $used where Extern_ID = '$share'");
 			if ($filenamenew != $displayname){
-			$fullPath = $GLOBALS["Program_Dir"]."Storage/".$filenamenew; 			
+			$fullPath = $GLOBALS["Program_Dir"]."Storage/".$filenamenew; 	
+			$_SESSION["current_file"] =  $fullPath;		
 				if (file_exists($fullPath)) {
 				
 						header('Content-Description: File Transfer');
@@ -1892,9 +1910,10 @@
 	* @param $user the user id
 	* @return the result of the action
 	*/
-	function isLocalSharedAnyUser($hash){
+	function isLocalSharedAnyUser($hash,$user){
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$hash = mysqli_real_escape_string($connect,$hash);		
+		$hash = mysqli_real_escape_string($connect,$hash);
+//TODO: FIX FAIL!		
 		$user = mysqli_real_escape_string($connect,$user);		
 		
 		$res = mysqli_query($connect,"Select LocalShare.ID,TargetUser from LocalShare inner join Files f on f.ID = LocalShare.FileID where f.Hash =  '$hash' or (LocalShare.TargetUser = '$user' and LocalShare.FileID = '$hash')") or die (mysqli_error($connect));		
@@ -1948,6 +1967,26 @@
 		$hash = mysqli_real_escape_string($connect,$hash);	
 		$owner = mysqli_real_escape_string($connect,$owner);	
 		$res = mysqli_query($connect,"Select UserID from Files where Hash =  '$hash' and UserID = '$owner'") or die (mysqli_error($connect));		
+
+		if (mysqli_affected_rows($connect) !=  0){
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	/**
+	* Check if a user id is the user id of the owner of a file
+	* @param $hash the file hash
+	* @param $owner the owner id
+	* @return the result of the action
+	*/
+	function isDirOwner($dir,$owner){
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$hash = mysqli_real_escape_string($connect,$dir);	
+		$owner = mysqli_real_escape_string($connect,$owner);	
+		$res = mysqli_query($connect,"Select UserID from Files where Displayname =  '$dir' and UserID = '$owner'") or die (mysqli_error($connect));		
 
 		if (mysqli_affected_rows($connect) !=  0){
 			return true;

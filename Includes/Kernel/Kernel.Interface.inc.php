@@ -176,13 +176,13 @@
 			$Share_Status = str_replace(
 			array("##hash","##shared"),
 			array("$hashcode",$GLOBALS["Program_Language"]["Shared"]),
-			$_SESSION["template"]["Status_template_shared"]
+			$GLOBALS["template"]["Status_template_shared"]
 			);	}				
 		else{
 			$Share_Status = str_replace(
 			array("##hash","##share"),
 			array("$hashcode",$GLOBALS["Program_Language"]["Share"]),
-			$_SESSION["template"]["Status_template_share"]
+			$GLOBALS["template"]["Status_template_share"]
 			);	
 		}
 		return $Share_Status;

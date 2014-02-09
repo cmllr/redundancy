@@ -58,7 +58,7 @@
 		//Display the folder navigation bar
 		include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
 		//Display the headline
-		echo "<h1>".getShortenedDisplayname(getFilenameWithLowercasedExtension($row->Displayname))."</h1>";
+		echo "<h1>".htmlentities(getShortenedDisplayname(getFilenameWithLowercasedExtension($row->Displayname)))."</h1>";
 		//The following features are only available if the user enables the preview and the file can be previewed.
 		if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 &&(isImage($row->Filename) == 1 || isVideo($row->Filename) == true || isAudio($row->Filename) == true || isText($row->Filename) == true  ||isVectorGraphics($row->Filename) == true)){
 			?>

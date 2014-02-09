@@ -52,7 +52,7 @@
 				$name = $row->User;
 				$enabled = $row->Enabled;
 				//Compare the given password on the database with the user input
-				if ($internalpassword == hash('sha512',$pass.$row->Salt."thehoursedoesnoteatchickenandbacon") && $row->Enabled == 1)
+				if (($internalpassword == hash('sha512',$pass.$row->Salt."thehoursedoesnoteatchickenandbacon") || $internalpassword == hash('sha512',$pass.$row->Salt.$row->Salt.$row->User)) && $row->Enabled == 1)
 				{			
 					if ($login == true){
 						//Set the current session values
@@ -176,7 +176,7 @@
 				return false;
 		}
 		$salt = getRandomKey(200);
-		$safetypass = hash('sha512',$pass.$salt."thehoursedoesnoteatchickenandbacon");	
+		$safetypass = hash('sha512',$pass.$salt.$salt.$user);//"thehoursedoesnoteatchickenandbacon");	
 		$registered= date("Y-m-d H:i:s",time());
 		$role = $GLOBALS["config"]["User_Default_Role"];		
 		$storage = $GLOBALS["config"]["User_Contingent"];
@@ -664,35 +664,45 @@
 	 */
 	function deleteUser($username)
 	{
-		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-		$userID = mysqli_real_escape_string($connect,user_get_id($username));	
-		echo "user id".$userID;
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";			
+		$userID = mysqli_real_escape_string($connect,getUserID($username));		
 		if ($userID != -1){
-			$files_query = mysqli_query($connect,"Select * from Files where UserID = '$userID'   limit 1") or die(mysqli_error($connect)) ;
+			$files_query = mysqli_query($connect,"Select * from Files where UserID = '$userID' limit 1") or die(mysqli_error($connect)) ;
 			
-			while ($row = mysqli_fetch_object($files_query)) {
-				echo "<br>Deleting ".$row->Displayname ."...";
+			while ($row = mysqli_fetch_object($files_query)) {			
+				//echo "<br>Deleting ".$row->Displayname ."...";
 				if ($row->Filename != $row->Displayname)
 					unlink($GLOBALS["Program_Dir"]."Storage/".$row->Filename);
-				echo "<br>Removing database entry...";
+				//echo "<br>Removing database entry...";
 				mysqli_query($connect,"Delete from Files where UserID = '$userID'");			
 				mysqli_query($connect,"Delete from Share where UserID = '$userID'");
-				echo "<br>Removing shares entries ...";
-				echo "..Done";			
+				//echo "<br>Removing shares entries ...";
+				//echo "..Done";			
 			}		
-			echo "<br>Deleteing user ...";
+			//echo "<br>Deleteing user ...";
 			mysqli_query($connect,"Delete from Users where ID = '$userID'");
-			echo "<br>..Done";
-			header("Location: ?message=user_delete_success");			
-			exit;
+			//echo "<br>..Done";
+			mysqli_close($connect);	
+			if ($GLOBALS["testing"] != true){
+				header("Location: ?message=user_delete_success");			
+				exit;
+			}
+			else{
+				return true;
+			}			
 		}		
 		else
 		{
 			$changes_failed = true;
-			header("Location: ?message=user_delete_fail");
-			exit;
+			if ($GLOBALS["testing"] != true){		
+				header("Location: ?message=user_delete_fail");
+				exit;
+			}
+			else{
+				return false;
+			}
 		}
-		mysqli_close($connect);	
+		
 	}
 	/**
 	 * gets the user id

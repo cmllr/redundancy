@@ -106,8 +106,8 @@
 		include "./Lib/JQuery.inc.php";
 ?>
 <?php
-	if (isset($_SESSION["template"]))
-		echo $_SESSION["template"]["Template_Header"];
+	if (isset($GLOBALS["template"]))
+		echo $GLOBALS["template"]["Template_Header"];
 ?>
 <link rel="icon" href="./favicon.ico" >
 <title>
@@ -115,7 +115,7 @@
 	//Check xss problems and check if the user could be banned
 	if (isXSS() == true || ($GLOBALS["config"]["Program_Enable_Banning"] && isBanned()))
 	{
-		echo "Attack found</title>";
+		echo "Attack found</title>";	
 		echo "<center><img src = \"./Images/AnimatedStop.gif\"><div style = 'visibility:visible;' id = 'warning'>You did an attack or your IP is banned. Redundancy will stop here.<br>*<br>This violation was reported<br>*<br>Dieser Vorgang wurde berichtet<br></div></center><body></body></html>";
 		exit;
 	}	
@@ -230,10 +230,12 @@
 		include "./Includes/recover.inc.php";	
 	else if (isset($_GET["share"]))
 		include "./Includes/share.inc.php";		
+	else if (isset($_GET["module"]) && $_GET["module"] == "viewonly")
+		include "./Includes/viewonly.inc.php";		
 	else if (isset($_GET["module"]) && $_GET["module"] == "setpass")
 		include "./Includes/setpass.inc.php";		
 	else if (isset($_GET["module"]) && $_GET["module"] == "health")
-		include "./Includes/health.inc.php";	
+		include "./Includes/health.inc.php";		
 	else
 		include "./Includes/Login.inc.php";		
 ?>

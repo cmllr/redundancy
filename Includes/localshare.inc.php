@@ -43,7 +43,7 @@
 	}
 ?>
 <?php endif;?>
-<?php if (isset($_POST) && isExisting("",$_POST["username_info"]) == true) :?>
+<?php if (isset($_POST["username_info"]) && isExisting("",$_POST["username_info"]) == true) :?>
 	<?php
 		$file = getFileIDByHash($_GET["file"]);
 		$hash = $_GET["file"];

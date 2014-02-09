@@ -36,6 +36,8 @@
 		{
 			$client_ip = substr($client_ip, 0, 4)."[...]";
 		}
+		if (is_null($client_ip))
+			$client_ip = "999.999.999.999";
 		return $client_ip;
 	}
 	/**
@@ -50,6 +52,8 @@
 		else {
 			$client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
 		}		
+		if (is_null($client_ip))
+			$client_ip = "999.999.999.999";
 		return $client_ip;
 	}
 	/**

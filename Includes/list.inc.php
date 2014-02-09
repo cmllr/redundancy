@@ -128,60 +128,60 @@
 	{
 		echo str_replace(array("##Paste_Description","##Abort"),
 		array($GLOBALS["Program_Language"]["Paste_Description"],$GLOBALS["Program_Language"]["Abort"]),
-		$_SESSION["template"]["Copy_Hint"]
+		$GLOBALS["template"]["Copy_Hint"]
 		);
 	}
 	//Only start the table if we have files in there.	
 	if (mysqli_affected_rows($connect) > 0){		
 		$header = str_replace(array("##def","##name"),
-		array($_SESSION["template"]["Table_Definition"],$GLOBALS["Program_Language"]["Name"]),
-		$_SESSION["template"]["Table_Definition_Additional"]
+		array($GLOBALS["template"]["Table_Definition"],$GLOBALS["Program_Language"]["Name"]),
+		$GLOBALS["template"]["Table_Definition_Additional"]
 		);			
 		if (isset($search) == false){				
-			if ($_SESSION["template"]["Uploaded"] == true){
+			if ($GLOBALS["template"]["Uploaded"] == true){
 				$header	= $header. str_replace(
 				array("##uploaded"),
 				array($GLOBALS["Program_Language"]["Uploaded"]),
-				$_SESSION["template"]["Uploaded_template_header"]
+				$GLOBALS["template"]["Uploaded_template_header"]
 				);
 			}
-			if ($_SESSION["template"]["Size"] == true){
+			if ($GLOBALS["template"]["Size"] == true){
 				$header	= $header. str_replace(
 				array("##size"),
 				array($GLOBALS["Program_Language"]["Size"]),
-				$_SESSION["template"]["Size_template_header"]
+				$GLOBALS["template"]["Size_template_header"]
 				);
 			}
-			if ($_SESSION["template"]["Actions"] == true){
+			if ($GLOBALS["template"]["Actions"] == true){
 				$header	= $header. str_replace(
 				array("##actions"),
 				array($GLOBALS["Program_Language"]["Actions"]),
-				$_SESSION["template"]["Actions_template_header"]
+				$GLOBALS["template"]["Actions_template_header"]
 				);
 			}				
-			if (isset($fileToCopyOrToMove) == false  && $_SESSION["template"]["Status"] == true){				
+			if (isset($fileToCopyOrToMove) == false  && $GLOBALS["template"]["Status"] == true){				
 				$header	= $header. str_replace(
 				array("##status"),
 				array($GLOBALS["Program_Language"]["Share_Status"]),
-				$_SESSION["template"]["Status_template_header"]
+				$GLOBALS["template"]["Status_template_header"]
 				);
 			}
 			echo $header;		
 		 }
 		 else
 		 {
-			if ($_SESSION["template"]["Uploaded"] == true){
+			if ($GLOBALS["template"]["Uploaded"] == true){
 				$header	= $header. str_replace(
 				array("##uploaded"),
 				array($GLOBALS["Program_Language"]["Uploaded"]),
-				$_SESSION["template"]["Uploaded_template_header"]
+				$GLOBALS["template"]["Uploaded_template_header"]
 				);
 			}
-			if ($_SESSION["template"]["Size"] == true){
+			if ($GLOBALS["template"]["Size"] == true){
 				$header	= $header. str_replace(
 				array("##size"),
 				array($GLOBALS["Program_Language"]["Size"]),
-				$_SESSION["template"]["Size_template_header"]
+				$GLOBALS["template"]["Size_template_header"]
 				);
 			}
 			echo $header;
@@ -239,20 +239,20 @@
 		*/
 		if ($row->Displayname == $row->Filename)
 		{		
-			echo str_replace("##suffix",$suffix,$_SESSION["template"]["Table_Item_Definition"]);
+			echo str_replace("##suffix",$suffix,$GLOBALS["template"]["Table_Item_Definition"]);
 			echo str_replace(
 				array("##imagepath","##hash","##dirlink","##uploaded","##size"),
 				array($imagepath,$row->Hash,$dirlink,date("d.m.y H:i:s",$date),measurementCorrection(getDirectorySize($row->Displayname))),
-				$_SESSION["template"]["Table_Item_template"]
+				$GLOBALS["template"]["Table_Item_template"]
 				);
 			if ( isset($_GET["move"]) == false && isset($_GET["copy"]) == false && isset($search) == false)
 			{
-				if ($GLOBALS["config"]["Program_Enable_Action_Buttons"] == 1 && $_SESSION["template"]["Actions"] == true || $GLOBALS["config"]["Program_Enable_JQuery"] == 0)
+				if ($GLOBALS["config"]["Program_Enable_Action_Buttons"] == 1 && $GLOBALS["template"]["Actions"] == true || $GLOBALS["config"]["Program_Enable_JQuery"] == 0)
 				{
 					echo str_replace(
 						array("##delete","##filename","##cut","##filename","##directory","##copy","##rename","##displayname","##currentdir","##download"),
 						array($GLOBALS["Program_Language"]["Delete"],$row->Filename,$GLOBALS["Program_Language"]["Cut"],$row->Filename,$row->Directory,$GLOBALS["Program_Language"]["Copy"],$GLOBALS["Program_Language"]["Rename_Button"],$row->Displayname,$_SESSION["currentdir"],$GLOBALS["Program_Language"]["Download"]),
-						$_SESSION["template"]["Actions_template_folder"]
+						$GLOBALS["template"]["Actions_template_folder"]
 					);
 				}			
 			}
@@ -262,7 +262,7 @@
 					echo str_replace(
 							array("##open","##modulelink"),
 							array($GLOBALS["Program_Language"]["Open"],$modulelink),
-							$_SESSION["template"]["Table_Item_Search_template"]
+							$GLOBALS["template"]["Table_Item_Search_template"]
 					);
 				}
 				else if (isset($_GET["source"]) == false)
@@ -270,17 +270,17 @@
 					echo str_replace(
 							array("##open","##modulelink"),
 							array($GLOBALS["Program_Language"]["Open"],$modulelink),
-							$_SESSION["template"]["Table_Item_Search_template"]
+							$GLOBALS["template"]["Table_Item_Search_template"]
 					);
 				}
 			}			
 		}			
 		else 
 		{			
-			echo str_replace("##suffix",$suffix,$_SESSION["template"]["Table_File_Definition"]);		
+			echo str_replace("##suffix",$suffix,$GLOBALS["template"]["Table_File_Definition"]);		
 			$shared = isShared($row->Hash);
 			if ($shared == false){					
-				$shared = isLocalSharedAnyUser($row->Hash);
+				$shared = isLocalSharedAnyUser($row->Hash,$_SESSION["user_id"]);
 			}
 			
 			if ($shared)
@@ -288,18 +288,18 @@
 			echo str_replace(
 				array("##imagepath","##hash","##directory","##displayname","##hash","##croppeddisplayname","##uploaded","##size"),
 				array($imagepath,$row->Hash,$row->Directory,$row->Displayname,$row->Hash,htmlentities((getShortenedDisplayname(getFilenameWithLowercasedExtension($row->Displayname)))).$shared,date("d.m.y H:i:s",$date),measurementCorrection($row->Size)),
-				$_SESSION["template"]["Table_File_template"]
+				$GLOBALS["template"]["Table_File_template"]
 				);
-			if (isset($_SESSION["user_logged_in"]) && $GLOBALS["config"]["Program_Enable_Action_Buttons"] == 1 && isset($fileToCopyOrToMove) == false  && isset($search) == false && $_SESSION["template"]["Actions"] == true)
+			if (isset($_SESSION["user_logged_in"]) && $GLOBALS["config"]["Program_Enable_Action_Buttons"] == 1 && isset($fileToCopyOrToMove) == false  && isset($search) == false && $GLOBALS["template"]["Actions"] == true)
 			{				
 				echo str_replace(
 					array("##delete","##hash","##cut","##copy","##rename","##download"),
 					array($GLOBALS["Program_Language"]["Delete"],$row->Hash,$GLOBALS["Program_Language"]["Cut"],$GLOBALS["Program_Language"]["Copy"],$GLOBALS["Program_Language"]["Rename_title"],$GLOBALS["Program_Language"]["Download"]),
-					$_SESSION["template"]["Actions_template_file"]
+					$GLOBALS["template"]["Actions_template_file"]
 				);
 			}				
 		}
-		if (isset($search) == false && $_SESSION["template"]["Status"] == true)
+		if (isset($search) == false && $GLOBALS["template"]["Status"] == true)
 			echo "</td><td>$Share_Status";	
 		echo "</td></tr>";		
 		if ($GLOBALS["config"]["Program_Enable_JQuery"] == 1)
@@ -312,28 +312,28 @@
 		echo str_replace(
 			array("##suffix","##currentdir","##fileToCopyOrToMove","##Paste_Home"),
 			array($suffix,$_SESSION["currentdir"],$fileToCopyOrToMove,$GLOBALS["Program_Language"]["Paste_Home"]),
-			$_SESSION["template"]["Move_file"]
+			$GLOBALS["template"]["Move_file"]
 		);
 	}
 	else if ( isset($_GET["copy"])  && isset($_GET["file"])){	
 		echo str_replace(
 			array("##suffix","##currentdir","##fileToCopyOrToMove","##Paste_Home"),
 			array($suffix,$_SESSION["currentdir"],$fileToCopyOrToMove,$GLOBALS["Program_Language"]["Paste_Home"]),
-			$_SESSION["template"]["Copy_file"]
+			$GLOBALS["template"]["Copy_file"]
 		);
 	}		
 	else if (isset($_GET["move"])  && isset($_GET["source"])){
 		echo str_replace(
 			array("##suffix","##currentdir","##fileToCopyOrToMove","##old_root","##Paste_Home"),
 			array($suffix,$_SESSION["currentdir"],$fileToCopyOrToMove,$_GET["old_root"],$GLOBALS["Program_Language"]["Paste_Home"]),
-			$_SESSION["template"]["Move_folder"]
+			$GLOBALS["template"]["Move_folder"]
 		);
 	}	
 	else if (isset($_GET["copy"]) && isset($_GET["source"])){
 		echo str_replace(
 			array("##suffix","##currentdir","##fileToCopyOrToMove","##old_root","##Paste_Home"),
 			array($suffix,$_SESSION["currentdir"],$fileToCopyOrToMove,$_GET["old_root"],$GLOBALS["Program_Language"]["Paste_Home"]),
-			$_SESSION["template"]["Copy_folder"]
+			$GLOBALS["template"]["Copy_folder"]
 		);
 	}	
 	//Close the table
@@ -343,7 +343,7 @@
 	echo str_replace(
 		array("##currentdir","##Delete_Folder"),
 		array($_SESSION["currentdir"],$GLOBALS["Program_Language"]["Delete_Folder"]),
-		$_SESSION["template"]["Delete_folder"]
+		$GLOBALS["template"]["Delete_folder"]
 	);
 	echo  "<a type=\"a\" href = 'index.php?module=createdir' class=\"btn btn-default\">
 					<span class=\"elusive icon-folder glyphIcon\"></span>".$GLOBALS["Program_Language"]["New_Directory_Short"]."

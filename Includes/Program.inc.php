@@ -20,10 +20,12 @@
 	 *
 	 * Program entry point
 	 */
-	$GLOBALS["Program_Version"] = "1.9.13-git-beta3-2";
+	$GLOBALS["Program_Version"] = "1.9.13-git-beta3-3";
 	$GLOBALS["Program_Release"] = "29.12.2013";
 	$GLOBALS["Program_Codename"] = "Cumulus";
 	$GLOBALS["config_dir"] = "./";	
+	$GLOBALS["testing"] = false;
+	$GLOBALS["template"] = parse_ini_file("./Styles/Bootstrap.tpl");
 	Include "Kernel/Kernel.User.inc.php";
 	Include "Kernel/Kernel.Common.inc.php";
 	Include "Kernel/Kernel.FileSystem.inc.php";

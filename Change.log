@@ -1,18 +1,18 @@
-<h1>Redundancy 1.9.13-git-beta3-1 Changelog</h1>
-<h2>Overview</h2> 
-<span class="label label-success">0 Bugfixes</span>
-<span class="label label-warning">0 Security Bugfixes</span>
-<span class="label label-info">1 Feature Additions or bugfixes</span>
-<span class="label label-important" style="background:#b94a48">0 Features removed</span>
-<h2>Bugfixes</h2>
-- Fixed a bug in admin panel when a user was not existant<br>
-- Enabled error messages after renaming a file or folder<br>
-- Removed redundant buttons to restore buttons in account site<br>
-- Added InnoDB as database engine for all tables (replaces MyISAM)<br>
-<h2>Security Bugfixes</h2>
-<h2>Feature additions/ Improvements</h2>
-- Replaced JQPlot with Boostrap internal solution<br>
-- Added internal share function<br>
-- Added pagination module (disabled per default)<br>
-- Added "create folder" button at bottom of directory listing<br>
-<h2>Features removed</h2>
+Redundancy 1.9.13-git-beta3-3 Changelog
+=======================================
+
+Bugfixes
+========
+- Fixed a bug which caused a problem at the user deletion
+- Fixed a bug which blocked the deletion of an directory
+- Fixed a warning in active debug mode when listing files
+- Fixed a warning in active debug when share a file to another user
+
+Security Bugfixes
+=================
+
+- XSS protection overhauled (fixed a bug in it which made it almost useless)
+- The template data was moved into $GLOBALS (previous in $_SESSION)
+- Fixed a bug in banning method (wrong date was set)
+- Fixed a bug in banning check
+- Moved the template data into $GLOBALS

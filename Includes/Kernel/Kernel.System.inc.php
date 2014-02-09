@@ -25,7 +25,7 @@
 	 * @return if something is wrong with $_GET/$_POST/$_SESSION/$_REQUEST/$_COOKIE
 	 */
 	function isXSS()
-	{
+	{		
 		$found = false;		
 		if (isset($_GET)){
 			$found = checkArray($_GET);
@@ -36,24 +36,12 @@
 		}		
 		if (isset($_FILES)){
 			if ($found != true)
-				$found = checkArray($_POST);
+				$found = checkArray($_FILES);
 		}
 		if (isset($_SESSION)){
 			if ($found != true)
-				$found = checkArray($_POST);
+				$found = checkArray($_SESSION);
 		}	
-		if (isset($_REQUEST)){
-			if ($found != true)
-				$found = checkArray($_POST);
-		}	
-		if (isset($_COOKIE)){
-			if ($found != true)
-				$found = checkArray($_POST);
-		}	
-		if ($found == true){
-			banUser(getIP(),$_SERVER['HTTP_USER_AGENT'],"XSS");
-			log_event("Kernel.System","xss_check","XSS attack detected");
-		}
 		return $found;
 	}
 	/**
@@ -63,11 +51,16 @@
 	 */
 	function checkArray($array)
 	{
-		$result = false;
-		foreach($array as $key => $value) {			
-			if (strpos($key,">") !== false || strpos($array[$key],">") !== false || strpos($key,"<") !== false || strpos($array[$key],"<") !== false)
+		$result = false;		
+		foreach($array as $key => $value) {		
+			if (is_array($value)){
+				$result = checkArray($value);
+			}	
+			else if (strpos($value,">") !== false || strpos($value,"<") !== false)
 			{				
-				$result = true;
+				
+				banUser(getIP2(),$_SERVER['HTTP_USER_AGENT'],"XSS");	
+				return true;	
 			}
 		}
 		return $result;
@@ -116,8 +109,8 @@
 		//Create new database isntance
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$client_ip = mysqli_real_escape_string($connect,$client_ip);
-		$client = mysqli_real_escape_string($connect,$client);
-		$date = date("m.d.y H:i:s",time());
+		$client = mysqli_real_escape_string($connect,$client);	
+		$date = date("Y-m-d H:i:s",time());
 		$query = "Insert into Banned (IP,Client,Date,Reason) Values('".$client_ip."','".$client."','$date','$reason')";
 		mysqli_query($connect,$query);
 	}	
@@ -128,7 +121,7 @@
 	{
 		//Create new database isntance
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
-		$client_ip = getIP();
+		$client_ip = getIP2();
 		$query = "Select ID from Banned where IP = '$client_ip'";
 		$ergebnis = mysqli_query($connect,$query);
 		if (mysqli_affected_rows($connect) > 0){

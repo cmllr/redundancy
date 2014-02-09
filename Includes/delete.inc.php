@@ -29,10 +29,19 @@
 	//Case 1: the user wants to delete a file
 	//echo var_dump($_SERVER);
 	$success = false;
-	if (!isOwner($_GET["file"],$_SESSION["user_id"])){		
-		header("Location: ./index.php?module=list&message=file_delete_fail");
-		exit;
+	if (isset($_GET["file"])){
+		if (!isOwner($_GET["file"],$_SESSION["user_id"])){		
+			header("Location: ./index.php?module=list&message=file_delete_fail");
+			exit;
+		}
 	}
+	else if (isset($_GET["dir"])){
+		if (!isDirOwner($_GET["dir"],$_SESSION["user_id"])){		
+			header("Location: ./index.php?module=list&message=file_delete_fail");
+			exit;
+		}
+	}
+	
 	if (isset($_GET["s"]) == false && isset($_POST["s"]) == false)
 	{
 		$agreed = false;

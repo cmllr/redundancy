@@ -39,9 +39,7 @@
 			{
 				$redir = "?module=admin";
 			}
-			if (login($_POST["user"],$_POST["pass"]) == true){
-				
-				$_SESSION["template"] = parse_ini_file("./Styles/Bootstrap.tpl");
+			if (login($_POST["user"],$_POST["pass"]) == true){				
 				$_SESSION["language"] = $_POST["lang"];
 				if ($_SESSION["Session_Closed"] == 1 )
 					header('Location: ./index.php'.$redir);
