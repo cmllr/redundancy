@@ -439,7 +439,8 @@
 			}
 		}		
 		if ($found == true){
-			banUser(getIP(),$_SERVER['HTTP_USER_AGENT'],"SQLi");
+			if ($GLOBALS["config"]["Program_Enable_Banning"] == 1)
+				banUser(getIP(),$_SERVER['HTTP_USER_AGENT'],"SQLi");
 			log_event("Kernel.User","user_check_session","SQL injection detected");
 		}
 		return $found;
