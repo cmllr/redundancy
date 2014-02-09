@@ -40,7 +40,7 @@
 				$redir = "?module=admin";
 			}
 			if (login($_POST["user"],$_POST["pass"]) == true){				
-				$_SESSION["language"] = $_POST["lang"];
+				$_SESSION["language"] = htmlspecialchars($_POST["lang"], ENT_QUOTES, 'UTF-8');
 				if ($_SESSION["Session_Closed"] == 1 )
 					header('Location: ./index.php'.$redir);
 				else if ($GLOBALS["config"]["User_NoLogout_Warning"] == 1 && $_SESSION["Session_Closed"] == 0)
