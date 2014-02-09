@@ -290,14 +290,14 @@
 				mysqli_query($connect,$history);		
 				if ($GLOBALS["config"]["Program_Enable_Mail"])
 					sendMail($email,2,$name,"Redundancy",$pass,"Redundancy");				
-				header("Location: ./index.php?module=recover&msg=success");
+				header("Location: ./index.php?module=recover&message=setpass_success");
 			}
 			else
-				header("Location: ./index.php?module=recover&msg=nosuccess");
+				header("Location: ./index.php?module=recover&message=setpass_fail");
 		}		
 		else
 		{
-			header("Location: ./index.php");
+			header("Location: ./index.php?module=recover&message=setpass_fail");
 		}
 	}
 	/**

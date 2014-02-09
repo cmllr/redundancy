@@ -1,7 +1,11 @@
 <div class="col-md-4 hidden-xs"></div>
 <div class="col-md-4 col-xs-12">
+<?php
+	getMessage();
+?>
 <div class="panel panel-default">
 <div class="panel-body">
+
 <form class="form-horizontal" role="form" method="POST" action="index.php?module=recover" >
 <?php
 	/**
@@ -44,14 +48,18 @@ if (isset($_GET["msg"]) && $_GET["msg"] == "success")
 	exit;
 }
 ?>		
-<div class="form-group">
-			<label for="inputEmail" class="col-lg-3 control-label"><?php echo $GLOBALS["Program_Language"]["Email"];?></label>
-			<div class="col-lg-9">
-				<input type="text" class="form-control" id="email" name="email" placeholder="Email">
-			</div>
-		</div>	
-		<input class = "btn btn-default "type="submit" value="<?php echo $GLOBALS["Program_Language"]["Recover"]; ?>" />
-	</form>	
+	<div class="form-group">
+		<label for="inputEmail" class="col-lg-3 control-label"><?php echo $GLOBALS["Program_Language"]["Email"];?></label>
+		<div class="col-lg-9">
+			<input type="text" class="form-control" id="email" name="email" placeholder="Email">
+		</div>
+	</div>	
+	<div class="form-group">
+		<div class="col-lg-offset-3 col-lg-9">
+			<button type="submit" class="btn btn-default btn-block"><?php echo $GLOBALS["Program_Language"]["Recover"];?></button>
+		</div>
+	</div>
+</form>	
 </div>
 </div>
 <div class="col-md-4 hidden-xs"></div> 
