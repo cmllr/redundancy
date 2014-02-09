@@ -87,22 +87,28 @@
 							</button>
 						</div>
 					</div>
-					
-				</form>
-				<?php if ($GLOBALS["config"]["Enable_register"] || $GLOBALS["config"]["User_Enable_Recover"]) :?>
-				<div class="btn-toolbar">
+					<?php if ($GLOBALS["config"]["Enable_register"] || $GLOBALS["config"]["User_Enable_Recover"]) :?>							
 					<?php if ($GLOBALS["config"]["Enable_register"]) :?>
-						<a class = "btn btn-default" href = "index.php?module=register">
-							<?php echo $GLOBALS["Program_Language"]["Register"]; ?>
-						</a>
+						<div class="form-group">
+							<div class="col-lg-offset-3 col-lg-9">		
+								<a class="btn btn-default btn-block" href = "index.php?module=register">
+									<?php echo $GLOBALS["Program_Language"]["Register"]; ?>
+								</a>
+							</div>
+						</div>	
 					<?php endif; ?>
 					<?php if ($GLOBALS["config"]["User_Enable_Recover"]) :?>
-						<a class = "btn btn-default"href = "index.php?module=recover">
-							<?php echo $GLOBALS["Program_Language"]["Recover"]; ?>
-						</a>
-					<?php endif; ?>
-				</div>
+						<div class="form-group">
+							<div class="col-lg-offset-3 col-lg-9">	
+								<a class="btn btn-default btn-block" href = "index.php?module=recover">
+									<?php echo $GLOBALS["Program_Language"]["Recover"]; ?>
+								</a>
+							</div>
+						</div>	
+					<?php endif; ?>								
 				<?php endif; ?>
+				</form>
+				
 			</div>
 		</div>
 	</div>
