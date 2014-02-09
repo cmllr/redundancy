@@ -1,5 +1,5 @@
 <div class="col-md-4 hidden-xs"></div>
-	<div class="col-md-4 col-xs-12">
+	<div  class="col-md-4 col-xs-12">
 		<?php
 			//Message display stack
 			getMessage();
@@ -55,9 +55,9 @@
 			include "./Includes/branding.inc.php";
 		}
 		?>
-		<div class="panel panel-default">
+		<div id ="loginform" class="panel panel-default">
 			<div class="panel-body">
-				<form class="form-horizontal" role="form" method="POST" action="index.php?module=login">
+				<form  class="form-horizontal" role="form" method="POST" action="index.php?module=login">
 					<div class="form-group">
 						<label for="inputEmail" class="col-lg-3 control-label"><?php echo $GLOBALS["Program_Language"]["Username"];?></label>
 						<div class="col-lg-9">
@@ -107,9 +107,23 @@
 						</div>	
 					<?php endif; ?>								
 				<?php endif; ?>
-				</form>
-				
+				</form>				
 			</div>
+			<?php if (isset($_GET["message"]) && $_GET["message"] == "wrongcredentials") :?>
+			<script>
+			  $(function() {			   
+			    function runEffect() {			   
+			      $( "#loginform" ).effect( "shake", {}, 500 );
+			      $("#user").attr("autocomplete","off");
+			      $("#pass").attr("autocomplete","off");
+			    };	    		   
+			    $(document).ready(function() {
+			      runEffect();
+			      return false;
+			    });
+			  });
+			  </script>
+			<?php endif;?>
 		</div>
 	</div>
 <div class="col-md-4 hidden-xs"></div> 
