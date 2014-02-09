@@ -281,7 +281,7 @@
 						$name = $row->User;
 						$id = $row->ID;
 				}
-				$safetypass = hash('sha512',$pass.$salt."thehoursedoesnoteatchickenandbacon");	
+				$safetypass = hash('sha512',$pass.$salt.$salt.$name);//hash('sha512',$pass.$salt."thehoursedoesnoteatchickenandbacon");	
 				$query = "Update Users Set Salt='$salt',Password='$safetypass' where Email ='$email'";
 				if ($GLOBALS["config"]["User_Unlock_Recover"] == 1)
 						mysqli_query($connect,"Update Users Set Enabled=1 where Email ='$email'");
@@ -327,7 +327,7 @@
 						$name = $row->User;
 						$id = $row->ID;
 				}
-				$safetypass = hash('sha512',$pass.$salt."thehoursedoesnoteatchickenandbacon");	
+				$safetypass = hash('sha512',$pass.$salt.$salt.$name); //hash('sha512',$pass.$salt."thehoursedoesnoteatchickenandbacon");	
 				$query = "Update Users Set Salt='$salt',Password='$safetypass' where Email ='$email' or User = '$email' limit 1";
 				if ($GLOBALS["config"]["User_Unlock_Recover"] == 1)
 						mysqli_query($connect,"Update Users Set Enabled=1 where Email ='$email' or User = '$email' limit 1");
@@ -337,17 +337,17 @@
 				$history = "Insert into Pass_History (Changed,IP,Who) Values ('".date("D M j G:i:s T Y", time())."','".getIP()."',$id)";
 				mysqli_query($connect,$history);							
 				if ($redir == 1)
-					header("Location: ./index.php");
+					header("Location: ./index.php?module=setpass&message=setpass_success");
 			}
 			else{
 				if ($redir == 1)
-					header("Location: ./index.php?module=setpass");
+					header("Location: ./index.php?module=setpass&message=setpass_fail");
 			}
 		}		
 		else
 		{
-				if ($redir == 1)
-			header("Location: ./index.php?module=setpass");
+			if ($redir == 1)
+				header("Location: ./index.php?module=setpass&message=setpass_fail");
 		}
 	}
 	/**
