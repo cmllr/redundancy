@@ -40,7 +40,7 @@
 		{
 			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 			$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);
-			$select = "Select Displayname,Filename,Directory from Files where UserID = '$user' and Hash = '".str_replace("#","",$hashcode)."' limit 1";
+			$select = "Select Hash,Displayname,Filename,Directory from Files where UserID = '$user' and Hash = '".str_replace("#","",$hashcode)."' limit 1";
 			$result= mysqli_query($connect,$select);
 			while ($row = mysqli_fetch_object($result)) {
 				echo "<li><a href ='index.php?module=list&dir=".$row->Displayname."'><span class=\"elusive icon-folder-open glyphIcon\"></span> ".$GLOBALS["Program_Language"]["open_generic"]."</a></li>";
