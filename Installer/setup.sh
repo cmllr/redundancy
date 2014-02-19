@@ -138,20 +138,4 @@ if [ $? != 0 ]; then
 	whiptail --title "$Title" --msgbox "The setup failed. Could not connect to the database." 8 78
 	exit 127
 fi
-whiptail --title "$Title" --msgbox "The setup will now import the database dump. Do you want to do this?" 8 78
-if [ $? != 0 ]; then
-	whiptail --title "$Title" --msgbox "The setup was completed. Please open the final setup using your webbrowser" 8 78
-	exit 127
-fi
-#root user?
-R2ROOT=$(whiptail --inputbox "Please enter your wanted password for the root user of Redundancy" 8 78 --title "$Title"  3>&1 1>&2 2>&3)
-while [ -z $R2ROOT ]
-do
-whiptail --msgbox "$Missing" 8 78 --title "$Title"
-R2ROOT=$(whiptail --inputbox "Please enter your wanted password for the root user of Redundancy" 8 78 --title "$Title"  3>&1 1>&2 2>&3)
-if [ $? != 0 ]; then
-        echo "$Abort"
-        exit 127
-fi
-done
 whiptail --title "$Title" --msgbox "The setup was completed. To complete the setup, open your webbrowser to /Installer/!" 8 78
