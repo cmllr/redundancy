@@ -89,14 +89,17 @@
 		header("Location: index.php?module=list&message=readonly");
 	}	
 ?>
-<form method="POST" action="index.php?module=createdir" >
-	<small>
-		<?php
-			echo $GLOBALS["Program_Language"]["multiple_dirs"];
-		?>
-	</small>
-	<br>
-	<?php echo $GLOBALS["Program_Language"]["New_Directory"]." ". $_SESSION["currentdir"];?>
-	<input name="directory">
-	<input class = 'btn btn-default' type=submit name=submit value="<?php echo $GLOBALS["Program_Language"]["New_Directory_Button"];?>">
+<h2><?php echo $GLOBALS["Program_Language"]["New_Directory"]." ". $_SESSION["currentdir"];?></h2>
+<div class="panel-body">
+<form class="form-horizontal" method="POST" action="index.php?module=createdir" >
+	<div class="form-group">		
+		<div class="alert alert-info"><?php
+				echo $GLOBALS["Program_Language"]["multiple_dirs"];
+			?>
+		</div>		
+		<label for="directory" class="col-lg-4 control-label"><?php echo $GLOBALS["Program_Language"]["New_Directory_Short"];?></label>
+		<input name="directory" class="col-lg-offset-0 col-lg-4">		
+		<input class = 'col-lg-offset-1 col-lg-3 btn btn-default' type=submit name=submit value="<?php echo $GLOBALS["Program_Language"]["New_Directory_Button"];?>">		
+	</div>
 </form>
+</div>

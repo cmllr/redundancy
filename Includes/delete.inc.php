@@ -107,7 +107,7 @@
 				echo $todelete."<br>";
 			if ($_SESSION['currentdir'] == $todelete)
 				$_SESSION["currentdir"] = getRootDirectory($_SESSION['currentdir'],$_SESSION["user_id"]);
-			if (!isLocalShared($todelete)){
+			if (!isLocalShared($todelete,$_SESSION["user_id"])){
 				$success= deleteDir($todelete);	
 			}
 		}
