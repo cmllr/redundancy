@@ -31,9 +31,9 @@
 		$lasthash = "";
 		$shared = isShared(str_replace("#","",$hashcode));
 		if ($shared)
-			$Share_Status = "<a class = 'shared' href = 'index.php?module=share&file=".str_replace("#","",$hashcode)."&delete=true'><span class=\"elusive icon-share glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Shared"]."</a>";
+			$Share_Status = "<a class = 'shared' href = 'index.php?module=share&file=".str_replace("#","",$hashcode)."&delete=true'><span class=\"elusive icon-link glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Shared"]."</a>";
 		else
-			$Share_Status = "<a href = 'index.php?module=share&file=".str_replace("#","",$hashcode)."&new=true'><span class=\"elusive icon-share glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Share"]."</a>";
+			$Share_Status = "<a href = 'index.php?module=share&file=".str_replace("#","",$hashcode)."&new=true'><span class=\"elusive icon-link glyphIcon\"></span> ".$GLOBALS["Program_Language"]["Share"]."</a>";
 		$folder = isDirectory(str_replace("#","",$hashcode));
 		echo "<ul id='context_menu$count' style='position:fixed;font-size:small;width:150px'>";
 		if ($folder == true)

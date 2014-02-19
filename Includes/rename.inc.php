@@ -140,7 +140,19 @@
 		$file = $_GET["source"];
 	}	
 ?>
-<form method="POST" action="index.php?module=rename<?php echo $suffix;?>" align = "center">
-<tag><?php echo sprintf($GLOBALS["Program_Language"]["Rename"],$file);?> <r></tag><input name="newname">
-<input class = "btn btn-default" type=submit name=submit value="<?php echo $GLOBALS["Program_Language"]["Rename_Button"];?>">
+<h2><?php echo $GLOBALS["Program_Language"]["Rename_Button"];?></h2>
+<div class="panel-body">
+<form class="form-horizontal" method="POST" action="index.php?module=rename<?php echo $suffix;?>">	
+	<div class="form-group">		
+		<label class="col-lg-3 control-label"><?php echo sprintf($GLOBALS["Program_Language"]["Rename"],$file);?></label>
+		<div class="col-lg-9">
+			<input type="text" class="form-control" id="searchquery" name="newname">
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-lg-offset-3 col-lg-9">
+			<input class="btn-block btn btn-default" type="submit" name="submit" value="<?php echo $GLOBALS["Program_Language"]["Rename_Button"];?>">		
+		</div>
+	</div>
 </form>
+</div>

@@ -346,8 +346,8 @@
 		$GLOBALS["template"]["Delete_folder"]
 	);
 	echo  "<a type=\"a\" href = 'index.php?module=createdir' class=\"btn btn-default\">
-					<span class=\"elusive icon-folder glyphIcon\"></span>".$GLOBALS["Program_Language"]["New_Directory_Short"]."
-				</a>";
+					<span class=\"elusive icon-folder glyphIcon\"></span><span class='hidden-xs'>".$GLOBALS["Program_Language"]["New_Directory_Short"]."
+				</span></a>";
 	
 	if ($_SESSION["currentdir"] != "/" && isset($hashcode) && isShared($hashcode) && isset($_POST["searchquery"]) == false){
 		if (isShared($hashcode))
@@ -359,7 +359,7 @@
 	else if ($_SESSION["currentdir"] != "/" &&  isset($hashcode) && isShared($hashcode) == false && isset($_POST["searchquery"]) == false)
 	{
 		if (isShared($hashcode) == false)
-			echo "<a type=\"a\" href = 'index.php?module=download&module=share&file=".$hashcode."&new=true'class=\"btn btn-default\"><span class=\"elusive icon-share glyphIcon\"></span>".$GLOBALS["Program_Language"]["Share"]."</a></div>";
+			echo "<a type=\"a\" href = 'index.php?module=download&module=share&file=".$hashcode."&new=true'class=\"btn btn-default\"><span class=\"elusive icon-share glyphIcon\"></span><span class='hidden-xs'>".$GLOBALS["Program_Language"]["Share"]."</span></a></div>";
 	}	
 	else if ($_SESSION["currentdir"] == "/" && !isset($_POST["searchquery"]))
 	{	

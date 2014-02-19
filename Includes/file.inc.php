@@ -58,7 +58,8 @@
 		//Display the folder navigation bar
 		include $GLOBALS["Program_Dir"]."Includes/broadcrumbs.inc.php";		
 		//Display the headline
-		echo "<h1>".htmlentities(getShortenedDisplayname(getFilenameWithLowercasedExtension($row->Displayname)))."</h1>";
+		echo "<h1 class='hidden-xs'>".htmlentities(getShortenedDisplayname(getFilenameWithLowercasedExtension($row->Displayname)))."</h1>";
+		echo "<h3 class='visible-xs'>".htmlentities(getShortenedDisplayname(getFilenameWithLowercasedExtension($row->Displayname)))."</h3>";
 		//The following features are only available if the user enables the preview and the file can be previewed.
 		if ($GLOBALS["config"]["Program_Enable_Preview"] == 1 &&(isImage($row->Filename) == 1 || isVideo($row->Filename) == true || isAudio($row->Filename) == true || isText($row->Filename) == true  ||isVectorGraphics($row->Filename) == true)){
 			?>
@@ -130,8 +131,8 @@
 				?>				
 				<a type="a" href = 'index.php?module=download&file=<?php echo $row->Hash;?>'class="btn btn-default">
 					<span class="elusive icon-download-alt glyphIcon">
-					</span>
-					<?php echo $GLOBALS["Program_Language"]["Download"];?>
+					</span><span class='hidden-xs'>
+					<?php echo $GLOBALS["Program_Language"]["Download"];?></span>
 				</a>
 				<?php			
 				//Display sharelinks
@@ -140,9 +141,9 @@
 					{
 						?>
 						<a type="a" href = 'index.php?module=share&file=<?php echo $row->Hash;?>&new=true' class="btn btn-default">
-							<span class="elusive icon-share glyphIcon">
-							</span>
-							<?php echo $GLOBALS["Program_Language"]["Share"];?>
+							<span class="elusive icon-link glyphIcon">
+							</span><span class='hidden-xs'>
+							<?php echo $GLOBALS["Program_Language"]["Share"];?></span>
 						</a>
 						<?php
 					}		
@@ -153,8 +154,8 @@
 						?>
 						<a type="a" href = 'index.php?module=share&file=<?php echo $row->Hash;?>&delete=true' class="btn btn-default">
 							<span class="elusive icon-remove-sign glyphIcon">
-							</span>
-							<?php echo $GLOBALS["Program_Language"]["Unshare"];?>
+							</span><span class='hidden-xs'>
+							<?php echo $GLOBALS["Program_Language"]["Unshare"];?></span>
 						</a>
 						<?php 
 					}
@@ -164,8 +165,8 @@
 				<?php if (isOwner($hash,$_SESSION["user_id"]))  :?>
 				<a type="a" href = 'index.php?module=localshare&file=<?php echo $row->Hash;?>&delete=true' class="btn btn-default">
 							<span class="elusive icon-share glyphIcon">
-							</span>
-							<?php echo $GLOBALS["Program_Language"]["LocalShare"];?>
+							</span><span class='hidden-xs'>
+							<?php echo $GLOBALS["Program_Language"]["LocalShare"];?></span>
 						</a>
 				<?php endif;?>
 				<?php
@@ -173,13 +174,13 @@
 					?>
 				<a type="a" href = 'index.php?module=delete&file=<?php echo $row->Hash;?>' class="btn btn-default">
 					<span class="elusive icon-trash glyphIcon">
-					</span>
-					<?php echo $GLOBALS["Program_Language"]["Delete"];?>
+					</span><span class='hidden-xs'>
+					<?php echo $GLOBALS["Program_Language"]["Delete"];?></span>
 				</a>				
 				<a type="a" href = 'index.php?module=rename&file=<?php echo $row->Hash;?>' class="btn btn-default">
 					<span class="elusive icon-edit glyphIcon">
-					</span>
-					<?php echo $GLOBALS["Program_Language"]["Rename_title"];?>
+					</span><span class='hidden-xs'>
+					<?php echo $GLOBALS["Program_Language"]["Rename_title"];?></span>
 				</a>
 				<?php 
 					}
