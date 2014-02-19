@@ -361,7 +361,7 @@
 		if (isShared($hashcode) == false)
 			echo "<a type=\"a\" href = 'index.php?module=download&module=share&file=".$hashcode."&new=true'class=\"btn btn-default\"><span class=\"elusive icon-share glyphIcon\"></span>".$GLOBALS["Program_Language"]["Share"]."</a></div>";
 	}	
-	else if ($_SESSION["currentdir"] == "/")
+	else if ($_SESSION["currentdir"] == "/" && !isset($_POST["searchquery"]))
 	{	
 		echo "</div>";
 	}
