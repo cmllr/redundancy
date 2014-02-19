@@ -36,7 +36,8 @@ border: 0px;">
 </ul>
 	<div id="tabs-1">
 	
-		<h1><?php echo $GLOBALS["Program_Language"]["User_Details"];?></h1>
+		<h1 class="hidden-xs"><?php echo $GLOBALS["Program_Language"]["User_Details"];?></h1>
+		<h3 class="visible-xs"><?php echo $GLOBALS["Program_Language"]["User_Details"];?></h3>
 		<?php	
 			if (isset($_SESSION) == false)
 					session_start();
