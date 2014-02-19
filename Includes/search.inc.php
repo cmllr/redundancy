@@ -23,17 +23,21 @@
 	 //Include uri check
 	require_once ("checkuri.inc.php");
 ?>
-
-  <div class="panel-body">
-	<form method="POST" action="index.php?module=list" class="form-horizontal" role="form">  
-  <div class="form-group"> 
-<?php
-	echo $GLOBALS["Program_Language"]["Search_Description"];
-?>
-<br>
-
-<?php echo $GLOBALS["Program_Language"]["Search_to"];?> <input id = "searchquery" name="searchquery">
-<input class = 'btn btn-default' type="submit"  value="<?php echo $GLOBALS["Program_Language"]["Search"];?>">
-</div>
+<h2><?php echo $GLOBALS["Program_Language"]["Search"];?></h2>
+<div class="panel-body">
+<form class="form-horizontal" method="POST" action="index.php?module=list">	
+	<div class="form-group">
+		<div class="alert alert-info"><?php	echo $GLOBALS["Program_Language"]["Search_Description"];?>
+		</div>	
+		<label class="col-lg-3 control-label"><?php echo $GLOBALS["Program_Language"]["Search_to"];?></label>
+		<div class="col-lg-9">
+			<input type="text" class="form-control" id = "searchquery" name="searchquery">
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-lg-offset-3 col-lg-9">
+			<input class="btn-block btn btn-default" type="submit" name="submit" value="<?php echo $GLOBALS["Program_Language"]["Search"];?>">		
+		</div>
+	</div>
 </form>
 </div>
