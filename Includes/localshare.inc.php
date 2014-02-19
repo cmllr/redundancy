@@ -8,30 +8,29 @@
 	}
 ?>
 <?php $file = $_GET["file"];?>
-<form role="form" method="POST" action="index.php?module=localshare&file=<?php echo $_GET["file"];?>">
+<div class="panel-body">
+<h2 class="hidden-xs"><?php echo $GLOBALS["Program_Language"]["LocalShare"];?> - <a href = "?module=file&file=<?php echo $file;?>"><?php echo getShortenedDisplayname(getFileByHash($_GET["file"])) ;?></a></h2>
+<h3 class="visible-xs"><?php echo $GLOBALS["Program_Language"]["LocalShare"];?> - <a href = "?module=file&file=<?php echo $file;?>"><?php echo getShortenedDisplayname(getFileByHash($_GET["file"])) ;?></a></h3>
 
-<div class="panel panel-default">
-	<div class="panel-heading">	<?php echo $GLOBALS["Program_Language"]["LocalShare"];?> - <a href = "?module=file&file=<?php echo $file;?>"><?php echo getShortenedDisplayname(getFileByHash($_GET["file"])) ;?></a>
+<div class="panel-body">
+<form class="form-horizontal" method="POST" action="index.php?module=localshare&file=<?php echo $_GET["file"];?>">	
+	<div class="form-group">
+		<div class="alert alert-info"><?php echo $GLOBALS["Program_Language"]["LocalShareDesc"];?></div>	
+		<label for="pass" class="col-lg-3 control-label"><?php echo $GLOBALS["Program_Language"]["Username"];?></label>
+		<div class="col-lg-9">
+			<input type="text" class="form-control" name="username_info" placeholder="<?php echo $GLOBALS["Program_Language"]["Username"];?>">
 		</div>
-	<div class="panel-body">
-		<div class="well well-sm"><?php echo $GLOBALS["Program_Language"]["LocalShareDesc"];?></div>		
-		<div class="input-group" id="inputUsername">
-			<span class="input-group-addon">
-				<?php echo $GLOBALS["Program_Language"]["Username"];?>
-			</span>
-			<input name="username_info" type="text" class="form-control" placeholder="">
-			<span class="input-group-btn">
-				<button class="btn btn-default" type="submit">
-					<?php echo $GLOBALS["Program_Language"]["SearchAndShare"];?>
-				</button>
-			</span>
+	</div>
+	<div class="form-group">
+		<div class="col-lg-offset-3 col-lg-9">
+			<input class="btn-block btn btn-default" type="submit" name="submit" value="<?php echo $GLOBALS["Program_Language"]["SearchAndShare"];?>">		
 		</div>
+	</div>
 	<?php
 		getLocalShares($_GET["file"]);
 	?>
-	</div>
-</div>
 </form>
+</div></div>
 <?php if (isset($_GET["delete"]) && isset($_GET["user"]) && isset($_GET["file"])) :?>
 <?php
 	$user = $_GET["user"];
