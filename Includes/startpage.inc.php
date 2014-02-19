@@ -51,14 +51,14 @@ else
 <div class="btn-group" >
 <a type="a" href="./Change.log" class="btn btn-default">
 <span class="elusive icon-plus glyphIcon">
-</span>Changelog</a>
+</span><span class='hidden-xs'>Changelog</span></a>
 <a type="a" href="index.php?module=account" class="btn btn-default">
 <span class="elusive icon-user glyphIcon">
-</span><?php echo $GLOBALS["Program_Language"]["My_Account"];?></a>
+</span><span class='hidden-xs'><?php echo $GLOBALS["Program_Language"]["My_Account"];?></span></a>
 <a type="a" href="index.php?module=<?php echo $GLOBALS["config"]["Program_Upload_Module"];?>" class="btn btn-default">
 <span class="elusive icon-file-new glyphIcon">
-</span><?php echo $GLOBALS["Program_Language"]["Upload"];?></a>
+</span><span class='hidden-xs'><?php echo $GLOBALS["Program_Language"]["Upload"];?></a>
 <a type="a" href="index.php?module=createdir" class="btn btn-default">
 <span class="elusive icon-folder glyphIcon">
-</span><?php echo $GLOBALS["Program_Language"]["New_Directory_Short"];?></a>
+</span><span class='hidden-xs'><?php echo $GLOBALS["Program_Language"]["New_Directory_Short"];?></span></a>
 </div>
