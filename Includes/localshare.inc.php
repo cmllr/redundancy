@@ -35,8 +35,13 @@
 <?php
 	$user = $_GET["user"];
 	$file = $_GET["file"];	
-	$hash = getFileHashByID($file);
-	if (deleteLocalShare($file,$user)){
+	if (!isGuest() && deleteLocalShare($file,$user)){
+		if (isset($_GET["returnto"])){
+			if ($_GET["returnto"] == "manageshares"){			
+				header("Location: index.php?module=manageshares&message=ShareDeletedSuccess");
+				exit;
+			}
+		}
 		header("Location: index.php?module=localshare&file=".$hash."&message=ShareDeletedSuccess");
 		exit;
 	}

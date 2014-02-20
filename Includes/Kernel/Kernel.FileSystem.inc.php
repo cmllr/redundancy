@@ -1903,7 +1903,7 @@
 		{
 			return false;
 		}
-	}
+	}	
 	/**
 	* Check if a file is shared locally
 	* @param $hash the file hash
@@ -1954,7 +1954,40 @@
 			echo "<h3>".sprintf($GLOBALS["Program_Language"]["ShareInfo"],getFileByHash($hash))."</h3>";
 		while ($row = mysqli_fetch_object($res)) {
 			echo $GLOBALS["Program_Language"]["Shared"]." - <b>".$GLOBALS["Program_Language"]["Username"].": ".$row->User."</b> <a href ='index.php?module=localshare&delete=true&user=".$row->TargetUser."&file=".$row->FileID."'>".$GLOBALS["Program_Language"]["Delete"]."</a><br>";
+		}	
+
+	}
+	function getSharesOfUser(){
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
+		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);			
+		$res = mysqli_query($connect,"Select f.Hash, LocalShare.TargetUser,LocalShare.FileID,u.ID,f.UserID,f.Displayname from LocalShare inner join Files f on f.ID = LocalShare.FileID inner join Users u on u.ID = LocalShare.TargetUser where u.ID =  '$user'") or die (mysqli_error($connect));		
+		while ($row = mysqli_fetch_object($res)) {
+			$link = "<a href = 'index.php?module=file&file=".$row->Hash."'>".$row->Displayname."</a>";
+			echo $GLOBALS["Program_Language"]["Shared"].": ".$link." ".sprintf($GLOBALS["Program_Language"]["SharedBy"],getUserName($row->UserID))." <a href ='index.php?module=localshare&delete=true&user=".$row->TargetUser."&file=".$row->FileID."&returnto=manageshares'>".$GLOBALS["Program_Language"]["ShareRemove"]."</a><br>";
+		}
+		if (mysqli_affected_rows($connect) == 0){
+			echo str_replace(
+				array("##nothingshared"),
+				array($GLOBALS["Program_Language"]["NothingShared"]),
+				$GLOBALS["template"]["NothingShared"]
+			);
 		}		
+	}
+	function getSharesByUser(){
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$id = mysqli_real_escape_string($connect,$_SESSION["user_id"]);			
+		$res = mysqli_query($connect,"Select f.Hash,LocalShare.TargetUser,LocalShare.FileID,f.UserID,f.Displayname from LocalShare inner join Files f on f.ID = LocalShare.FileID where f.UserID =  '$id'") or die (mysqli_error($connect));		
+		while ($row = mysqli_fetch_object($res)) {
+			$link = "<a href = 'index.php?module=file&file=".$row->Hash."'>".$row->Displayname."</a>";
+			echo $GLOBALS["Program_Language"]["Shared"].": ".$link." ".sprintf($GLOBALS["Program_Language"]["SharedTo"],getUserName($row->TargetUser))." <a href ='index.php?module=localshare&delete=true&user=".$row->TargetUser."&file=".$row->FileID."&returnto=manageshares'>".$GLOBALS["Program_Language"]["ShareRemove"]."</a><br>";
+		}	
+		if (mysqli_affected_rows($connect) == 0){
+			echo str_replace(
+				array("##nothingshared"),
+				array($GLOBALS["Program_Language"]["NothingShared"]),
+				$GLOBALS["template"]["NothingShared"]
+			);
+		}	
 	}
 	/**
 	* Check if a user id is the user id of the owner of a file

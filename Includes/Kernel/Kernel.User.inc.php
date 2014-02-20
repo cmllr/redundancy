@@ -723,6 +723,23 @@
 		return $id;
 	}
 	/**
+	 * gets the user name
+	 * @param $id the id
+	 */
+	function getUserName($id)
+	{
+		$name = "";
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		$userID = mysqli_real_escape_string($connect,$id);	
+		$files_query = mysqli_query($connect,"Select * from Users where ID = '$userID'  limit 1") or die(mysqli_error($connect)) ;
+		
+		while ($row = mysqli_fetch_object($files_query)) {
+				$name = $row->User;	
+		}		
+		mysqli_close($connect);	
+		return $name;
+	}
+	/**
 	 * gets the user status if enabled
 	 * @param $username the username or Email
 	 */

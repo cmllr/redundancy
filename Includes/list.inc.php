@@ -347,8 +347,12 @@
 	);
 	echo  "<a type=\"a\" href = 'index.php?module=createdir' class=\"btn btn-default\">
 					<span class=\"elusive icon-folder glyphIcon\"></span><span class='hidden-xs'>".$GLOBALS["Program_Language"]["New_Directory_Short"]."
-				</span></a>";
-	
+				</span></a>";				
+	echo str_replace(
+		array("##Manage_shares"),
+		array($GLOBALS["Program_Language"]["Manage_shares"]),
+		$GLOBALS["template"]["Manage_shares"]
+	);
 	if ($_SESSION["currentdir"] != "/" && isset($hashcode) && isShared($hashcode) && isset($_POST["searchquery"]) == false){
 		if (isShared($hashcode))
 		{

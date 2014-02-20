@@ -34,3 +34,5 @@ Move_folder="<tr><td><img src='./Images/mimetypes/folder.png'></td><td><a class 
 Copy_file= "<tr ><td><img src='./Images/mimetypes/folder.png'></td><td><a class = 'filelink' href = 'index.php?module=copy&dir=##currentdir&file=##fileToCopyOrToMove'>##Paste_Home</a></td><td></td><td></td><td class =  'actions' ></td><td></td></tr>";
 Copy_folder="<tr ><td><img src='./Images/mimetypes/folder.png'></td><td><a class = 'filelink' href = 'index.php?module=copy&target=##currentdir&source=##fileToCopyOrToMove&old_root=##old_root'>##Paste_Home</a></td><td></td><td></td><td class =  'actions' ></td><td></td></tr>";
 Delete_folder = "<div class="btn-group " id="fileActionBtnGroup"><a type=\"a\" href = 'index.php?module=delete&dir=##currentdir'class=\"btn btn-default\"><span class=\"elusive icon-trash glyphIcon\"></span><span class='hidden-xs'>##Delete_Folder</span></a>";
+Manage_shares = "<a type=\"a\" href = 'index.php?module=manageshares'class=\"btn btn-default\"><span class=\"elusive icon-share glyphIcon\"></span><span class='hidden-xs'>##Manage_shares</span></a>";
+NothingShared="<div class=\"alert alert-info\">##nothingshared</div>";	
