@@ -85,12 +85,11 @@
 			mysqli_query($connect,$query)  or die("Error: 014 ".mysqli_error($connect));
 			$count = mysqli_affected_rows($connect);			
 		}
-		
-		$query .= "UNION ALL 
-		Select Uploaded,Displayname,Filename,Hash,MimeType,Filename_only,Size,Directory 
-		from Files 		
-
-		inner join LocalShare ls on ls.FileID = Files.ID where ls.TargetUser = '$user'";
+		if ($_SESSION["currentdir"] == "/")
+			$query .= "UNION ALL 
+			Select Uploaded,Displayname,Filename,Hash,MimeType,Filename_only,Size,Directory 
+			from Files 		
+			inner join LocalShare ls on ls.FileID = Files.ID where ls.TargetUser = '$user'";
 		if (isset($_GET["current"]) && isset($_GET["start"]) && isset($_GET["end"]))
 		{
 			if (!isset($_GET["move"]) &&  !isset($_GET["copy"])){
