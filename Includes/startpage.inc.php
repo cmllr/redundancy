@@ -61,4 +61,5 @@ else
 <a type="a" href="index.php?module=createdir" class="btn btn-default">
 <span class="elusive icon-folder glyphIcon">
 </span><span class='hidden-xs'><?php echo $GLOBALS["Program_Language"]["New_Directory_Short"];?></span></a>
+<a type="a" href = 'index.php?module=manageshares'class="btn btn-default"><span class="elusive icon-share glyphIcon"></span><span class='hidden-xs'><?php echo $GLOBALS["Program_Language"]["Manage_shares"];?></span></a>
 </div>
