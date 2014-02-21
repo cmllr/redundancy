@@ -331,6 +331,9 @@
 						$pPass = $_POST["pass_create"];
 						$pPassRepeat = $pPass;
 						$pSystem = 1;
+						if ($_POST["user_create"] == "" ||$_POST["pass_create"] == "" ){
+							header("Location: index.php?module=admin&message=user_create_admin_fail");
+						}
 						if (registerUser($pEmail,$pPass,$pPassRepeat,$pSystem) == true)
 						{
 							header("Location: index.php?module=admin&message=user_create_admin_success");
