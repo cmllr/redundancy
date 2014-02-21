@@ -185,12 +185,7 @@
 <noscript>
 <div style = 'visibility:visible;' id = 'warning'><?php echo $GLOBALS["Program_Language"]["No_JS"];?></div>
 </noscript>
-<?php
-	//Display a warning if the user uses internet explorer
-	if ($GLOBALS["config"]["IE_Warning"] == 1 && !(strpos($_SERVER['HTTP_USER_AGENT'],"MSIE") === false))
-	{	
-		echo "<div style = 'visibility:visible;' id = 'warning'>".$GLOBALS["Program_Language"]["IE_Warning"]."</div>";
-	}	
+<?php	
 	//Display mainteance message if Redundancy is not enabled
 	if ($GLOBALS["config"]["Enable"] != 1 ) 
 	{
