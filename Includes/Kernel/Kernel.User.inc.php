@@ -31,71 +31,70 @@
 	{		
 		//start a new session
 		if (isset($_SESSION) == false)
-			session_start();		
-		if (strpos($pUser,"<") === false && strpos($pPass,"<") === false)
-		{
-			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
-			//Get the user and pass cleaned from any dangerous contents
-			$user = mysqli_real_escape_string($connect,$pUser);
-			$pass = mysqli_real_escape_string($connect,$pPass);		
-			$tries = 0;
-			$email ="";
-			$name = "";
-			$enabled = 1;
-			$loginQuery = "Select ID, User, Email, Password, Salt,Storage,Role, Enabled,Failed_Logins,Session_Closed from Users where User = '$user' or Email = '$user' limit 1";
-			$ergebnis = mysqli_query($connect,$loginQuery) or die("Error: Could not execute query to log in the user. Error message: ".mysqli_error($connect));
-			while ($row = mysqli_fetch_object($ergebnis)) {	
-				//Remember data of the current tuple
-				$internalpassword = $row->Password;	
-				$tries = $row->Failed_Logins;
-				$email = $row->Email;
-				$name = $row->User;
-				$enabled = $row->Enabled;
-				//Compare the given password on the database with the user input
-				if (($internalpassword == hash('sha512',$pass.$row->Salt."thehoursedoesnoteatchickenandbacon") || $internalpassword == hash('sha512',$pass.$row->Salt.$row->Salt.$row->User)) && $row->Enabled == 1)
-				{			
-					if ($login == true){
-						//Set the current session values
-						$_SESSION['user_id'] = $row->ID;
-						$_SESSION['user_name'] = $row->User;
-						$_SESSION['user_email'] = $row->Email;
-						$_SESSION["user_logged_in"] = true;
-						$_SESSION["currentdir"] = "/";	
-						$_SESSION["currentdir_hashed"] = "6666cd76f96956469e7be39d750cc7d9";	
-						$_SESSION["space"] = $row->Storage;	
-						$_SESSION["space_used"] = 0;
-						$_SESSION["role"] = $row->Role;
-						$_SESSION["fs_hash"] = hash('sha512',$pass.$row->Salt.$row->Email.$pass);
-						$_SESSION["Session_Closed"] = $row->Session_Closed;
-						$_SESSION["begin"] = time();
-						//Reset Login counter;
-						$resetQuery = "Update Users Set Failed_logins=0,Session_Closed =0 where Email ='$user' or User='$user'";
-						mysqli_query($connect,$resetQuery);
-						mysqli_close($connect);	
-					}	
-					else{
-						$_SESSION['user_id'] = $row->ID;
-						$_SESSION['user_name'] = $row->User;
-						$_SESSION['user_email'] = $row->Email;
-					}
-					return true;		
-				}							
-			}
-			//Update the error counter and lock the account if needed
-			if ($tries == $GLOBALS["config"]["User_Max_Fails"]){
-				if ($enabled != 0){
-					$disableQuery = "Update Users Set Enabled=0 where Email ='$user' or User='$user'";
-					mysqli_query($connect,$disableQuery);		
-					if ($GLOBALS["config"]["Program_Enable_Mail"] == 1)
-						sendMail($email,3,$name,getIP2(),"","");		
+			session_start();	
+		
+		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
+		//Get the user and pass cleaned from any dangerous contents
+		$user = mysqli_real_escape_string($connect,$pUser);
+		$pass = mysqli_real_escape_string($connect,$pPass);		
+		$tries = 0;
+		$email ="";
+		$name = "";
+		$enabled = 1;
+		$loginQuery = "Select ID, User, Email, Password, Salt,Storage,Role, Enabled,Failed_Logins,Session_Closed from Users where User = '$user' or Email = '$user' limit 1";
+		$ergebnis = mysqli_query($connect,$loginQuery) or die("Error: Could not execute query to log in the user. Error message: ".mysqli_error($connect));
+		while ($row = mysqli_fetch_object($ergebnis)) {	
+			//Remember data of the current tuple
+			$internalpassword = $row->Password;	
+			$tries = $row->Failed_Logins;
+			$email = $row->Email;
+			$name = $row->User;
+			$enabled = $row->Enabled;
+			//Compare the given password on the database with the user input
+			if (($internalpassword == hash('sha512',$pass.$row->Salt."thehoursedoesnoteatchickenandbacon") || $internalpassword == hash('sha512',$pass.$row->Salt.$row->Salt.$row->User)) && $row->Enabled == 1)
+			{			
+				if ($login == true){
+					//Set the current session values
+					$_SESSION['user_id'] = $row->ID;
+					$_SESSION['user_name'] = $row->User;
+					$_SESSION['user_email'] = $row->Email;
+					$_SESSION["user_logged_in"] = true;
+					$_SESSION["currentdir"] = "/";	
+					$_SESSION["currentdir_hashed"] = "6666cd76f96956469e7be39d750cc7d9";	
+					$_SESSION["space"] = $row->Storage;	
+					$_SESSION["space_used"] = 0;
+					$_SESSION["role"] = $row->Role;
+					$_SESSION["fs_hash"] = hash('sha512',$pass.$row->Salt.$row->Email.$pass);
+					$_SESSION["Session_Closed"] = $row->Session_Closed;
+					$_SESSION["begin"] = time();
+					//Reset Login counter;
+					$resetQuery = "Update Users Set Failed_logins=0,Session_Closed =0 where Email ='$user' or User='$user'";
+					mysqli_query($connect,$resetQuery);
+					mysqli_close($connect);	
+				}	
+				else{
+					$_SESSION['user_id'] = $row->ID;
+					$_SESSION['user_name'] = $row->User;
+					$_SESSION['user_email'] = $row->Email;
 				}
-			}		
-			$tries = $tries +1;		
-			$updateTriesQuery = "Update Users Set Failed_logins=$tries where Email ='$user' or User='$user'";
-			mysqli_query($connect,$updateTriesQuery);		
-			mysqli_close($connect);
-			return false;
-		}			
+				return true;		
+			}							
+		}
+		//Update the error counter and lock the account if needed
+		if ($tries == $GLOBALS["config"]["User_Max_Fails"]){
+			if ($enabled != 0){
+				$disableQuery = "Update Users Set Enabled=0 where Email ='$user' or User='$user'";
+				mysqli_query($connect,$disableQuery);		
+				if ($GLOBALS["config"]["Program_Enable_Mail"] == 1)
+					sendMail($email,3,$name,getIP2(),"","");		
+			}
+		}		
+		$tries = $tries +1;		
+		$updateTriesQuery = "Update Users Set Failed_logins=$tries where Email ='$user' or User='$user'";
+		mysqli_query($connect,$updateTriesQuery);		
+		mysqli_close($connect);
+		return false;
+					
 	}
 	/**
 	 * getNewUserName create a new user name
@@ -140,9 +139,7 @@
 		{
 			$pUser = $pEmail;			
 		}
-		//Is the password and the repeated the same?
-		if (strpos("<",$pUser) !== false || strpos("<",$pEmail) !== false || strpos("<",$pPass) !== false || strpos("<",$pPassRepeat) !== false)
-			return false;
+		//Is the password and the repeated the same?		
 		if ($pPass == $pPassRepeat)
 		{
 			$passOK = true;
