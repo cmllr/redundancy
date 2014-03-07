@@ -2,8 +2,8 @@
 	function inst_create_DataBaseConfig($user,$pass,$server,$db)
 	{		
 		try{
-			$ourFileName = $_POST["dir"]."Includes/DataBase.inc.php";
-			if (is_writable($ourFileName)){
+			$ourFileName = "../Includes/DataBase.inc.php";
+			if (is_writable($ourFileName) && file_exists($ourFileName)){
 				$escapedollar = "$";
 				$text = $escapedollar."connect = mysqli_connect('$server', '$user', '$pass') or die('Error: 005 '.mysqli_error());	
 				mysqli_select_db(".$escapedollar."connect,'$db') or die('Error: 006 '.mysqli_error()); 
@@ -16,107 +16,50 @@
 				fwrite($ourFileHandle, "<?php $text?>");
 				fclose($ourFileHandle);		
 				$connect = mysqli_connect("$server", "$user", "$pass");
-				if (mysqli_select_db($connect,"$db") == false){				
-					echo "<td><span class=\"successValue elusive icon-remove glyphIcon\"></span></td>";
-					$GLOBALS["fail"]++;		
-					$GLOBALS["ERRORS"]["DB"] = "Could not establish connection to database";				
-					return;	
-				}else{			
-					echo "<td><span class=\"successValue elusive icon-ok glyphIcon\"></span></td>";
-					inst_create_DataBase_Structure($user,$pass,$server,$db);
+				if (mysqli_select_db($connect,"$db") ){			
+					inst_create_DataBase_Structure($user,$pass,$server,$db);			
 				}
 			}
-			else{
-				$GLOBALS["ERRORS"]["DB"] = "Could not write Database config";	
-					echo "<td><span class=\"successValue elusive icon-remove glyphIcon\"></span></td>";
+			else{				
+				echo "<div class='alert alert-danger'>The database config could not be written</div>";
 			}
 		}
-		catch (Exception $e){
-			echo "<td><span class=\"successValue elusive icon-remove glyphIcon\"></span></td>";
-			$GLOBALS["ERRORS"]["DB"] = "Could not write Database config";	
-			$GLOBALS["fail"]++;
+		catch (Exception $e){		
+			echo "<div class='alert alert-danger'>".$e->getMessage()."</div>";
 		}
 	}
 	function inst_create_DataBase_Structure($user,$pass,$server,$db)
-	{
-		if ($GLOBALS["fail"] > 0)
-		{
-			echo "Aborting...<br>";		
-			return;			
-		}
+	{		
 		try{
+			$error = false;
 			$myFile = "./database.sql";
 			$fh = fopen($myFile, 'r');
 			$theData = "";
 			while (!feof($fh)) {
 				$theData = $theData ."\n".fgets($fh);			
 			}
-			$connect = mysqli_connect("$server", "$user", "$pass") or die("Error: 005 ".mysqli_error($connect));
-			mysqli_select_db($connect,"$db") or die("Error: 006 ".mysqli_error($connect)); 	
+			$connect = @mysqli_connect("$server", "$user", "$pass") or die("Error: 005 ".mysqli_error($connect));
+			@mysqli_select_db($connect,"$db") or die("Error: 006 ".mysqli_error($connect)); 	
 			$array = explode("##",$theData);
-			for ($i = 0; $i<count($array);$i++)		
-				mysqli_query($connect,$array[$i]) or die(mysqli_error($connect));
+			for ($i = 0; $i<count($array);$i++)	{
+				if (!@mysqli_query($connect,$array[$i])){
+					echo "<div class='alert alert-danger'>There was an error running the query. This may be an indicator that your database is not empty!</div>";
+					$error = true;
+				}
+			}	
+				
 			mysqli_close($connect);
 			fclose($fh);
+			if (!$error){
+				header("Location: index.php?step=3");
+				exit;
+			}			
 		}
 		catch (Exception $e)
 		{
-			$GLOBALS["fail"]++;
-			$GLOBALS["ERRORS"]["DB"] = "Could not import database dump.";	
+			echo "<div class='alert alert-danger'>".$e->getMessage()."</div>";
 		}
-	}
-	function inst_check_directory_rights($storage,$temp,$snapshots)
-	{
-		try{			
-			if (file_exists($storage."/") && is_writable($storage."/") == true)
-			{
-				echo "<tr><td><span class=\"successValue elusive icon-ok glyphIcon\"></span></td><td>Storage access</td></tr>";
-				inst_sec_check($storage."/");
-			} 
-			else
-			{
-				echo "<tr><td><span class=\"successValue elusive icon-remove glyphIcon\"></span></td><td>Storage access</td></tr>";
-				$GLOBALS["fail"]++;
-				if (file_exists($storage."/"))
-					$GLOBALS["ERRORS"]["STORAGE"] = "Storage directory is not readable or does not exists";	
-				else
-					$GLOBALS["ERRORS"]["STORAGE"] = "Storage directory is does not exists";	
-			}
-			
-			if (file_exists($temp."/") && is_writable($temp."/") == true)
-			{
-				echo "<tr><td><span class=\"successValue elusive icon-ok glyphIcon\"></span></td><td>Temp access</td></tr>";
-				inst_sec_check($temp."/");
-			} 
-			else
-			{
-				echo "<tr><td><span class=\"successValue elusive icon-remove glyphIcon\"></span><td>Temp access</td></tr>";
-				$GLOBALS["fail"]++;
-				if (file_exists($temp."/"))
-					$GLOBALS["ERRORS"]["TEMP"] = "Temp directory is not readable or does not exists";	
-				else
-					$GLOBALS["ERRORS"]["TEMP"] = "Temp directory is does not exists";	
-			}
-			if (file_exists($snapshots."/") && is_writable($snapshots."/") == true)
-			{
-				echo "<tr><td><span class=\"successValue elusive icon-ok glyphIcon\"></span></td><td>Snapshots access</td></tr>";
-				inst_sec_check($snapshots."/");
-			} 
-			else
-			{
-				echo "<tr><td><span class=\"successValue elusive icon-remove glyphIcon\"></span></td><td>Snapshots access</td></tr>";
-				$GLOBALS["fail"]++;
-				if (file_exists($snapshots."/"))
-					$GLOBALS["ERRORS"]["SNAPSHOTS"] = "Snapshots directory is not readable";	
-				else
-					$GLOBALS["ERRORS"]["SNAPSHOTS"] = "Snapshots directory does not exists";	
-			}
-		}
-		catch (Exception $e)
-		{
-			$GLOBALS["ERRORS"]["DIRS"] = "Please check the integrity of your installation";	
-		}
-	}
+	}	
 	function inst_apply_configuration($program_dir,$storage,$temp,$snapshots)
 	{
 		try{
@@ -159,66 +102,24 @@
 			$GLOBALS["fail"]++;
 			$GLOBALS["ERRORS"]["CONF"] = "Please check if Redundancy.conf is writable by PHP";	
 		}		
-	}
-	function inst_check()
-	{
-		if ($GLOBALS["fail"] == 0){			
-			echo"<br><div class = 'alert alert-info'>Please delete the directory /Installer/ and its contents. The installation was successfully.</div>";
-		}else{
-			echo "<br><div class = 'alert alert-danger'>One or more steps failed. Please check your values<br>";
-			echo "<ul>";
-			foreach ($GLOBALS["ERRORS"] as $key => $value)
-			{
-				echo "<li>[$key] $value</li>";
-			}
-			echo "</ul>";			
-			
-			echo "Use the navigation of your browser to go back or retry the installation</div>";
-		}
-	}
-	function inst_sec_check($dir)
-	{
-		if (file_exists($dir.".htaccess") == false)
-		{
-			echo "<div style = 'word-wrap: break-word;' class = 'alert alert-info'>Your data in dir \"$dir\" is maybe accessible from the internet. You can use a \".htaccess\" file to avoid access from the internet</div>";
-		}
-	}
+	}	
 	function inst_create_root($name,$pass)
-	{		
-		$pUser = $name;
-		//Is the password and the repeated the same?
-		if (strpos("<",$name) !== false || strpos("<",$name) !== false || strpos("<",$name) !== false )
-			return;
-		$passOK = true;		
+	{			
+		$pUser = $name;			
+		$passOK = true;
 		//Include database file
-		$connect = mysqli_connect($_POST["server"], $_POST["user"], $_POST["pass"]) or die('Error: 005 '.mysqli_error());	
-		mysqli_select_db($connect,$_POST["db"]) or die('Error: 006 '.mysqli_error());
-		$user = mysqli_real_escape_string($connect,$name);
-		$pass = mysqli_real_escape_string($connect,$pass);	
-		$email = mysqli_real_escape_string($connect,"root@localhost.local");
+		include $_POST["dir"]."Includes/DataBase.inc.php";			
+		$user = mysqli_real_escape_string($connect,$pUser);
+		$pass = mysqli_real_escape_string($connect,$pass);		
+		$email = $user."@localhost";		
 		$salt = getRandomKey(200);
-		$safetypass = hash('sha512',$pass.$salt."thehoursedoesnoteatchickenandbacon");	
-		$registered= date("D M j G:i:s T Y",time());
-		$role = 0;	
-		$storage = "10";
-		$api_key = hash('sha512',$email.$salt.$user."thehoursedoesnoteatchickenandbacon");	
-		$enabled = 1;
-		if ($passOK == true){
-			$ergebnis = mysqli_query($connect,"Select * from Users where  User = '$user' or Email = '$email'") or die("Error: 021 ".mysqli_error($connect));
-			if (mysqli_affected_rows($connect) > 0)
-			{
-				echo "<td><span class=\"successValue elusive icon-remove glyphIcon\"></span></td>";
-				$GLOBALS["ERRORS"]["ROOT"] = "A root user already exists";	
-					$GLOBALS["fail"]++;
-			}
-			else		
-			{
-				echo "<td><span class=\"successValue elusive icon-ok glyphIcon\"></span></td>";
-				$ergebnis = mysqli_query($connect,"Insert into Users (User, Email,Password,Salt,Registered,Role,Storage,Enabled,API_Key,Enable_API) Values('$user','$email','$safetypass','$salt','$registered','$role',$storage,$enabled,'$api_key',1)") or die("Error: 019 ".mysqli_error($connect));
-			}	
-			
-		}		
-		
+		$safetypass = hash('sha512',$pass.$salt.$salt.$user);
+		$registered= date("Y-m-d H:i:s",time());
+		$role = $GLOBALS["config"]["User_Default_Role"];		
+		$storage = 10;
+		$api_key = hash('sha512',$Email.$salt.$user."thehoursedoesnoteatchickenandbacon");			
+		$enabled = 1;	
+		$ergebnis = @mysqli_query($connect,"Insert into Users (User, Email,Password,Salt,Registered,Role,Storage,Enabled,API_Key,Enable_API) Values ('$user','$email','$safetypass','$salt','$registered','$role',$storage,$enabled,'$api_key',1)");		
 	}	
 	/**
 	 * getRandomKey: get random key
