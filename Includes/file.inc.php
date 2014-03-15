@@ -127,7 +127,14 @@
 		?>
 			<div class = "btn-group" id = "fileActionBtnGroup">
 			<?php
-				//Display download link
+				//Display download  and view linklink
+				?>				
+				<a type="a" href = 'index.php?module=download&file=<?php echo $row->Hash;?>&view=true' target="_blank"  class="btn btn-default">
+					<span class="elusive icon-screen glyphIcon">
+					</span><span class='hidden-xs'>
+					<?php echo $GLOBALS["Program_Language"]["open_generic"];?></span>
+				</a>
+				<?php
 				?>				
 				<a type="a" href = 'index.php?module=download&file=<?php echo $row->Hash;?>'class="btn btn-default">
 					<span class="elusive icon-download-alt glyphIcon">

@@ -66,7 +66,8 @@
 	if (file_exists($fullPath)) {
 		header('Content-Description: File Transfer');
 		header('Content-Type: ' . $mimetype); 
-		header("Content-Disposition: attachment; filename=".$displayname."");
+		if (!isset($_GET["view"]))
+			header("Content-Disposition: attachment; filename=".$displayname."");
 		header('Content-Transfer-Encoding: binary');
 		header('Expires: 0');
 		header('Cache-Control: must-revalidate');
