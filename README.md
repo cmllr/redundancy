@@ -1,4 +1,4 @@
-Redundancy  1.9.x unstable branch
+Redundancy  1.9.X unstable branch
 =================================
 Redundancy is an lightweight cloud computing system. The program is so lightweight that you can run it on microservers like the Raspberry Pi without having too much load.
 Redundancy does not require full server access. It can be installed on every server running a webserver using PHP. The configuration is very easy through a central configuration file. At the moment it does not have a "bling bling" configuration wizard. The stable branch will probably get an installer and an installation wizard, too. The biggest difference between Redundancy and other programs for this purpose is that you get a very lightweight user

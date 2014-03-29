@@ -196,3 +196,5 @@ SharedSelf ="Shared by you";
 GotShared ="Got shared";
 SharedTo = " (shared to %s)";
 NothingShared = "No shared files found.";
+renameDescription="Please do not use path separators ('/') in the new directory or file name";
+setpass_fail_noemail="You can not reset this password using an email. To reset your password, contact your system administrator";
