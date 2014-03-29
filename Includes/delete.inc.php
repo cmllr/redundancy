@@ -92,9 +92,13 @@
 			else
 				$hash = mysqli_real_escape_string($connect,$_POST["file"]);				
 			$userid = mysqli_real_escape_string($connect,$_SESSION['user_id']);		
-			if (!isLocalShared($hash)){
+			if (!isLocalShared($hash,$_SESSION["user_id"])){
 				$success = getFileByHashAndDelete($hash,$userid);
-			}			
+			}	
+			else{
+				if ($GLOBALS["config"]["Program_Debug"] == 1)
+					echo "is shared!";
+			}		
 		}
 		//Case 2: the user wants to delete a directory
 		else if (isset($_SESSION["user_name"]) &&  ((isset($_GET["dir"]) ) || isset($_POST["dir"]) ))
@@ -121,7 +125,7 @@
 		exit;		
 	}
 	else{	
-		if ($GLOBALS["config"]["Program_Debug"] != 1){		
+		if ($GLOBALS["config"]["Program_Debug"] != 1){				
 			$dir = $_SESSION["currentdir"];			
 			if ($success == true)
 				header("Location: ./index.php?module=list&dir=".$dir."&message=file_delete_success");

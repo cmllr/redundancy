@@ -22,7 +22,7 @@
 	 */
 	 //Include uri check
 	require_once ("checkuri.inc.php");
-if (isset($_SESSION) == false);
+	if (isset($_SESSION) == false)
 		session_start();
 	if (isset($_GET["dir"]) )
 	{

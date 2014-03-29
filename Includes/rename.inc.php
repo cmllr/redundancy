@@ -36,7 +36,7 @@
 		//only proceed if the user is logged in and we have a valid user_id
 		if (isset($_SESSION['user_id']))
 		{		
-			if (isset($_POST["newname"]) && strpos($_POST["newname"],"<") === false){
+			if (isset($_POST["newname"]) && strpos($_POST["newname"],"<") === false && strpos($_POST["newname"],"/") === false){
 				if ((isset($_GET["source"]) && isset($_GET["old_root"])) || (isset($_POST["source"]) && isset($_POST["old_root"]))){
 					
 					include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
@@ -143,6 +143,7 @@
 <h2><?php echo $GLOBALS["Program_Language"]["Rename_Button"];?></h2>
 <div class="panel-body">
 <form class="form-horizontal" method="POST" action="index.php?module=rename<?php echo $suffix;?>">	
+	<div class="alert alert-info"><?php echo $GLOBALS["Program_Language"]["renameDescription"];?></div>
 	<div class="form-group">		
 		<label class="col-lg-3 control-label"><?php echo sprintf($GLOBALS["Program_Language"]["Rename"],$file);?></label>
 		<div class="col-lg-9">

@@ -187,6 +187,9 @@
 		}
 		return $Share_Status;
 	}
+	/**
+	 * Enable the programs key hooks for the shortcuts	 
+	 */
 	function enableKeyHooks()
 	{
 		if ($GLOBALS["config"]["Program_Enable_JQuery"] == 1)
@@ -327,6 +330,14 @@
 		}
 		mysqli_close($connect);			
 	}
+	/**
+	* get the Pagination buttons when splitting data listings on multiple pages
+	* @param $current the current result number
+	* @param $max the maxium amounts per page
+	* @param $count the current amounts per page
+	* @param $dir the current directory
+	*
+	*/
 	function getPagination($current,$max,$count,$dir){
 		echo "<ul class=\"pagination pagination-sm\">";
 			for ($i = 0; $i < round($count/$max,0,PHP_ROUND_HALF_UP ); $i++){			

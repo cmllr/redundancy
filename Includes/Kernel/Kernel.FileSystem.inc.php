@@ -21,7 +21,7 @@
 	 * This file contains filesystem relevant methods.
 	 * @todo the copy, rename and move algorithms must be tested more
 	 */
-	/*
+	/**
 	 * Determines if a file is an image
 	 * @param $filename the full filename ({value}.dat)
 	 * @return If the file is an image
@@ -40,8 +40,8 @@
 			return false;
 		}
 	}
-	/*
-	 * isVectorGraphics determines if a file is an vector graphics
+	/**
+	 * determines if a file is an vector graphics
 	 * @param $filename the full filename ({value}.dat)
 	 * @return If the file is an vector graphics
 	 */
@@ -582,7 +582,8 @@
 	 * moveDir moves a directory
 	 * @param $dir the dir
 	 * @param $target the target dir
-	 * @param $old_root the directory, where the directory was saved	
+	 * @param $old_root the directory, where the directory was saved
+	 * @todo More testing!	
 	 */
 	function moveDir($dir,$target,$old_root)
 	{
@@ -665,6 +666,7 @@
 	 * moveFile moves a file
 	 * @param $ID the ID
 	 * @param $newdir the new directory
+	 * @todo More testing!	
 	 */
 	function moveFile($ID,$newdir)
 	{
@@ -682,6 +684,7 @@
 	 * @param $source the source directory
 	 * @param $target the target directory
 	 * @todo if data is not moved, see line 641 
+	 * @todo More testing!	
 	 */
 	function moveContents($source,$target)
 	{			
@@ -734,7 +737,7 @@
 			//include the dataBase file
 			include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 			$currentdir = mysqli_real_escape_string($connect,$currentdir);
-			$directory = mysqli_real_escape_string($connect,$directory);
+			$directory = mysqli_real_escape_string($connect,($directory));
 			//remember the user id, the new directory, the current directory, the directory without path timestamp hash and so on...
 			$userid = mysqli_real_escape_string($connect,$_SESSION['user_id']);		
 			$newdirectory =  $currentdir . $directory."/";			
@@ -779,6 +782,7 @@
 	 * @param $dir the directory
 	 * @param $target the target directory
 	 * @param $old_root the directory, where the directory was saved	
+	 * @todo More testing!	
 	 */
 	function copyDir($dir,$target,$old_root)
 	{	
@@ -862,6 +866,7 @@
 	 * copies a file	
 	 * @param $file the file
 	 * @param $dir the directory which contains the file
+	 * @todo More testing!	
 	 */
 	function copyFile($file,$dir)
 	{
@@ -942,9 +947,9 @@
 		$hash = mysqli_real_escape_string($connect,$hash);
 		$userid = mysqli_real_escape_string($connect,$userid);
 		$result = mysqli_query($connect,"Select Filename,Directory from Files  where Hash = '$hash' and UserID = '$userid' limit 1") or die("Can't run database query to get the file to delete: ".mysqli_error($connect));
-		if (mysqli_affected_rows($connect) == 1){			
-			$localfilename = "";
-			$dir = "";
+		$localfilename = "";
+		$dir = "";
+		if (mysqli_affected_rows($connect) == 1){		
 			while ($row = mysqli_fetch_object($result)) {
 				$localfilename = $row->Filename;
 				$dir = $row->Directory;
@@ -953,16 +958,20 @@
 			}	
 			mysqli_close($connect);	
 			if ($localfilename != "" && $dir != "")
-				$success = deleteFile($localfilename,$dir,$hash);				
+				$success = deleteFile($localfilename,$dir,$hash);					
 		}
 		else{
+			if ($GLOBALS["config"]["Program_Debug"] == 1)
+				echo "FILE DOES NOT EXISTS. NOTHING FOUND IN DATABASE!";
 			$success = false;
 		}
 		return $success;
 	}
 	/**
 	 * deleteDir deletes a directory
-	 * @param $dirname the directory name	
+	 * @param $dirname the directory name
+	 * @return the result of the action
+	 * @todo More testing!	
 	 */
 	function deleteDir($dirname)
 	{		
@@ -1029,6 +1038,7 @@
 	 * @param $filename the file (ending with .dat!)
 	 * @param $directory the directory which contains the file
 	 * @param $hash the file hash
+	 * @todo more testing
 	 */
 	function deleteFile($filename,$directory,$hash)
 	{
@@ -1057,11 +1067,12 @@
 		}
 		else{
 			$success = false;
-		}
+		}		
 		return $success;
 	}
 	/**
 	 *  creates a database snapshot (can take long time!)
+	 * @todo More testing.
 	 */
 	function createSnapshot()
 	{
@@ -1153,6 +1164,7 @@
 	 * createZipFile backup the tables
 	 * @param $zipfile zipfile in Program_Dir/Temp/
 	 * @param $dir the directory 
+	 * @todo find a solution if the size is too much
 	 */
 	function createZipFile($dir,$zipfile)
 	{
@@ -1363,18 +1375,18 @@
 			if ($row->Uploaded != $row->lastWrite){
 				echo "<span class=\"elusive icon-edit\"></span> ";		
 				if ($row->Displayname != $row->Filename)
-					echo "<a href ='index.php?module=file&file=".$row->Hash."'>".$row->Displayname." (".date("d.m.y H:i:s",strtotime($row->lastWrite)).")</a>";
+					echo "<a href ='index.php?module=file&file=".$row->Hash."'>".utf8_encode($row->Displayname)." (".date("d.m.y H:i:s",strtotime($row->lastWrite)).")</a>";
 				else
-					echo "<a href ='index.php?module=list&dir=".$row->Displayname."'>".$row->Displayname." (".date("d.m.y H:i:s",strtotime($row->lastWrite)).")</a>";
+					echo "<a href ='index.php?module=list&dir=".utf8_encode($row->Displayname)."'>".utf8_encode($row->Displayname)." (".date("d.m.y H:i:s",strtotime($row->lastWrite)).")</a>";
 				
 			}
 			else
 			{
 				echo "<span class=\"elusive icon-file-new\"></span> ";
 				if ($row->Displayname != $row->Filename)
-					echo "<a href ='index.php?module=file&file=".$row->Hash."'>".$row->Displayname." (".date("d.m.y H:i:s",strtotime($row->Uploaded)).")</a>";
+					echo "<a href ='index.php?module=file&file=".$row->Hash."'>".utf8_encode($row->Displayname)." (".date("d.m.y H:i:s",strtotime($row->Uploaded)).")</a>";
 				else
-					echo "<a href ='index.php?module=list&dir=".$row->Displayname."'>".$row->Displayname." (".date("d.m.y H:i:s",strtotime($row->Uploaded)).")</a>";
+					echo "<a href ='index.php?module=list&dir=".utf8_encode($row->Displayname)."'>".utf8_encode($row->Displayname)." (".date("d.m.y H:i:s",strtotime($row->Uploaded)).")</a>";
 		}
 		
 			echo "</li>";	
@@ -1388,24 +1400,8 @@
 		echo "</div></div>";
 		mysqli_close($connect);		
 	}
-	//dev only
-	/*function fs_transform_timestamp()
-	{
-		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
-		$result = mysqli_query($connect,"Select * from Files")  or die("Error 023: ".mysqli_error($connect));
-		$array = array ();
-		while ($row = mysqli_fetch_object($result)) {		
-			$datum = new DateTime($row->Uploaded);
-			$datum_string = $datum->Format("d.m.y H:i:s");	
-				//2008-08-07 18:11:31"
-			echo "Transformed ".$row->Displayname." ".$row->Uploaded."->".$datum_string."->".$datum->Format("y-m-d H:i:s")."<br>";
-			$datum_db = $datum->Format("y-m-d H:i:s");
-			$query = mysqli_query($connect,"Update Files SET Uploaded = '$datum_db' where Hash = '".$row->Hash."'");			
-		}	
-		mysqli_close($connect);				
-	}*/
 	/**
-	 * get the statistics about the filesystem usage
+	 * get the statistics about the filesystem usage. The result will be printed on screen.
 	 */
 	function getFileSystemStats()
 	{
@@ -1444,9 +1440,17 @@
 		}
 		mysqli_close($connect);	
 	}
+	/**
+	* return an randomized color.
+	* @return the color as hex.
+	*/
 	function rand_color() {
 		return '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT);
 	}
+	/**
+	* See getFileSytemStats.
+	* @return nothing. Result will be printed on screen.
+	*/
 	function getFileSystemStats2()
 	{
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
@@ -1490,6 +1494,9 @@
 		}
 		mysqli_close($connect);	
 	}
+	/**
+	* Print out a legend for the files which are currently on the filesytem.
+	*/
 	function getFileSystemLegend()
 	{		
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
@@ -1730,7 +1737,7 @@
 				if (file_exists($fullPath)) {
 				
 						header('Content-Description: File Transfer');
-						header('Content-Type: ' .mime_content_type($fullPath)); 
+						header('Content-Type: '.getMimeType($fullPath)); 
 						if ($viewonly == false)
 							header('Content-Disposition: attachment; filename='.$displayname);
 						header('Content-Transfer-Encoding: binary');
@@ -1909,6 +1916,7 @@
 	* @param $hash the file hash
 	* @param $user the user id
 	* @return the result of the action
+	* @todo: fix failure.
 	*/
 	function isLocalSharedAnyUser($hash,$user){
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
@@ -1957,6 +1965,10 @@
 		}	
 
 	}
+	/**
+	* Get the shares of the user.	
+	* @return the rresult will be printed out.
+	*/
 	function getSharesOfUser(){
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";
 		$user = mysqli_real_escape_string($connect,$_SESSION["user_id"]);			
@@ -1973,6 +1985,10 @@
 			);
 		}		
 	}
+	/**
+	* Get the list of files shared by the user.	
+	* @return the rresult will be printed out.
+	*/
 	function getSharesByUser(){
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		$id = mysqli_real_escape_string($connect,$_SESSION["user_id"]);			
@@ -2044,4 +2060,116 @@
 		}	
 		return $user;
 	}	
+	/**
+	* Upload files to the system
+	* @param $uploadFile the $_FILES array
+	* @param $targetdir the relative dir, e. g. / or /test/.
+	* @return an array with keys (displaynames) and values (Guard::Result)
+	*/
+	function uploadFiles($uploadFile,$targetdir){
+		if (isset($uploadFile["userfile"]))
+		{		
+			$success = false;
+			$toobig = false;
+			$alreadyExisting = false;
+			$max_upload = (int)(ini_get('upload_max_filesize'));
+			$config_size = $max_upload*1024*1024;
+			$filecount = 0;
+			$results = array();
+			$move_process = false;			
+			//Get the amount of files				
+			$filecount = count($uploadFile["userfile"]['tmp_name']);		
+			foreach ($uploadFile['userfile']['tmp_name'] as $key => $tmp_name ){
+				//Check if the file is too big
+				if ($config_size < filesize($uploadFile['userfile']['tmp_name'][$key])){
+					$success = false;
+					$toobig = true;
+				}
+				if ($toobig == false && isset($uploadFile["userfile"]) && file_exists($uploadFile['userfile']['tmp_name'][$key]))
+				{		
+					//If the session is not set properly, abort the upload process.
+					if (!isset($_SESSION['user_id']))
+						return Result::NoUserLoggedIn;	
+									
+					$uploaddir =getStoragePath();
+					//Get the properties needed for the upload process.
+					//$time = date("Ymdhs", time());					
+					$code = getFreeStorageFileName();
+					$newfilename = $code.".dat";					
+					include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";				
+					$userid = $_SESSION['user_id'];						
+					$hash = md5($newfilename);	
+					$client_ip = getIP();					
+					if (isset($_POST["timestamp"]) == true){
+						$timestamp 	= strtotime(mysqli_real_escape_string($connect,$_POST["timestamp"]));
+					}
+					else{
+						$timestamp = time();
+					}						
+					$uploadtime= date("Y-m-d H:i:s",$timestamp);
+					$dir = $targetdir;
+					$displayname = utf8_decode($uploadFile['userfile']['name'][$key]);					
+					if (!isset($connect))
+						include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";						
+					$oldfilename = mysqli_real_escape_string($connect,$displayname);					
+					$size = filesize($uploadFile['userfile']['tmp_name'][$key]);
+					$directory_id =  getDirectoryID($dir);				
+					$file_mime = file_get_contents($uploadFile['userfile']['tmp_name'][$key]); 
+					$finfo = new finfo(FILEINFO_MIME_TYPE);		
+					$mimetype =  $finfo->buffer($file_mime);
+					
+					//**********************Insert file into filessytem**********************
+					if ((getUsedSpace($_SESSION["user_id"])  + $size < $_SESSION["space"] * 1024 * 1024) && isFileExisting($oldfilename,$dir) == false){
+						include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";			
+						$insert = "INSERT INTO Files (Filename,Displayname,Hash,UserID,IP,Uploaded,Size,Directory,Directory_ID, Client,MimeType,lastWrite) VALUES ('$newfilename','$oldfilename','$hash','$userid','$client_ip','$uploadtime','$size','$dir','$directory_id','".$_SERVER['HTTP_USER_AGENT']."','$mimetype','$uploadtime')";
+						//Insert file into db
+						$insert_query = mysqli_query($connect,$insert) or die ("Error: 030:" .mysqli_error($connect));
+						//If the insertion was successfull, move the file into the storage directory.
+						if ($insert_query == true){
+							$move_process = move_uploaded_file($uploadFile['userfile']['tmp_name'][$key], $uploaddir.$newfilename);
+							if ($move_process == true)
+								updateLastWriteOfDirectory($directory_id);
+						}
+						//If the moving was not successfull, roll back.
+						if ($move_process == false)
+						{
+							//if the file can't be moved, the file will be removed out of the filesystem
+							$remove = "Delete from Files where Filename = '$newfilename'";								
+							mysqli_query($connect,$remove);														
+						}							
+						//
+						//Return the results
+						if ($move_process != false){							
+							$success =true;
+							$results[$dir.$oldfilename] = Result::OK;
+						}else{							
+							$success = false;
+							$results[$dir.$oldfilename] = Result::CantBeMoved;
+						}
+					}
+					else if (isFileExisting($oldfilename,$dir) == false)
+					{
+						//Second case: The file is to big. Nothing was done.
+						//Remember the reason.
+						$success = false;
+						$toobig = true;							
+						$results[$dir.$oldfilename] = Result::TooBig;
+					}
+					else if (isFileExisting($oldfilename,$dir) != false)
+					{
+						//Third case: The file was already existing
+						//Remember the reason
+						$success = false;
+						$toobig = false;
+						$alreadyExisting = true;
+						$results[$dir.$oldfilename] = Result::FileIsExisting;
+					}					
+				}				
+			}	
+			mysqli_close($connect);	
+			return $results;		
+		}		
+		mysqli_close($connect);	
+		return null;
+	}
 ?>

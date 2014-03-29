@@ -145,8 +145,8 @@
 
 	function uploadFile()
 	{	
-		$_SESSION["currentdir"] = $_POST["currentdir"];				
 		setSession($_POST["key"]);		
+		$_SESSION["currentdir"] = $_POST["currentdir"];			
 		include "../upload.inc.php";		
 	}
 	/**

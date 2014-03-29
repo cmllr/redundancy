@@ -34,6 +34,8 @@
 		const FileIsExisting = 10;
 		const SourceAndTargetEqual = 11;
 		const TooBig = 12;
+		const NoUserLoggedIn = 13;
+		const CantBeMoved = 14;
 	} 
 	class Guard{
 		/**

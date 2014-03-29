@@ -135,7 +135,7 @@
 	}	
 	/**
 	 * get the link for activation
-	 * @returns the activation link
+	 * @return the activation link
 	 */
 	function getActivationLink(){
 		$dir = str_replace("index.php","",$_SERVER["PHP_SELF"]);
@@ -145,19 +145,35 @@
 			$link = "http://".$_SERVER["SERVER_NAME"].$dir."index.php?module=activate";
 		return $link;
 	}
-	
+	/**
+	 * Set the internal expeption handler
+	 */
 	function setExceptionHandler(){
 		set_exception_handler('exception_handler');
 		setErrorHandler();
 	}
+	/**
+	 * Set the internal error handler (will be called by setExceptionHandler())
+	 */
 	function setErrorHandler(){
 		set_error_handler('error_handler');
 	}
+	/**
+	 *The error handler itself
+	 * @param $errno error number
+	 * @param $errstr the error string
+	 * @param $errfile the causing file
+	 * @param $errline the line where the error oncurred.
+	 */
 	function error_handler($errno, $errstr, $errfile, $errline){
 		if ($GLOBALS["config"]["Program_Enable_Logging"] == 1){		
 			log_event("error","$errno: \"$errstr\" in \"$errfile\" on $errline");
 		}	
 	}
+	/**
+	 * Set the internal error handler (will be called by setExceptionHandler())
+	 * @param $exception the thrown exception to log.
+	 */
 	function exception_handler($exception) {
 		if ($GLOBALS["config"]["Program_Enable_Logging"] == 1){		
 			log_event("exception",$exception->getFile()." : Error on line \"".$exception->getLine()."\" Message: \"".$exception->getMessage()."\"");

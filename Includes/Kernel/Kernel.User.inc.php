@@ -18,7 +18,7 @@
 	 *
 	 * @section DESCRIPTION
 	 *
-	 * Any functionality for the user (login, register etc.) is stored in this file.
+	 * Redundancy's user functions are located here
 	 */
 	/**
 	 * login login the user
@@ -265,12 +265,14 @@
 		include $GLOBALS["Program_Dir"]."Includes/DataBase.inc.php";	
 		$email = mysqli_real_escape_string($connect,$pEmail);		
 		if (isExisting($email,"") && strpos("<",$email) === false)
-		{		
-			if ($GLOBALS["config"]["User_Enable_Recover"] == 1){			
-			
-				$pass = getRandomPass($GLOBALS["config"]["User_Recover_Password_Length"]);
-				
-				$query = mysqli_query($connect,"Select ID,User, Email, Password, Salt from Users where Email ='$email' limit 1");
+		{	
+			if (endsWith($email, "localhost.lan")){
+				header("Location: ./index.php?module=recover&message=setpass_fail_noemail");
+				exit;
+			}
+			if ($GLOBALS["config"]["User_Enable_Recover"] == 1){				
+				$pass = getRandomPass($GLOBALS["config"]["User_Recover_Password_Length"]);				
+				$query = mysqli_query($connect,"Select ID,User, Email, Password, Salt from Users where Email ='$email' limit 1");				
 				$salt = getRandomKey(200);
 				$name = "";		
 				$id = -1;
@@ -541,6 +543,7 @@
 	}
 	/**
 	 * saves changes at the user profiles	
+	 * @param $admin is the change done by an administrator/ the sytem?
 	 */
 	function saveUserChanges($admin = true)
 	{		

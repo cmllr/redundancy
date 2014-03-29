@@ -131,6 +131,7 @@
 						{
 							$countMissing++;
 							echo "<span class=\"errorValue elusive icon-remove glyphIcon\"></span>- File \"".$row->Displayname."\" (".$row->Filename.") in database, but not on filesystem!<br>";
+							
 						}
 					}		
 				}	
@@ -160,7 +161,7 @@
 							$result = mysqli_query($connect,"Select * from Files where Filename = '$file'");
 							if (mysqli_affected_rows($connect) == 0)
 							{
-								$countMissing++;					
+								$countMissing++;
 								echo "<span class=\"errorValue elusive icon-remove glyphIcon\"></span>- File \"$file\" on filesystem, but not in database!<br>";
 							}
 						}

@@ -32,7 +32,13 @@
 		$sql = "UPDATE Users SET Enabled=1 WHERE Email='$email'" ;
 		//Update the data row
 		mysqli_query($sql) or die("DataBase Error: 002 ".mysqli_error($connect));
-		header("Location: ./index.php?message=user_enabled");
-		exit;
+		if (mysqli_affected_rows($connect) != 0){
+			header("Location: ./index.php?message=user_enabled");
+			exit;
+		}
+		else{
+			header("Location: ./index.php?module=activate");
+			exit;
+		}
 	}
 ?>
