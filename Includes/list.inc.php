@@ -188,13 +188,15 @@
 		echo "</tr>";
 	}
 	else{
-		echo "
-			<div class='alert alert-info alert-dismissable'>
-			  <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
-				".$GLOBALS["Program_Language"]["Dir_Empty"]."
-			</div>
-		";	
-		$emptyFolder = true;
+		if (!isset($_POST["searchquery"])){
+				echo "
+				<div class='alert alert-info alert-dismissable'>
+				  <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
+					".$GLOBALS["Program_Language"]["Dir_Empty"]."
+				</div>
+			";	
+			$emptyFolder = true;
+		}
 	}
 	/*
 		Display the filelist
