@@ -195,3 +195,5 @@ SharedSelf ="Selbst freigegeben";
 GotShared ="Erhaltene Freigaben";
 SharedTo = " (freigegeben an %s)";
 NothingShared = "Keine Freigaben gefunden.";
+renameDescription ="Bitte vermeiden Sie das Angeben von Pfadtrennern ('/') in einem Verzeichnis- oder Dateinamen)!";
+setpass_fail_noemail="Dieses Konto kann nicht mittels Email zurückgesetzt werden. Bitte wenden Sie sich an Ihren Systemadministrator";
