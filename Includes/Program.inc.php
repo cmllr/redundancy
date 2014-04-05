@@ -20,7 +20,7 @@
 	 *
 	 * Program entry point
 	 */
-	$GLOBALS["Program_Version"] = "1.9.14-git-beta4-2";
+	$GLOBALS["Program_Version"] = "1.9.14-git-beta4-3";
 	$GLOBALS["Program_Release"] = "29.03.2014";
 	$GLOBALS["Program_Codename"] = "Cumulus";
 	$GLOBALS["config_dir"] = "./";	
