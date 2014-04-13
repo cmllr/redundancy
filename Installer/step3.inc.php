@@ -18,7 +18,7 @@
 					</div>
 				</div>
 			<?
-			$fail = tue;
+			$fail = true;
 		}
 		if ($fail == false){
 			if ($_POST["storage"] != "" && $_POST["temp"] != "" && $_POST["snapshots"] != ""){
