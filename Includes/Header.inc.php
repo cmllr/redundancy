@@ -69,6 +69,11 @@
 					<?php echo $GLOBALS["Program_Language"]["New_Directory"];?>
 				</a>
 			</li>
+			<li <?php if (isset($_GET["storageinfo"]) == true && $_GET["module"] == "storageinfo"): ?> <?php echo "class=\"active\"";?> <?php endif;?>>
+				<a href="index.php?module=storageinfo">
+					<?php echo $GLOBALS["Program_Language"]["Account_Storage_Info"];?>
+				</a>
+			</li>
 			<li <?php if (isset($_GET["module"]) == true && $_GET["module"] == "account"): ?> <?php echo "class=\"active\"";?> <?php endif;?>>
 				<a href="index.php?module=account">
 					<?php echo $GLOBALS["Program_Language"]["My_Account"];?>
@@ -128,7 +133,12 @@
 						<a href="?module=account">
 							<?php echo $GLOBALS["Program_Language"]["My_Account"];?>
 						</a>
-					</li>					
+					</li>	
+					<li>
+						<a href="?module=storageinfo">
+							<?php echo $GLOBALS["Program_Language"]["Account_Storage_Info"];?>
+						</a>
+					</li>						
 					<?php if ($_SESSION["role"] == 0 && isAdmin()): ?>
 						<li>
 						<a href="?module=admin">

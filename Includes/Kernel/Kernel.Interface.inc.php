@@ -306,8 +306,9 @@
 		$result = mysqli_query($connect,"Select ID,Email,User,API_Key from Users  where ID = '$id' limit 1") or die("DataBase Error: 001 ".mysqli_error($connect));
 		//Display the user informations (Email, Username, API_Key, User changes)
 		while ($row = mysqli_fetch_object($result)) {
-			echo "<b>".$GLOBALS["Program_Language"]["Email"].": </b> ".$row->Email;	
-			echo "<br><b>".$GLOBALS["Program_Language"]["Username"].": </b> ".$row->User;
+			if (strpos($row->Email,"localhost.local") == -1)
+				echo "<b>".$GLOBALS["Program_Language"]["Email"].": </b> ".$row->Email."<br>";
+			echo "<b>".$GLOBALS["Program_Language"]["Username"].": </b> ".$row->User;
 			//Display the api token 
 			if ($_SESSION["role"] != 3 && isGuest() == false && $GLOBALS["config"]["Api_Enable"] == 1)
 			echo"

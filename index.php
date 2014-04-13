@@ -246,6 +246,11 @@
 		<ul class="dropdown-menu" role="menu">
 			<li>
 				<a href="?module=account"><?php echo $GLOBALS["Program_Language"]["My_Account"];?></a>
+			</li>	
+			<li>
+				<a href="?module=storageinfo">
+					<?php echo $GLOBALS["Program_Language"]["Account_Storage_Info"];?>
+				</a>
 			</li>		
 			<?php if ($_SESSION["role"] == 0 && isAdmin()): ?>
 				<li>
