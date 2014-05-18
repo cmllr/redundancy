@@ -1,9 +1,11 @@
 <?php
 	/**
-	 * @file
-	 * @author  squarerootfury <me@0fury.de>	 
-	 *
-	 * @section LICENSE
+	* Kernel.Constants.inc.php
+	*/
+	namespace Redundancy\Kernel;
+	/**
+	 * This file contains a kind of enumerations for having global Errors, Messages etc.
+	 * @license
 	 *
 	 * This program is free software; you can redistribute it and/or
 	 * modify it under the terms of the GNU General Public License as
@@ -16,11 +18,8 @@
 	 * General Public License for more details at
 	 * http://www.gnu.org/copyleft/gpl.html
 	 *
-	 * @section DESCRIPTION
-	 *
-	 * System Constants (errors etc.)
+	 * @author  squarerootfury <me@0fury.de>
 	 **/
-	namespace Redundancy\Kernel;
 	class Errors{
 		const ModuleMissing = 1;
 		const MethodMissing = 2;

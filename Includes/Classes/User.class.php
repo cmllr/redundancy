@@ -1,9 +1,11 @@
-<?php
+<?php	
 	/**
-	 * @file
-	 * @author  squarerootfury <fury224@googlemail.com>	 
-	 *
-	 * @section LICENSE
+	* User.class.php
+	*/	
+	namespace Redundancy\Classes;
+	/**
+	 * This file contains the user class
+	 * @license
 	 *
 	 * This program is free software; you can redistribute it and/or
 	 * modify it under the terms of the GNU General Public License as
@@ -16,11 +18,8 @@
 	 * General Public License for more details at
 	 * http://www.gnu.org/copyleft/gpl.html
 	 *
-	 * @section DESCRIPTION
-	 *
-	 * User data class
-	 */	
-	namespace Redundancy\Classes;
+	 * @author  squarerootfury <me@0fury.de>
+	 **/
 	class User{
 		/**
 		* The users ID
@@ -59,8 +58,13 @@
 		*/
 		public $ContingentInByte = 0;
 		/**
-		* The object of the users role.
+		* The object of the users role. 
+		* @see \Redundancy\Classes\Role
 		*/
-		public $Role = null;			
+		public $Role = null;
+		/**
+		* Th amount of last failed login tries. Will be resetted on successfull login.
+		*/
+		public $FailedLogins;			
 	}
 ?>

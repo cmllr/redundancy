@@ -1,9 +1,14 @@
 <?php	
 	/**
-	 * @file
-	 * @author  squarerootfury <me@0fury.de>	 
-	 *
-	 * @section LICENSE
+	* Kernel.DBLayer.class.php
+	*/	
+	namespace Redundancy\Kernel;		
+	use Doctrine\Common\ClassLoader;
+	use Doctrine\DBAL;
+	use Doctrine\Common;
+	/**
+	 * This file contains the database abstraction layer, the framework Doctrine is used.
+	 * @license
 	 *
 	 * This program is free software; you can redistribute it and/or
 	 * modify it under the terms of the GNU General Public License as
@@ -16,19 +21,20 @@
 	 * General Public License for more details at
 	 * http://www.gnu.org/copyleft/gpl.html
 	 *
-	 * @section DESCRIPTION
-	 *
-	 * Database layer to communicate to the database.
-	 * This class creates an wrapper to the underlying database abstraction layer, called "Doctrine".
-	 * This class allows to replace Doctrine with others, if needed.
-	 */	
-	namespace Redundancy\Kernel;		
-	use Doctrine\Common\ClassLoader;
-	use Doctrine\DBAL;
-	use Doctrine\Common;
+	 * @author  squarerootfury <me@0fury.de>
+	 **/
 	class DBLayer{
+		/**
+		* The current class instance (singleton)
+		*/
 		private static $instance;
+		/**
+		* The currently open database connection.
+		*/
 		private $connection;
+		/**
+		* private constructor. Nothing to tell
+		*/
 		private function __construct(){}
 		/**
 		* Returns the current instance of the database layer.	
@@ -69,7 +75,8 @@
 			}				
 		}
 		/**
-		* Return the current connection 		
+		* Return the current connection 
+		* @return \Doctrine\DBAL\Connection the current connection		
 		*/
 		public function GetConnection(){
 			return $this->connection;
@@ -77,7 +84,7 @@
 		/**
 		* Runs an select query on the database
 		* @param $sql the sql query to run
-		* @return an array containing the results
+		* @return array|null containing the results
 		*/
 		public function RunSelect($sql){
 			if (!isset($this->connection)){
@@ -92,7 +99,7 @@
 		/**
 		* Update data in the database
 		* @param $sql the sql query to run
-		* @return the affected rows
+		* @return integer the amount of affected rows
 		*/
 		public function RunUpdate($sql){
 			if (!isset($this->connection)){
@@ -104,7 +111,7 @@
 		/**
 		* Delete data from the database
 		* @param $sql the sql query to run
-		* @return an data object containing the query
+		* @return \Doctrine\DBAL\Query an data object containing the query
 		*/
 		public function RunDelete($sql){
 			if (!isset($this->connection)){
@@ -116,7 +123,7 @@
 		/**
 		* Insert data to db
 		* @param $sql the sql query to run
-		* @return the affected rows
+		* @return \Doctrine\DBAL\Query an data object containing the query
 		*/
 		function RunInsert($sql){
 			if (!isset($this->connection)){
@@ -128,8 +135,8 @@
 		/**
 		* Escapes a string like mysqli_real_escape_string
 		* @param $string the param to escape
-		* @param $quotemarks determines if the escaped string should contain ''
-		* @return the escaped string
+		* @param $quotemarks determines if the escaped string should replace '' with nothing
+		* @return string the escaped string
 		*/
 		public function EscapeString($string,$quotemarks){
 			if (!isset($this->connection)){

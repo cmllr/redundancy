@@ -1,9 +1,11 @@
-<?php
+<?php	
 	/**
-	 * @file
-	 * @author  squarerootfury <fury224@googlemail.com>	 
-	 *
-	 * @section LICENSE
+	* Role.class.php
+	*/	
+	namespace Redundancy\Classes;
+	/**
+	 * This file contains the role data
+	 * @license
 	 *
 	 * This program is free software; you can redistribute it and/or
 	 * modify it under the terms of the GNU General Public License as
@@ -16,14 +18,20 @@
 	 * General Public License for more details at
 	 * http://www.gnu.org/copyleft/gpl.html
 	 *
-	 * @section DESCRIPTION
-	 *
-	 * Role data class
-	 */
-	namespace Redundancy\DataClasses;	
+	 * @author  squarerootfury <me@0fury.de>
+	 **/	
 	class Role{
+		/**
+		* the role id
+		*/
 		public $Id;
+		/**
+		* The description/ name of the role, e. g. "root".
+		*/
 		public $Description;
+		/**
+		* The permissions of the role. It is an binary value describing if several actions are allowed or not.
+		*/
 		public $Permissions;				
 	}
 ?>

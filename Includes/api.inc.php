@@ -1,5 +1,6 @@
 <?php
 	/**
+         * the api file is a central point which grabs the queries and executes them in the wanted kernel parts
 	 * @file
 	 * @author  squarerootfury <me@0fury.de>	 
 	 *
@@ -19,13 +20,23 @@
 	 * @section DESCRIPTION
 	 *
 	 * Central api layer to send requests to.
-	 */		
-	$path = str_replace("Includes/api.inc.php","", __file__);		
+	 */	
+	namespace Redundancy;	
+	$path = str_replace("Includes/api.inc.php","", __file__);
+	/**
+	* The systems root dir, ending with "/"
+	*/		
 	define("__REDUNDANCY_ROOT__",$path);
+	/**
+	* A flag determining if the system is in debug mode (for later purposes)
+	*/
 	define("__REDUNDANCY_DEBUG__",true);		
 	include __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Program.class.php";	
-	$Redundancy = new Redundancy\Kernel();	
-	if (isset($_GET["method"])){
+	/**
+	* blalbla
+	*/
+	$Redundancy = new \Redundancy\Kernel\Kernel();	
+	if (isset($_GET["method"])){	
 		$method = $_GET["method"];		
 		$params = json_decode($_POST["args"]);	
 		$module = $_GET["module"];
