@@ -2,7 +2,7 @@
 	/**
 	* Kernel.Constants.inc.php
 	*/
-	namespace Redundancy\Kernel;
+	namespace Redundancy\Classes;
 	/**
 	 * This file contains a kind of enumerations for having global Errors, Messages etc.
 	 * @license

@@ -24,12 +24,24 @@
 	*/
 	class UserKernel{
 		/**
+		* Hashes a given password
+		* @param $password the given password
+		* @return the password hash
+		*/
+		private function HashPassword($password){
+			$options = [
+				    'cost' => 11,
+				    'salt' => mcrypt_create_iv(22, MCRYPT_DEV_URANDOM),
+				];
+			return password_hash($password, PASSWORD_BCRYPT, $options);
+		}
+		/**
 		* Create a new system user, will be created using the settings User_Default_Role and User_Contingent
 		* @param $loginName the username of the new user, e . g. "chuck"
 		* @param $displayName the displayname of the new user, e. g. "Master of the Universe"
 		* @param $mailAddress a mail adress of the user or null
 		* @param $password the password of the user
-		* @return \Redundancy\Classes\User an new object of Redundancy\Classes\User.class.php or an int value containing the error (taken from Redundancy\Kernel\Errors)
+		* @return \Redundancy\Classes\User an new object of Redundancy\Classes\User.class.php or an int value containing the error (taken from Redundancy\Classes\Errors)
 		*/					
 		public function RegisterUser($loginName,$displayName,$mailAddress,$password){
 			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginName,true);
@@ -39,11 +51,7 @@
 			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select count(id) as Amount from User where loginName = '%s' or mailAddress = '%s'",$escapedLoginName,$escapedMailAddress));
 			if ($dbquery[0]["Amount"] == 0){
 				//Only proceed if there is no existing account with this email or loginName		
-				$options = [
-				    'cost' => 11,
-				    'salt' => mcrypt_create_iv(22, MCRYPT_DEV_URANDOM),
-				];
-				$safetypass = password_hash($escapedPassword, PASSWORD_BCRYPT, $options);
+				$safetypass = $this->HashPassword($password);
 				$registered= date("Y-m-d H:i:s",time());
 				$role = $GLOBALS["Kernel"]->Configuration["User_Default_Role"];
 				$storage = $GLOBALS["Kernel"]->Configuration["User_Contingent"]*1024*1024;
@@ -58,7 +66,7 @@
 				$user->ContingentInByte = $storage;
 				$user->Role = $this->GetUserRole($user->LoginName);
 				if ($user->Role == null)
-					return Errors::RoleNotFound;
+					return \Redundancy\Classes\Errors::RoleNotFound;
 				$dbinsertion = sprintf("Insert into User (loginName,displayName,mailAddress,registrationDateTime,lastLoginDateTime,passwordHash,isEnabled,contingentInByte,roleID) values ('%s','%s','%s','%s','%s','%s','%u','%u','%u')",$user->LoginName,$user->DisplayName,$user->MailAddress,$user->RegistrationDateTime,$user->LastLoginDateTime,$user->PasswordHash,$user->IsEnabled,$user->ContingentInByte,$user->Role->Id);
 				DBLayer::GetInstance()->RunInsert($dbinsertion);
 				//Check if the user was created
@@ -69,10 +77,10 @@
 					return $user;			
 				}
 				else{
-					return Errors::MultipleUserAccountsFound;			
+					return \Redundancy\Classes\Errors::MultipleUserAccountsFound;			
 				}
 			}else{
-				return Errors::UserOrEmailAlreadyGiven;				
+				return \Redundancy\Classes\Errors::UserOrEmailAlreadyGiven;				
 			}			
 		}
 		/**
@@ -80,7 +88,7 @@
 		* @todo add methods to delete the files, shares etc.
 		* @param $loginName the users login name
 		* @param $password the users password
-		* return bool the result of the deletion
+		* @return bool the result of the deletion
 		*/
 		public function DeleteUser($loginName,$password){
 			$result = false;
@@ -97,6 +105,70 @@
 				return false;			
 			
 			return result;
+		}
+		/**
+		* Changes the password of the user
+		* @param $token the valid session token for the user
+		* @param $oldPassword the old user password
+		* @param $newPassword the new user password
+		* @return bool the result of the change
+		*/
+		public function ChangePassword($token,$oldPassword,$newPassword){
+			$username = $this->GetUser($token)->LoginName;
+			if (is_null($username))
+				return false;
+			if (!$this->Authentificate($username,$oldPassword))	
+				return false;
+			$newHash = $this->HashPassword($newPassword);
+			//Set the new password
+			DBLayer::GetInstance()->RunUpdate("Update User set PasswordHash = '$newHash' where LoginName = '$username'");
+			//Check if the password was set
+			$check = DBLayer::GetInstance()->RunSelect(sprintf("Select count(id) as Amount from User where PasswordHash = '%s'",$newHash));
+			if (is_null($check))
+				return false;			
+			if ($check[0]["Amount"] != "0")
+				return true;
+			else
+				return false;	
+		}
+	
+		/**
+		* Generates a new random password
+		* @todo generate an stronger password
+		* @param length the length of the password. If not set, the value from User_Recover_Password_Length will be used
+		* @return string the new password
+		*/
+		public function GeneratePassword($length = -1){
+			//https://stackoverflow.com/questions/6101956/generating-a-random-password-in-php
+			if ($length == -1)
+				$length = $GLOBALS["Kernel"]->Configuration["User_Recover_Password_Length"];
+			$alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+			$pass = '';                           //password is a string
+			$alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+			for ($i = 0; $i < $length; $i++) {
+				$n = mt_rand(0, $alphaLength);    
+				$pass = $pass.$alphabet[$n];      //append a random character
+			}
+			return ($pass); 
+		}
+		/**
+		* Resets a password by a mail
+		* @param mailAddress the email of the account which password should be resetted
+		* @todo check the systems email configuration to prevent mail sending when mail is not configured
+		* @todo mail body
+		* @todo Function not complete implemented
+		*/
+		public function ResetPasswordByMail($mailAddress){
+			$mailAddress = DBLayer::GetInstance()->EscapeString($mailAddress);
+			$check = DBLayer::GetInstance()->RunSelect(sprintf("Select count(id) as Amount from User where MailAddress = '%s'",$mailAddress));
+			if (is_null($check))
+				return false;			
+			if ($check[0]["Amount"] != "0")
+			{
+				//Send mail
+			}
+			else
+				return false;	
 		}
 		/**
 		* Return the currently installed roles (e. g. admin, user, guest)
@@ -166,6 +238,7 @@
 				$user->IsEnabled = $value["isEnabled"];
 				$user->ContingentInByte = $value["contingentInByte"];
 				$user->Role = $this->GetUserRole($user->LoginName);
+				$user->FailedLogins = $value["failedLogins"];
 				$result = $user;
 			}
 			return $result;	
@@ -178,7 +251,7 @@
 		* @return string a string containing the token
 		*/
 		private function GenerateToken($loginName,$dateTime,$ip){
-			$token = Errors::TokenGenerationFailed;
+			$token = \Redundancy\Classes\Errors::TokenGenerationFailed;
 			$token = md5(md5($loginName).md5($dateTime).md5($ip).md5($_SERVER['HTTP_USER_AGENT']));
 			return $token;		
 		}
@@ -212,7 +285,7 @@
 		* @return string a string containing the token or an error code
 		*/	
 		public function LogIn($loginName,$password,$stayLoggedIn){
-			$result = Errors::PasswordOrUserNameWrong;
+			$result = \Redundancy\Classes\Errors::PasswordOrUserNameWrong;
 			$passwordToCheck = "";
 			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginName,true);
 			$escapedPassword = DBLayer::GetInstance()->EscapeString($password,true);
@@ -227,6 +300,7 @@
 			$sessionStartedDateTime = date("Y-m-d H:i:s",time());
 			if (password_verify($escapedPassword,$dbquery[0]["passwordHash"])){
 				$this->ResetFailedLoginsCounter($escapedLoginName);
+				$this->SetLastLoginDateTime($escapedLoginName);
 				$sessionNeeded = $this->IsNewSessionNeeded($escapedLoginName);
 				if ($sessionNeeded != "true"){
 					return $sessionNeeded;				
@@ -250,6 +324,17 @@
 				$this->IncreaseFailedLoginCounter($escapedLoginName);
 			}
 			return $result;
+		}
+		/**
+		* Set the last Login Date and time
+		* @param $loginName the username of the logging in user
+		*/
+		private function SetLastLoginDateTime($loginName){
+			$value = date("Y-m-d H:i:s",time());
+			$loginName = DBLayer::GetUser()->EscapeString($loginName,true);
+			$query = sprintf("Update User set LastLoginDateTime = $value where loginName = '%s'",$loginName);	
+			DBLayer::GetInstance()->RunUpdate($query);
+
 		}
 		/**
 		* Increases the failure counter of failed logins
