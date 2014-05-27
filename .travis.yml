@@ -1,0 +1,6 @@
+language: php
+php:
+  - 5.5
+before_script:
+  - mysql -e 'create database Lenticularis;'
+script: phpunit --configuration ./runTests.xml

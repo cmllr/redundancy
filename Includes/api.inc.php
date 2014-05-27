@@ -30,7 +30,11 @@
 	/**
 	* A flag determining if the system is in debug mode (for later purposes)
 	*/
-	define("__REDUNDANCY_DEBUG__",true);		
+	define("__REDUNDANCY_DEBUG__",true);
+	/**
+	* A flag determining if the system is in a testing mode
+	*/
+	define("__REDUNDANCY_TESTING__",true);		
 	include __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Program.class.php";	
 	/**
 	* blalbla
@@ -41,7 +45,7 @@
 		$params = json_decode($_POST["args"]);	
 		$module = $_GET["module"];
 		if (!isset($module))
-			die("Fatal Error :( ".Errors::ModuleMissing);		
+			die("Fatal Error :( ".\Redundancy\Classes\Errors::ModuleMissing);		
 		//TODO: A more professional solution
 		switch($module){
 			case "Kernel":
@@ -50,9 +54,15 @@
 			case "Kernel.UserKernel":
 			$Redundancy->Output(call_user_func_array(array($Redundancy->UserKernel,$method), $params)); 
 			break;
+			case "Kernel.InterfaceKernel":
+			$Redundancy->Output(call_user_func_array(array($Redundancy->InterfaceKernel,$method), $params)); 
+			break;
 		}
 	}
 	else{
-		die("Fatal Error :( ".Redundancy\Kernel\Errors::MethodMissing);	
+		if (!__REDUNDANCY_TESTING__)
+			die("Fatal Error :( ".\Redundancy\Classes\Errors::MethodMissing);	
+		else
+			echo "Redundancy ".$Redundancy->GetVersion()." bootstrapped\n";
 	}	
 ?>

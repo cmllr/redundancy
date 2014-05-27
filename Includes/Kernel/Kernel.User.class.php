@@ -55,7 +55,7 @@
 				$registered= date("Y-m-d H:i:s",time());
 				$role = $GLOBALS["Kernel"]->Configuration["User_Default_Role"];
 				$storage = $GLOBALS["Kernel"]->Configuration["User_Contingent"]*1024*1024;
-				$user = new \Redundancy\Classes\User();
+				$user = new \Redundancy\Classes\User();				
 				$user->LoginName = $escapedLoginName;
 				$user->DisplayName = $escapedDisplayName;
 				$user->MailAddress = $escapedMailAddress;
@@ -64,8 +64,15 @@
 				$user->PasswordHash = $safetypass;
 				$user->IsEnabled = true;
 				$user->ContingentInByte = $storage;
-				$user->Role = $this->GetUserRole($user->LoginName);
-				if ($user->Role == null)
+				$systemRoles = $this->GetInstalledRoles();			
+				foreach ($systemRoles as $value){
+					if ($value->Id == $role)
+					{
+						$user->Role = $value;					
+						break;
+					}
+				}				
+				if (is_null($user->Role))
 					return \Redundancy\Classes\Errors::RoleNotFound;
 				$dbinsertion = sprintf("Insert into User (loginName,displayName,mailAddress,registrationDateTime,lastLoginDateTime,passwordHash,isEnabled,contingentInByte,roleID) values ('%s','%s','%s','%s','%s','%s','%u','%u','%u')",$user->LoginName,$user->DisplayName,$user->MailAddress,$user->RegistrationDateTime,$user->LastLoginDateTime,$user->PasswordHash,$user->IsEnabled,$user->ContingentInByte,$user->Role->Id);
 				DBLayer::GetInstance()->RunInsert($dbinsertion);
