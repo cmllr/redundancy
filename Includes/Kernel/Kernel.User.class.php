@@ -287,6 +287,23 @@
 			return $result;
 		}
 		/**
+		* Get the clients IP
+		* @returns string the IP
+		*/
+		private function GetIP(){
+			if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+			    $ip = $_SERVER['HTTP_CLIENT_IP'];
+			} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+			} else {
+			    if (__REDUNDANCY_TESTING__ == true)
+			    	$ip = $_SERVER['REMOTE_ADDR'];
+			    else
+			    	$ip = "127.0.0.1";
+			}
+			return $ip;
+		}
+		/**
 		* Logs the user in and returns an Errorcode from Errors if failure or the session token.  Uses the session timeout from Program_Session_Timeout
 		* @param $loginName the user's login name
 		* @param $password the user's password
@@ -298,14 +315,8 @@
 			$passwordToCheck = "";
 			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginName,true);
 			$escapedPassword = DBLayer::GetInstance()->EscapeString($password,true);
-			if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-			    $ip = $_SERVER['HTTP_CLIENT_IP'];
-			} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-			    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-			} else {
-			    $ip = $_SERVER['REMOTE_ADDR'];
-			}
-			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select Id,passwordHash from User where loginName ='%s'",$escapedLoginName));
+			$ip =$this->GetIP();
+ 			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select Id,passwordHash from User where loginName ='%s'",$escapedLoginName));
 			$sessionStartedDateTime = date("Y-m-d H:i:s",time());
 			if (password_verify($escapedPassword,$dbquery[0]["passwordHash"])){
 				$this->ResetFailedLoginsCounter($escapedLoginName);
@@ -403,13 +414,7 @@
 			if (is_null($dbquery))
 				return true;
 			foreach ($dbquery as $value){
-				if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-				    $ip = $_SERVER['HTTP_CLIENT_IP'];
-				} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-				    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-				} else {
-				    $ip = $_SERVER['REMOTE_ADDR'];
-				}	
+				$ip =$this->GetIP();
 				$sessionStartedDateTime = date("Y-m-d H:i:s",strtotime($value["sessionStartedDateTime"]));
 				$compareToken = $this->GenerateToken($escapedLoginName,$sessionStartedDateTime,$ip);			
 				if ($compareToken == $value["Token"]){

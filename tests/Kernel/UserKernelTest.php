@@ -21,7 +21,7 @@
 			$mailAddress = "mail@localhost.lan";
 			$password = "test";
 			$got = $value = $GLOBALS["Kernel"]->UserKernel->RegisterUser($loginName,$displayName,$mailAddress,$password);			
-			$this->assertTrue(!is_null($got) && \Redundancy\Classes\Errors::UserOrEmailAlreadyGiven!=$got);
+			$this->assertTrue(!is_null($got));
 			$this->assertTrue(!is_null($got),"Got no new User object");
 			$this->assertEquals($loginName,$got->LoginName);
 			$this->assertEquals($displayName,$got->DisplayName);
