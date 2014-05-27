@@ -257,11 +257,15 @@
 		* @param $loginName the user's login name
 		* @param $dateTime the current date and time
 		* @param $ip the clients IP
+		* @todo: Fix these fucking $_SERVER values
 		* @return string a string containing the token
 		*/
 		private function GenerateToken($loginName,$dateTime,$ip){
 			$token = \Redundancy\Classes\Errors::TokenGenerationFailed;
-			$token = md5(md5($loginName).md5($dateTime).md5($ip).md5($_SERVER['HTTP_USER_AGENT']));
+			$userAgent = "";
+			if (isset($_SERVER['HTTP_USER_AGENT']))
+				$userAgent = $_SERVER['HTTP_USER_AGENT'];
+			$token = md5(md5($loginName).md5($dateTime).md5($ip).md5($userAgent));
 			return $token;		
 		}
 		/**
