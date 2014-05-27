@@ -97,21 +97,23 @@
 		* @param $password the users password
 		* @return bool the result of the deletion
 		*/
-		public function DeleteUser($loginName,$password){
-			$result = false;
+		public function DeleteUser($loginName,$password){			
 			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginName,true);
 			$escapedPassword = DBLayer::GetInstance()->EscapeString($password,true);
-			//Delete the sessions
+			//Delete the sessions			
 			if (!$this->Authentificate($escapedLoginName,$escapedPassword))
 				return false;
-			echo sprintf("Delete from Session s where u.loginName ='%s' inner join User u on u.id = s.userID",$escapedLoginName);
-			$dbquery = DBLayer::GetInstance()->RunDelete(sprintf("Delete from Session s where loginName ='%s' inner join User u on u.id = s.userID",$escapedLoginName));
-			$check = DBLayer::GetInstance()->RunSelect(sprintf("Select count(id) as Amount from Session s inner join User u on u.id = s.userID where u.loginName = '%s' ",$escapedLoginName));
+			//Kill all sessions
+			$dbquery = DBLayer::GetInstance()->RunDelete(sprintf("Delete from Session where userID = (Select  id from User where User.loginName = '%s')",$escapedLoginName));
+			$sessioncheck = DBLayer::GetInstance()->RunSelect(sprintf("Select count(s.id) as Amount from Session s inner join User u on u.id = s.userID where u.loginName = '%s' ",$escapedLoginName));
+			//If the check returns values, there must be a problem and the deletion failed					
+			//Delete the user			
+			$dbquery = DBLayer::GetInstance()->RunDelete(sprintf("Delete from User where loginName = '%s'",$escapedLoginName));
+			$check = DBLayer::GetInstance()->RunSelect(sprintf("Select count(u.id) as Amount from User u where u.loginName = '%s' ",$escapedLoginName));
 			//If the check returns values, there must be a problem and the deletion failed		
-			if (!is_null($check))
-				return false;			
-			
-			return result;
+			if ($check[0]["Amount"] != 0 || $sessioncheck[0]["Amount"] != 0)
+				return false;	
+			return true;
 		}
 		/**
 		* Changes the password of the user
@@ -328,7 +330,7 @@
 				}
 			}
 			else{
-				$this->IncreaseFailedLoginCounter($escapedLoginName);
+				$this->IncreaseFailedLoginsCounter($escapedLoginName);
 			}
 			return $result;
 		}
@@ -338,8 +340,8 @@
 		*/
 		private function SetLastLoginDateTime($loginName){
 			$value = date("Y-m-d H:i:s",time());
-			$loginName = DBLayer::GetUser()->EscapeString($loginName,true);
-			$query = sprintf("Update User set LastLoginDateTime = $value where loginName = '%s'",$loginName);	
+			$loginName = DBLayer::GetInstance()->EscapeString($loginName,true);
+			$query = sprintf("Update User set LastLoginDateTime = '$value' where loginName = '%s'",$loginName);	
 			DBLayer::GetInstance()->RunUpdate($query);
 
 		}
