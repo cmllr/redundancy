@@ -87,14 +87,19 @@
 		* @return array|null containing the results
 		*/
 		public function RunSelect($sql){
-			if (!isset($this->connection)){
-				$this->Setup();
-			}	
-			$stmt = $this->GetConnection()->query($sql);				
-			while ($row = $stmt->fetch()) {			    
-			    $result[] = $row;
-			}
-			return $result;
+			$result = null;
+			try{
+				if (!isset($this->connection)){
+					$this->Setup();
+				}	
+				$stmt = $this->GetConnection()->query($sql);				
+				while ($row = $stmt->fetch()) {			    
+				    $result[] = $row;
+				}
+				return $result;;
+			}catch(Exception $e){
+				return null;
+			}			
 		}
 		/**
 		* Update data in the database
@@ -102,11 +107,15 @@
 		* @return integer the amount of affected rows
 		*/
 		public function RunUpdate($sql){
-			if (!isset($this->connection)){
-				$this->Setup();
-			}	
-			$count =  $this->GetConnection()->executeUpdate($sql);
-			return $count;
+			try{
+				if (!isset($this->connection)){
+					$this->Setup();
+				}	
+				$count =  $this->GetConnection()->executeUpdate($sql);
+				return $count;
+			}catch(Exception $e){
+				return null;
+			}
 		}
 		/**
 		* Delete data from the database
@@ -114,11 +123,15 @@
 		* @return \Doctrine\DBAL\Query an data object containing the query
 		*/
 		public function RunDelete($sql){
-			if (!isset($this->connection)){
-				$this->Setup();
+			try{
+				if (!isset($this->connection)){
+					$this->Setup();
+				}
+				$result =  $this->GetConnection()->query($sql);
+				return $result;
+			}catch(Exception $e){
+				return null;
 			}
-			$result =  $this->GetConnection()->query($sql);
-			return $result;
 		}
 		/**
 		* Insert data to db
@@ -126,11 +139,15 @@
 		* @return \Doctrine\DBAL\Query an data object containing the query
 		*/
 		function RunInsert($sql){
-			if (!isset($this->connection)){
-				$this->Setup();
-			}
-			$result =  $this->GetConnection()->query($sql);
-			return $result;		
+			try{
+				if (!isset($this->connection)){
+					$this->Setup();
+				}
+				$result =  $this->GetConnection()->query($sql);
+				return $result;	
+			}catch(Exception $e){
+				return null;
+			}	
 		}
 		/**
 		* Escapes a string like mysqli_real_escape_string
