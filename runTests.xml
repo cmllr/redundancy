@@ -1,7 +1,7 @@
-<phpunit bootstrap="Includes/api.inc.php">
+<phpunit bootstrap="./Includes/api.inc.php">
 <testsuites>
   <testsuite name="My Test Suite">
-    <directory>Tests/</directory>
+    <directory>./Tests/</directory>
   </testsuite>
 </testsuites>
 </phpunit>
