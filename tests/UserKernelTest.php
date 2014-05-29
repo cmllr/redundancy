@@ -144,7 +144,7 @@
 			$got2 = $GLOBALS["Kernel"]->UserKernel->GeneratePassword();
 			$this->assertTrue(strlen($got1) != 0);
 			$this->assertTrue(strlen($got2) != 0);
-			$this->assertTrue($got != $got2);
+			$this->assertTrue($got1 != $got2);
 		}		
 		//***********************TestsIsSessionExisting()***********************
 		public function testIsSessionExistingShouldSucceed(){
