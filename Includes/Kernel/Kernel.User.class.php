@@ -207,12 +207,12 @@
 		private function GetUserRole($loginName){
 			$result = null;
 			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginName,true);
-			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select * from Role r inner join User u on u.roleID = r.id where  u.loginName = '%s' ",$escapedLoginName));
+			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select *,r.ID as RoleID from Role r inner join User u on u.roleID = r.id where  u.loginName = '%s' ",$escapedLoginName));
 			if (is_null($dbquery))
 				return null;
 			foreach ($dbquery as $value){
 				$role = new \Redundancy\Classes\Role();
-				$role->Id = $value["id"];
+				$role->Id = $value["RoleID"];
 				$role->Description = $value["description"];
 				$role->Permissions = $value["permissions"];				
 				$result = $role;
@@ -282,10 +282,12 @@
 			if (is_null($dbquery))
 				return false;			
 			if(password_verify($escapedPassword,$dbquery[0]["passwordHash"])){
+				$this->ResetFailedLoginsCounter($escapedLoginName);
 				$result = true;
 			}
 			else
-			{
+			{		
+				$this->IncreaseFailedLoginsCounter($escapedLoginName);
 				$result = false;		
 			}		
 			return $result;
@@ -365,7 +367,8 @@
 		* @param $loginName the username
 		*/
 		private function IncreaseFailedLoginsCounter($loginName){
-			$query = sprintf("Update User set FailedLogins = FailedLogins +1 where loginName = '%s'",$loginName);	
+			$loginName = DBLayer::GetInstance()->EscapeString($loginName,true);
+			$query = sprintf("Update User set FailedLogins = FailedLogins +1 where loginName = '%s'",$loginName);		
 			DBLayer::GetInstance()->RunUpdate($query);
 		}
 		/**
@@ -373,8 +376,22 @@
 		* @param $loginName the username
 		*/
 		private function ResetFailedLoginsCounter($loginName){
+			$loginName = DBLayer::GetInstance()->EscapeString($loginName,true);
 			$query = sprintf("Update User set FailedLogins = 0 where loginName = '%s'",$loginName);	
 			DBLayer::GetInstance()->RunUpdate($query);
+		}
+		/**
+		* Resets the failure counter.
+		* @param $loginName the username
+		* @return int the amount of failed logins
+		*/
+		private function GetFailedLoginsCounter($loginName){
+			$loginName = DBLayer::GetInstance()->EscapeString($loginName,true);
+			$query = sprintf("Select FailedLogins from User where loginName = '%s'",$loginName);	
+			$result = DBLayer::GetInstance()->RunSelect($query);		
+			if (is_null($query))
+				return 0;
+			return $result[0]["FailedLogins"];
 		}
 		/**
 		* Delete a single token from the database
@@ -412,16 +429,16 @@
 		*/
 		private function IsNewSessionNeeded($loginName){
 			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginName,true);
-			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select Token,sessionStartedDateTime,sessionEndDateTime from Session inner join User u on u.Id = userId where u.loginName = '%s'",$escapedLoginName));
+			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select token,sessionStartedDateTime,sessionEndDateTime from Session inner join User u on u.Id = userId where u.loginName = '%s'",$escapedLoginName));
 
 			//If there is no token, a new one can be created
 			if (is_null($dbquery))
-				return true;
-			foreach ($dbquery as $value){
+				return true;			
+			foreach ($dbquery as $value){				
 				$ip =$this->GetIP();
 				$sessionStartedDateTime = date("Y-m-d H:i:s",strtotime($value["sessionStartedDateTime"]));
-				$compareToken = $this->GenerateToken($escapedLoginName,$sessionStartedDateTime,$ip);			
-				if ($compareToken == $value["Token"]){
+				$compareToken = $this->GenerateToken($escapedLoginName,$sessionStartedDateTime,$ip);				
+				if ($compareToken == $value["token"]){
 					if ($value["sessionEndDateTime"] == "0000-00-00 00:00:00")
 						return $compareToken;
 					else{
