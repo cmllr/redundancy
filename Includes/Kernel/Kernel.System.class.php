@@ -22,6 +22,20 @@
 	* 
 	*/
 	class SystemKernel{
-		
+		/**
+		* Checks if the system is runned in a test environment
+		* @return bool
+		*/
+		public function IsInTestEnvironment(){
+			if (!isset($_SERVER["argv"]))
+				return false;
+			foreach ($_SERVER["argv"] as $value)
+			{
+				if (strpos($value,"phpunit") !== false){
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 ?>

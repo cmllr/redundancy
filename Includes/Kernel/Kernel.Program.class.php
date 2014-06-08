@@ -24,6 +24,7 @@
 	namespace Redundancy\Kernel;	
 		//TODO: Include _every_ needed file here	
 		//**********************************************Kernel modules************************************
+		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.System.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.User.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Interface.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Constants.inc.php";
@@ -65,6 +66,10 @@
 			*/	
 			public $UserKernel;
 			/**
+			* The kernel part object which contains the user functions.
+			*/
+			public $SystemKernel;
+			/**
 			* The Kernel part object which contains the functions to manage interface data.
 			*/
 			public $InterfaceKernel;
@@ -82,7 +87,8 @@
 				$this->Configuration = parse_ini_file(__REDUNDANCY_ROOT__."Redundancy.conf");
 				//Add the current object to the globals that other Kernel parts kann access others (over this object)
 				$GLOBALS["Kernel"] = $this;
-				$this->InterfaceKernel = new \Redundancy\Kernel\InterfaceKernel(-1);											
+				$this->InterfaceKernel = new \Redundancy\Kernel\InterfaceKernel(-1);							
+				$this->SystemKernel =  new \Redundancy\Kernel\SystemKernel();	
 			}
 			/**
 			* Return the current server version

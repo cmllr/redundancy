@@ -328,7 +328,7 @@
 				$this->ResetFailedLoginsCounter($escapedLoginName);
 				$this->SetLastLoginDateTime($escapedLoginName);
 				$sessionNeeded = $this->IsNewSessionNeeded($escapedLoginName);
-				if ($sessionNeeded != "true"){
+				if ($sessionNeeded != "true"){					
 					return $sessionNeeded;				
 				}
 				else{
@@ -336,6 +336,8 @@
 					$userId = $dbquery[0]["Id"];
 					if ($stayLoggedIn || $GLOBALS["Kernel"]->Configuration["Program_Session_Timeout"] == -1){
 						$dbquery = sprintf("Insert into Session (userId,token,sessionStartedDateTime,sessionEndDateTime) values('%u','%s','%s','%s')",$userId,$token,$sessionStartedDateTime,null);
+						if (!$GLOBALS["Kernel"]->SystemKernel->IsInTestEnvironment())
+							$this->CreateCookie($token,false);						
 					}else{
 					
 						$minutes = $GLOBALS["Kernel"]->Configuration["Program_Session_Timeout"];					
@@ -350,6 +352,42 @@
 				$this->IncreaseFailedLoginsCounter($escapedLoginName);
 			}
 			return $result;
+		}
+		/**
+		* Kill the session cookie	
+		* @return the result of the overwrite process with an empty value	
+		*/
+		private function KillSessionCookie(){			
+			return setcookie('SessionData', '', time() - 3600);			
+		}
+		/**
+		* Get a session by a cookie
+		* @return string the cookie token or -1
+		*/
+		public function GetSessionByCookie(){
+			if (!isset($_COOKIE["SessionData"]))
+				return -1;
+			else
+				return $_COOKIE["SessionData"];
+		}
+		/**
+		* Creates a cookie for the given token session
+		* uses the configuration value Program_Session_Timeout, if not set, the default cookie lifetime will be 5 minutes.
+		* @param $token the token
+		* @param $expires bool determines if the cookie should expire
+		*/
+		private function CreateCookie($token,$expires = false){
+			if ($expires){
+				$cookieLifeSpan = $GLOBALS["Kernel"]->Configuration["Program_Session_Timeout"];	
+				if ($cookieLifeSpan == -1)
+				{
+					$cookieLifeSpan = 5;
+				}		
+				setcookie("SessionData", $token, time()+ $cookieLifeSpan * 60);	
+			}
+			else{				
+				setcookie("SessionData", $token);	
+			}						
 		}
 		/**
 		* Set the last Login Date and time
@@ -403,10 +441,13 @@
 			if (!$this->IsSessionExisting($token))
 				return false;
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+							
+			if (!$GLOBALS["Kernel"]->SystemKernel->IsInTestEnvironment())
+				$this->KillSessionCookie();
 			DBLayer::GetInstance()->RunDelete(sprintf("Delete from Session where Token = '%s'",$escapedToken));
 			if (!$this->IsSessionExisting($token))
 				return true;
-		}
+		}		
 		/**
 		* Check if a single token exists in the database;
 		* @param $token the token to search

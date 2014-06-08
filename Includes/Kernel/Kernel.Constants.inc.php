@@ -31,4 +31,3 @@
 		const TokenGenerationFailed = 8;
 	} 
 ?>
-

@@ -33,8 +33,7 @@
 	define("__REDUNDANCY_DEBUG__",true);
 	/**
 	* A flag determining if the system is in a testing mode
-	*/
-	define("__REDUNDANCY_TESTING__",true);		
+	*/	
 	include __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Program.class.php";	
 	/**
 	* blalbla
@@ -46,7 +45,7 @@
 		$module = $_GET["module"];
 		if (!isset($module))
 			die("Fatal Error :( ".\Redundancy\Classes\Errors::ModuleMissing);		
-		//TODO: A more professional solution
+		//TODO: A more professional solution			
 		switch($module){
 			case "Kernel":
 			$Redundancy->Output(call_user_func_array(array($Redundancy,$method), $params)); 
@@ -57,12 +56,6 @@
 			case "Kernel.InterfaceKernel":
 			$Redundancy->Output(call_user_func_array(array($Redundancy->InterfaceKernel,$method), $params)); 
 			break;
-		}
-	}
-	else{
-		if (!__REDUNDANCY_TESTING__)
-			die("Fatal Error :( ".\Redundancy\Classes\Errors::MethodMissing);	
-		else
-			echo "Redundancy ".$Redundancy->GetVersion()." bootstrapped\n";
-	}	
+		}	
+	}		
 ?>

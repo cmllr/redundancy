@@ -221,7 +221,7 @@
 			$GLOBALS["Kernel"]->UserKernel->KillSessionByToken($token)	;		
 			$got = $GLOBALS["Kernel"]->UserKernel->IsSessionExisting($token);		
 			$this->assertFalse($got);	
-		}
+		}		
 		//***********************Tests DeleteUser()***********************
 		public function testDeleteUser(){
 			$loginName = "testUser";		
