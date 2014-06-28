@@ -23,7 +23,6 @@
 		  	$obj = $GLOBALS["Kernel"]->FileSystemKernel;	  
 			$got = $foo->invokeArgs($obj, array(1));			
 		  	$this->assertTrue($got != \Redundancy\Classes\Errors::SystemDirectoryNotExisting);
-			$this->assertTrue(file_exists($got));
 			$this->assertTrue(strpos($got,"Temp") !== false);
 		}
 		public function testGetSystemDir03(){
@@ -32,7 +31,6 @@
 		  	$obj = $GLOBALS["Kernel"]->FileSystemKernel;	  
 			$got = $foo->invokeArgs($obj, array(2));			
 		  	$this->assertTrue($got != \Redundancy\Classes\Errors::SystemDirectoryNotExisting);
-			$this->assertTrue(file_exists($got));
 			$this->assertTrue(strpos($got,"Snapshots") !== false);
 		}		
 		public function testGetSystemDir04(){
@@ -41,7 +39,6 @@
 		  	$obj = $GLOBALS["Kernel"]->FileSystemKernel;	  
 			$got = $foo->invokeArgs($obj, array(0));			
 		  	$this->assertTrue($got != \Redundancy\Classes\Errors::SystemDirectoryNotExisting);
-			$this->assertTrue(file_exists($got));
 			$this->assertTrue(strpos($got,"Storage") !== false);
 		}
 	}
