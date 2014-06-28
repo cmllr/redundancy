@@ -20,7 +20,7 @@
 	 *
 	 * @author  squarerootfury <me@0fury.de>
 	 **/
-	class Errors{
+	abstract class Errors{
 		const ModuleMissing = 1;
 		const MethodMissing = 2;
 		const UserOrEmailAlreadyGiven = 3;
@@ -29,5 +29,15 @@
 		const DataBaseError = 6;
 		const PasswordOrUserNameWrong = 7;
 		const TokenGenerationFailed = 8;
+		const SystemDirectoryNotExisting = 9;
 	} 
+	/**
+	* File system constants to use
+	*/
+	abstract class SystemDirectories
+	{
+	    const Storage = 0;
+	    const Temp = 1;
+            const Snapshots = 2;
+	}
 ?>

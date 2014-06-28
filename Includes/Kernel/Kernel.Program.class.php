@@ -29,9 +29,13 @@
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Interface.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Constants.inc.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.class.php";
+		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.FileSystem.class.php";
 		//**********************************************Data classes**************************************
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/User.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/Role.class.php";
+		require_once __REDUNDANCY_ROOT__."Includes/Classes/FileSystemItem.class.php";
+		require_once __REDUNDANCY_ROOT__."Includes/Classes/Folder.class.php";
+		require_once __REDUNDANCY_ROOT__."Includes/Classes/File.class.php";
 		//**********************************************third party stuff*********************************
 		require_once __REDUNDANCY_ROOT__.'Lib/Doctrine/Doctrine/Common/ClassLoader.php';	
 		/**
@@ -74,6 +78,10 @@
 			*/
 			public $InterfaceKernel;
 			/**
+			* The Kernel part to handle files
+			*/
+			public $FileSystemKernel;
+			/**
 			* The systems configuration. Parsed from __REDUNDANCY_ROOT__Redundancy.conf
 			*/
 			public $Configuration;
@@ -89,6 +97,7 @@
 				$GLOBALS["Kernel"] = $this;
 				$this->InterfaceKernel = new \Redundancy\Kernel\InterfaceKernel(-1);							
 				$this->SystemKernel =  new \Redundancy\Kernel\SystemKernel();	
+				$this->FileSystemKernel = new \Redundancy\Kernel\FileSystemKernel();
 			}
 			/**
 			* Return the current server version

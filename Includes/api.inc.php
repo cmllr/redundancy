@@ -56,6 +56,9 @@
 			case "Kernel.InterfaceKernel":
 			$Redundancy->Output(call_user_func_array(array($Redundancy->InterfaceKernel,$method), $params)); 
 			break;
+			case "Kernel.FileSystemKernel":
+			$Redundancy->Output(call_user_func_array(array($Redundancy->FileSystemKernel,$method), $params));
+			break;
 		}	
 	}		
 ?>
