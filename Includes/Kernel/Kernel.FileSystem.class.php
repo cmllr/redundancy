@@ -27,7 +27,7 @@
 		* @param $Directory \Redundancy\Classes\SystemDirectories member
 		* @return string or \Redundancy\Classes\Errors::SystemDirectoryNotExisting
 		*/
-		public function GetSystemDir($Directory){
+		private function GetSystemDir($Directory){
 			if ($Directory == \Redundancy\Classes\SystemDirectories::Storage)
 				$configValue = $role = $GLOBALS["Kernel"]->Configuration["Program_Storage_Dir"];
 			else if ($Directory == \Redundancy\Classes\SystemDirectories::Temp)
