@@ -30,6 +30,9 @@
 		const PasswordOrUserNameWrong = 7;
 		const TokenGenerationFailed = 8;
 		const SystemDirectoryNotExisting = 9;
+		const TokenNotValid = 10;
+		const DirectoryNotFound = 11;
+		const EntryExisting = 12;
 	} 
 	/**
 	* File system constants to use
