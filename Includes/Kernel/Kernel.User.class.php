@@ -228,7 +228,7 @@
 		public function GetUser($token){
 			$result = null;
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
-			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select * from User u inner join Session s on s.userId = u.ID where  s.token = '%s' ",$escapedToken));
+			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select *,u.Id as UserID from User u inner join Session s on s.userId = u.ID where  s.token = '%s' ",$escapedToken));
 			if (is_null($dbquery))
 				return null;
 			foreach ($dbquery as $value){
@@ -236,7 +236,7 @@
 				if ($this->IsNewSessionNeeded($value["loginName"]) == "true")
 					return null;
 				$user = new \Redundancy\Classes\User();
-				$user->ID = $value["id"];
+				$user->ID = $value["UserID"];
 				$user->LoginName = $value["loginName"];
 				$user->DisplayName = $value["displayName"];
 				$user->MailAddress = $value["mailAddress"];
