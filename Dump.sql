@@ -1,5 +1,52 @@
+-- phpMyAdmin SQL Dump
+-- version 4.1.11
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Erstellungszeit: 29. Jun 2014 um 13:52
+-- Server Version: 5.5.37-MariaDB
+-- PHP-Version: 5.5.13
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Datenbank: `Lenticularis`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `FileSystem`
+--
+
+CREATE TABLE IF NOT EXISTS `FileSystem` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sizeInByte` int(11) NOT NULL DEFAULT '0',
+  `filePath` text COLLATE utf8_bin,
+  `displayName` text COLLATE utf8_bin NOT NULL,
+  `uploadDateTime` datetime NOT NULL,
+  `lastChangeDateTime` datetime NOT NULL,
+  `uploadUserAgent` text COLLATE utf8_bin NOT NULL,
+  `hash` text COLLATE utf8_bin NOT NULL,
+  `ownerId` int(11) NOT NULL,
+  `parentFolder` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `ownerId` (`ownerId`),
+  KEY `parentFolder` (`parentFolder`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=12 ;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `Role`
+--
 
 CREATE TABLE IF NOT EXISTS `Role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -8,8 +55,18 @@ CREATE TABLE IF NOT EXISTS `Role` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=2 ;
 
+--
+-- Daten für Tabelle `Role`
+--
+
 INSERT INTO `Role` (`id`, `description`, `permissions`) VALUES
 (1, 'Root', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `Session`
+--
 
 CREATE TABLE IF NOT EXISTS `Session` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -19,10 +76,21 @@ CREATE TABLE IF NOT EXISTS `Session` (
   `sessionEndDateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `userID` (`userID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=33 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=32 ;
+
+--
+-- Daten für Tabelle `Session`
+--
 
 INSERT INTO `Session` (`id`, `userID`, `token`, `sessionStartedDateTime`, `sessionEndDateTime`) VALUES
-(32, 9, '3c4ea6c0d772988ba779b465ab515a2b', '2014-05-18 15:38:27', '0000-00-00 00:00:00');
+(20, 9, '50594b3cec34fdedebdf6764bb0ab530', '2014-06-29 11:53:15', '0000-00-00 00:00:00'),
+(22, 11, '1ebc9106c8d144651b22e10709f06223', '2014-06-29 13:29:20', '0000-00-00 00:00:00');
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `User`
+--
 
 CREATE TABLE IF NOT EXISTS `User` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -38,12 +106,40 @@ CREATE TABLE IF NOT EXISTS `User` (
   `failedLogins` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_Role` (`roleID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=24 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=21 ;
+
+--
+-- Daten für Tabelle `User`
+--
 
 INSERT INTO `User` (`id`, `loginName`, `displayName`, `mailAddress`, `registrationDateTime`, `lastLoginDateTime`, `passwordHash`, `isEnabled`, `contingentInByte`, `roleID`, `failedLogins`) VALUES
 (1, 'fury', 'CM', 'bla@bla.de', '2014-05-16 00:00:00', '2014-05-16 00:00:00', 'bla', 1, 100000, NULL, 0),
-(9, 'fuxry', 'CM', 'bla@blxa.de', '2014-05-17 14:12:59', '0000-00-00 00:00:00', '$2y$11$KY/Tjuko2xX/4WqhhyYj6.FnzdN/9Ui7D2JUUujy/bPSVKheUoKJO', 1, 5242880, 1, 0);
+(9, 'fuxry', 'CM', 'bla@blxa.de', '2014-05-17 14:12:59', '2014-06-29 11:53:25', '$2y$11$KY/Tjuko2xX/4WqhhyYj6.FnzdN/9Ui7D2JUUujy/bPSVKheUoKJO', 1, 5242880, 1, 0),
+(11, 'testFS', 'FileSystemTestUser', 'test@fs.local', '2014-06-29 13:29:20', '2014-06-29 13:47:20', '$2y$11$3HV31aOBhLJ8qUzSx7UdFecKnWbR9dHh6FcuRwHCmQnI07xc7hwOu', 1, 5242880, 1, 0);
 
+--
+-- Constraints der exportierten Tabellen
+--
 
+--
+-- Constraints der Tabelle `FileSystem`
+--
+ALTER TABLE `FileSystem`
+  ADD CONSTRAINT `FileSystem_ibfk_1` FOREIGN KEY (`ownerId`) REFERENCES `User` (`id`);
+
+--
+-- Constraints der Tabelle `Session`
+--
 ALTER TABLE `Session`
   ADD CONSTRAINT `Session_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `User` (`id`);
+
+--
+-- Constraints der Tabelle `User`
+--
+ALTER TABLE `User`
+  ADD CONSTRAINT `fk_Role` FOREIGN KEY (`roleID`) REFERENCES `Role` (`id`);
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
