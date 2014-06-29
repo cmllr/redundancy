@@ -71,6 +71,67 @@
 			return $this->IsEntryExisting($escapedName,$escapedRoot,$escapedToken);
 		}
 		/**
+		* Delete an directory
+		* @param string $name the absolute path of the directory, e. g. /test/test2/
+		* @param string $token the valid session token
+		* @return bool the result of the deletion.
+		*/
+		public function DeleteDirectory($name,$token){
+			$escapedName = DBLayer::GetInstance()->EscapeString($name,true);
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;
+			if (is_null($ownerId))
+				return \Redundancy\Classes\Errors::TokenNotValid;
+			$folder = $this->GetEntryByAbsolutePath($name,$token);
+			if (is_null($folder))
+				return false;
+			$query = sprintf("Select * from FileSystem where OwnerID = '%u' and parentFolder = '%d'",$ownerId,$folder->Id);			
+			$result = DBLayer::GetInstance()->RunSelect($query);	
+			if (count($result) != 0){
+				foreach ($result as $value){	
+					if (is_null($value["filePath"]) && $value["sizeInByte"] == 0)
+					{
+						//It's a folder
+						$this->DeleteDirectory($this->GetAbsolutePathById($value["id"],$escapedToken),$escapedToken);
+					}
+					else{
+						//Its a file
+						//TODO: Implement deletion for files
+					}	
+				}
+			}		
+			
+			//Delete Directory itself
+			$dbquery = DBLayer::GetInstance()->RunDelete(sprintf("Delete from FileSystem where Id = '%d' and ownerId = '%u' limit 1",$folder->Id,$ownerId));
+			return !$this->IsEntryExisting($folder->DisplayName,$folder->ParentID,$escapedToken);
+		}
+		/**
+		* Get an entry by an absolute path, e. g. /test/test2
+		* @param string $absolutePath the absolute path to the entry
+		* @param string $token a valid session token
+		* @return \Redundancy\Classes\File | \Redundancy\Classes\Folder | null (if failed) or Errors::TokenNotValid if the token is not valid
+		*/
+		public function GetEntryByAbsolutePath($absolutePath,$token){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedabsolutePath = DBLayer::GetInstance()->EscapeString($absolutePath,true);
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;
+			if (is_null($ownerId))
+				return \Redundancy\Classes\Errors::TokenNotValid;
+			if ($absolutePath == "/")
+				return $this->GetEntryById(-1,$escapedToken);
+			///root/bla
+			$pathParts = explode("/",$escapedabsolutePath);	
+			$lastId = -1;
+			for ($i = 0; $i < count($pathParts);$i++){
+				if ($pathParts[$i] != ""){
+					$checkquery = sprintf("Select * from FileSystem where DisplayName = '%s' and OwnerID = '%u' and parentFolder = '%d'",$pathParts[$i],$ownerId,$lastId);
+				$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);	
+						$lastId = $checkresult[0]["id"];	
+				}
+			}
+			return $this->GetEntryById($lastId,$escapedToken);
+		}
+		/**
 		* Check if an entry is existing in a given folder
 		* @param string $name the name of the new entry
 		* @param int $root the Id of the current directory
@@ -108,7 +169,7 @@
 				$dir = new \Redundancy\Classes\Folder();
 				$dir->Id = -1;
 				$dir->DisplayName = "Rootnode";
-				$dir->OwnerId = $ownerId;
+				$dir->OwnerID = $ownerId;
 				$dir->ParentID = -1;
 				$dir->CreateDateTime = null;
 				$dir->LastChangeDateTime = null;
@@ -125,7 +186,7 @@
 				$dir = new \Redundancy\Classes\Folder();
 				$dir->Id = $checkresult[0]["id"];
 				$dir->DisplayName = $checkresult[0]["displayName"];
-				$dir->OwnerId = $checkresult[0]["ownerId"];
+				$dir->OwnerID = $checkresult[0]["ownerId"];
 				$dir->ParentID = $checkresult[0]["parentFolder"];
 				$dir->CreateDateTime = $checkresult[0]["uploadDateTime"];
 				$dir->LastChangeDateTime = $checkresult[0]["lastChangeDateTime"];
@@ -136,7 +197,7 @@
 				$file = new \Redundancy\Classes\File();
 				$file->Id = $checkresult[0]["id"];
 				$file->DisplayName = $checkresult[0]["displayName"];
-				$file->OwnerId = $checkresult[0]["ownerId"];
+				$file->OwnerID = $checkresult[0]["ownerId"];
 				$file->ParentID = $checkresult[0]["parentFolder"];
 				$file->CreateDateTime = $checkresult[0]["uploadDateTime"];
 				$file->LastChangeDateTime = $checkresult[0]["lastChangeDateTime"];

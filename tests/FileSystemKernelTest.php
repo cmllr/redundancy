@@ -55,12 +55,22 @@
 			$this->assertTrue($got == \Redundancy\Classes\Errors::EntryExisting);
 		}
 		//***********************Tests GetEntryById()***********************
-		//Case 2 is missing...
 		public function testGetEntryById01(){
 			//This check shoudl fail..
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
 			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryById(-1,$token);
 			$this->assertTrue($got->DisplayName == "Rootnode");
+		}
+		//***********************Tests GetAbsolutePath()***********************
+		public function testGetEntryByAbsolutePath01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/testDirectory01",$token);
+			$this->assertTrue($got->DisplayName == "testDirectory01");
+		}
+		public function testGetEntryByAbsolutePath02(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/testDirectory01NOTEXISTING",$token);
+			$this->assertTrue(is_null($got));
 		}
 		//***********************Tests IsEntryExisting()***********************
 		public function testIsEntryExisting01(){
@@ -72,6 +82,39 @@
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
 			$got = $GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("thiscantbeexisting",-1,$token);
 			$this->assertFalse($got);
+		}
+		//***********************Tests DeleteDirectory()***********************
+		public function testDeleteDirectory01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/testDirectory01/",$token);
+			$this->assertTrue($got);
+		}
+		public function testDeleteDirectory02(){
+			//This one should fail
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/testDirectory01NOTEXISTING/",$token);
+			$this->assertFalse($got);
+		}
+		public function testDeleteDirectory03(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("testdirroot",-1,$token);
+			$parent = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/testdirroot/",$token);			
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("testdirsub",$parent->Id,$token);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/testdirroot/",$token);
+			$this->AssertFalse($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("testdirroot",-1,$token));
+			$this->assertTrue($got);
+		}
+		public function testDeleteDirectory04(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("testdirroot",-1,$token);
+			$parent = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/testdirroot/",$token);			
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("testdirsub",$parent->Id,$token);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/testdirroot/testdirsub/",$token);
+			$this->AssertTrue($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("testdirroot",-1,$token));
+			$got2 = $GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/testdirroot/",$token);
+			$this->AssertTrue($got2);
+			$this->AssertFalse($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("testdirroot",-1,$token));
+			$this->assertTrue($got);
 		}
 	}
 ?>
