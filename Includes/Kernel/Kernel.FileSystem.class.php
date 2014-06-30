@@ -37,16 +37,20 @@
 			else
 				return \Redundancy\Classes\Errors::SystemDirectoryNotExisting;		
 			//If the programs root dir is not mentioned, check if the storage dir is in the current folder
+			$path = "";			
 			if (strpos($configValue,__REDUNDANCY_ROOT__) === false)
 			{
 				if (file_exists(__REDUNDANCY_ROOT__.$configValue))
-					return __REDUNDANCY_ROOT__.$configValue;
+					$path =  __REDUNDANCY_ROOT__.$configValue;
 				else
-					return $configValue;
+					$path =  $configValue;
 			}							
 			else{
-				return __REDUNDANCY_ROOT__.$configValue;
+				$path =  __REDUNDANCY_ROOT__.$configValue;
 			}
+			if ($path[strlen($path)] != "/")
+				$path = $path ."/";
+			return $path;
 		}
 		/**
 		* Creates a new directory in the given root dir
@@ -59,16 +63,84 @@
 			$escapedName = DBLayer::GetInstance()->EscapeString($name,true);
 			$escapedRoot = DBLayer::GetInstance()->EscapeString($root,true);
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
-			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;			
 			if (is_null($ownerId))
 				return \Redundancy\Classes\Errors::TokenNotValid;
 			if ($this->IsEntryExisting($escapedName,$escapedRoot,$escapedToken))
 				return \Redundancy\Classes\Errors::EntryExisting;
 			$uploadDateTime = date('Y-m-d H:i:s');
 			$hash = $this->GetUniqueHash($name);
-			$dbinsertion = sprintf("Insert into FileSystem (sizeInByte,filePath,displayName,uploadDateTime,lastChangeDateTime,uploadUserAgent,hash,ownerID,parentFolder) values ('%u',null,'%s','%s','%s','%s','%s','%d', '%d')",0,$escapedName,$uploadDateTime, $uploadDateTime,$uploadDateTime,$hash,$ownerId,$escapedRoot);
+			$dbinsertion = sprintf("Insert into FileSystem (sizeInByte,filePath,displayName,uploadDateTime,lastChangeDateTime,uploadUserAgent,hash,ownerID,parentFolder,mimeType) values ('%u',null,'%s','%s','%s','%s','%s','%d', '%d','%s')",0,$escapedName,$uploadDateTime, $uploadDateTime,$uploadDateTime,$hash,$ownerId,$escapedRoot,'inode/directory');
 			DBLayer::GetInstance()->RunInsert($dbinsertion);
 			return $this->IsEntryExisting($escapedName,$escapedRoot,$escapedToken);
+		}
+		/**
+		* Get the storage informations
+		* @param string $token a valid session token to identify the user
+		* @returns \Redundancy\Classes\FileSystemAnalysis object or an errorcode
+		*/
+		public function GetStorage($token){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;						
+			if (is_null($ownerId))
+				return \Redundancy\Classes\Errors::TokenNotValid;	
+			$result = new \Redundancy\Classes\FileSystemAnalysis();
+			$result->sizeInByte = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ContingentInByte;			
+			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select sizeInByte from FileSystem where ownerID = '%d'",$ownerId));			
+			if (is_null($dbquery))
+				$result->usedStorageInByte = 0;
+			else{
+				foreach ($dbquery as $value){
+					//only proceed if the token was valid				
+					$result->usedStorageInByte = $result->usedStorageInByte + $value["sizeInByte"];
+				}
+			}				
+			return $result;	
+		}		
+		/**
+		* Upload a file to a given folder
+		* Note: You have to send the single file in an field namen "file".
+		* @param int $root the id of the new root folder
+		* @param string $token a valid session token
+		* @return bool if the action was successfull or an errorcode to describe the problem
+		*/
+		public function UploadFile($root,$token){		
+			$escapedRoot = DBLayer::GetInstance()->EscapeString($root,true);
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;			
+			if (is_null($ownerId))
+				return \Redundancy\Classes\Errors::TokenNotValid;
+			//For reverting
+			$newAddedFiles = [];	
+			var_dump($_FILES);		
+			if (is_null($_FILES["file"]))
+				return false;
+			$displayName =  DBLayer::GetInstance()->EscapeString($_FILES["file"]["name"],true);
+			if ($this->IsEntryExisting($displayName,$escapedRoot,$escapedToken))
+					return \Redundancy\Classes\Errors::EntryExisting;
+			
+			$sizeInByte = DBLayer::GetInstance()->EscapeString($_FILES["file"]["size"],true);
+			//Do the insertion only if there is enough space
+			if ($this->GetStorage($escapedToken) + $sizeInByte < $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ContingentInByte){
+				$uploadDateTime = date('Y-m-d H:i:s');			
+				$type =  DBLayer::GetInstance()->EscapeString($_FILES["file"]["type"],true);
+				$tempPath = $_FILES["file"]["tmp_name"];
+				$hash = $this->GetUniqueHash($displayName);
+				$filePath = $this->GetUniqueStorageFileName($displayName);
+				$userAgent = (is_null($_SERVER['HTTP_USER_AGENT'])) ? "The platform could not be detected!" : $_SERVER['HTTP_USER_AGENT'];				
+				if (move_uploaded_file($tempPath,$this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage).$filePath)){
+					$query = sprintf("Insert into FileSystem (sizeInByte,filePath,displayName,uploadDateTime,lastChangeDateTime,uploadUserAgent,hash,ownerId,parentFolder,mimeType) values('%i','%s','%s','%s','%s','%s','%s','%d','%d','%s')",$sizeInByte,$filePath,$displayName,$uploadDateTime,$uploadDateTime,$userAgent,$hash,$ownerId,$root,$type);	
+					DBLayer::GetInstance()->RunInsert($query);
+					
+					return 	$this->IsEntryExisting($displayName,$escapedRoot,$escapedToken);
+				}
+				else{
+					return \Redundancy\Classes\Errors::TempFileCouldNotBeMoved;
+				}
+			}
+			else{
+				return \Redundancy\Classes\Errors::NoSpaceLeft;
+			}	
 		}
 		/**
 		* Delete an directory
@@ -121,15 +193,42 @@
 				return $this->GetEntryById(-1,$escapedToken);
 			///root/bla
 			$pathParts = explode("/",$escapedabsolutePath);	
-			$lastId = -1;
+			$lastId = -1;		
 			for ($i = 0; $i < count($pathParts);$i++){
-				if ($pathParts[$i] != ""){
-					$checkquery = sprintf("Select * from FileSystem where DisplayName = '%s' and OwnerID = '%u' and parentFolder = '%d'",$pathParts[$i],$ownerId,$lastId);
-				$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);	
-						$lastId = $checkresult[0]["id"];	
+				if ($pathParts[$i] != ""){					
+					$checkquery = sprintf("Select id from FileSystem where DisplayName = '%s' and OwnerID = '%u' and parentFolder = '%d'",$pathParts[$i],$ownerId,$lastId);					
+					$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);						
+					$lastId = $checkresult[0]["id"];													
 				}
-			}
+			}							
 			return $this->GetEntryById($lastId,$escapedToken);
+		}
+		/**
+		* Rename a filesystem entry
+		* @param int $id the entry's ID
+		* @param string $newName the new displayed name 
+		* @param string $token a valid session token
+		* @return bool the result of the change or an error code
+		*/
+		public function RenameEntry($id,$newName,$token){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedId = DBLayer::GetInstance()->EscapeString($id,true);
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;
+			$escapedDisplayName = DBLayer::GetInstance()->EscapeString($newName,true);
+			if (is_null($ownerId))
+				return \Redundancy\Classes\Errors::TokenNotValid;
+			if ($escapedId == -1)
+				return false;
+			$entry = $this->GetEntryById($escapedId,$token);
+			//Only continue if the entry is existing and there is not another entry with this name
+			if (!is_null($entry) && !$this->IsEntryExisting($newName,$entry->ParentID,$escapedToken)){
+				$query = sprintf("Update FileSystem set DisplayName = '%s' where OwnerID = '%u' and parentFolder = '%d'",$escapedDisplayName,$ownerId,$entry->ParentID);		
+				DBLayer::GetInstance()->RunUpdate($query);
+				return true;
+			}
+			else{
+				return false;
+			}			
 		}
 		/**
 		* Check if an entry is existing in a given folder
@@ -250,6 +349,24 @@
 			do{
 				$hashToSearch = sha1($escapedHash.$timeStamp);
 				$checkquery = sprintf("Select Id from FileSystem where hash = '%s'",$hashToSearch);
+				$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);
+			}while(count($checkresult) != 0);
+			return $hashToSearch;
+		}
+		/**
+		* Return an unique storage filename for a new filesystem entry.
+		* @param string $value the name of the new filesystem entry (will be concatenated with the current timestamp)
+		* @return string an unique filename for a new filesystem entry
+		*/
+		private function GetUniqueStorageFileName($value){
+			$escapedHash = DBLayer::GetInstance()->EscapeString($value,true);
+			$timeStamp = date('Y-m-d H:i:s u');
+			$hashToSearch = $this->Hash($escapedHash.$timeStamp);
+			$checkquery = sprintf("Select Id from FileSystem where filePath = '%s'",$hashToSearch);
+			$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);
+			do{
+				$hashToSearch = sha1($escapedHash.$timeStamp);
+				$checkquery = sprintf("Select Id from FileSystem where filePath = '%s'",$hashToSearch);
 				$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);
 			}while(count($checkresult) != 0);
 			return $hashToSearch;

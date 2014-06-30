@@ -116,5 +116,38 @@
 			$this->AssertFalse($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("testdirroot",-1,$token));
 			$this->assertTrue($got);
 		}
+		//***********************Tests RenameEntry()***********************
+		public function testRenameEntry01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("anotherdir",-1,$token);
+			$id = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/anotherdir/",$token)->Id;					
+			$this->assertTrue($GLOBALS["Kernel"]->FileSystemKernel->RenameEntry($id,"test1",$token));
+			$this->assertTrue($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("test1",-1,$token));
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/test1/",$token);
+		}
+		public function testRenameEntry02(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
+			$id = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/anotherdirDoesNOtExists/",$token)->Id;					
+			$this->assertFalse($GLOBALS["Kernel"]->FileSystemKernel->RenameEntry($id,"superdir",$token));
+		}
+		public function testRenameEntry03(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("anotherdir",-1,$token);	
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("anotherdir2",-1,$token);			
+			$id = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/anotherdir/",$token)->Id;
+			$this->assertFalse($GLOBALS["Kernel"]->FileSystemKernel->RenameEntry($id,"anotherdir2",$token));				
+			$this->assertTrue($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("anotherdir",-1,$token));
+			$this->assertTrue($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("anotherdir2",-1,$token));
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/anotherdir/",$token);
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/anotherdir2/",$token);
+		}
+		//***********************Tests GetStorage()***********************
+		public function testGetStorage01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$expected = 	$GLOBALS["Kernel"]->UserKernel->GetUser($token)	;
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetStorage($token);										
+			$this->assertTrue($got->sizeInByte == $expected->ContingentInByte);
+			$this->assertTrue($got->usedStorageInByte == 0);
+		}
 	}
 ?>

@@ -41,7 +41,10 @@
 	$Redundancy = new \Redundancy\Kernel\Kernel();	
 	if (isset($_GET["method"])){	
 		$method = $_GET["method"];		
-		$params = json_decode($_POST["args"]);	
+		$params = json_decode($_POST["args"]);
+		//If the regular parsing fails, try to decode the data first (for example if files are send)	
+		if (is_null($params))
+			$params = json_decode(urldecode($_POST["args"]));	
 		$module = $_GET["module"];
 		if (!isset($module))
 			die("Fatal Error :( ".\Redundancy\Classes\Errors::ModuleMissing);		

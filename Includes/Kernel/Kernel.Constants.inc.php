@@ -33,6 +33,8 @@
 		const TokenNotValid = 10;
 		const DirectoryNotFound = 11;
 		const EntryExisting = 12;
+		const NoSpaceLeft = 13;
+		const TempFileCouldNotBeMoved = 14;
 	} 
 	/**
 	* File system constants to use
