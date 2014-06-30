@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 29. Jun 2014 um 13:52
+-- Erstellungszeit: 30. Jun 2014 um 20:56
 -- Server Version: 5.5.37-MariaDB
 -- PHP-Version: 5.5.13
 
@@ -37,10 +37,11 @@ CREATE TABLE IF NOT EXISTS `FileSystem` (
   `hash` text COLLATE utf8_bin NOT NULL,
   `ownerId` int(11) NOT NULL,
   `parentFolder` int(11) NOT NULL,
+  `mimeType` text COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id`),
   KEY `ownerId` (`ownerId`),
   KEY `parentFolder` (`parentFolder`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=12 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=286 ;
 
 -- --------------------------------------------------------
 
@@ -76,15 +77,14 @@ CREATE TABLE IF NOT EXISTS `Session` (
   `sessionEndDateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `userID` (`userID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=32 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=65 ;
 
 --
 -- Daten für Tabelle `Session`
 --
 
 INSERT INTO `Session` (`id`, `userID`, `token`, `sessionStartedDateTime`, `sessionEndDateTime`) VALUES
-(20, 9, '50594b3cec34fdedebdf6764bb0ab530', '2014-06-29 11:53:15', '0000-00-00 00:00:00'),
-(22, 11, '1ebc9106c8d144651b22e10709f06223', '2014-06-29 13:29:20', '0000-00-00 00:00:00');
+(23, 9, '7f0dd90a3009619b041e52589008df90', '2014-06-30 18:22:22', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS `User` (
   `failedLogins` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_Role` (`roleID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=21 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=53 ;
 
 --
 -- Daten für Tabelle `User`
@@ -114,8 +114,7 @@ CREATE TABLE IF NOT EXISTS `User` (
 
 INSERT INTO `User` (`id`, `loginName`, `displayName`, `mailAddress`, `registrationDateTime`, `lastLoginDateTime`, `passwordHash`, `isEnabled`, `contingentInByte`, `roleID`, `failedLogins`) VALUES
 (1, 'fury', 'CM', 'bla@bla.de', '2014-05-16 00:00:00', '2014-05-16 00:00:00', 'bla', 1, 100000, NULL, 0),
-(9, 'fuxry', 'CM', 'bla@blxa.de', '2014-05-17 14:12:59', '2014-06-29 11:53:25', '$2y$11$KY/Tjuko2xX/4WqhhyYj6.FnzdN/9Ui7D2JUUujy/bPSVKheUoKJO', 1, 5242880, 1, 0),
-(11, 'testFS', 'FileSystemTestUser', 'test@fs.local', '2014-06-29 13:29:20', '2014-06-29 13:47:20', '$2y$11$3HV31aOBhLJ8qUzSx7UdFecKnWbR9dHh6FcuRwHCmQnI07xc7hwOu', 1, 5242880, 1, 0);
+(9, 'fuxry', 'CM', 'bla@blxa.de', '2014-05-17 14:12:59', '2014-06-30 18:22:23', '$2y$11$KY/Tjuko2xX/4WqhhyYj6.FnzdN/9Ui7D2JUUujy/bPSVKheUoKJO', 1, 5242880, 1, 0);
 
 --
 -- Constraints der exportierten Tabellen
@@ -142,4 +141,3 @@ ALTER TABLE `User`
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
