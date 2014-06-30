@@ -48,7 +48,7 @@
 			else{
 				$path =  __REDUNDANCY_ROOT__.$configValue;
 			}
-			if (substr($string, -1)  != "/")
+			if (substr($path, -1)  != "/")
 				$path = $path ."/";
 			return $path;
 		}
