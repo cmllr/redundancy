@@ -124,12 +124,7 @@
 			$this->assertTrue($GLOBALS["Kernel"]->FileSystemKernel->RenameEntry($id,"test1",$token));
 			$this->assertTrue($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("test1",-1,$token));
 			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/test1/",$token);
-		}
-		public function testRenameEntry02(){
-			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
-			$id = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/anotherdirDoesNOtExists/",$token)->Id;					
-			$this->assertFalse($GLOBALS["Kernel"]->FileSystemKernel->RenameEntry($id,"superdir",$token));
-		}
+		}		
 		public function testRenameEntry03(){
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
 			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("anotherdir",-1,$token);	
