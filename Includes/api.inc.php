@@ -22,7 +22,11 @@
 	 * Central api layer to send requests to.
 	 */	
 	namespace Redundancy;	
-	$path = str_replace("Includes/api.inc.php","", __file__);
+	//Damn Windows!
+	if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
+		$path = str_replace("Includes\api.inc.php","", __file__);
+	else
+		$path = str_replace("Includes/api.inc.php","", __file__);
 	/**
 	* The systems root dir, ending with "/"
 	*/		
@@ -39,13 +43,13 @@
 	* blalbla
 	*/
 	$Redundancy = new \Redundancy\Kernel\Kernel();	
-	if (isset($_GET["method"])){	
-		$method = $_GET["method"];		
+	if (isset($_POST["method"])){	
+		$method = $_POST["method"];		
 		$params = json_decode($_POST["args"]);
 		//If the regular parsing fails, try to decode the data first (for example if files are send)	
 		if (is_null($params))
 			$params = json_decode(urldecode($_POST["args"]));	
-		$module = $_GET["module"];
+		$module = $_POST["module"];
 		if (!isset($module))
 			die("Fatal Error :( ".\Redundancy\Classes\Errors::ModuleMissing);		
 		//TODO: A more professional solution			

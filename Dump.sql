@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `Role` (
 --
 
 INSERT INTO `Role` (`id`, `description`, `permissions`) VALUES
-(1, 'Root', 1);
+(1, 'Root', '111111111');
 
 -- --------------------------------------------------------
 
