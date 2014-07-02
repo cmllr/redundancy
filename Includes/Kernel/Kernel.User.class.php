@@ -95,14 +95,20 @@
 		* @todo add methods to delete the files, shares etc.
 		* @param $loginName the users login name
 		* @param $password the users password
-		* @return bool the result of the deletion
+		* @return bool the result of the deletion or an errorcode
+		* @todo file deletion
 		*/
 		public function DeleteUser($loginName,$password){			
 			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginName,true);
 			$escapedPassword = DBLayer::GetInstance()->EscapeString($password,true);
-			//Delete the sessions			
+			//Delete the sessions		
+			
 			if (!$this->Authentificate($escapedLoginName,$escapedPassword))
 				return false;
+			$token = $this->LogIn($escapedLoginName,$escapedPassword,false);
+			
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($token,\Redundancy\Classes\PermissionSet::AllowDeletingUser))
+				return \Redundancy\Classes\Errors::NotAllowed;		
 			//Kill all sessions
 			$dbquery = DBLayer::GetInstance()->RunDelete(sprintf("Delete from Session where userID = (Select  id from User where User.loginName = '%s')",$escapedLoginName));
 			$sessioncheck = DBLayer::GetInstance()->RunSelect(sprintf("Select count(s.id) as Amount from Session s inner join User u on u.id = s.userID where u.loginName = '%s' ",$escapedLoginName));
@@ -123,11 +129,14 @@
 		* @return bool the result of the change
 		*/
 		public function ChangePassword($token,$oldPassword,$newPassword){
-			$username = $this->GetUser($token)->LoginName;
+			$username = $this->GetUser($token)->LoginName;			
+				
 			if (is_null($username))
 				return false;
 			if (!$this->Authentificate($username,$oldPassword))	
 				return false;
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($token,\Redundancy\Classes\PermissionSet::AllowChangingPassword))
+				return \Redundancy\Classes\Errors::NotAllowed;	
 			$newHash = $this->HashPassword($newPassword);
 			//Set the new password
 			DBLayer::GetInstance()->RunUpdate("Update User set PasswordHash = '$newHash' where LoginName = '$username'");
@@ -168,6 +177,8 @@
 		* @todo Function not complete implemented
 		*/
 		public function ResetPasswordByMail($mailAddress){
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowChangingPassword))
+				return \Redundancy\Classes\Errors::NotAllowed;	
 			$mailAddress = DBLayer::GetInstance()->EscapeString($mailAddress);
 			$check = DBLayer::GetInstance()->RunSelect(sprintf("Select count(id) as Amount from User where MailAddress = '%s'",$mailAddress));
 			if (is_null($check))
@@ -194,10 +205,34 @@
 				$role = new \Redundancy\Classes\Role();
 				$role->Id = $value["id"];
 				$role->Description = $value["description"];
-				$role->Permissions = $value["permissions"];				
+				$role->Permissions = array();
+				for ($i = 0; $i < strlen($value["permissions"]);$i++){
+					$role->Permissions[] = $value["permissions"][$i];
+				}			
 				$result[] = $role;
-			}
+			}			
 			return $result;			
+		}
+		/**
+		* Check if an action is allowed
+		* @param string $token a valid session token to identify the user
+		* @param int $permission the permission to check. Can be taken out of \Redundancy\Classes\PermissionSet
+		* @return bool the result of the check
+		*/
+		public function IsActionAllowed($token,$permission){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedPermission = DBLayer::GetInstance()->EscapeString($permission,true);				
+			$user = $this->GetUser($escapedToken);
+			if (is_null($user)){					
+				return false;
+			}		
+			$permissions = $user->Role->Permissions;	
+			if (is_null($permissions) || $escapedPermission > count($permissions) -1)		
+				return false;	
+			if ($permissions[$permission] == "0")
+				return false;
+			else
+				return true;
 		}
 		/**
 		* Get the users role 
@@ -214,9 +249,13 @@
 				$role = new \Redundancy\Classes\Role();
 				$role->Id = $value["RoleID"];
 				$role->Description = $value["description"];
-				$role->Permissions = $value["permissions"];				
+				//Iterate the permissions
+				$role->Permissions = array();
+				for ($i = 0; $i < strlen($value["permissions"]);$i++){
+					$role->Permissions[] = $value["permissions"][$i];
+				}						
 				$result = $role;
-			}
+			}			
 			return $result;	
 		}
 		/**
@@ -226,11 +265,13 @@
 		* @return \Redundancy\Classes\User|null user or, if failed, null
 		*/ 
 		public function GetUser($token){
-			$result = null;
+			$result = null;			
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
-			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select *,u.Id as UserID from User u inner join Session s on s.userId = u.ID where  s.token = '%s' ",$escapedToken));
-			if (is_null($dbquery))
+			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select *,u.Id as UserID from User u inner join Session s on s.userId = u.ID where  s.token = '%s' ",$escapedToken));			
+			if (is_null($dbquery)){				
 				return null;
+			}
+				
 			foreach ($dbquery as $value){
 				//only proceed if the token was valid
 				if ($this->IsNewSessionNeeded($value["loginName"]) == "true")
@@ -248,7 +289,7 @@
 				$user->ContingentInByte = $value["contingentInByte"];
 				$user->Role = $this->GetUserRole($user->LoginName);
 				$user->FailedLogins = $value["failedLogins"];
-				$result = $user;
+				$result = $user;				
 			}
 			return $result;	
 		}
@@ -479,7 +520,7 @@
 				$ip =$this->GetIP();
 				$sessionStartedDateTime = date("Y-m-d H:i:s",strtotime($value["sessionStartedDateTime"]));
 				$compareToken = $this->GenerateToken($escapedLoginName,$sessionStartedDateTime,$ip);				
-				if ($compareToken == $value["token"]){
+				if ($compareToken == $value["token"]){					
 					if ($value["sessionEndDateTime"] == "0000-00-00 00:00:00")
 						return $compareToken;
 					else{

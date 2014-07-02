@@ -44,7 +44,7 @@
 		//***********************Tests CreateDirectory()***********************
 		public function testCreateDirectory01(){
 			$GLOBALS["Kernel"]->UserKernel->RegisterUser("testFS","FileSystemTestUser","test@fs.local","testFS");
-			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
 			$got = $GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("testDirectory01",-1,$token);
 			$this->assertTrue($got);
 		}
@@ -125,7 +125,7 @@
 			$this->assertTrue($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("test1",-1,$token));
 			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/test1/",$token);
 		}		
-		public function testRenameEntry03(){
+		public function testRenameEntry02(){
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
 			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("anotherdir",-1,$token);	
 			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("anotherdir2",-1,$token);			
@@ -144,5 +144,87 @@
 			$this->assertTrue($got->sizeInByte == $expected->ContingentInByte);
 			$this->assertTrue($got->usedStorageInByte == 0);
 		}
+		//***********************Test UploadFile()***********************		
+		public function testUploadFile01(){
+			 $_FILES = array(
+			    'file' => array(
+				'name' => 'testUpload',
+				'type' => 'text/plain',
+				'size' => 16,
+				'tmp_name' => __REDUNDANCY_ROOT__."test",
+				'error' => 0
+			    )
+			);			
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->UploadFile(-1,$token);		
+			$this->AssertTrue($got);
+			$this->AssertTrue($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("testUpload",-1,$token));
+			
+		}
+		public function testUploadFile02(){
+			//Should fail
+			 $_FILES = array(
+			    'file' => array(
+				'name' => 'testFileUpload',
+				'type' => 'text/plain',
+				'size' => 16,
+				'tmp_name' => __REDUNDANCY_ROOT__."doesnotexists",
+				'error' => 0
+			    )
+			);			
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->UploadFile(-1,$token);		
+			$this->AssertTrue($got == \Redundancy\Classes\Errors::TempFileCouldNotBeMoved);
+		}
+		//***********************Test DeleteFile()***********************	
+		public function testDeleteFile01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUpload",$token);
+			$this->AssertTrue($got);
+			$this->AssertFalse($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("testUpload",-1,$token));
+		}
+		public function testDeleteFile02(){
+			//Should fail
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUploadX",$token);
+			$this->AssertTrue($got == \Redundancy\Classes\Errors::EntryNotExisting);			
+		}
+		//***********************Test MoveEntry()***********************	
+		public function testMoveEntry01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("testMoving",-1,$token);	
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("target4Moving",-1,$token);	
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->MoveEntry("/testMoving/","/target4Moving/",$token);
+			$targetID = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/target4Moving/",$token)->Id;			
+			$this->AssertTrue($got);				
+			$this->AssertTrue($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("testMoving",$targetID,$token));
+			$this->AssertFalse($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("testMoving",-1,$token));
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/target4Moving/",$token);
+		}
+		public function testMoveEntry02(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("testMoving",-1,$token);	
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("target4Moving",-1,$token);	
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("targetRecursive",-1,$token);
+			$GLOBALS["Kernel"]->FileSystemKernel->MoveEntry("/testMoving/","/target4Moving/",$token);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->MoveEntry("/targetRecursive/","/target4Moving/testMoving/",$token);
+			$targetID = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/target4Moving/testMoving/",$token)->Id;					
+			$this->AssertTrue($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("targetRecursive",$targetID,$token));
+			$this->AssertFalse($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("testMoving",-1,$token));
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/target4Moving/",$token);
+		}
+		public function testMoveEntry03(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("testMoving",-1,$token);	
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("target4Moving",-1,$token);	
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("targetRecursive",-1,$token);
+			$GLOBALS["Kernel"]->FileSystemKernel->MoveEntry("/testMoving/","/target4Moving/",$token);
+			$GLOBALS["Kernel"]->FileSystemKernel->MoveEntry("/targetRecursive/","/target4Moving/testMoving/",$token);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->MoveEntry("/target4Moving/","/target4Moving/testMoving/",$token);
+			$targetID = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/target4Moving/testMoving/",$token)->Id;					
+			$this->AssertTrue($got == \Redundancy\Classes\Errors::CanNotPasteIntoItself);
+			$this->AssertTrue($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("target4Moving",-1,$token));
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/target4Moving/",$token);
+		}		
 	}
 ?>
