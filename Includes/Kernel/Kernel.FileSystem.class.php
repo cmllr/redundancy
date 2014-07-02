@@ -130,7 +130,7 @@
 				$tempPath = $_FILES["file"]["tmp_name"];
 				$hash = $this->GetUniqueHash($displayName);
 				$filePath = $this->GetUniqueStorageFileName($displayName);
-				$userAgent = (is_null($_SERVER['HTTP_USER_AGENT'])) ? "The platform could not be detected!" : $_SERVER['HTTP_USER_AGENT'];
+				$userAgent = (!isset($_SERVER['HTTP_USER_AGENT'])) ? "The platform could not be detected!" : $_SERVER['HTTP_USER_AGENT'];
 				//A little workaround if the program is runned in a test environment (e. g. PHPUnit)			
 				if ($GLOBALS["Kernel"]->SystemKernel->IsInTestEnvironment()){
 					if (!file_exists($tempPath))
