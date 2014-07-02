@@ -124,7 +124,7 @@
 			
 			$sizeInByte = DBLayer::GetInstance()->EscapeString($_FILES["file"]["size"],true);
 			//Do the insertion only if there is enough space
-			if ($this->GetStorage($escapedToken) + $sizeInByte < $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ContingentInByte){
+			if ($this->GetStorage($escapedToken)->usedStorageInByte + $sizeInByte < $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ContingentInByte){
 				$uploadDateTime = date('Y-m-d H:i:s');			
 				$type =  DBLayer::GetInstance()->EscapeString($_FILES["file"]["type"],true);
 				$tempPath = $_FILES["file"]["tmp_name"];
