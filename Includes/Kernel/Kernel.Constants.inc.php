@@ -35,7 +35,24 @@
 		const EntryExisting = 12;
 		const NoSpaceLeft = 13;
 		const TempFileCouldNotBeMoved = 14;
+		const NotAllowed = 15;
+		const EntryNotExisting = 16;
+		const RootCannotbeMoved = 17;
+		const CanNotPasteIntoItself = 18;
 	} 
+	/**
+	* The permission set in a human readable form
+	*/	
+	abstract class PermissionSet{
+		const AllowUpload = 0;
+		const AllowCreatingFolder = 1;
+		const AllowDeletingFolder = 2;
+		const AllowDeletingFile = 3;
+		const AllowRenaming = 4;
+		const AllowDeletingUser = 5;
+		const AllowChangingPassword = 6;
+		const AllowMoving = 7;
+	}
 	/**
 	* File system constants to use
 	*/

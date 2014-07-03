@@ -66,7 +66,16 @@
 			$expected[0] = new \Redundancy\Classes\Role();
 			$expected[0]->Id = 1;
 			$expected[0]->Description = "Root";
-			$expected[0]->Permissions = "1";
+			$expected[0]->Permissions = array();
+			$expected[0]->Permissions[] = "1";
+			$expected[0]->Permissions[] = "1";
+			$expected[0]->Permissions[] = "1";
+			$expected[0]->Permissions[] = "1";
+			$expected[0]->Permissions[] = "1";
+			$expected[0]->Permissions[] = "1";
+			$expected[0]->Permissions[] = "1";	
+			$expected[0]->Permissions[] = "1";
+			$expected[0]->Permissions[] = "1";
 			$this->assertEquals($value,$expected);		
 		}
 		//***********************Tests ChangePassword()***********************
@@ -85,7 +94,16 @@
 			$expected = new \Redundancy\Classes\Role();
 			$expected->Id = 1;
 			$expected->Description = "Root";
-			$expected->Permissions = "1";
+			$expected->Permissions = array();
+			$expected->Permissions[] = "1";
+			$expected->Permissions[] = "1";
+			$expected->Permissions[] = "1";
+			$expected->Permissions[] = "1";
+			$expected->Permissions[] = "1";
+			$expected->Permissions[] = "1";
+			$expected->Permissions[] = "1";
+			$expected->Permissions[] = "1";
+			$expected->Permissions[] = "1";
 			$foo = self::getMethod('GetUserRole');
 		  	$obj = $GLOBALS["Kernel"]->UserKernel;	  
 			$got = $foo->invokeArgs($obj, array("testUser"));			
@@ -214,6 +232,26 @@
 			$got = $foo->invokeArgs($obj, array("testUser"));				
 			$this->assertTrue($got ==  0);
 		}		
+		//***********************Tests IsActionAllowed()***********************
+		public function testIsActionAllowed01(){
+			$loginName = "testUser";		
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn($loginName,"test1",true);	
+			$got = $GLOBALS["Kernel"]->UserKernel->IsActionAllowed($token,\Redundancy\Classes\PermissionSet::AllowUpload);
+			$this->assertTrue($got);	
+		}
+		public function testIsActionAllowed02(){
+			$loginName = "testUser";		
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn($loginName,"test1",true);	
+			$got = $GLOBALS["Kernel"]->UserKernel->IsActionAllowed($token,\Redundancy\Classes\PermissionSet::AllowCreatingFolder);
+			$this->assertTrue($got);	
+		}
+		public function testIsActionAllowed03(){
+			$loginName = "testUser";		
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn($loginName,"test1",true);	
+			$got = $GLOBALS["Kernel"]->UserKernel->IsActionAllowed($token,300); //This permission can't be existing!
+			$this->assertFalse($got);	
+		}	
+		
 		//***********************Tests KillSessionByToken()***********************
 		public function testKillSessionByToken(){
 			$loginName = "testUser";		
@@ -231,12 +269,13 @@
 		public function testDeleteUserShouldFail1(){
 			$loginName = "testUser";		
 			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUser($loginName,"test");		
-			$this->assertTrue(!$got);	
+			$this->assertFalse($got);	
 		}
 		public function testDeleteUserShouldFail2(){
 			$loginName = "testUser2";		
 			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUser($loginName,"test1");		
 			$this->assertTrue(!$got);	
 		}
+		
 	}
 ?>

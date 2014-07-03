@@ -4,6 +4,7 @@ php:
 before_script:
   - mysql -e 'create database Lenticularis;'
   - mysql -u root  Lenticularis < ./Dump.sql
+  - chmod 777 ./Storage
 script: phpunit --configuration ./runTests.xml
 # whitelist
 branches:

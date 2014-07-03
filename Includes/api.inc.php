@@ -42,6 +42,7 @@
 	/**
 	* blalbla
 	*/
+<<<<<<< HEAD
 	$Redundancy = new \Redundancy\Kernel\Kernel();
 	var_dump($_POST);	
 	if (isset($_POST["method"])){	
@@ -50,6 +51,12 @@
 	        $params = json_decode($_POST["args"]);
 	    else
 	       $params = array();
+=======
+	$Redundancy = new \Redundancy\Kernel\Kernel();	
+	if (isset($_POST["method"])){	
+		$method = $_POST["method"];		
+		$params = json_decode($_POST["args"]);
+>>>>>>> origin/Lenticularis
 		//If the regular parsing fails, try to decode the data first (for example if files are send)	
 		if (is_null($params))
 			$params = json_decode(urldecode($_POST["args"]));	
