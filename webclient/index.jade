@@ -1,17 +1,18 @@
 doctype html
 head
 	title R2
-	link(rel='stylesheet', href='./css/bootstrap/css/bootstrap.css')
+	link(rel='stylesheet', href='./vendor/bootstrap/css/bootstrap.css')
 	script(src='./vendor/angular/angular.js')
 	script(src='./app/app.js')
-	script(src='./app/login.js')
+	script(src='./app/services/user.js')
+	script(src='./app/login/login.js')
 body(ng-app='redundancy')
 	div.container
 		div(ng-controller='loginController')
 			h1 Login
-			form.form-inline(name='loginForm', ng-submit=' login()')
+			form.form-inline(name='loginForm', ng-submit='login()')
 				div.form-group
 					input.form-control(type='text', ng-model='login.username', placeholder='Benutzername')
 				div.form-group
 					input.form-control(type='password', ng-model='login.password', placeholder='Passwort')
-				button.btn.btn-default(type='submit') Anmelden
+				button.btn.btn-default-alt(type='submit') Anmelden
