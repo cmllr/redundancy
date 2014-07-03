@@ -260,9 +260,15 @@
 				return \Redundancy\Classes\Errors::NotAllowed;
 			//Update the folder information			
 			if (!$this->CheckIfEntryIsInBranch($entry,$targetEntry,$token) ){
-				$query = sprintf("Update FileSystem set parentFolder = '%d' where OwnerID = '%u' and ID = '%u'",$targetEntry->Id,$ownerId,$entry->Id);		
-				DBLayer::GetInstance()->RunUpdate($query);
-				return $this->IsEntryExisting($entry->DisplayName,$targetEntry->Id,$escapedToken);
+				//Check if the entry is not already existing in the target directory
+				if (!$this->IsEntryExisting($entry->DisplayName,$targetEntry->Id,$escapedToken)){
+						$query = sprintf("Update FileSystem set parentFolder = '%d' where OwnerID = '%u' and ID = '%u'",$targetEntry->Id,$ownerId,$entry->Id);		
+						DBLayer::GetInstance()->RunUpdate($query);
+						return $this->IsEntryExisting($entry->DisplayName,$targetEntry->Id,$escapedToken);
+				}
+				else{
+						return \Redundancy\Classes\Errors::EntryExisting ;	
+				}
 			}
 			else{
 				return \Redundancy\Classes\Errors::CanNotPasteIntoItself;
