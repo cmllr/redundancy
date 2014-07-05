@@ -43,7 +43,6 @@
 	* blalbla
 	*/
 	$Redundancy = new \Redundancy\Kernel\Kernel();	
-	var_dump($_POST);
 	if (isset($_POST["method"])){	
 		$method = $_POST["method"];		
 		if (isset($_POST["args"]))
