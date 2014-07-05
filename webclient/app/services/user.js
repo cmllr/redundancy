@@ -8,72 +8,72 @@
 				module: module,
 				method: method
 			};
-			if(args) //arguments are optional
+
+			//arguments are optional
+			if(args)
 				params.args = args;
 			return $http.post(apiUrl, params);
 		};
 
 		//API functions
 		var registerUser = function(loginName, displayName, mailAddress, password){
-			var args = {
-				loginName: loginName,
-				displayName: displayName, 
-				mailAddress: mailAddress,
-				password: password
-			};
+			var args = [
+				loginName,
+				displayName, 
+				mailAddress,
+				password
+			];
 			return post('RegisterUser', args);
 		};
 
 		var deleteUser = function(loginName, password){
-			var args = {
-				loginName: loginName,
-				password: password
-			};
+			var args = [
+				loginName,
+				password
+			];
 			return post('DeleteUser', args);
 		};
 
 		var changePassword = function(token, oldPassword, newPassword){
-			var args = {
-				token: token,
-				oldPassword: oldPassword,
-				newPassword: newPassword
-			};
+			var args = [
+				token,
+				oldPassword,
+				newPassword
+			];
 			return post('ChangePassword', args);
 		};
 
 		var generatePassword = function(length){
-			var args = {
-				length: length
-			};
-			return post('GeneratePassword', args)
+			return post('GeneratePassword', [length])
 		};
 
 		var resetPasswordByMail = function(mailAddress){
-			var args = {
-				mailAddress: mailAddress
-			};
-			return post('ResetPasswordByMail', args);
+			return post('ResetPasswordByMail', [mailAddress]);
 		};
 
 		var getInstalledRoles = function(){
 			return post('GetInstalledRoles');
 		};
 
+		var getUser = function(){
+			return post('GetUser', [token]);
+		};
+
 		var authentificate = function(loginName, password){
-			var args = {
-				loginName: loginName,
-				password: password
-			};
+			var args = [
+				loginName,
+				password
+			];
 			return post('Authentificate', args);
 		};
 
 		var login = function(loginName, password, stayLoggedIn){
-			var args = {
-				loginName: loginName,
-				password: password, 
-				stayLoggedIn: stayLoggedIn
-			};
-			return post('Login', args);
+			var args = [
+				loginName,
+				password, 
+				stayLoggedIn
+			];
+			return post('LogIn', args);
 		};
 
 		var getSessionByCookie = function(){
@@ -81,17 +81,11 @@
 		};
 
 		var killSessionByToken = function(token){
-			var args = {
-				token: token
-			};
-			return post('KillSessionByToken', args);
+			return post('KillSessionByToken', [token]);
 		};
 
 		var isSessionExisting = function(token){
-			var args = {
-				token: token
-			};
-			return post('IsSessionExisting', args);
+			return post('IsSessionExisting', [token]);
 		};
 		//end API functions
 

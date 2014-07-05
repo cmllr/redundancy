@@ -43,10 +43,11 @@
 	* blalbla
 	*/
 	$Redundancy = new \Redundancy\Kernel\Kernel();	
+	var_dump($_POST);
 	if (isset($_POST["method"])){	
 		$method = $_POST["method"];		
 		if (isset($_POST["args"]))
-			$params = json_decode($_POST["args"]);
+			$params = $_POST["args"];
 		else
 			$params = array();
 		//If the regular parsing fails, try to decode the data first (for example if files are send)	

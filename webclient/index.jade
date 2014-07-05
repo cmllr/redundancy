@@ -12,7 +12,7 @@ body(ng-app='redundancy')
 			h1 Login
 			form.form-inline(name='loginForm', ng-submit='login()')
 				div.form-group
-					input.form-control(type='text', ng-model='login.username', placeholder='Benutzername')
+					input.form-control(type='text', ng-model='login.username', placeholder='Benutzername', required)
 				div.form-group
-					input.form-control(type='password', ng-model='login.password', placeholder='Passwort')
+					input.form-control(type='password', ng-model='login.password', placeholder='Passwort', required)
 				button.btn.btn-default-alt(type='submit') Anmelden
