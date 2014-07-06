@@ -39,6 +39,9 @@
 		const EntryNotExisting = 16;
 		const RootCannotbeMoved = 17;
 		const CanNotPasteIntoItself = 18;
+		const DisplayNameNotAllowed = 19;
+		const CopyingFailed = 20;
+		const TargetIsNoDirectory = 21;
 	} 
 	/**
 	* The permission set in a human readable form
@@ -52,6 +55,7 @@
 		const AllowDeletingUser = 5;
 		const AllowChangingPassword = 6;
 		const AllowMoving = 7;
+		const AllowCopying = 8;
 	}
 	/**
 	* File system constants to use
@@ -61,5 +65,11 @@
 	    const Storage = 0;
 	    const Temp = 1;
             const Snapshots = 2;
+	}
+	/**
+	* This class contains contanst for the system
+	*/
+	abstract class SystemConstants{
+	   const NotAllowedChars = "/";
 	}
 ?>

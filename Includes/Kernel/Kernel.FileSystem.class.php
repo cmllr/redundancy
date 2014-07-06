@@ -62,17 +62,21 @@
 		public function CreateDirectory($name, $root,$token){
 			$escapedName = DBLayer::GetInstance()->EscapeString($name,true);
 			$escapedRoot = DBLayer::GetInstance()->EscapeString($root,true);
-			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
-			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;			
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);			
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;					
 			if (is_null($ownerId))
 				return \Redundancy\Classes\Errors::TokenNotValid;
-			//if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowCreatingFolder))
-			//	return \Redundancy\Classes\Errors::NotAllowed;
+			if (!$this->IsDisplayNameAllowed($escapedName))
+				return \Redundancy\Classes\Errors::DisplayNameNotAllowed;		
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowCreatingFolder))
+				return \Redundancy\Classes\Errors::NotAllowed;
 			if ($this->IsEntryExisting($escapedName,$escapedRoot,$escapedToken))
 				return \Redundancy\Classes\Errors::EntryExisting;
+			
 			$uploadDateTime = date('Y-m-d H:i:s');
+			$userAgent = (!isset($_SERVER['HTTP_USER_AGENT'])) ? "The platform could not be detected!" : $_SERVER['HTTP_USER_AGENT'];
 			$hash = $this->GetUniqueHash($name);
-			$dbinsertion = sprintf("Insert into FileSystem (sizeInByte,filePath,displayName,uploadDateTime,lastChangeDateTime,uploadUserAgent,hash,ownerID,parentFolder,mimeType) values ('%u',null,'%s','%s','%s','%s','%s','%d', '%d','%s')",0,$escapedName,$uploadDateTime, $uploadDateTime,$uploadDateTime,$hash,$ownerId,$escapedRoot,'inode/directory');
+			$dbinsertion = sprintf("Insert into FileSystem (sizeInByte,filePath,displayName,uploadDateTime,lastChangeDateTime,uploadUserAgent,hash,ownerID,parentFolder,mimeType) values ('%u',null,'%s','%s','%s','%s','%s','%d', '%d','%s')",0,$escapedName,$uploadDateTime, $uploadDateTime,$userAgent,$hash,$ownerId,$escapedRoot,'inode/directory');		
 			DBLayer::GetInstance()->RunInsert($dbinsertion);
 			return $this->IsEntryExisting($escapedName,$escapedRoot,$escapedToken);
 		}
@@ -98,6 +102,20 @@
 				}
 			}				
 			return $result;	
+		}
+		/**
+		* Checks if a displayname is allowed in the system
+		* @param string $displayname the displayname of the entry
+		* @return bool the result of the check
+		*/
+		public function IsDisplayNameAllowed($displayname){
+			$array = \Redundancy\Classes\SystemConstants::NotAllowedChars;
+			$array = explode(";",$array);
+			for ($i=0;$i<count($array);$i++){
+				if ($array[$i] != "" && strpos($displayname,$array[$i]) !== false)
+					return false;
+			}
+			return true;
 		}		
 		/**
 		* Upload a file to a given folder
@@ -120,8 +138,9 @@
 				return false;
 			$displayName =  DBLayer::GetInstance()->EscapeString($_FILES["file"]["name"],true);
 			if ($this->IsEntryExisting($displayName,$escapedRoot,$escapedToken))
-					return \Redundancy\Classes\Errors::EntryExisting;
-			
+				return \Redundancy\Classes\Errors::EntryExisting;
+			if (!$this->IsDisplayNameAllowed($displayName))
+				return \Redundancy\Classes\Errors::DisplayNameNotAllowed;				
 			$sizeInByte = DBLayer::GetInstance()->EscapeString($_FILES["file"]["size"],true);
 			//Do the insertion only if there is enough space
 			if ($this->GetStorage($escapedToken)->usedStorageInByte + $sizeInByte < $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ContingentInByte){
@@ -140,7 +159,7 @@
 					$uploadResult = move_uploaded_file($tempPath,$this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage).$filePath);
 				}	
 				if ($uploadResult){
-					$query = sprintf("Insert into FileSystem (sizeInByte,filePath,displayName,uploadDateTime,lastChangeDateTime,uploadUserAgent,hash,ownerId,parentFolder,mimeType) values('%i','%s','%s','%s','%s','%s','%s','%d','%d','%s')",$sizeInByte,$filePath,$displayName,$uploadDateTime,$uploadDateTime,$userAgent,$hash,$ownerId,$root,$type);	
+					$query = sprintf("Insert into FileSystem (sizeInByte,filePath,displayName,uploadDateTime,lastChangeDateTime,uploadUserAgent,hash,ownerId,parentFolder,mimeType) values('%d','%s','%s','%s','%s','%s','%s','%d','%d','%s')",$sizeInByte,$filePath,$displayName,$uploadDateTime,$uploadDateTime,$userAgent,$hash,$ownerId,$root,$type);	
 					DBLayer::GetInstance()->RunInsert($query);
 					
 					return 	$this->IsEntryExisting($displayName,$escapedRoot,$escapedToken);
@@ -227,6 +246,10 @@
 			$escapedtoSearch =$toSearch;
 			$escapedbranch = $branch;
 			//Folder that is searched
+			$toSearchAbsolutePath = $this->GetAbsolutePathById($toSearch->Id,$escapedToken);
+			$branchAbsolutePath = $this->GetAbsolutePathById($branch->Id,$escapedToken);				
+			//if ($toSearchAbsolutePath == $branchAbsolutePath)
+			//	return true;
 			$idToSearch = $toSearch->Id;
 			$lastGotId = $branch->ParentID;
 			do{
@@ -236,6 +259,23 @@
 					return true;
 			}while($lastGotId != -1);
 			return false;
+		}
+		/**
+		* Check if a entry is a directory and 
+		* @param string $absolutePath the absolute path of the entry
+		* @param string $token a valid session token
+		* @return bool the result of the check
+		*/
+		private function IsDirectory($absolutePath,$token){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedabsolutePath = DBLayer::GetInstance()->EscapeString($absolutePath,true);
+			$entry = $this->GetEntryByAbsolutePath($escapedabsolutePath,$escapedToken);
+			if (!is_null($entry) && $entry->MimeType == "inode/directory"){
+				return true;
+			}
+			else{
+				return false;
+			}
 		}
 		/**
 		* Move an entry to another root dir
@@ -250,6 +290,8 @@
 			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;
 			if (is_null($ownerId))
 				return \Redundancy\Classes\Errors::TokenNotValid;
+			if (!$this->IsDirectory($escapednewRoot,$escapedToken))
+				return \Redundancy\Classes\Errors::TargetIsNoDirectory;
 			if ($escapedoldAbsolutePath == "/")
 				return \Redundancy\Classes\Errors::RootCannotbeMoved;
 			$entry = $this->GetEntryByAbsolutePath($escapedoldAbsolutePath,$token);
@@ -275,6 +317,98 @@
 			}			
 		}
 		/**
+		* Copy an filesystementry to a given directory
+		* @param string $oldAbsolutePath the old absolute Path of the file/ folder
+		* @param string $newRoot the new root path of the file/ folder
+		* @param string $token a valid session token
+		* @return mixed The result of the action or an error code
+		* @todo Implement a fucking test for this algorithm *hating*
+		*/
+		public function CopyEntry($oldAbsolutePath,$newRoot,$token){			
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedoldAbsolutePath = DBLayer::GetInstance()->EscapeString($oldAbsolutePath,true);
+			$escapednewRoot = DBLayer::GetInstance()->EscapeString($newRoot,true);
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;			
+			if (is_null($ownerId))
+				return \Redundancy\Classes\Errors::TokenNotValid;
+			if (!$this->IsDirectory($escapednewRoot,$escapedToken))
+				return \Redundancy\Classes\Errors::TargetIsNoDirectory;
+			if ($escapedoldAbsolutePath == "/")
+				return \Redundancy\Classes\Errors::RootCannotbeMoved;			
+			$entry = $this->GetEntryByAbsolutePath($escapedoldAbsolutePath,$token);
+			$targetEntry = $this->GetEntryByAbsolutePath($escapednewRoot,$token);
+			if (is_null($entry) || is_null($targetEntry))
+				return \Redundancy\Classes\Errors::EntryNotExisting;
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowMoving))
+				return \Redundancy\Classes\Errors::NotAllowed;			
+			if ($entry->MimeType != "inode/directory"){
+				//Its a file				
+				if ($this->GetStorage($escapedToken)->usedStorageInByte + $entry->SizeInBytes < $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ContingentInByte){
+					if (!$this->IsEntryExisting($entry->DisplayName,$targetEntry->Id,$escapedToken)){
+						$uploadDateTime = date('Y-m-d H:i:s');			
+						$type =  $entry->MimeType;
+						$tempPath = $this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage).$entry->FilePath;
+						$hash = $this->GetUniqueHash($entry->DisplayName);
+						$filePath = $this->GetUniqueStorageFileName($entry->DisplayName);
+						$userAgent = (!isset($_SERVER['HTTP_USER_AGENT'])) ? "No_User_Agent" : $_SERVER['HTTP_USER_AGENT'];
+						//A little workaround if the program is runned in a test environment (e. g. PHPUnit)						
+						$uploadResult = copy($tempPath,$this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage).$filePath);
+						
+						if ($uploadResult){							
+							$query = sprintf("Insert into FileSystem (sizeInByte,filePath,displayName,uploadDateTime,lastChangeDateTime,uploadUserAgent,hash,ownerId,parentFolder,mimeType) values('%d','%s','%s','%s','%s','%s','%s','%d','%d','%s')",$entry->SizeInBytes,$filePath,$entry->DisplayName,$uploadDateTime,$uploadDateTime,$userAgent,$hash,$ownerId,$targetEntry->Id,$type);	
+								
+									
+							DBLayer::GetInstance()->RunInsert($query);
+							return $this->IsEntryExisting($entry->DisplayName,$targetEntry->Id,$escapedToken);
+						}
+						else{
+							return \Redundancy\Classes\Errors::TempFileCouldNotBeMoved;
+						}
+					}
+					else{
+						return \Redundancy\Classes\Errors::EntryExisting ;	
+					}
+				}
+				else{
+					return \Redundancy\Classes\Errors::NoSpaceLeft;
+				}	
+			}
+			else{	
+						
+				if ($this->IsEntryExisting($entry->DisplayName,$targetEntry->Id,$escapedToken))
+					return \Redundancy\Classes\Errors::EntryExisting ;
+					
+				if ($this->CheckIfEntryIsInBranch($entry,$targetEntry,$escapedToken))
+					return \Redundancy\Classes\Errors::CanNotPasteIntoItself;
+				//It is a directory					
+				if ($this->IsEntryExisting($entry->DisplayName,$targetEntry->Id,$escapedToken))	{								
+					return \Redundancy\Classes\Errors::CopyingFailed;	
+				}
+				else{									
+					$this->CreateDirectory($entry->DisplayName, $targetEntry->Id,$escapedToken);
+				}							
+				$queryToGetFiles = sprintf("Select * from FileSystem where ParentFolder ='%d' and ownerId = '%d'",$entry->Id,$ownerId);				
+				
+				$absolutePath = $this->GetAbsolutePathById($targetEntry->Id,$escapedToken).$entry->DisplayName."/";				
+				$result = DBLayer::GetInstance()->RunSelect($queryToGetFiles);					
+				if (count($result) != 0){
+					foreach ($result as $value){							
+						if (is_null($value["filePath"]) && $value["sizeInByte"] == 0 && $value["mimeType"] == "inode/directory")
+						{
+							//It's a folder, copy it to the new created root	
+							$this->CopyEntry($this->GetAbsolutePathById($value["id"],$escapedToken),$absolutePath,$escapedToken);
+						}
+						else{
+							//Its a file
+							$this->CopyEntry($this->GetAbsolutePathById($value["id"],$escapedToken),$absolutePath,$escapedToken);
+						}	
+					}
+				}
+				return $this->IsEntryExisting($entry->DisplayName,$targetEntry->Id,$escapedToken);				
+				
+			}			
+		}
+		/**
 		* Get an entry by an absolute path, e. g. /test/test2
 		* @param string $absolutePath the absolute path to the entry
 		* @param string $token a valid session token
@@ -295,7 +429,8 @@
 				if ($pathParts[$i] != ""){	
 								
 					$checkquery = sprintf("Select id from FileSystem where DisplayName = '%s' and OwnerID = '%u' and parentFolder = '%d'",$pathParts[$i],$ownerId,$lastId);					
-					$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);						
+					$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);	
+								
 					$lastId = $checkresult[0]["id"];													
 				}
 			}	
@@ -320,6 +455,8 @@
 				return \Redundancy\Classes\Errors::TokenNotValid;
 			if ($escapedId == -1)
 				return false;
+			if (!$this->IsDisplayNameAllowed($escapedDisplayName))
+				return \Redundancy\Classes\Errors::DisplayNameNotAllowed;
 			$entry = $this->GetEntryById($escapedId,$token);
 			//Only continue if the entry is existing and there is not another entry with this name
 			if (!is_null($entry) && !$this->IsEntryExisting($newName,$entry->ParentID,$escapedToken)){
@@ -342,11 +479,11 @@
 			$escapedName = DBLayer::GetInstance()->EscapeString($name,true);
 			$escapedRoot = DBLayer::GetInstance()->EscapeString($root,true);
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
-			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;			
 			if (is_null($ownerId))
 				return \Redundancy\Classes\Errors::TokenNotValid;
 			$checkquery = sprintf("Select * from FileSystem where DisplayName = '%s' and OwnerID = '%u' and parentFolder = '%d'",$escapedName,$ownerId,$escapedRoot);
-			$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);	
+			$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);		
 			if (count($checkresult) != 0)
 				return true;
 			else
@@ -374,6 +511,7 @@
 				$dir->CreateDateTime = null;
 				$dir->LastChangeDateTime = null;
 				$dir->Hash = null;
+				$dir->MimeType ="inode/directory";
 				return $dir;
 			}			
 			$checkquery = sprintf("Select * from FileSystem where Id = '%u' and OwnerID = '%u' limit 1",$escapedId,$ownerId);
@@ -391,6 +529,7 @@
 				$dir->CreateDateTime = $checkresult[0]["uploadDateTime"];
 				$dir->LastChangeDateTime = $checkresult[0]["lastChangeDateTime"];
 				$dir->Hash = $checkresult[0]["hash"];
+				$dir->MimeType = $checkresult[0]["mimeType"];
 				return $dir;
 			}
 			else if (!is_null($checkresult[0]["filePath"])){
@@ -405,6 +544,7 @@
 				$file->SizeInBytes = $checkresult[0]["sizeInByte"];
 				$file->FilePath = $checkresult[0]["filePath"];
 				$file->UsedUserAgent = $checkresult[0]["uploadUserAgent"];
+				$file->MimeType = $checkresult[0]["mimeType"];
 				return $file;
 			}
 		}
