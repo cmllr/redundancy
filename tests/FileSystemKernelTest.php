@@ -49,10 +49,16 @@
 			$this->assertTrue($got);
 		}
 		public function testCreateDirectory02(){
-			//This check shoudl fail..
+			//This check should fail..
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
 			$got = $GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("testDirectory01",-1,$token);
 			$this->assertTrue($got == \Redundancy\Classes\Errors::EntryExisting);
+		}
+		public function testCreateDirectory03(){
+			//This check should fail..
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("testDirectory01/",-1,$token);
+			$this->assertTrue($got == \Redundancy\Classes\Errors::DisplayNameNotAllowed);
 		}
 		//***********************Tests GetEntryById()***********************
 		public function testGetEntryById01(){
@@ -136,11 +142,19 @@
 			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/anotherdir/",$token);
 			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/anotherdir2/",$token);
 		}
+		public function testRenameEntry03(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("anotherdir",-1,$token);
+			$id = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/anotherdir/",$token)->Id;					
+			$this->assertTrue($GLOBALS["Kernel"]->FileSystemKernel->RenameEntry($id,"test1/",$token) == \Redundancy\Classes\Errors::DisplayNameNotAllowed);
+			$this->assertTrue($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("anotherdir",-1,$token));
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/anotherdir/",$token);
+		}
 		//***********************Tests GetStorage()***********************
 		public function testGetStorage01(){
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
 			$expected = 	$GLOBALS["Kernel"]->UserKernel->GetUser($token)	;
-			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetStorage($token);										
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetStorage($token);											
 			$this->assertTrue($got->sizeInByte == $expected->ContingentInByte);
 			$this->assertTrue($got->usedStorageInByte == 0);
 		}
@@ -176,6 +190,21 @@
 			$got = $GLOBALS["Kernel"]->FileSystemKernel->UploadFile(-1,$token);		
 			$this->AssertTrue($got == \Redundancy\Classes\Errors::TempFileCouldNotBeMoved);
 		}
+		public function testUploadFile03(){
+			//Should fail
+			 $_FILES = array(
+			    'file' => array(
+				'name' => 'testFileUpload/',
+				'type' => 'text/plain',
+				'size' => 16,
+				'tmp_name' => __REDUNDANCY_ROOT__."test",
+				'error' => 0
+			    )
+			);			
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->UploadFile(-1,$token);		
+			$this->AssertTrue($got == \Redundancy\Classes\Errors::DisplayNameNotAllowed);
+		}
 		//***********************Test DeleteFile()***********************	
 		public function testDeleteFile01(){
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
@@ -189,6 +218,8 @@
 			$got =$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUploadX",$token);
 			$this->AssertTrue($got == \Redundancy\Classes\Errors::EntryNotExisting);			
 		}
+		//***********************Test TestCopyEntry()***********************
+		//Implement me!	
 		//***********************Test MoveEntry()***********************	
 		public function testMoveEntry01(){
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
@@ -225,6 +256,17 @@
 			$this->AssertTrue($got == \Redundancy\Classes\Errors::CanNotPasteIntoItself);
 			$this->AssertTrue($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("target4Moving",-1,$token));
 			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/target4Moving/",$token);
-		}		
+		}
+		//***********************Test IsDisplayNameAllowed()***********************	
+		public function testIsDisplayNameAllowed01(){					
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->IsDisplayNameAllowed("test");
+			$this->AssertTrue($got);			
+		}
+		public function testIsDisplayNameAllowed02(){
+			//Should fail			
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->IsDisplayNameAllowed("test/");
+			$this->AssertFalse($got);			
+		}
+		
 	}
 ?>

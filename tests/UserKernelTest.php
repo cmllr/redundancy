@@ -42,7 +42,7 @@
 			$loginName = "testUser";
 			$password = "test";
 			$stayLoggedIn = "true";
-			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn($loginName,$password,$stayLoggedIn);		
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn($loginName,$password,$stayLoggedIn);					
 			$this->assertTrue($token != \Redundancy\Classes\Errors::PasswordOrUserNameWrong);
 		}
 		public function testLogInShouldFail(){
@@ -76,6 +76,7 @@
 			$expected[0]->Permissions[] = "1";	
 			$expected[0]->Permissions[] = "1";
 			$expected[0]->Permissions[] = "1";
+			$expected[0]->Permissions[] = "1";
 			$this->assertEquals($value,$expected);		
 		}
 		//***********************Tests ChangePassword()***********************
@@ -95,6 +96,7 @@
 			$expected->Id = 1;
 			$expected->Description = "Root";
 			$expected->Permissions = array();
+			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
