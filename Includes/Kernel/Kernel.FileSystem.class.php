@@ -161,7 +161,7 @@
 				if ($uploadResult){
 					$query = sprintf("Insert into FileSystem (sizeInByte,filePath,displayName,uploadDateTime,lastChangeDateTime,uploadUserAgent,hash,ownerId,parentFolder,mimeType) values('%d','%s','%s','%s','%s','%s','%s','%d','%d','%s')",$sizeInByte,$filePath,$displayName,$uploadDateTime,$uploadDateTime,$userAgent,$hash,$ownerId,$root,$type);	
 					DBLayer::GetInstance()->RunInsert($query);
-					
+					$this->RefreshLastChangeDateTimeOfParent($escapedRoot,$escapedToken);
 					return 	$this->IsEntryExisting($displayName,$escapedRoot,$escapedToken);
 				}
 				else{
@@ -206,6 +206,7 @@
 			}		
 			
 			//Delete Directory itself
+			$this->RefreshLastChangeDateTimeOfParent($folder->Id,$escapedToken);
 			$dbquery = DBLayer::GetInstance()->RunDelete(sprintf("Delete from FileSystem where Id = '%d' and ownerId = '%u' limit 1",$folder->Id,$ownerId));
 			return !$this->IsEntryExisting($folder->DisplayName,$folder->ParentID,$escapedToken);
 		}
@@ -236,8 +237,8 @@
 		}
 		/**
 		* Check if an folder is a parent of its own children to prevent recursive loops
-		* @param \Redundancy\Classes\FileSystemItem (or inheriting) $toSearch the item to get moved/copied etc.
-		* @param \Redundancy\Classes\FileSystemItem (or inheriting) $toSearch the target item which should be the new root of $toSearch
+		* @param \Redundancy\Classes\FileSystemItem $toSearch the item to get moved/copied etc.
+		* @param \Redundancy\Classes\FileSystemItem $branch the target item which should be the new root of $toSearch
 		* @param string $token a valid session token
 		* @return bool the result of the check
 		*/
@@ -248,8 +249,8 @@
 			//Folder that is searched
 			$toSearchAbsolutePath = $this->GetAbsolutePathById($toSearch->Id,$escapedToken);
 			$branchAbsolutePath = $this->GetAbsolutePathById($branch->Id,$escapedToken);				
-			//if ($toSearchAbsolutePath == $branchAbsolutePath)
-			//	return true;
+			if ($toSearchAbsolutePath == $branchAbsolutePath)
+				return true;
 			$idToSearch = $toSearch->Id;
 			$lastGotId = $branch->ParentID;
 			do{
@@ -278,9 +279,93 @@
 			}
 		}
 		/**
+		* Get the content of a directory
+		* @param string $absolutePath the absolute path of the folder to get displayed;
+		* @param string $token a valid session token
+		* @return array containing the entries
+		*/
+		public function GetContent($absolutePath,$token){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedabsolutePath = DBLayer::GetInstance()->EscapeString($absolutePath,true);			
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;
+			if (is_null($ownerId))
+				return \Redundancy\Classes\Errors::TokenNotValid;
+			$entry = $this->GetEntryByAbsolutePath($escapedabsolutePath,$escapedToken);
+			if (is_null($entry)){
+				return \Redundancy\Classes\Errors::EntryNotExisting;
+			}			
+			if (!$this->IsDirectory($escapedabsolutePath,$escapedToken))
+				return \Redundancy\Classes\Errors::TargetIsNoDirectory;
+			
+			$queryToGetFiles = sprintf("Select id from FileSystem where ParentFolder ='%d' and ownerId = '%d'",$entry->Id,$ownerId);				
+			$result = DBLayer::GetInstance()->RunSelect($queryToGetFiles);					
+			$files = array();
+			if (count($result) != 0){
+				foreach ($result as $value){							
+					$entry = $this->GetEntryById($value["id"],$escapedToken);
+					if ($entry->MimeType == "inode/directory")
+						$entry->sizeInByte = $this->CalculateFolderSize($this->GetAbsolutePathById($entry->Id,$escapedToken),$escapedToken);
+					$files[] = $entry;
+				}
+			}
+			return $files;
+		}
+		/**
+		* Refreshs the last Change information of a folder branch
+		* @param int $entryID the id of the child entry
+		* @param string $token a valid session token
+		* @return bool false if the entry does not exists		
+		*/
+		public function RefreshLastChangeDateTimeOfParent($entryID,$token){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedentryID = DBLayer::GetInstance()->EscapeString($entryID,true);	
+			$entry = $this->GetEntryById($escapedentryID,$escapedToken);
+			if (is_null($entry))
+				return false;		
+			do{
+				$changeDateTime = date('Y-m-d H:i:s');		
+				$query = sprintf("Update FileSystem set lastChangeDateTime ='%s' where ID ='%d'",$changeDateTime,$entry->ParentID);
+				DBLayer::GetInstance()->RunUpdate($query);
+				$entry = $this->GetEntryById($entry->ParentID,$escapedToken);										
+			}while($entry->ParentID != -1);		
+			return true;			
+		}
+		/**
+		* Calculate the size of a folder
+		* @param string $absolutePath the absolute path of the directory
+		* @param string $token a valid session token
+		* @return the size or -1 in case of an error
+		*/
+		public function CalculateFolderSize($absolutePath,$token){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);			
+			$entry = $this->GetEntryByAbsolutePath($absolutePath,$escapedToken);
+			$escapedabsolutePath = DBLayer::GetInstance()->EscapeString($absolutePath,true);
+			$folderSize = 0;
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;
+			if (is_null($ownerId))
+				return \Redundancy\Classes\Errors::TokenNotValid;
+			if (is_null($entry) || $entry->MimeType != "inode/directory")
+				return -1;			
+			$queryToGetFiles = sprintf("Select id,mimeType,sizeInByte from FileSystem where ParentFolder ='%d' and ownerId = '%d'",$entry->Id,$ownerId);
+			$result = DBLayer::GetInstance()->RunSelect($queryToGetFiles);					
+			$files = array();
+			if (count($result) != 0){
+				foreach ($result as $value){							
+					if ($value["mimeType"] == "inode/directory"){
+						$folderSize += $this->CalculateFolderSize($this->GetAbsolutePathById($value["id"],$escapedToken),$escapedToken);
+					}
+					else{
+						$folderSize += $value["sizeInByte"];
+					}
+				}
+			}	
+			return $folderSize;	
+		}
+		/**
 		* Move an entry to another root dir
 		* @param string $oldAbsolutePath the old absolute path
 		* @param string $newRoot the path of the target dir to get the entry moved into
+		* @param string $token a valid session token
 		* @return bool | An errorcode describing the problem
 		*/
 		public function MoveEntry($oldAbsolutePath,$newRoot,$token){
@@ -306,6 +391,7 @@
 				if (!$this->IsEntryExisting($entry->DisplayName,$targetEntry->Id,$escapedToken)){
 						$query = sprintf("Update FileSystem set parentFolder = '%d' where OwnerID = '%u' and ID = '%u'",$targetEntry->Id,$ownerId,$entry->Id);		
 						DBLayer::GetInstance()->RunUpdate($query);
+						$this->RefreshLastChangeDateTimeOfParent($entry->Id,$escapedToken);
 						return $this->IsEntryExisting($entry->DisplayName,$targetEntry->Id,$escapedToken);
 				}
 				else{
@@ -359,6 +445,7 @@
 								
 									
 							DBLayer::GetInstance()->RunInsert($query);
+							$this->RefreshLastChangeDateTimeOfParent($targetEntry->Id,$escapedToken);
 							return $this->IsEntryExisting($entry->DisplayName,$targetEntry->Id,$escapedToken);
 						}
 						else{
@@ -404,6 +491,7 @@
 						}	
 					}
 				}
+				$this->RefreshLastChangeDateTimeOfParent($targetEntry->Id,$escapedToken);
 				return $this->IsEntryExisting($entry->DisplayName,$targetEntry->Id,$escapedToken);				
 				
 			}			
@@ -462,6 +550,7 @@
 			if (!is_null($entry) && !$this->IsEntryExisting($newName,$entry->ParentID,$escapedToken)){
 				$query = sprintf("Update FileSystem set DisplayName = '%s' where OwnerID = '%u' and parentFolder = '%d'",$escapedDisplayName,$ownerId,$entry->ParentID);		
 				DBLayer::GetInstance()->RunUpdate($query);
+				$this->RefreshLastChangeDateTimeOfParent($entry->Id,$escapedToken);
 				return true;
 			}
 			else{

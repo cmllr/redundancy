@@ -267,6 +267,67 @@
 			$got =$GLOBALS["Kernel"]->FileSystemKernel->IsDisplayNameAllowed("test/");
 			$this->AssertFalse($got);			
 		}
-		
+		//***********************Test GetContent()***********************	
+		public function testGetContent01(){					
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("listTest1",-1,$token);	
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("listTest2",-1,$token);	
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("listTest3",-1,$token);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetContent("/",$token);			
+			$this->AssertTrue(count($got) == 3);	
+			$this->AssertTrue($got[0]->DisplayName == "listTest1");
+			$this->AssertTrue($got[1]->DisplayName == "listTest2");
+			$this->AssertTrue($got[2]->DisplayName == "listTest3");
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/listTest1/",$token);
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/listTest2/",$token);
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/listTest3/",$token);	
+		}
+		public function testGetContent02(){					
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetContent("/",$token);			
+			$this->AssertTrue(count($got) == 0);				
+		}
+		//***********************Test CalculateFolderSize()***********************	
+		public function testCalculateFolderSize01(){	
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			 $_FILES = array(
+			    'file' => array(
+				'name' => 'testUpload',
+				'type' => 'text/plain',
+				'size' => 16,
+				'tmp_name' => __REDUNDANCY_ROOT__."test",
+				'error' => 0
+			    )
+			);			
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$GLOBALS["Kernel"]->FileSystemKernel->UploadFile(-1,$token);	
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("mySizeDir",-1,$token);	
+			$GLOBALS["Kernel"]->FileSystemKernel->MoveEntry("/testUpload","/mySizeDir/",$token);					
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->CalculateFolderSize("/mySizeDir/",$token);			
+			$this->AssertTrue($got == 16);					
+		}
+		public function testCalculateFolderSize02(){	
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			 $_FILES = array(
+			    'file' => array(
+				'name' => 'testUpload2',
+				'type' => 'text/plain',
+				'size' => 16,
+				'tmp_name' => __REDUNDANCY_ROOT__."test",
+				'error' => 0
+			    )
+			);			
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$GLOBALS["Kernel"]->FileSystemKernel->UploadFile(-1,$token);		
+			$GLOBALS["Kernel"]->FileSystemKernel->MoveEntry("/testUpload2","/mySizeDir/",$token);					
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->CalculateFolderSize("/",$token);			
+			$this->AssertTrue($got == 32);	
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/mySizeDir/",$token);			
+		}
+		public function testCalculateFolderSize03(){						
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);				
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->CalculateFolderSize("/thisisnothere",$token);			
+			$this->AssertTrue($got == -1);			
+		}
 	}
 ?>
