@@ -267,15 +267,15 @@
 		public function GetUser($token){
 			$result = null;			
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
-			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select *,u.Id as UserID from User u inner join Session s on s.userId = u.ID where  s.token = '%s' ",$escapedToken));			
-			if (is_null($dbquery)){				
+			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select *,u.Id as UserID from User u inner join Session s on s.userId = u.ID where  s.token = '%s' ",$escapedToken));					
+			if (is_null($dbquery)){							
 				return null;
-			}
-				
+			}				
 			foreach ($dbquery as $value){
 				//only proceed if the token was valid
-				if ($this->IsNewSessionNeeded($value["loginName"]) == "true")
+				if ($this->IsNewSessionNeeded($value["loginName"]) == "true"){				
 					return null;
+				}					
 				$user = new \Redundancy\Classes\User();
 				$user->ID = $value["UserID"];
 				$user->LoginName = $value["loginName"];
@@ -290,7 +290,7 @@
 				$user->Role = $this->GetUserRole($user->LoginName);
 				$user->FailedLogins = $value["failedLogins"];
 				$result = $user;				
-			}
+			}			
 			return $result;	
 		}
 		/**
@@ -365,6 +365,8 @@
 			$ip =$this->GetIP();
  			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select Id,passwordHash from User where loginName ='%s'",$escapedLoginName));
 			$sessionStartedDateTime = date("Y-m-d H:i:s",time());
+			if (is_null($dbquery))
+				return \Redundancy\Classes\Errors::PasswordOrUserNameWrong;
 			if (password_verify($escapedPassword,$dbquery[0]["passwordHash"])){
 				$this->ResetFailedLoginsCounter($escapedLoginName);
 				$this->SetLastLoginDateTime($escapedLoginName);
@@ -520,7 +522,7 @@
 				$ip =$this->GetIP();
 				$sessionStartedDateTime = date("Y-m-d H:i:s",strtotime($value["sessionStartedDateTime"]));
 				$compareToken = $this->GenerateToken($escapedLoginName,$sessionStartedDateTime,$ip);				
-				if ($compareToken == $value["token"]){					
+				if ($compareToken == $value["token"]){									
 					if ($value["sessionEndDateTime"] == "0000-00-00 00:00:00")
 						return $compareToken;
 					else{
