@@ -3,23 +3,12 @@
   <title>R2</title>
   <link rel="stylesheet" href="./vendor/bootstrap/css/bootstrap.css">
   <script src="./vendor/angular/angular.js"></script>
+  <script src="./vendor/angular/angular-ui-router.js"></script>
   <script src="./app/app.js"></script>
+  <script src="./app/config.js"></script>
   <script src="./app/services/user.js"></script>
   <script src="./app/login/login.js"></script>
 </head>
 <body ng-app="redundancy">
-  <div class="container">
-    <div ng-controller="loginController">
-      <h1>Login</h1>
-      <form name="loginForm" ng-submit="login()" class="form-inline">
-        <div class="form-group">
-          <input type="text" ng-model="login.username" placeholder="Benutzername" required class="form-control">
-        </div>
-        <div class="form-group">
-          <input type="password" ng-model="login.password" placeholder="Passwort" required class="form-control">
-        </div>
-        <button type="submit" class="btn btn-default-alt">Anmelden</button>
-      </form>
-    </div>
-  </div>
+  <div ui-view class="container"></div>
 </body>

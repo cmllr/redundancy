@@ -3,16 +3,12 @@ head
 	title R2
 	link(rel='stylesheet', href='./vendor/bootstrap/css/bootstrap.css')
 	script(src='./vendor/angular/angular.js')
+	script(src='./vendor/angular/angular-ui-router.js')
 	script(src='./app/app.js')
+	script(src='./app/config.js')
 	script(src='./app/services/user.js')
 	script(src='./app/login/login.js')
 body(ng-app='redundancy')
-	div.container
-		div(ng-controller='loginController')
-			h1 Login
-			form.form-inline(name='loginForm', ng-submit='login()')
-				div.form-group
-					input.form-control(type='text', ng-model='login.username', placeholder='Benutzername', required)
-				div.form-group
-					input.form-control(type='password', ng-model='login.password', placeholder='Passwort', required)
-				button.btn.btn-default-alt(type='submit') Anmelden
+	//-TODO: include header
+	div.container(ui-view)
+	//-TODO: include footer

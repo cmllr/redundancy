@@ -3,17 +3,31 @@
 		var apiUrl = 'http://localhost/redundancy/Includes/api.inc.php';
 		var module = 'Kernel.UserKernel';
 
-		var post = function(method, args){
+		var post = function(method, args, makeEmptyStrings){
 			var params = {
 				module: module,
 				method: method
 			};
 
 			//arguments are optional
-			if(args)
-				params.args = args;
+			if(args){
+
+				//if makeEmptyStrings is undefined or true
+				//undefined fields will be defined as empty strings
+				if(makeEmptyStrings || makeEmptyStrings === undefined)
+					params.args = makeEmptyStringsInArray(args);
+				else
+					params.args = args;
+			}
 			return $http.post(apiUrl, params);
 		};
+
+		var makeEmptyStringsInArray = function(arr){
+			for(var i = 0; i < arr.length; i++)
+				if(arr[i] === undefined)
+					arr[i] = '';
+			return arr;
+		}
 
 		//API functions
 		var registerUser = function(loginName, displayName, mailAddress, password){

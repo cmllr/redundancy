@@ -1,12 +1,15 @@
 (function(){
 	var loginController = function($scope, $log, user){
+		$scope.user = {};
+
 		$scope.login = function(){
 			//TODO: implement stayLoggedIn parameter Checkbox
-			login($scope.login.username, $scope.login.password, true);
+			login($scope.user.username, $scope.user.password, true);
 		};
 
 		var login = function(username, password, stayLoggedIn){
-			user.login(username, password, stayLoggedIn).then(onLoginSuccess, onLoginError);
+			user.login(username, password, stayLoggedIn)
+				.then(onLoginSuccess, onLoginError);
 		};
 
 		var onLoginSuccess = function(response){
