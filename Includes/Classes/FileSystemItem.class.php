@@ -50,5 +50,13 @@
 		* The hashcode of the item to verify integrity or to identify it
 		*/
 		public $Hash;
+		/**
+		* The mimetype of th entry
+		*/
+		public $MimeType;
+		/**
+		* The file physical path on the servers FS 
+		*/
+		public $FilePath;
 	}
 ?>

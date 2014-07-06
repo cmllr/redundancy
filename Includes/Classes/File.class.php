@@ -24,11 +24,7 @@
 		/**
 		* The filesize in Bytes			
 		*/
-		public $SizeInBytes;
-		/**
-		* The file physical path on the servers FS 
-		*/
-		public $FilePath;
+		public $SizeInBytes;		
 		/**
 		* The used upload user agent
 		*/		
