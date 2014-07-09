@@ -1,5 +1,5 @@
 (function(){
-	var filesystem = function($http){
+	var fileSystem = function($http){
 		var apiUrl = 'http://localhost/redundancy/Includes/api.inc.php';
 		var module = 'Kernel.FileSystemKernel';
 
@@ -165,5 +165,5 @@
 		};
 	};
 
-	angular.module('redundancy').factory('filesystem', ['$http', filesystem]);
+	angular.module('redundancy').factory('fileSystem', ['$http', fileSystem]);
 }());
