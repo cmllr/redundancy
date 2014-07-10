@@ -677,7 +677,7 @@
 			$checkquery = sprintf("Select Id from FileSystem where hash = '%s'",$hashToSearch);
 			$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);
 			do{
-				$hashToSearch = sha1($escapedHash.$timeStamp);
+				$hashToSearch = $this->Hash($escapedHash.$timeStamp);
 				$checkquery = sprintf("Select Id from FileSystem where hash = '%s'",$hashToSearch);
 				$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);
 			}while(count($checkresult) != 0);
@@ -695,7 +695,7 @@
 			$checkquery = sprintf("Select Id from FileSystem where filePath = '%s'",$hashToSearch);
 			$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);
 			do{
-				$hashToSearch = sha1($escapedHash.$timeStamp);
+				$hashToSearch = $this->Hash($escapedHash.$timeStamp);
 				$checkquery = sprintf("Select Id from FileSystem where filePath = '%s'",$hashToSearch);
 				$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);
 			}while(count($checkresult) != 0);
