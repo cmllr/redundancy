@@ -2,12 +2,14 @@ doctype html
 head
 	title R2
 	link(rel='stylesheet', href='./vendor/bootstrap/css/bootstrap.css')
-	script(src='./vendor/angular/angular.js')
-	script(src='./vendor/angular/angular-ui-router.js')
-	script(src='./app/app.js')
-	script(src='./app/config.js')
-	script(src='./app/services/user.js')
-	script(src='./app/login/login.js')
+	script(src='vendor/angular/angular.js')
+	script(src='vendor/angular/angular-ui-router.js')
+	script(src='app/app.js')
+	script(src='app/config.js')
+	script(src='app/services/user.js')
+	script(src='app/services/principal.js')
+	script(src='app/register/register.js')
+	script(src='app/login/login.js')
 body(ng-app='redundancy')
 	//-TODO: include header
 	div.container(ui-view)
