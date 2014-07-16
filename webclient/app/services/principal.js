@@ -1,6 +1,10 @@
 (function() {
     var principal = function() {
-        return {};
+        return {
+            loginName: '',
+            displayName: '',
+            token: ''
+        };
     }
 
     var app = angular.module('redundancy');

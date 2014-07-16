@@ -56,6 +56,7 @@
         var register = {
                 name: 'register',
                 url: '/register',
+                controller: 'registerController',
                 templateUrl: 'app/templates/register.tpl.html'
             },
             login = {

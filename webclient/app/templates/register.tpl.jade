@@ -1,8 +1,26 @@
-div(ng-controller='loginController')
+div
 	h1 Registrieren
-	form.form-inline(name='loginForm', ng-submit='login()')
+	form.form-horizontal(name='registerForm', ng-submit='registerForm.$valid && arePasswordsIdentical() && register()')
 		div.form-group
-			input.form-control(type='text', ng-model='user.username', placeholder='Benutzername', required)
+			label.col-sm-2.control-label Anmeldename:
+			div.col-sm-10
+				input.form-control(type='text', ng-model='user.userName', placeholder='Benutzername', required)
 		div.form-group
-			input.form-control(type='password', ng-model='user.password', placeholder='Passwort', required)
-		button.btn.btn-default-alt(type='submit') Registrieren
+			label.col-sm-2.control-label Anzeigename:
+			div.col-sm-10
+				input.form-control(type='text', ng-model='user.displayName', placeholder='Anzeigename', required)
+		div.form-group
+			label.col-sm-2.control-label E-Mail Adresse:
+			div.col-sm-10
+				input.form-control(type='email', ng-model='user.mailAddress', placeholder='E-Mail Adresse', required)
+		div.form-group
+			label.col-sm-2.control-label Passwort:
+			div.col-sm-10
+				input.form-control(type='password', ng-model='user.password', placeholder='Passwort', required)
+		div.form-group
+			label.col-sm-2.control-label Passwort wiederholen:
+			div.col-sm-10
+				input.form-control(type='password', ng-model='user.passwordRepetition', placeholder='Passwort', required)
+		div.form-group
+			div.col-sm-10.col-sm-offset-2
+				button.btn.btn-default-alt(type='submit') Registrieren
