@@ -5,31 +5,41 @@
     <div class="form-group">
       <label class="col-sm-2 control-label">Anmeldename:</label>
       <div class="col-sm-10">
-        <input type="text" ng-model="user.userName" placeholder="Benutzername" required="required" class="form-control"/>
+        <input type="text" ng-model="user.userName" name="userName" placeholder="Benutzername" test12="test12" required="required" class="form-control"/>
+        <div ng-if="interacted(registerForm.userName)" ng-messages="registerForm.userName.$error" ng-messages-include="app/templates/error-messages.tpl.html" class="panel panel-danger ng-active">
+          <div ng-message="usernameOrMailAddressLoading" class="panel-body">Name wird überprüft...</div>
+          <div ng-message="usernameOrMailAddressAvailable" class="panel-body">Dieser Name ist nicht mehr verfügbar</div>
+        </div>
       </div>
     </div>
     <div class="form-group">
       <label class="col-sm-2 control-label">Anzeigename:</label>
       <div class="col-sm-10">
-        <input type="text" ng-model="user.displayName" placeholder="Anzeigename" required="required" class="form-control"/>
+        <input type="text" ng-model="user.displayName" name="displayName" placeholder="Anzeigename" required="required" class="form-control"/>
+        <div ng-if="interacted(registerForm.displayName)" ng-messages="registerForm.displayName.$error" ng-messages-include="app/templates/error-messages.tpl.html" class="panel panel-danger"></div>
       </div>
     </div>
     <div class="form-group">
       <label class="col-sm-2 control-label">E-Mail Adresse:</label>
       <div class="col-sm-10">
-        <input type="email" ng-model="user.mailAddress" placeholder="E-Mail Adresse" required="required" class="form-control"/>
+        <input type="email" ng-model="user.mailAddress" name="mailAddress" placeholder="E-Mail Adresse" user-name-or-mail-address-availability-validator="user-name-or-mail-address-availability-validator" required="required" class="form-control"/>
+        <div ng-if="interacted(registerForm.mailAddress)" ng-messages="registerForm.mailAddress.$error" ng-messages-include="app/templates/error-messages.tpl.html" class="panel panel-danger"></div>
       </div>
     </div>
     <div class="form-group">
       <label class="col-sm-2 control-label">Passwort:</label>
       <div class="col-sm-10">
-        <input type="password" ng-model="user.password" placeholder="Passwort" required="required" class="form-control"/>
+        <input type="password" ng-model="user.password" name="password" placeholder="Passwort" required="required" class="form-control"/>
+        <div ng-if="interacted(registerForm.passwordRepetition)" ng-messages="registerForm.password.$error" ng-messages-include="app/templates/error-messages.tpl.html" class="panel panel-danger"></div>
       </div>
     </div>
     <div class="form-group">
       <label class="col-sm-2 control-label">Passwort wiederholen:</label>
       <div class="col-sm-10">
-        <input type="password" ng-model="user.passwordRepetition" placeholder="Passwort" required="required" class="form-control"/>
+        <input type="password" ng-model="user.passwordRepetition" name="passwordRepetition" placeholder="Passwort" password-repetition-validator="{{user.password}}" required="required" class="form-control"/>
+        <div ng-if="interacted(registerForm.passwordRepetition)" ng-messages="registerForm.passwordRepetition.$error" ng-messages-include="app/templates/error-messages.tpl.html" class="panel panel-danger">
+          <div ng-message="passwordIsRepeated" class="panel-body">Passwörter stimmt nicht überein</div>
+        </div>
       </div>
     </div>
     <div class="form-group">

@@ -101,6 +101,10 @@
         var isSessionExisting = function(token) {
             return post('IsSessionExisting', [token]);
         };
+
+        var isLoginOrMailFree = function(value) {
+            return post('IsLoginOrMailFree', [value]);
+        };
         //end API functions
 
         return {
@@ -115,7 +119,8 @@
             login: login,
             getSessionByCookie: getSessionByCookie,
             killSessionByToken: killSessionByToken,
-            isSessionExisting: isSessionExisting
+            isSessionExisting: isSessionExisting,
+            isLoginOrMailFree: isLoginOrMailFree
         };
     };
 

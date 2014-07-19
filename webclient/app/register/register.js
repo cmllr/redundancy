@@ -20,8 +20,8 @@
             console.log(response);
         };
 
-        $scope.arePasswordsIdentical = function() {
-            return $scope.user.password === $scope.user.passwordRepetition;
+        $scope.interacted = function(field) {
+            return $scope.submitted || field.$dirty;
         };
     };
 

@@ -1,3 +1,3 @@
 (function() {
-    var app = angular.module('redundancy', ['ui.router']);
+    var app = angular.module('redundancy', ['ui.router', 'ngMessages']);
 }());
