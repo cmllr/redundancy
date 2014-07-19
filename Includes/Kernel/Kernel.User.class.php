@@ -91,6 +91,19 @@
 			}			
 		}
 		/**
+		* Checks if a given loginName is free and can be used
+		* @param string $loginName the login name to search
+		* @return bool the result of the check
+		*/
+		public function IsLoginOrMailFree($value){
+			$escapedLoginName = DBLayer::GetInstance()->EscapeString($value,true);
+			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select count(id) as Amount from User where loginName = '%s' or mailAddress ='%s'",$escapedLoginName,$escapedLoginName));
+			if ($dbquery[0]["Amount"] == 0)
+				return true;
+			else
+				return false;
+		}
+		/**
 		* Deletes the user after an successfull authentification
 		* @todo add methods to delete the files, shares etc.
 		* @param $loginName the users login name
@@ -129,10 +142,11 @@
 		* @return bool the result of the change
 		*/
 		public function ChangePassword($token,$oldPassword,$newPassword){
-			$username = $this->GetUser($token)->LoginName;			
+			$username = $this->GetUser($token);			
 				
 			if (is_null($username))
 				return false;
+			$username = $username->LoginName;
 			if (!$this->Authentificate($username,$oldPassword))	
 				return false;
 			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($token,\Redundancy\Classes\PermissionSet::AllowChangingPassword))
@@ -153,7 +167,7 @@
 		/**
 		* Generates a new random password
 		* @todo generate an stronger password
-		* @param length the length of the password. If not set, the value from User_Recover_Password_Length will be used
+		* @param int $length the length of the password. If not set, the value from User_Recover_Password_Length will be used
 		* @return string the new password
 		*/
 		public function GeneratePassword($length = -1){
@@ -171,7 +185,7 @@
 		}
 		/**
 		* Resets a password by a mail
-		* @param mailAddress the email of the account which password should be resetted
+		* @param string $mailAddress the email of the account which password should be resetted
 		* @todo check the systems email configuration to prevent mail sending when mail is not configured
 		* @todo mail body
 		* @todo Function not complete implemented

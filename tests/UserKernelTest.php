@@ -261,7 +261,16 @@
 			$GLOBALS["Kernel"]->UserKernel->KillSessionByToken($token)	;		
 			$got = $GLOBALS["Kernel"]->UserKernel->IsSessionExisting($token);		
 			$this->assertFalse($got);	
-		}		
+		}
+		//***********************Tests IsLoginNameFree()***********************
+		public function testIsLoginOrMailFree01(){					
+			$got = $GLOBALS["Kernel"]->UserKernel->IsLoginOrMailFree("test123");		
+			$this->assertTrue($got);	
+		}
+		public function testIsLoginOrMailFree02(){					
+			$got = $GLOBALS["Kernel"]->UserKernel->IsLoginOrMailFree("testUser");		
+			$this->assertFalse($got);	
+		}
 		//***********************Tests DeleteUser()***********************
 		public function testDeleteUser(){
 			$loginName = "testUser";		
