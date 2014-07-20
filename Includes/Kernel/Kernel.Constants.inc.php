@@ -42,6 +42,7 @@
 		const DisplayNameNotAllowed = 19;
 		const CopyingFailed = 20;
 		const TargetIsNoDirectory = 21;
+                const EntryAlreadyShared = 22;
 	} 
 	/**
 	* The permission set in a human readable form
@@ -70,6 +71,13 @@
 	* This class contains contanst for the system
 	*/
 	abstract class SystemConstants{
-	   const NotAllowedChars = "/";
+	    const NotAllowedChars = "/";
 	}
+        /**
+        * The systems share modes
+        */
+        abstract class ShareMode{
+            const ByCode = 0;
+            const ToUser = 1;
+        }
 ?>
