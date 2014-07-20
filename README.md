@@ -1,5 +1,6 @@
 Redundancy  1.9.15 branch
 =================================
+[![Build Status](https://travis-ci.org/squarerootfury/redundancy.svg?branch=Lenticularis)](https://travis-ci.org/squarerootfury/redundancy)
 
 > Please note: This branch is _only_ for developing purposes. This version is bleeding edge, instable, uncomplete and does not have all functions
 
