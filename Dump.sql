@@ -1,30 +1,5 @@
--- phpMyAdmin SQL Dump
--- version 4.1.11
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Erstellungszeit: 30. Jun 2014 um 20:56
--- Server Version: 5.5.37-MariaDB
--- PHP-Version: 5.5.13
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-
---
--- Datenbank: `Lenticularis`
---
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `FileSystem`
---
 
 CREATE TABLE IF NOT EXISTS `FileSystem` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -41,33 +16,17 @@ CREATE TABLE IF NOT EXISTS `FileSystem` (
   PRIMARY KEY (`id`),
   KEY `ownerId` (`ownerId`),
   KEY `parentFolder` (`parentFolder`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=286 ;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Role`
---
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `Role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `description` text COLLATE utf8_bin,
   `permissions` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=2 ;
-
---
--- Daten für Tabelle `Role`
---
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
 
 INSERT INTO `Role` (`id`, `description`, `permissions`) VALUES
-(1, 'Root', '1111111111');
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Session`
---
+(1, 'Root', 1111111111);
 
 CREATE TABLE IF NOT EXISTS `Session` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -77,20 +36,20 @@ CREATE TABLE IF NOT EXISTS `Session` (
   `sessionEndDateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `userID` (`userID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=65 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
 
---
--- Daten für Tabelle `Session`
---
-
-INSERT INTO `Session` (`id`, `userID`, `token`, `sessionStartedDateTime`, `sessionEndDateTime`) VALUES
-(23, 9, '7f0dd90a3009619b041e52589008df90', '2014-06-30 18:22:22', '0000-00-00 00:00:00');
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `User`
---
+CREATE TABLE IF NOT EXISTS `SharedFileSystem` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `entryID` int(11) NOT NULL,
+  `userID` int(11) NOT NULL,
+  `targetUserID` int(11) DEFAULT NULL,
+  `permissions` text COLLATE utf8_bin,
+  `shareCode` text COLLATE utf8_bin,
+  `shared` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `entryID` (`entryID`),
+  KEY `userID` (`userID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
 
 CREATE TABLE IF NOT EXISTS `User` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -106,38 +65,23 @@ CREATE TABLE IF NOT EXISTS `User` (
   `failedLogins` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_Role` (`roleID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=53 ;
-
---
--- Daten für Tabelle `User`
---
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 INSERT INTO `User` (`id`, `loginName`, `displayName`, `mailAddress`, `registrationDateTime`, `lastLoginDateTime`, `passwordHash`, `isEnabled`, `contingentInByte`, `roleID`, `failedLogins`) VALUES
-(1, 'fury', 'CM', 'bla@bla.de', '2014-05-16 00:00:00', '2014-05-16 00:00:00', 'bla', 1, 100000, NULL, 0),
-(9, 'fuxry', 'CM', 'bla@blxa.de', '2014-05-17 14:12:59', '2014-06-30 18:22:23', '$2y$11$KY/Tjuko2xX/4WqhhyYj6.FnzdN/9Ui7D2JUUujy/bPSVKheUoKJO', 1, 5242880, 1, 0);
+(9, 'fuxry', 'CM', 'bla@blxa.de', '2014-05-17 14:12:59', '2014-07-13 11:25:47', '$2y$11$KY/Tjuko2xX/4WqhhyYj6.FnzdN/9Ui7D2JUUujy/bPSVKheUoKJO', 1, 5242880, 1, 0),
+(84, 'testFS', 'FileSystemTestUser', 'test@fs.local', '2014-07-06 15:52:01', '2014-07-20 13:05:22', '$2y$11$y1ldtxNAWEa6HTOWkHQtRuwU1pagqX0GydlLx2RMpPx5KLa7zizqK', 1, 5242880, 1, 0);
 
---
--- Constraints der exportierten Tabellen
---
 
---
--- Constraints der Tabelle `FileSystem`
---
 ALTER TABLE `FileSystem`
   ADD CONSTRAINT `FileSystem_ibfk_1` FOREIGN KEY (`ownerId`) REFERENCES `User` (`id`);
 
---
--- Constraints der Tabelle `Session`
---
 ALTER TABLE `Session`
   ADD CONSTRAINT `Session_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `User` (`id`);
 
---
--- Constraints der Tabelle `User`
---
+ALTER TABLE `SharedFileSystem`
+  ADD CONSTRAINT `SharedFileSystem_ibfk_1` FOREIGN KEY (`entryID`) REFERENCES `FileSystem` (`id`),
+  ADD CONSTRAINT `SharedFileSystem_ibfk_2` FOREIGN KEY (`userID`) REFERENCES `User` (`id`);
+
 ALTER TABLE `User`
   ADD CONSTRAINT `fk_Role` FOREIGN KEY (`roleID`) REFERENCES `Role` (`id`);
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
