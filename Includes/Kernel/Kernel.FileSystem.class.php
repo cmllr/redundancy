@@ -63,9 +63,10 @@
 			$escapedName = DBLayer::GetInstance()->EscapeString($name,true);
 			$escapedRoot = DBLayer::GetInstance()->EscapeString($root,true);
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);			
-			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;					
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken);					
 			if (is_null($ownerId))
 				return \Redundancy\Classes\Errors::TokenNotValid;
+                        $ownerId = $ownerId->ID;
 			if (!$this->IsDisplayNameAllowed($escapedName))
 				return \Redundancy\Classes\Errors::DisplayNameNotAllowed;		
 			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowCreatingFolder))

@@ -30,6 +30,7 @@
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Constants.inc.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.FileSystem.class.php";
+		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Sharing.class.php";
 		//**********************************************Data classes**************************************
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/User.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/Role.class.php";
@@ -83,6 +84,10 @@
 			*/
 			public $FileSystemKernel;
 			/**
+			* The kernel part which handles the filesystem shares
+			*/
+			public $SharingKernel;
+			/**
 			* The systems configuration. Parsed from __REDUNDANCY_ROOT__Redundancy.conf
 			*/
 			public $Configuration;
@@ -99,6 +104,7 @@
 				$this->InterfaceKernel = new \Redundancy\Kernel\InterfaceKernel(-1);							
 				$this->SystemKernel =  new \Redundancy\Kernel\SystemKernel();	
 				$this->FileSystemKernel = new \Redundancy\Kernel\FileSystemKernel();
+				$this->SharingKernel = new \Redundancy\Kernel\SharingKernel();
 			}
 			/**
 			* Return the current server version

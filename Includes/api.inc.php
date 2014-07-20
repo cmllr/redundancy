@@ -76,6 +76,9 @@
 			case "Kernel.FileSystemKernel":
 			$Redundancy->Output(call_user_func_array(array($Redundancy->FileSystemKernel,$method), $params));
 			break;
+			case "Kernel.SharingKernel":
+			$Redundancy->Output(call_user_func_array(array($Redundancy->SharingKernel,$method), $params));
+			break;
 		}	
 	}		
 ?>
