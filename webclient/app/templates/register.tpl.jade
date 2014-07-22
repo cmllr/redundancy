@@ -1,15 +1,15 @@
 div
 	h1 Registrieren
-	form.form-horizontal(name='registerForm', ng-submit='registerForm.$valid && arePasswordsIdentical() && register()')
+	form.form-horizontal(name='registerForm', ng-submit='registerForm.$valid && register()')
 		div.form-group
 			label.col-sm-2.control-label Anmeldename:
 			div.col-sm-10
-				input.form-control(type='text', ng-model='user.userName', name='userName', placeholder='Benutzername', test12, required)
+				input.form-control(type='text', ng-model='user.loginName', name='loginName', placeholder='Benutzername', loginname-or-mail-address-availability-validator, required)
 
 				//-error validation
-				div.panel.panel-danger.ng-active(ng-if='interacted(registerForm.userName)', ng-messages='registerForm.userName.$error', ng-messages-include='app/templates/error-messages.tpl.html')
-					div.panel-body(ng-message='usernameOrMailAddressLoading') Name wird überprüft...
-					div.panel-body(ng-message='usernameOrMailAddressAvailable') Dieser Name ist nicht mehr verfügbar
+				div.panel.panel-danger.ng-active(ng-if='interacted(registerForm.loginName)', ng-messages='registerForm.loginName.$error', ng-messages-include='app/templates/error-messages.tpl.html')
+					div.panel-body(ng-message='loginnameOrMailAddressLoading') Name wird überprüft...
+					div.panel-body(ng-message='loginnameOrMailAddressAvailable') Dieser Name ist nicht mehr verfügbar
 		div.form-group
 			label.col-sm-2.control-label Anzeigename:
 			div.col-sm-10
@@ -34,11 +34,12 @@ div
 		div.form-group
 			label.col-sm-2.control-label Passwort wiederholen:
 			div.col-sm-10
-				input.form-control(type='password', ng-model='user.passwordRepetition', name='passwordRepetition', placeholder='Passwort', password-repetition-validator='{{user.password}}' required)
+				input.form-control(type='password', ng-model='user.passwordRepetition', name='passwordRepetition', placeholder='Passwort', required)
+				//-TODO: password repetition fixen! input.form-control(type='password', ng-model='user.passwordRepetition', name='passwordRepetition', placeholder='Passwort', password-repetition-validator='{{user.password}}' required)
 
 				//-error validation
-				div.panel.panel-danger(ng-if='interacted(registerForm.passwordRepetition)', ng-messages='registerForm.passwordRepetition.$error', ng-messages-include='app/templates/error-messages.tpl.html')
-					div.panel-body(ng-message='passwordIsRepeated') Passwörter stimmt nicht überein
+				//-TODO: password repetition fixen! div.panel.panel-danger(ng-if='interacted(registerForm.passwordRepetition)', ng-messages='registerForm.passwordRepetition.$error', ng-messages-include='app/templates/error-messages.tpl.html')
+					//-div.panel-body(ng-message='passwordIsRepeated') Passwörter stimmen nicht überein
 		div.form-group
 			div.col-sm-10.col-sm-offset-2
 				button.btn.btn-default-alt(type='submit') Registrieren

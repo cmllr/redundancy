@@ -14,8 +14,8 @@
                 ngModel.$parsers.push(function(value) {
                     if (!value | value.length === 0) return;
 
-                    setAsLoading(true);
-                    setAsAvailable(false);
+                    // setAsLoading(true);
+                    // setAsAvailable(false);
 
                     var onCheckingError = function() {
                         setAsLoading(false);
@@ -31,12 +31,11 @@
                     };
 
                     user.isLoginOrMailFree(value).success(onCheckingSuccess).error(onCheckingError);
-
                     return value;
                 });
             }
         }
     };
 
-    angular.module('redundancy').directive('test12', ['user', directive]);
+    angular.module('redundancy').directive('usernameOrMailAddressAvailabilityValidator', ['user', directive]);
 }());

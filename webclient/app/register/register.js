@@ -1,10 +1,12 @@
 (function() {
     var registerController = function($scope, principal, user) {
         $scope.principal = principal;
+        console.log(principal);
 
         $scope.register = function() {
             console.log('Try registering...');
-            user.registerUser($scope.user.userName, $scope.user.displayName, $scope.user.mailAddress, $scope.user.password)
+            console.log($scope.user);
+            user.registerUser($scope.user.loginName, $scope.user.displayName, $scope.user.mailAddress, $scope.user.password)
                 .success(onRegisterSuccess).error(onRegisterError);
         };
 
