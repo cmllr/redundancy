@@ -48,6 +48,8 @@
 			$escapedMailAddress = DBLayer::GetInstance()->EscapeString($mailAddress,true);
 			$escapedDisplayName = DBLayer::GetInstance()->EscapeString($displayName,true);
 			$escapedPassword = DBLayer::GetInstance()->EscapeString($password,true);
+			if (empty($escapedLoginName) || empty($escapedMailAddress) || empty($escapedDisplayName) || empty($escapedPassword))
+				return \Redundancy\Classes\Errors::ArgumentMissing;
 			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select count(id) as Amount from User where loginName = '%s' or mailAddress = '%s'",$escapedLoginName,$escapedMailAddress));
 			if ($dbquery[0]["Amount"] == 0){
 				//Only proceed if there is no existing account with this email or loginName		
@@ -92,7 +94,7 @@
 		}
 		/**
 		* Checks if a given loginName is free and can be used
-		* @param string $loginName the login name to search
+		* @param string $value the login name to search
 		* @return bool the result of the check
 		*/
 		public function IsLoginOrMailFree($value){
