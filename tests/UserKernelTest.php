@@ -37,6 +37,14 @@
 			$got = $GLOBALS["Kernel"]->UserKernel->RegisterUser($loginName,$displayName,$mailAddress,$password);		
 			$this->assertTrue(\Redundancy\Classes\Errors::UserOrEmailAlreadyGiven==$got);	
 		}
+		public function testRegisterUserMissingArg(){
+			$loginName = "testUser";
+			$displayName = "";
+			$mailAddress = "mail@localhost.lan";
+			$password = "test";
+			$got = $GLOBALS["Kernel"]->UserKernel->RegisterUser($loginName,$displayName,$mailAddress,$password);		
+			$this->assertTrue(\Redundancy\Classes\Errors::ArgumentMissing==$got);	
+		}
 		//***********************Tests LogIn()***********************
 		public function testLogInShouldSucceed(){
 			$loginName = "testUser";

@@ -43,6 +43,7 @@
 		const CopyingFailed = 20;
 		const TargetIsNoDirectory = 21;
                 const EntryAlreadyShared = 22;
+		const ArgumentMissing = 23;
 	} 
 	/**
 	* The permission set in a human readable form
