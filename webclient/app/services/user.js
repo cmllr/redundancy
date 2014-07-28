@@ -69,7 +69,7 @@
             return post('GetInstalledRoles');
         };
 
-        var getUser = function() {
+        var getUser = function(token) {
             return post('GetUser', [token]);
         };
 

@@ -62,10 +62,20 @@
             login = {
                 name: 'login',
                 url: '/login',
+                controller: 'loginController',
                 templateUrl: 'app/templates/login.tpl.html'
+            },
+            main = {
+                name: 'main',
+                url: '/main',
+                controller: 'mainController',
+                templateUrl: 'app/templates/main.tpl.html'
             };
         $stateProvider.state(register);
         $stateProvider.state(login);
+        $stateProvider.state(main);
+
+        //TODO: IMPORTANT: Use of abstract controller
     };
 
     angular.module('redundancy').config(['$httpProvider', '$stateProvider', '$urlRouterProvider', config]);

@@ -10,13 +10,14 @@
         };
 
         var onRegisterSuccess = function(response) {
+
             //Save principal for authentification
             $scope.principal.displayName = response.DisplayName;
             $scope.principal.loginName = response.LoginName;
         };
 
         var onRegisterError = function(response) {
-            console.log('Failed.');
+            
             console.log(response);
         };
 

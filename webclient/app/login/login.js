@@ -1,5 +1,5 @@
 (function() {
-    var loginController = function($scope, $log, user, principal) {
+    var loginController = function($scope, $log, user, principal, $state) {
         $scope.principal = principal;
         $scope.loginErrors = {};
 
@@ -37,7 +37,10 @@
 
             principal.loginName = $scope.user.loginName;
             principal.token = token;
-            validateErrors(); //reset errors
+
+            //reset errors
+            validateErrors();
+            $state.go('main');
         };
 
         var onLoginError = function(response) {
@@ -46,5 +49,5 @@
     };
 
     var app = angular.module('redundancy');
-    app.controller('loginController', ['$scope', '$log', 'user', 'principal', loginController]);
+    app.controller('loginController', ['$scope', '$log', 'user', 'principal', '$state', loginController]);
 }());

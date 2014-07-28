@@ -2,6 +2,8 @@
 
 -Andere CSS Klassen verwenden, dass bei der Eingabe im Login fehlerlose Felder nicht "rot unterstrichen" werden
 
--Fehlerbehandlung bei Registrierung: Erfolgreicher HTTP Request heißt nicht erfolgreiche Registrierung! Errorcodes müssen überprüft werden!
+-Fehlerbehandlung bei Registrierung: Errorcodes müssen überprüft werden!
 
 -implement stayLoggedIn parameter Checkbox on login
+
+-use abstract controller to avoid memory leak (forgotten principal)
