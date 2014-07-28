@@ -3,6 +3,10 @@
         $scope.principal = principal;
         $scope.loginErrors = {};
 
+        $scope.user = {
+            loginName: $scope.principal.loginName
+        };
+
         $scope.login = function() {
             //TODO: implement stayLoggedIn parameter Checkbox
             login($scope.user.loginName, $scope.user.password, true);
@@ -16,7 +20,6 @@
         var validateErrors = function(errorcode) {
             switch (errorcode) {
                 case '7':
-                    console.log("true");
                     $scope.loginErrors.wrongPasswordOrLoginName = true;
                     break;
 
@@ -30,19 +33,15 @@
         };
 
         var onLoginSuccess = function(response) {
-            $log.info(response.data);
-            if (response.data && response.data.length > 2) {
-                var token = response.data.substring(1, response.data.length - 1);
+            var token = response.data.substring(1, response.data.length - 1);
 
-                principal.loginName = $scope.user.loginName;
-                principal.token = token;
-                validateErrors();
-            } else
-                validateErrors(response.data);
+            principal.loginName = $scope.user.loginName;
+            principal.token = token;
+            validateErrors(); //reset errors
         };
 
         var onLoginError = function(response) {
-            $log.info(response.data);
+            validateErrors(response.data);
         };
     };
 

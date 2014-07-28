@@ -4,15 +4,13 @@
         console.log(principal);
 
         $scope.register = function() {
-            console.log('Try registering...');
             console.log($scope.user);
             user.registerUser($scope.user.loginName, $scope.user.displayName, $scope.user.mailAddress, $scope.user.password)
                 .success(onRegisterSuccess).error(onRegisterError);
         };
 
         var onRegisterSuccess = function(response) {
-            console.log('Registered.');
-            console.log(response);
+            //Save principal for authentification
             $scope.principal.displayName = response.DisplayName;
             $scope.principal.loginName = response.LoginName;
         };
