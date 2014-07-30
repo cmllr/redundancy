@@ -1,10 +1,10 @@
 div
 	h1 Registrieren
-	form.form-horizontal(name='registerForm', ng-submit='registerForm.$valid && register()')
+	form.form-horizontal(name='registerForm', ng-submit='registerForm.$valid && register.register()')
 		div.form-group
 			label.col-sm-2.control-label Anmeldename:
 			div.col-sm-10
-				input.form-control(type='text', ng-model='user.loginName', name='loginName', placeholder='Benutzername', loginname-or-mail-address-availability-validator, required)
+				input.form-control(type='text', ng-model='register.user.loginName', name='loginName', placeholder='Benutzername', loginname-or-mail-address-availability-validator, required)
 
 				//-error validation
 				div.panel.panel-danger.ng-active(ng-if='interacted(registerForm.loginName)', ng-messages='registerForm.loginName.$error', ng-messages-include='app/templates/error-messages.tpl.html')
@@ -13,29 +13,29 @@ div
 		div.form-group
 			label.col-sm-2.control-label Anzeigename:
 			div.col-sm-10
-				input.form-control(type='text', ng-model='user.displayName', name='displayName', placeholder='Anzeigename', required)
+				input.form-control(type='text', ng-model='register.user.displayName', name='displayName', placeholder='Anzeigename', required)
 
 				//-error validation
 				div.panel.panel-danger(ng-if='interacted(registerForm.displayName)', ng-messages='registerForm.displayName.$error', ng-messages-include='app/templates/error-messages.tpl.html')
 		div.form-group
 			label.col-sm-2.control-label E-Mail Adresse:
 			div.col-sm-10
-				input.form-control(type='email', ng-model='user.mailAddress', name='mailAddress', placeholder='E-Mail Adresse', user-name-or-mail-address-availability-validator, required)
+				input.form-control(type='email', ng-model='register.user.mailAddress', name='mailAddress', placeholder='E-Mail Adresse', user-name-or-mail-address-availability-validator, required)
 
 				//-error validation
 				div.panel.panel-danger(ng-if='interacted(registerForm.mailAddress)', ng-messages='registerForm.mailAddress.$error', ng-messages-include='app/templates/error-messages.tpl.html')
 		div.form-group
 			label.col-sm-2.control-label Passwort:
 			div.col-sm-10
-				input.form-control(type='password', ng-model='user.password', name='password', placeholder='Passwort', required)
+				input.form-control(type='password', ng-model='register.user.password', name='password', placeholder='Passwort', required)
 
 				//-error validation
 				div.panel.panel-danger(ng-if='interacted(registerForm.passwordRepetition)', ng-messages='registerForm.password.$error', ng-messages-include='app/templates/error-messages.tpl.html')
 		div.form-group
 			label.col-sm-2.control-label Passwort wiederholen:
 			div.col-sm-10
-				input.form-control(type='password', ng-model='user.passwordRepetition', name='passwordRepetition', placeholder='Passwort', required)
-				//-TODO: password repetition fixen! input.form-control(type='password', ng-model='user.passwordRepetition', name='passwordRepetition', placeholder='Passwort', password-repetition-validator='{{user.password}}' required)
+				input.form-control(type='password', ng-model='register.user.passwordRepetition', name='passwordRepetition', placeholder='Passwort', required)
+				//-TODO: password repetition fixen! input.form-control(type='password', ng-model='register.user.passwordRepetition', name='passwordRepetition', placeholder='Passwort', password-repetition-validator='{{register.user.password}}' required)
 
 				//-error validation
 				//-TODO: password repetition fixen! div.panel.panel-danger(ng-if='interacted(registerForm.passwordRepetition)', ng-messages='registerForm.passwordRepetition.$error', ng-messages-include='app/templates/error-messages.tpl.html')

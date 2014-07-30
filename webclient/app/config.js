@@ -56,19 +56,19 @@
         var register = {
                 name: 'register',
                 url: '/register',
-                controller: 'registerController',
+                controller: 'registerController as register',
                 templateUrl: 'app/templates/register.tpl.html'
             },
             login = {
                 name: 'login',
                 url: '/login',
-                controller: 'loginController',
+                controller: 'loginController as login',
                 templateUrl: 'app/templates/login.tpl.html'
             },
             main = {
                 name: 'main',
                 url: '/main',
-                controller: 'mainController',
+                controller: 'mainController as main',
                 templateUrl: 'app/templates/main.tpl.html'
             };
         $stateProvider.state(register);

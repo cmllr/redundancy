@@ -1,15 +1,15 @@
 
 <div>
   <h1>Login</h1>
-  <form name="loginForm" ng-submit="loginForm.$valid &amp;&amp; login()" class="form-inline">
+  <form name="loginForm" ng-submit="loginForm.$valid &amp;&amp; login.login()" class="form-inline">
     <div class="form-group">
-      <input type="text" name="loginName" ng-model="user.loginName" placeholder="Benutzername" required="required" class="form-control"/>
+      <input type="text" name="loginName" ng-model="login.user.loginName" placeholder="Benutzername" required="required" class="form-control"/>
     </div>
     <div class="form-group">
-      <input type="password" name="password" ng-model="user.password" placeholder="Passwort" required="required" class="form-control"/>
+      <input type="password" name="password" ng-model="login.user.password" placeholder="Passwort" required="required" class="form-control"/>
     </div>
     <button type="submit" class="btn btn-default-alt">Anmelden</button>
-    <div ng-messages="loginErrors" ng-messages-include="app/templates/error-messages.tpl.html" class="panel panel-danger ng-active"></div>
+    <div ng-messages="login.loginErrors" ng-messages-include="app/templates/error-messages.tpl.html" class="panel panel-danger ng-active"></div>
   </form><br/>
   <div class="alert alert-info">Falls Du noch nicht registriert bist, <a ui-sref="register">klicke hier.</a></div>
 </div>

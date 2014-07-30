@@ -1,20 +1,23 @@
 (function() {
-    var mainController = function($scope, principal, user) {
-        $scope.principal = principal;
-        console.log($scope.principal);
+    'use strict';
+
+    var mainController = function(principal, user) {
+        var vm = this;
+        vm.principal = principal;
 
         var getUser = function() {
-            var token = $scope.principal.token;
+            var token = vm.principal.token;
             user.getUser(token).success(onGetUserSuccess);
         };
 
         var onGetUserSuccess = function(response) {
-            $scope.principal.displayName = response.DisplayName;
+            console.log(response);
+            vm.principal.displayName = response.DisplayName;
         };
 
         getUser();
     };
 
-    var app = angular.module('redundancy');
-    app.controller('mainController', ['$scope', 'principal', 'user', mainController]);
+    angular.module('redundancy')
+        .controller('mainController', ['principal', 'user', mainController]);
 }());

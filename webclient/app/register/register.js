@@ -1,31 +1,35 @@
 (function() {
-    var registerController = function($scope, principal, user) {
-        $scope.principal = principal;
+    'use strict';
+
+    var registerController = function(principal, user) {
+        var vm = this;
+
+        vm.principal = principal;
         console.log(principal);
 
-        $scope.register = function() {
-            console.log($scope.user);
-            user.registerUser($scope.user.loginName, $scope.user.displayName, $scope.user.mailAddress, $scope.user.password)
+        vm.register = function() {
+            console.log(vm.user);
+            user.registerUser(vm.user.loginName, vm.user.displayName, vm.user.mailAddress, vm.user.password)
                 .success(onRegisterSuccess).error(onRegisterError);
         };
 
         var onRegisterSuccess = function(response) {
 
             //Save principal for authentification
-            $scope.principal.displayName = response.DisplayName;
-            $scope.principal.loginName = response.LoginName;
+            vm.principal.displayName = response.DisplayName;
+            vm.principal.loginName = response.LoginName;
         };
 
         var onRegisterError = function(response) {
-            
+
             console.log(response);
         };
 
-        $scope.interacted = function(field) {
-            return $scope.submitted || field.$dirty;
+        vm.interacted = function(field) {
+            return vm.submitted || field.$dirty;
         };
     };
 
-    var app = angular.module('redundancy');
-    app.controller('registerController', ['$scope', 'principal', 'user', registerController]);
+    angular.module('redundancy')
+        .controller('registerController', ['principal', 'user', registerController]);
 }());

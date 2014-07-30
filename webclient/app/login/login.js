@@ -1,15 +1,18 @@
 (function() {
-    var loginController = function($scope, $log, user, principal, $state) {
-        $scope.principal = principal;
-        $scope.loginErrors = {};
+    'use strict';
 
-        $scope.user = {
-            loginName: $scope.principal.loginName
+    var loginController = function($log, user, principal, $state) {
+        var vm = this;
+        vm.principal = principal;
+        vm.loginErrors = {};
+
+        vm.user = {
+            loginName: vm.principal.loginName
         };
 
-        $scope.login = function() {
+        vm.login = function() {
             //TODO: implement stayLoggedIn parameter Checkbox
-            login($scope.user.loginName, $scope.user.password, true);
+            login(vm.user.loginName, vm.user.password, true);
         };
 
         var login = function(loginName, password, stayLoggedIn) {
@@ -20,22 +23,21 @@
         var validateErrors = function(errorcode) {
             switch (errorcode) {
                 case '7':
-                    $scope.loginErrors.wrongPasswordOrLoginName = true;
+                    vm.loginErrors.wrongPasswordOrLoginName = true;
                     break;
 
                     //if there are no errors, reset all errors
                 default:
-                    console.log('reset');
-                    for (var prop in $scope.loginErrors)
-                        if ($scope.loginErrors.hasOwnProperty(prop))
-                            $scope.loginErrors[prop] = false;
+                    for (var prop in vm.loginErrors)
+                        if (vm.loginErrors.hasOwnProperty(prop))
+                            vm.loginErrors[prop] = false;
             }
         };
 
         var onLoginSuccess = function(response) {
             var token = response.data.substring(1, response.data.length - 1);
 
-            principal.loginName = $scope.user.loginName;
+            principal.loginName = vm.user.loginName;
             principal.token = token;
 
             //reset errors
@@ -48,6 +50,6 @@
         };
     };
 
-    var app = angular.module('redundancy');
-    app.controller('loginController', ['$scope', '$log', 'user', 'principal', '$state', loginController]);
+    angular.module('redundancy')
+        .controller('loginController', ['$log', 'user', 'principal', '$state', loginController]);
 }());

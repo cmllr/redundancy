@@ -1,14 +1,14 @@
 div
 	h1 Login
-	form.form-inline(name='loginForm', ng-submit='loginForm.$valid && login()')
+	form.form-inline(name='loginForm', ng-submit='loginForm.$valid && login.login()')
 		div.form-group
-			input.form-control(type='text', name='loginName', ng-model='user.loginName', placeholder='Benutzername', required)
+			input.form-control(type='text', name='loginName', ng-model='login.user.loginName', placeholder='Benutzername', required)
 		div.form-group
-			input.form-control(type='password', name='password', ng-model='user.password', placeholder='Passwort', required)
+			input.form-control(type='password', name='password', ng-model='login.user.password', placeholder='Passwort', required)
 		button.btn.btn-default-alt(type='submit') Anmelden
 
 		//-error validation	
-		div.panel.panel-danger.ng-active(ng-messages='loginErrors', ng-messages-include='app/templates/error-messages.tpl.html')
+		div.panel.panel-danger.ng-active(ng-messages='login.loginErrors', ng-messages-include='app/templates/error-messages.tpl.html')
 	br
 	div.alert.alert-info Falls Du noch nicht registriert bist, 
 		a(ui-sref='register') klicke hier.
