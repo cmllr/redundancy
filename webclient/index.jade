@@ -1,21 +1,33 @@
 doctype html
+html(ng-app='redundancy')
 head
-	title R2
-	link(rel='stylesheet', href='vendor/bootstrap/css/bootstrap.css')
-	link(rel='stylesheet', href='app/css/advanced.css')
-	script(src='vendor/angular/angular-1.3.0-beta15.js')
-	script(src='vendor/angular/angular-ui-router.js')
-	script(src='vendor/angular/angular-messages.js')
-	script(src='app/app.js')
-	script(src='app/config.js')
-	script(src='app/services/user.js')
-	script(src='app/services/principal.js')
-	script(src='app/register/register.js')
-	script(src='app/register/usernameOrMailAddressAvailabilityValidator.js')
-	script(src='app/register/passwordRepetitionValidator.js')
-	script(src='app/login/login.js')
-	script(src='app/main/main.js')
-body(ng-app='redundancy')
-	//-TODO: include header
-	div.container(ui-view)
-	//-TODO: include footer
+	title
+	meta(name='viewport', content='width=device-width, initial-scale=1.0')
+	meta(charset='utf-8')
+	link(href='app_components/css/advanced.css')
+	link(href='bower_components/bootstrap/dist/css/bootstrap.css', rel='stylesheet')
+body
+	//Livereload script for development only (stripped during dist build) 
+	script(src='http://localhost:35729/livereload.js', data-concat='false')
+
+	//JS from Bower Components
+	script(src='bower_components/jquery/jquery.js')
+	script(src='bower_components/bootstrap/dist/js/bootstrap.js')
+	script(src='bower_components/angular/angular.js')
+	script(src='bower_components/angular-ui-router/release/angular-ui-router.js')
+	script(src='bower_components/ng-messages/angular-messages.js')
+	//Add New Bower Component JS Above
+
+	//Main App JS 
+	script(src='app_components/app.js')
+	script(src='app_components/config.js')
+	script(src='app_components/services/user.js')
+	script(src='app_components/services/principal.js')
+	script(src='app_components/register/register.js')
+	script(src='app_components/register/usernameOrMailAddressAvailabilityValidator.js')
+	script(src='app_components/register/passwordRepetitionValidator.js')
+	script(src='app_components/login/login.js')
+	script(src='app_components/main/main.js')
+		
+	//Add New Component JS Above 
+	div(ui-view)
