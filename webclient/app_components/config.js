@@ -58,7 +58,6 @@
 
         //register page
         var register = {
-                name: 'register',
                 url: '/register',
                 controller: 'registerController as register',
                 templateUrl: 'app_components/templates/register.html'
@@ -66,7 +65,6 @@
 
             //login Page
             login = {
-                name: 'login',
                 url: '/login',
                 controller: 'loginController as login',
                 templateUrl: 'app_components/templates/login.html'
@@ -74,17 +72,23 @@
 
             //abstract state for capsulating principal object
             main = {
-                name: 'main',
                 abstract: true,
                 url: '/main',
                 controller: 'mainController as main',
                 templateUrl: 'app_components/templates/main.html'
+            },
+
+            mainStart = {
+                url: '/start',
+                controller: 'startController as start',
+                templateUrl: 'app_components/templates/mainStart.html'
             };
 
         $stateProvider
             .state('register', register)
             .state('login', login)
-            .state('main', main);
+            .state('main', main)
+            .state('main.start', mainStart);
     };
 
     angular.module('redundancy').config(config);

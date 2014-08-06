@@ -42,7 +42,7 @@
 
             //reset errors
             validateErrors();
-            $state.go('main');
+            $state.go('main.start');
         };
 
         var onLoginError = function(response) {
