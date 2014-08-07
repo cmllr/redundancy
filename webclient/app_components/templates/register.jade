@@ -1,48 +1,47 @@
-div#page-wrapper
-	div.container-fluid
-		div.row
-			div.col-md-offset-3.col-md-6
-				h1 Registrieren
-				form.form-horizontal(name='registerForm', ng-submit!='registerForm.$valid && register.register()')
-					div.form-group
-						label.col-sm-2.control-label Anmeldename:
-						div.col-sm-10
-							input.form-control(type='text', ng-model='register.user.loginName', name='loginName', placeholder='Benutzername', loginname-or-mail-address-availability-validator, required)
+div.container
+	div.row
+		div.col-md-offset-3.col-md-6
+			h1.white Registrieren
+			form.form-horizontal(name='registerForm', ng-submit!='registerForm.$valid && register.register()')
+				div.form-group
+					label.col-sm-3.control-label.white Anmeldename:
+					div.col-sm-9
+						input.form-control(type='text', ng-model='register.user.loginName', name='loginName', placeholder='Benutzername', loginname-or-mail-address-availability-validator, required)
 
-							//-error validation
-							div.panel.panel-danger.ng-active(ng-if='interacted(registerForm.loginName)', ng-messages='registerForm.loginName.$error', ng-messages-include='app_components/templates/error-messages.html')
-								div.panel-body(ng-message='loginnameOrMailAddressLoading') Name wird überprüft...
-								div.panel-body(ng-message='loginnameOrMailAddressAvailable') Dieser Name ist nicht mehr verfügbar
-					div.form-group
-						label.col-sm-2.control-label Anzeigename:
-						div.col-sm-10
-							input.form-control(type='text', ng-model='register.user.displayName', name='displayName', placeholder='Anzeigename', required)
+						//-error validation
+						div.panel.panel-danger.ng-active(ng-if='interacted(registerForm.loginName)', ng-messages='registerForm.loginName.$error', ng-messages-include='app_components/templates/error-messages.html')
+							div.panel-body(ng-message='loginnameOrMailAddressLoading') Name wird überprüft...
+							div.panel-body(ng-message='loginnameOrMailAddressAvailable') Dieser Name ist nicht mehr verfügbar
+				div.form-group
+					label.col-sm-3.control-label.white Anzeigename:
+					div.col-sm-9
+						input.form-control(type='text', ng-model='register.user.displayName', name='displayName', placeholder='Anzeigename', required)
 
-							//-error validation
-							div.panel.panel-danger(ng-if='interacted(registerForm.displayName)', ng-messages='registerForm.displayName.$error', ng-messages-include='app_components/templates/error-messages.html')
-					div.form-group
-						label.col-sm-2.control-label E-Mail Adresse:
-						div.col-sm-10
-							input.form-control(type='email', ng-model='register.user.mailAddress', name='mailAddress', placeholder='E-Mail Adresse', user-name-or-mail-address-availability-validator, required)
+						//-error validation
+						div.panel.panel-danger(ng-if='interacted(registerForm.displayName)', ng-messages='registerForm.displayName.$error', ng-messages-include='app_components/templates/error-messages.html')
+				div.form-group
+					label.col-sm-3.control-label.white E-Mail Adresse:
+					div.col-sm-9
+						input.form-control(type='email', ng-model='register.user.mailAddress', name='mailAddress', placeholder='E-Mail Adresse', user-name-or-mail-address-availability-validator, required)
 
-							//-error validation
-							div.panel.panel-danger(ng-if='interacted(registerForm.mailAddress)', ng-messages='registerForm.mailAddress.$error', ng-messages-include='app_components/templates/error-messages.html')
-					div.form-group
-						label.col-sm-2.control-label Passwort:
-						div.col-sm-10
-							input.form-control(type='password', ng-model='register.user.password', name='password', placeholder='Passwort', required)
+						//-error validation
+						div.panel.panel-danger(ng-if='interacted(registerForm.mailAddress)', ng-messages='registerForm.mailAddress.$error', ng-messages-include='app_components/templates/error-messages.html')
+				div.form-group
+					label.col-sm-3.control-label.white Passwort:
+					div.col-sm-9
+						input.form-control(type='password', ng-model='register.user.password', name='password', placeholder='Passwort', required)
 
-							//-error validation
-							div.panel.panel-danger(ng-if='interacted(registerForm.passwordRepetition)', ng-messages='registerForm.password.$error', ng-messages-include='app_components/templates/error-messages.html')
-					div.form-group
-						label.col-sm-2.control-label Passwort wiederholen:
-						div.col-sm-10
-							input.form-control(type='password', ng-model='register.user.passwordRepetition', name='passwordRepetition', placeholder='Passwort', required)
-							//-TODO: password repetition fixen! input.form-control(type='password', ng-model='register.user.passwordRepetition', name='passwordRepetition', placeholder='Passwort', password-repetition-validator='{{register.user.password}}' required)
+						//-error validation
+						div.panel.panel-danger(ng-if='interacted(registerForm.passwordRepetition)', ng-messages='registerForm.password.$error', ng-messages-include='app_components/templates/error-messages.html')
+				div.form-group
+					label.col-sm-3.control-label.white Passwort wiederholen:
+					div.col-sm-9
+						input.form-control(type='password', ng-model='register.user.passwordRepetition', name='passwordRepetition', placeholder='Passwort', required)
+						//-TODO: password repetition fixen! input.form-control(type='password', ng-model='register.user.passwordRepetition', name='passwordRepetition', placeholder='Passwort', password-repetition-validator='{{register.user.password}}' required)
 
-							//-error validation
-							//-TODO: password repetition fixen! div.panel.panel-danger(ng-if='interacted(registerForm.passwordRepetition)', ng-messages='registerForm.passwordRepetition.$error', ng-messages-include='app_components/templates/error-messages.html')
-								//-div.panel-body(ng-message='passwordIsRepeated') Passwörter stimmen nicht überein
-					div.form-group
-						div.col-sm-10.col-sm-offset-2
-							button.btn.btn-default-alt(type='submit') Registrieren
+						//-error validation
+						//-TODO: password repetition fixen! div.panel.panel-danger(ng-if='interacted(registerForm.passwordRepetition)', ng-messages='registerForm.passwordRepetition.$error', ng-messages-include='app_components/templates/error-messages.html')
+							//-div.panel-body(ng-message='passwordIsRepeated') Passwörter stimmen nicht überein
+				div.form-group
+					div.col-sm-9.col-sm-offset-3
+						button.btn.btn-primary(type='submit') Registrieren

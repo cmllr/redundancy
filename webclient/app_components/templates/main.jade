@@ -1,6 +1,6 @@
 #wrapper
 	// Navigation
-	nav.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+	nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
 		// Brand and toggle get grouped for better mobile display
 		.navbar-header
 			button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-ex1-collapse')
@@ -8,11 +8,11 @@
 				span.icon-bar
 				span.icon-bar
 				span.icon-bar
-			a.navbar-brand(href='index.html') Redundancy
+			a.navbar-brand(href='index.html') R²
 		// Top Menu Items
 		ul.nav.navbar-right.top-nav
 			li.dropdown
-				a.dropdown-toggle(href='#', data-toggle='dropdown')
+				a.dropdown-toggle(href='', data-toggle='dropdown')
 					i.fa.fa-user
 					| {{ main.principal.displayName }}
 					b.caret
@@ -37,6 +37,10 @@
 		// Sidebar Menu Items - These collapse to the responsive navigation menu on small screens
 		.collapse.navbar-collapse.navbar-ex1-collapse
 			ul.nav.navbar-nav.side-nav
+				li.active
+					a(href='blank-page.html')
+						i.fa.fa-fw.fa-file
+						| Start
 				li
 					a(href='javascript:;', data-toggle='collapse', data-target='#demo')
 						i.fa.fa-fw.fa-arrows-v
@@ -47,23 +51,20 @@
 							a(href='#') Dropdown Item
 						li
 							a(href='#') Dropdown Item
-				li.active
-					a(href='blank-page.html')
-						i.fa.fa-fw.fa-file
-						| Blank Page
 		// /.navbar-collapse
 	#page-wrapper
 		.container-fluid
 			// Page Heading
 			.row
 				.col-lg-12
-					h1.page-header
-						| Blank Page
-						small  Subheading
-					ol.breadcrumb
-						li
-							i.fa.fa-dashboard
-							a(href='index.html') Dashboard
-						li.active
-							i.fa.fa-file
-							| Blank page
+					div(ui-view='')
+					//- h1.page-header
+					//- 	| Blank Page
+					//- 	small  Subheading
+					//- ol.breadcrumb
+					//- 	li
+					//- 		i.fa.fa-dashboard
+					//- 		a(href='index.html') Dashboard
+					//- 	li.active
+					//- 		i.fa.fa-file
+					//- 		| Blank page
