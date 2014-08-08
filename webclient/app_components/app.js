@@ -1,4 +1,4 @@
-angular.module('redundancy', ['ui.router', 'ngMessages']);
+angular.module('redundancy', ['ui.router', 'ngMessages', 'pascalprecht.translate']);
 
 angular.module('redundancy').run(function($rootScope) {
 

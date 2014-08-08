@@ -1,7 +1,16 @@
 (function() {
     'use strict';
 
-    var config = function($httpProvider, $stateProvider, $urlRouterProvider) {
+    var config = function($httpProvider, $stateProvider, $urlRouterProvider, $translateProvider) {
+
+        $translateProvider.useStaticFilesLoader({
+            prefix: 'app_components/i18n/',
+            suffix: '.json'
+        });
+
+        $translateProvider.preferredLanguage('de');
+        //$translateProvider.useLocalStorage();
+
 
         //code from: http://victorblog.com/2012/12/20/make-angularjs-http-service-behave-like-jquery-ajax/
         //necessary to make angular requests work like jquery ajax requests
