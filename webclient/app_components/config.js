@@ -69,14 +69,28 @@
         var register = {
                 url: '/register',
                 controller: 'registerController as register',
-                templateUrl: 'app_components/templates/register.html'
+                templateUrl: 'app_components/templates/register.html',
+                data: {
+                    roles: []
+                }
             },
 
             //login Page
             login = {
                 url: '/login',
                 controller: 'loginController as login',
-                templateUrl: 'app_components/templates/login.html'
+                templateUrl: 'app_components/templates/login.html',
+                data: {
+                    roles: []
+                }
+            },
+
+            accessdenied = {
+                url: '/accessdenied',
+                template: 'ACCESS DENIED',
+                data: {
+                    roles: []
+                }
             },
 
             //abstract state for capsulating principal object
@@ -84,18 +98,32 @@
                 abstract: true,
                 url: '/main',
                 controller: 'mainController as main',
-                templateUrl: 'app_components/templates/main.html'
+                templateUrl: 'app_components/templates/main.html',
+                resolve: {
+                    authorize: ['authorization',
+                        function(authorization) {
+                            return authorization.authorize();
+                        }
+                    ]
+                },
+                data: {
+                    roles: ['user']
+                }
             },
 
             mainStart = {
                 url: '/start',
                 controller: 'startController as start',
-                templateUrl: 'app_components/templates/mainStart.html'
+                templateUrl: 'app_components/templates/mainStart.html',
+                data: {
+                    roles: ['user']
+                }
             };
 
         $stateProvider
             .state('register', register)
             .state('login', login)
+            .state('accessdenied', accessdenied)
             .state('main', main)
             .state('main.start', mainStart);
     };

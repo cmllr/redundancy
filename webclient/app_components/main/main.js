@@ -1,9 +1,9 @@
 (function() {
     'use strict';
 
-    var mainController = function(principal, user) {
+    var mainController = function(principal, user, $state) {
         var vm = this;
-        vm.principal = principal;
+        vm.principal = principal.getIdentity();
 
         var getUser = function() {
             var token = vm.principal.token;
@@ -15,9 +15,14 @@
             vm.principal.displayName = response.DisplayName;
         };
 
+        vm.logout = function() {
+            principal.authenticate(null);
+            $state.go('login');
+        };
+
         getUser();
     };
 
     angular.module('redundancy')
-        .controller('mainController', ['principal', 'user', mainController]);
+        .controller('mainController', ['principal', 'user', '$state', mainController]);
 }());

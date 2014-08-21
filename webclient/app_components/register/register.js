@@ -1,11 +1,8 @@
 (function() {
     'use strict';
 
-    var registerController = function(principal, user) {
+    var registerController = function(user) {
         var vm = this;
-
-        vm.principal = principal;
-        console.log(principal);
 
         vm.register = function() {
             console.log(vm.user);
@@ -21,7 +18,6 @@
         };
 
         var onRegisterError = function(response) {
-
             console.log(response);
         };
 
@@ -31,5 +27,5 @@
     };
 
     angular.module('redundancy')
-        .controller('registerController', ['principal', 'user', registerController]);
+        .controller('registerController', ['user', registerController]);
 }());

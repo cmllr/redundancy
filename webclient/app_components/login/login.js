@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    var loginController = function($log, user, principal, $state) {
+    var loginController = function($scope, $log, user, principal, $state) {
         var vm = this;
         vm.principal = principal;
         vm.loginErrors = {};
@@ -37,12 +37,23 @@
         var onLoginSuccess = function(response) {
             var token = response.data.substring(1, response.data.length - 1);
 
+            principal.authenticate({
+                loginName: vm.user.loginName,
+                token: token,
+                roles: ['user'] //FOR TESTS HARDCODED!!!
+            });
+            /*
             principal.loginName = vm.user.loginName;
-            principal.token = token;
+            principal.token = token;*/
+            console.log($scope.returnToState);
 
             //reset errors
             validateErrors();
-            $state.go('main.start');
+
+            if ($scope.returnToState)
+                $state.go($scope.returnToState.name, $scope.returnToStateParams);
+            else
+                $state.go('main.start');
         };
 
         var onLoginError = function(response) {
@@ -51,5 +62,5 @@
     };
 
     angular.module('redundancy')
-        .controller('loginController', ['$log', 'user', 'principal', '$state', loginController]);
+        .controller('loginController', ['$scope', '$log', 'user', 'principal', '$state', loginController]);
 }());
