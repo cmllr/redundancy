@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html ng-app="redundancy"></html>
+<head>
+  <title></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <link href="bower_components/bootswatch/cosmo/bootstrap.min.css" rel="stylesheet">
+  <link href="app_components/vendor/sb-admin/css/sb-admin.css" rel="stylesheet">
+</head>
+<body>
+  <!--Livereload script for development only (stripped during dist build) -->
+  <script src="http://localhost:35729/livereload.js" data-concat="false"></script>
+  <!--JS from Bower Components-->
+  <script src="bower_components/jquery/jquery.js"></script>
+  <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+  <script src="bower_components/ng-messages/angular-messages.js"></script>
+  <script src="bower_components/angular-translate/angular-translate.js"></script>
+  <script src="bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
+  <!--Add New Bower Component JS Above-->
+  <!--Main App JS -->
+  <script src="app_components/app.js"></script>
+  <script src="app_components/config.js"></script>
+  <script src="app_components/services/user.js"></script>
+  <script src="app_components/services/principal.js"></script>
+  <script src="app_components/services/authorization.js"></script>
+  <script src="app_components/register/register.js"></script>
+  <script src="app_components/register/usernameOrMailAddressAvailabilityValidator.js"></script>
+  <script src="app_components/register/passwordRepetitionValidator.js"></script>
+  <script src="app_components/login/login.js"></script>
+  <script src="app_components/main/main.js"></script>
+  <script src="app_components/start/start.js"></script>
+  <!--Add New Component JS Above -->
+  <div ui-view=""></div>
+</body>

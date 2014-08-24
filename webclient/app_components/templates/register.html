@@ -1,0 +1,52 @@
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-offset-3 col-md-6">
+      <h1 class="white">Registrieren</h1>
+      <form name="registerForm" ng-submit="registerForm.$valid && register.register()" class="form-horizontal">
+        <div class="form-group">
+          <label class="col-sm-3 control-label white">Anmeldename:</label>
+          <div class="col-sm-9">
+            <input type="text" ng-model="register.user.loginName" name="loginName" placeholder="Benutzername" loginname-or-mail-address-availability-validator="loginname-or-mail-address-availability-validator" required="required" class="form-control"/>
+            <div ng-if="interacted(registerForm.loginName)" ng-messages="registerForm.loginName.$error" ng-messages-include="app_components/templates/error-messages.html" class="panel panel-danger ng-active">
+              <div ng-message="loginnameOrMailAddressLoading" class="panel-body">Name wird überprüft...</div>
+              <div ng-message="loginnameOrMailAddressAvailable" class="panel-body">Dieser Name ist nicht mehr verfügbar</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label white">Anzeigename:</label>
+          <div class="col-sm-9">
+            <input type="text" ng-model="register.user.displayName" name="displayName" placeholder="Anzeigename" required="required" class="form-control"/>
+            <div ng-if="interacted(registerForm.displayName)" ng-messages="registerForm.displayName.$error" ng-messages-include="app_components/templates/error-messages.html" class="panel panel-danger"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label white">E-Mail Adresse:</label>
+          <div class="col-sm-9">
+            <input type="email" ng-model="register.user.mailAddress" name="mailAddress" placeholder="E-Mail Adresse" user-name-or-mail-address-availability-validator="user-name-or-mail-address-availability-validator" required="required" class="form-control"/>
+            <div ng-if="interacted(registerForm.mailAddress)" ng-messages="registerForm.mailAddress.$error" ng-messages-include="app_components/templates/error-messages.html" class="panel panel-danger"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label white">Passwort:</label>
+          <div class="col-sm-9">
+            <input type="password" ng-model="register.user.password" name="password" placeholder="Passwort" required="required" class="form-control"/>
+            <div ng-if="interacted(registerForm.passwordRepetition)" ng-messages="registerForm.password.$error" ng-messages-include="app_components/templates/error-messages.html" class="panel panel-danger"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label white">Passwort wiederholen:</label>
+          <div class="col-sm-9">
+            <input type="password" ng-model="register.user.passwordRepetition" name="passwordRepetition" placeholder="Passwort" required="required" class="form-control"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-9 col-sm-offset-3">
+            <button type="submit" class="btn btn-primary">Registrieren</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
