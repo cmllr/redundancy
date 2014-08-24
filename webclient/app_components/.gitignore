@@ -1,4 +1,0 @@
-#ignore all html files, if needed the jade files
-#must be compiled with "grunt jade:serve"
-
-*.html
