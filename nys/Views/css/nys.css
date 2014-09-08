@@ -1,0 +1,19 @@
+.logo{
+	display: block;
+	max-width: 70%;
+	height: auto;
+	margin-right: 15%;
+	margin-left: 15%;
+}
+.infologo{	
+	max-width: 20%;
+	margin-right: 35%;
+	margin-left: 35%;
+}
+.appname{
+	text-align: center;
+	font-weight: 600;
+}
+.container{
+	padding-top: 20px;
+}
