@@ -60,6 +60,23 @@
 			$got = $GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("testDirectory01/",-1,$token);
 			$this->assertTrue($got == \Redundancy\Classes\Errors::DisplayNameNotAllowed);
 		}
+		
+		//***********************Tests GetAbsolutePathById()***********************
+		public function GetAbsolutePathById01(){
+			//This check shoudl fail..
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetAbsolutePathById(-1,$token);
+			$this->assertTrue($got == "/");
+		}
+		public function GetAbsolutePathById02(){
+			//This check shoudl fail..
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("testDirectory012/",-1,$token);
+			$id = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/testDirectory012",$token)->Id;
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetAbsolutePathById($id,$token);
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/testDirectory012/",$token);
+			$this->assertTrue($got == "/testDirectory012/");
+		}
 		//***********************Tests GetEntryById()***********************
 		public function testGetEntryById01(){
 			//This check shoudl fail..
@@ -157,6 +174,37 @@
 			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetStorage($token);											
 			$this->assertTrue($got->sizeInByte == $expected->ContingentInByte);
 			$this->assertTrue($got->usedStorageInByte == 0);
+		}
+		//***********************Tests GetCorrectedUnit()***********************
+		public function testGetCorrectedUnit01(){
+			$expected = "5 B";									
+			$value = 5;
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetCorrectedUnit($value);			
+			$this->assertTrue($expected == $got);			
+		}
+		public function testGetCorrectedUnit02(){
+			$expected = "5 KB";									
+			$value = 5*1024;
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetCorrectedUnit($value);			
+			$this->assertTrue($expected == $got);
+		}	
+		public function testGetCorrectedUnit03(){
+			$expected = "5 MB";									
+			$value = 5*1024*1024;
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetCorrectedUnit($value);
+			$this->assertTrue($expected == $got);
+		}
+		public function testGetCorrectedUnit04(){
+			$expected = "5 GB";									
+			$value = 5*1024*1024*1024;
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetCorrectedUnit($value);
+			$this->assertTrue($expected == $got);
+		}
+		public function testGetCorrectedUnit05(){
+			$expected = "5 TB";									
+			$value = 5*1024*1024*1024*1024;
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetCorrectedUnit($value);			
+			$this->assertTrue($expected == $got);
 		}
 		//***********************Test UploadFile()***********************		
 		public function testUploadFile01(){

@@ -63,7 +63,14 @@
 		* @param $router the Router-Object to be used.
 		*/
 		public function Main($router){			
-			$data = $this->InjectSessionData($router);					
+			$data = $this->InjectSessionData($router);		
+			$innerContent = "StartPage.php";				
+			//Set the varaiables to be injected.
+			$storageStats = $GLOBALS["Router"]->DoRequest("Kernel.FileSystemKernel","GetStorage",json_encode(array($_SESSION["Token"])));	
+			$storageSize = $GLOBALS["Router"]->DoRequest("Kernel.FileSystemKernel","GetCorrectedUnit",json_encode(array($storageStats->sizeInByte)));	
+			$usedStorageSize = $GLOBALS["Router"]->DoRequest("Kernel.FileSystemKernel","GetCorrectedUnit",json_encode(array($storageStats->usedStorageInByte)));	 		
+			$percentage = ($storageStats->usedStorageInByte != 0) ? 100/($storageStats->sizeInByte/$storageStats->usedStorageInByte) : 0;			
+			$storageInfo = $usedStorageSize." ".$GLOBALS["Language"]->of." ".$storageSize." ".$GLOBALS["Language"]->used;		
 			include "Views/Main.php";
 		}
 		/**
@@ -73,6 +80,68 @@
 		public function Info($router){		
 			$data = $this->InjectSessionData($router);					
 			$innerContent = "Info.php";			
+			include "Views/Main.php";
+		}
+		/**
+		* Display the files list
+		* @param $router the Router-Object to be used.
+		*/
+		public function Files($router){		
+			$data = $this->InjectSessionData($router);					
+			$entries = array("test","test2");
+			$innerContent = "Files.php";			
+			include "Views/Main.php";
+		}
+		/**
+		* Display the dialog for creating a new directory
+		* @param $router the Router-Object to be used.
+		*/
+		public function NewFolder($router){	
+			if (!isset($_SESSION["currentFolder"]))				
+				$_SESSION["currentFolder"] = "/";
+			$currentDirectory = $router->DoRequest("Kernel.FileSystemKernel","GetEntryByAbsolutePath",json_encode(array($_SESSION["currentFolder"],$_SESSION["Token"])));			
+			$absolutePathCurrentDirectory = $router->DoRequest("Kernel.FileSystemKernel","GetAbsolutePathById",json_encode(array($currentDirectory->Id,$_SESSION["Token"])));
+			if (isset($_POST["directory"])){
+				$values = array();			
+				if (strpos($_POST["directory"],";") !== false){
+					$values = explode(";",$_POST["directory"]);
+				}
+				else{
+					$values[] = str_replace("/", "", $_POST["directory"]);
+				}
+				foreach($values as $key=>$value){
+					$fullPath = sprintf("$absolutePathCurrentDirectory%s/",$value);
+					if (!empty($value))
+					{						
+						//Create the directory, but only when there is no directory with that name.
+						$args = array("$value",$currentDirectory->Id,$_SESSION["Token"]);					
+						$exists =  $router->DoRequest("Kernel.FileSystemKernel","IsEntryExisting",json_encode($args));	
+						if (!$exists){
+							$creation = $router->DoRequest("Kernel.FileSystemKernel","CreateDirectory",json_encode($args));
+							if (!isset($MESSAGE))
+								$MESSAGE=array();
+							if (!is_numeric($creation))
+								$MESSAGE[]= sprintf($GLOBALS["Language"]->createdir_success,$fullPath);
+							else
+								$ERROR[] = sprintf($GLOBALS["Language"]->createdir_fail,$fullPath,$creation);
+						}	
+						else{						
+							if (!isset($ERROR))
+								$ERROR=array();
+							$ERROR[] = sprintf($GLOBALS["Language"]->createdir_fail,$fullPath,$exists);
+						}	
+					}
+					else{
+						if (!isset($ERROR))
+								$ERROR=array();
+						$ERROR[] = sprintf($GLOBALS["Language"]->createdir_fail,$fullPath,"Null");
+					}
+				}	  
+						
+			}
+			$data = $this->InjectSessionData($router);			
+			
+			$innerContent = "NewFolder.php";			
 			include "Views/Main.php";
 		}
 		/**

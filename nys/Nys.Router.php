@@ -45,30 +45,34 @@
 		* Routes the user to the wanted view
 		* @param $url the current url
 		*/	
-		public function Route($url){			
+		public function Route($url){				
 			//Start the SESSION-Array if needed.			
 			if (!isset($_SESSION))
 						session_start();
 			$this->SetLanguage("de");
 
-			if (strpos($url,"?login") !== false){		
-				if (!isset($_SESSION["Token"]))		
-					$this->controller->LogIn($this);	
+			if (isset($_SESSION["Token"])){
+				if (isset($_GET["main"]))
+					$this->controller->Main($this);	
+				else if (isset($_GET["info"]))
+					$this->controller->Info($this);		
+				else if (isset($_GET["logout"]))
+					$this->controller->LogOut($this);
+				else if (isset($_GET["files"]))
+					$this->controller->Files($this);	
+				else if (isset($_GET["newfolder"]))
+					$this->controller->NewFolder($this);							
 				else
 					$this->DoRedirect("main");
-			}
-			else if (strpos($url,"?main") !== false){		
-				if (isset($_SESSION["Token"]))
-					$this->controller->Main($this);	
+			}		
+			else{
+				if (isset($_GET["info"]))
+					$this->controller->Info($this);					
+				else if (isset($_GET["login"]))				
+					$this->controller->LogIn($this);	
 				else
-					$$this->controller->LogOut($this);
-			}	
-			else if (strpos($url,"?logout") !== false)
-				$this->controller->LogOut($this);	
-			else if (strpos($url,"?info") !== false)
-				$this->controller->Info($this);	
-			else if (isset($_SESSION["Token"]))
-				$this->controller->Main($this);					
+					$this->controller->LogIn($this);		
+			}									
 		}
 		/**
 		* POST-Request helper method
@@ -87,7 +91,7 @@
 			    CURLOPT_VERBOSE => TRUE,
 			    CURLOPT_RETURNTRANSFER => 1,
 			    CURLOPT_URL => $prefix.$domain.$relative,
-			    CURLOPT_USERAGENT => 'Nys',
+			    CURLOPT_USERAGENT => (isset($_SERVER['HTTP_USER_AGENT'])) ? 'Nys@'.$_SERVER['HTTP_USER_AGENT'] : 'Nys',
 			    CURLOPT_POST => 1,
 			    CURLOPT_POSTFIELDS => array(
 				'module' => $module,

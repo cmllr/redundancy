@@ -84,7 +84,7 @@
 		/**
 		* Get the storage informations
 		* @param string $token a valid session token to identify the user
-		* @returns \Redundancy\Classes\FileSystemAnalysis object or an errorcode
+		* @return \Redundancy\Classes\FileSystemAnalysis object or an errorcode
 		*/
 		public function GetStorage($token){
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
@@ -103,6 +103,23 @@
 				}
 			}				
 			return $result;	
+		}
+		/**
+		* Calculates the correct unit for a storage information
+		* @param $value the value to calculate
+		* @return a string containg the unit
+		*/
+		public function GetCorrectedUnit($value){
+			if ($value <= 1024)
+				return round($value,2)." B";
+			else if ($value > 1024 && $value < (1024*1024))
+				return round($value/(1024),2). " KB";
+			elseif ($value > 1024*1024 && $value < (1024*1024*1024))
+				return round($value/(1024*1024),2). " MB";
+			elseif ($value > 1024*1024 && $value < (1024*1024*1024*1024))
+				return round($value/(1024*1024*1024),2). " GB";
+			elseif ($value > 1024*1024*1024 && $value < (1024*1024*1024*1024*1024))
+				return round($value/(1024*1024*1024*1024),2). " TB";
 		}
 		/**
 		* Checks if a displayname is allowed in the system
@@ -647,11 +664,14 @@
 		public function GetAbsolutePathById($id,$token){
 			$escapedId = DBLayer::GetInstance()->EscapeString($id,true);
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
-			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;			
 			if (is_null($ownerId))
 				return \Redundancy\Classes\Errors::TokenNotValid;
+			//Return the root dir if the function should find the root node.
+			if ($id == -1)
+				return "/";
 			$checkquery = sprintf("Select * from FileSystem where Id = '%s' and OwnerID = '%s' limit 1",$escapedId,$ownerId);
-			$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);	
+			$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);				
 			if (count($checkresult) == 0)
 				return \Redundancy\Classes\Errors::DirectoryNotFound;
 			$lastParentId = $checkresult[0]["parentFolder"];	

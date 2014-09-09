@@ -3,7 +3,7 @@
 <?php
 	//Display the error message if needed.
 	if (isset($ERROR))
-		include "ErrorMessage.php";
+		include "Partials/ErrorMessage.php";
 ?>
 <img class="logo hidden-xs" src="./nys/Views/img/logo.png">
 <h2 class="appname"><?php  echo $GLOBALS["Router"]->DoRequest("Kernel","GetAppName",json_encode(array())); ?></h2>

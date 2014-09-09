@@ -28,13 +28,51 @@
 			<li>
 				<a href="index.php">
 				<span class="elusive icon-home glyphIcon"></span>
-					Main
+					<?php echo $GLOBALS["Language"]->Home;?>
+				</a>
+			</li>	
+			<li>
+				<a href="?files">
+				<span class="elusive icon-file glyphIcon"></span>
+					<?php echo $GLOBALS["Language"]->Files;?>
+				</a>
+			</li>	
+			<li>
+				<a href="?history">
+				<span class="elusive icon-time glyphIcon"></span>
+					<?php echo $GLOBALS["Language"]->changes;?>
+				</a>
+			</li>	
+			<li>
+				<a href="?search">
+				<span class="elusive icon-search glyphIcon"></span>
+					<?php echo $GLOBALS["Language"]->Search;?>
+				</a>
+			</li>	
+			<li>
+				<a href="?upload">
+				<span class="elusive icon-file-new glyphIcon"></span>
+					<?php echo $GLOBALS["Language"]->Upload;?>
+				</a>
+			</li>	
+			<li>
+				<a href="?newfolder">
+				<span class="elusive icon-folder glyphIcon"></span>
+					<?php echo $GLOBALS["Language"]->New_Directory_Short;?>
 				</a>
 			</li>											
 		</ul>		
 	</div>
 </div>
 <div class="col-lg-8 col-md-8 col-sm-9 col-xs-12">
+	<?php
+	//Display the error message if needed.
+	if (isset($ERROR))
+		include "Partials/ErrorMessage.php";
+	//Display other messages
+	if (isset($MESSAGE))
+		include "Partials/Message.php";	
+	?>	
 	<div class="panel panel-default"> 
 		<div class="panel-body">
 			<?php
