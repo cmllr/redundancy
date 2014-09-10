@@ -134,7 +134,18 @@
 					return false;
 			}
 			return true;
-		}		
+		}	
+		/**
+		* Wrapper vor redirecting the files
+		* @param string $root the root dir id
+		* @param string $token a valid session token
+		*@param string $files the files-array
+		* @return bool if the action was successfull or an errorcode to describe the problem
+		*/
+		public function UploadFileWrapper($root,$token,$files){
+			$_FILES["file"] = json_decode($files);			
+			return $this->UploadFile($root,$token);
+		}	
 		/**
 		* Upload a file to a given folder
 		* Note: You have to send the single file in an field named "file" in $_FILES.
@@ -145,50 +156,83 @@
 		public function UploadFile($root,$token){		
 			$escapedRoot = DBLayer::GetInstance()->EscapeString($root,true);
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
-			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;			
-			if (is_null($ownerId))
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;	
+			$_FILES["file"] =  (array) $_FILES["file"];
+			$tempPath = $_FILES["file"]["tmp_name"];					
+			if (is_null($ownerId)){
+				//Delete the temporary file!
+				$this->CleanUpTemp($tempPath);	
 				return \Redundancy\Classes\Errors::TokenNotValid;
-			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowUpload))
-				return \Redundancy\Classes\Errors::NotAllowed;
+			}
+				
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowUpload)){
+				//Delete the temporary file!
+				$this->CleanUpTemp($tempPath);	
+				return  \Redundancy\Classes\Errors::NotAllowed;
+			}
+				
 			//For reverting
-			$newAddedFiles = [];				
-			if (is_null($_FILES["file"]))
-				return false;
+			$newAddedFiles = array();				
+			if (is_null($_FILES["file"])){
+				//Delete the temporary file!
+				$this->CleanUpTemp($tempPath);	
+				return "false";
+			}			
+			
+
 			$displayName =  DBLayer::GetInstance()->EscapeString($_FILES["file"]["name"],true);
-			if ($this->IsEntryExisting($displayName,$escapedRoot,$escapedToken))
+			if ($this->IsEntryExisting($displayName,$escapedRoot,$escapedToken)){
+				//Delete the temporary file!
+				$this->CleanUpTemp($tempPath);	
 				return \Redundancy\Classes\Errors::EntryExisting;
-			if (!$this->IsDisplayNameAllowed($displayName))
-				return \Redundancy\Classes\Errors::DisplayNameNotAllowed;				
-			$sizeInByte = DBLayer::GetInstance()->EscapeString($_FILES["file"]["size"],true);
+			}			
+				
+			if (!$this->IsDisplayNameAllowed($displayName)){
+				//Delete the temporary file!
+				$this->CleanUpTemp($tempPath);	
+				return \Redundancy\Classes\Errors::DisplayNameNotAllowed;	
+			}
+							
+			$sizeInByte = DBLayer::GetInstance()->EscapeString($_FILES["file"]["size"],true);			
 			//Do the insertion only if there is enough space
 			if ($this->GetStorage($escapedToken)->usedStorageInByte + $sizeInByte < $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ContingentInByte){
 				$uploadDateTime = date('Y-m-d H:i:s');			
-				$type =  DBLayer::GetInstance()->EscapeString($_FILES["file"]["type"],true);
-				$tempPath = $_FILES["file"]["tmp_name"];
+				$type =  DBLayer::GetInstance()->EscapeString($_FILES["file"]["type"],true);				
 				$hash = $this->GetUniqueHash($displayName);
 				$filePath = $this->GetUniqueStorageFileName($displayName);
 				$userAgent = (!isset($_SERVER['HTTP_USER_AGENT'])) ? "The platform could not be detected!" : $_SERVER['HTTP_USER_AGENT'];
-				//A little workaround if the program is runned in a test environment (e. g. PHPUnit)			
-				if ($GLOBALS["Kernel"]->SystemKernel->IsInTestEnvironment()){
+				//A little workaround if the program is runned in a test environment (e. g. PHPUnit)						
+				if ($GLOBALS["Kernel"]->SystemKernel->IsInTestEnvironment() || strpos($tempPath, "REDUNDANCY") !== false){
 					if (!file_exists($tempPath))
 						return \Redundancy\Classes\Errors::TempFileCouldNotBeMoved;
 					$uploadResult = copy($tempPath,$this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage).$filePath);
 				}else{
 					$uploadResult = move_uploaded_file($tempPath,$this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage).$filePath);
 				}	
+				//Delete the temporary file!
+				$this->CleanUpTemp($tempPath);				
 				if ($uploadResult){
 					$query = sprintf("Insert into FileSystem (sizeInByte,filePath,displayName,uploadDateTime,lastChangeDateTime,uploadUserAgent,hash,ownerId,parentFolder,mimeType) values('%d','%s','%s','%s','%s','%s','%s','%d','%d','%s')",$sizeInByte,$filePath,$displayName,$uploadDateTime,$uploadDateTime,$userAgent,$hash,$ownerId,$root,$type);	
 					DBLayer::GetInstance()->RunInsert($query);
 					$this->RefreshLastChangeDateTimeOfParent($escapedRoot,$escapedToken);
 					return 	$this->IsEntryExisting($displayName,$escapedRoot,$escapedToken);
 				}
-				else{
+				else{					
 					return \Redundancy\Classes\Errors::TempFileCouldNotBeMoved;
-				}
+				}				
 			}
 			else{
+				$this->CleanUpTemp($tempPath);			
 				return \Redundancy\Classes\Errors::NoSpaceLeft;
 			}	
+		}
+		/**
+		* Deletes a temporary file
+		* @param $tempPath string the temporary file path
+		*/
+		private function CleanUpTemp($tempPath){
+			if (strpos($tempPath, "REDUNDANCY") !== false || !$GLOBALS["Kernel"]->SystemKernel->IsInTestEnvironment())
+					unlink($tempPath);
 		}
 		/**
 		* Delete an directory

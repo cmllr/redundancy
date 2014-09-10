@@ -1,4 +1,5 @@
 <?php
+	namespace Redundancy\Nys;
 	/**
 	 * PHP UI routing module
 	 * @file
@@ -61,7 +62,9 @@
 				else if (isset($_GET["files"]))
 					$this->controller->Files($this);	
 				else if (isset($_GET["newfolder"]))
-					$this->controller->NewFolder($this);							
+					$this->controller->NewFolder($this);	
+				else if (isset($_GET["upload"]))
+					$this->controller->Upload($this);								
 				else
 					$this->DoRedirect("main");
 			}		
@@ -100,7 +103,16 @@
 			    )
 			));
 			// Send the request & save response to $resp
-			$resp = curl_exec($curl);						
+			$resp = curl_exec($curl);	
+			if (is_int(json_decode($resp))){	
+				header('HTTP/1.1 403 Forbidden');				
+				//Special handling if the file upload is used.
+				if ($method=="UploadFileWrapper"){
+					header('Content-type: text/plain');
+					curl_close($curl);			
+					exit("##R_ERR_".$resp);
+				}
+			}					
 			// Close request to clear up some resources
 			curl_close($curl);			
 			return json_decode($resp);

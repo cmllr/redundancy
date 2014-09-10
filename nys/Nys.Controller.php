@@ -1,4 +1,5 @@
 <?php
+	namespace Redundancy\Nys;
 	/**
 	 * base controller
 	 * @file
@@ -142,6 +143,53 @@
 			$data = $this->InjectSessionData($router);			
 			
 			$innerContent = "NewFolder.php";			
+			include "Views/Main.php";
+		}
+		function diverse_array($vector) { 
+		    $result = array(); 
+		    foreach($vector as $key1 => $value1) 
+		        foreach($value1 as $key2 => $value2) 
+		            $result[$key2][$key1] = $value2; 
+		    return $result; 
+		} 
+		/**
+		* Display the files list
+		* @param $router the Router-Object to be used.
+		*/
+		public function Upload($router){		
+			$data = $this->InjectSessionData($router);	
+			if (!isset($_SESSION["currentFolder"]))						
+				$_SESSION["currentFolder"] = "/";;
+			$absolutePathCurrentDirectory = $_SESSION["currentFolder"];				
+			if (isset($_FILES["file"])){
+				$fileToUpload = array();
+				$_FILES["file"] = $this->diverse_array($_FILES["file"]);
+				if (!isset($_FILES["file"]["name"])){
+					for ($i =0 ; $i < count($_FILES["file"]);$i++){
+						$fileToUpload[] = $_FILES["file"][$i];
+					}			
+				}
+				else{
+					$fileToUpload[] = $_FILES["file"];
+				}
+				for ($i = 0; $i < count($fileToUpload);$i++){
+
+					$value = $fileToUpload[$i];
+					$file = $value;
+					$oldPath = $value["tmp_name"];						
+					move_uploaded_file($oldPath,$oldPath."REDUNDANCY");
+					$file["tmp_name"] = $oldPath."REDUNDANCY";			
+					if (isset($value)){						
+						$result =  $router->DoRequest("Kernel.FileSystemKernel","UploadFileWrapper",json_encode(array(-1,$_SESSION["Token"],json_encode($file))));	
+						//TODO: Fallback handling
+						/*if (!is_numeric($result) && $result)
+							echo "YEAH BITCHEZ";
+						else
+							echo "ERROR $result";*/
+					}
+				}
+			}						
+			$innerContent = "Upload.php";			
 			include "Views/Main.php";
 		}
 		/**

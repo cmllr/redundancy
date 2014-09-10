@@ -62,7 +62,7 @@
 			* The programs version
 			* Structurized in {1.9.X-codenameorbranch-state-update}
 			*/
-			public $Version = "1.9.15-lenticularis-beta5-0";
+			public $Version = "1.9.15-lenticularis-dev1-0";
 			/**
 			* The programs release date
 			*/
@@ -132,5 +132,12 @@
 					return http_response_code("503");
 				return -1;
 			}	
+			/**
+			* Get the installations display name
+			* @return the application name
+			*/
+			public function GetAppName(){
+				return $this->Configuration["Program_Name_ALT"];
+			}
 		}
 ?>

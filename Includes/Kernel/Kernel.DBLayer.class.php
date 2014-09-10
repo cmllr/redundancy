@@ -96,7 +96,7 @@
 				while ($row = $stmt->fetch()) {			    
 				    $result[] = $row;
 				}
-				return $result;;
+				return $result;
 			}catch(Exception $e){
 				return null;
 			}			

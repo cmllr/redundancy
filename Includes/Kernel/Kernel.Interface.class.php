@@ -71,9 +71,25 @@
 		*/
 		public function SetCurrentLanguage($languageCode){
 			if (file_exists(__REDUNDANCY_ROOT__."Language/".$languageCode.".lng")){
-				$this->Language = $languageCode;
+				$this->Language = parse_ini_file(__REDUNDANCY_ROOT__."Language/".$languageCode.".lng");	
 				$this->LanguageCode = $languageCode;
+				return $this->Language;
 			}
+		}
+		/**
+		 * get a list of languages
+		 * @return an array which contains the language values.
+		 */
+		public function GetInstalledLanguages()
+		{
+			$languages = scandir(__REDUNDANCY_ROOT__."Language/");	
+			$langs = array();
+			foreach($languages as $entry) {
+				if (strpos($entry,".lng") !== false){
+					$langs[] = str_replace(".lng","",$entry);			
+				}			
+			}
+			return $langs;
 		}
 	}
 ?>
