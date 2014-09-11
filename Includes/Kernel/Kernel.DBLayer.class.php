@@ -162,7 +162,7 @@
 			if ($quotemarks == false)
 				return $this->GetConnection()->quote($string, \PDO::PARAM_STR);	
 			else
-				return str_replace("'","",$this->GetConnection()->quote($string, \PDO::PARAM_STR));	
+				return str_replace("\"","",str_replace("'","",$this->GetConnection()->quote($string, \PDO::PARAM_STR)));	
 		}
 	}
 ?>

@@ -346,12 +346,13 @@
 		* @param string $token a valid session token
 		* @return array containing the entries
 		*/
-		public function GetContent($absolutePath,$token){
+		public function GetContent($absolutePath,$token){		
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
 			$escapedabsolutePath = DBLayer::GetInstance()->EscapeString($absolutePath,true);			
-			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken);				
 			if (is_null($ownerId))
 				return \Redundancy\Classes\Errors::TokenNotValid;
+			$ownerId = $ownerId->ID;
 			$entry = $this->GetEntryByAbsolutePath($escapedabsolutePath,$escapedToken);
 			if (is_null($entry)){
 				return \Redundancy\Classes\Errors::EntryNotExisting;
@@ -366,10 +367,11 @@
 				foreach ($result as $value){							
 					$entry = $this->GetEntryById($value["id"],$escapedToken);
 					if ($entry->MimeType == "inode/directory")
-						$entry->sizeInByte = $this->CalculateFolderSize($this->GetAbsolutePathById($entry->Id,$escapedToken),$escapedToken);
+						$entry->SizeInBytes = $this->CalculateFolderSize($this->GetAbsolutePathById($entry->Id,$escapedToken),$escapedToken);
 					$files[] = $entry;
-				}
+				}		
 			}
+
 			return $files;
 		}
 		/**
@@ -386,7 +388,7 @@
 				return false;		
 			do{
 				$changeDateTime = date('Y-m-d H:i:s');		
-				$query = sprintf("Update FileSystem set lastChangeDateTime ='%s' where ID ='%d'",$changeDateTime,$entry->ParentID);
+				$query = sprintf("Update FileSystem set lastChangeDateTime ='%s' where ID ='%d' or ID='%d'",$changeDateTime,$entry->ParentID,$entry->Id);
 				DBLayer::GetInstance()->RunUpdate($query);
 				$entry = $this->GetEntryById($entry->ParentID,$escapedToken);										
 			}while($entry->ParentID != -1);		
@@ -610,7 +612,7 @@
 			$entry = $this->GetEntryById($escapedId,$token);
 			//Only continue if the entry is existing and there is not another entry with this name
 			if (!is_null($entry) && !$this->IsEntryExisting($newName,$entry->ParentID,$escapedToken)){
-				$query = sprintf("Update FileSystem set DisplayName = '%s' where OwnerID = '%u' and parentFolder = '%d'",$escapedDisplayName,$ownerId,$entry->ParentID);		
+				$query = sprintf("Update FileSystem set displayName = '%s' where OwnerID = '%u' and parentFolder = '%d'",$escapedDisplayName,$ownerId,$entry->ParentID);		
 				DBLayer::GetInstance()->RunUpdate($query);
 				$this->RefreshLastChangeDateTimeOfParent($entry->Id,$escapedToken);
 				return true;
@@ -649,9 +651,10 @@
 		public function GetEntryById($id,$token){
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
 			$escapedId = DBLayer::GetInstance()->EscapeString($id,true);
-			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;
+			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken);
 			if (is_null($ownerId))
 				return \Redundancy\Classes\Errors::TokenNotValid;
+			$ownerId = $ownerId->ID;
 			//If the node is the root node, return an fitting object
 			if ($id == -1){
 				$dir = new \Redundancy\Classes\Folder();
@@ -714,21 +717,31 @@
 			//Return the root dir if the function should find the root node.
 			if ($id == -1)
 				return "/";
+			//Workaround 4 files and folder 
+			$entry = $this->GetEntryById($escapedId,$escapedToken);	
 			$checkquery = sprintf("Select * from FileSystem where Id = '%s' and OwnerID = '%s' limit 1",$escapedId,$ownerId);
 			$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);				
 			if (count($checkresult) == 0)
 				return \Redundancy\Classes\Errors::DirectoryNotFound;
 			$lastParentId = $checkresult[0]["parentFolder"];	
 			$absolutePath = $checkresult[0]["displayName"];	
-			if ($lastParentId == -1)
-				return "/".$absolutePath."/";
+			if ($lastParentId == -1){
+				if (is_null($entry->FilePath))				
+					return "/".$absolutePath."/";
+				else
+					return "/".$absolutePath;
+			}
+			
 			do{
 				$checkquery = sprintf("Select * from FileSystem where Id = '%s' limit 1",$lastParentId);
 				$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);	
 				$lastParentId = $checkresult[0]["parentFolder"];	
 				$absolutePath = $checkresult[0]["displayName"]."/".$absolutePath;				
 			}while($lastParentId != -1);
-			return "/".$absolutePath."/";
+			if (is_null($entry->FilePath))				
+				return "/".$absolutePath."/";
+			else
+				return "/".$absolutePath;
 		}
 		/**
 		* Return an unique hash for a new filesystem entry.

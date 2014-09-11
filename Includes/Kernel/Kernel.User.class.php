@@ -283,13 +283,14 @@
 		public function GetUser($token){
 			$result = null;			
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
-			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select *,u.Id as UserID from User u inner join Session s on s.userId = u.ID where  s.token = '%s' ",$escapedToken));					
+			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select *,u.Id as UserID from User u inner join Session s on s.userId = u.ID where  s.token = '%s' limit 1",$escapedToken));		
 			if (is_null($dbquery)){							
 				return null;
-			}				
+			}			
+			
 			foreach ($dbquery as $value){
-				//only proceed if the token was valid
-				if ($this->IsNewSessionNeeded($value["loginName"]) == "true"){				
+				//only proceed if the token was valid				
+				if ($this->IsNewSessionNeeded($value["loginName"]) == "true"){						
 					return null;
 				}					
 				$user = new \Redundancy\Classes\User();
@@ -305,7 +306,7 @@
 				$user->ContingentInByte = $value["contingentInByte"];
 				$user->Role = $this->GetUserRole($user->LoginName);
 				$user->FailedLogins = $value["failedLogins"];
-				$result = $user;				
+				$result = $user;			
 			}			
 			return $result;	
 		}
@@ -319,9 +320,9 @@
 		*/
 		private function GenerateToken($loginName,$dateTime,$ip){
 			$token = \Redundancy\Classes\Errors::TokenGenerationFailed;
-			$userAgent = "";
+			$userAgent = "";						
 			if (isset($_SERVER['HTTP_USER_AGENT']))
-				$userAgent = $_SERVER['HTTP_USER_AGENT'];
+				$userAgent = $_SERVER['HTTP_USER_AGENT'];			
 			$token = md5(md5($loginName).md5($dateTime).md5($ip).md5($userAgent));
 			return $token;		
 		}
@@ -353,7 +354,9 @@
 		* Get the clients IP
 		* @returns string the IP
 		*/
-		private function GetIP(){
+		private function GetIP(){			
+			if (isset($_POST["ip"]))
+				return DBLayer::GetInstance()->EscapeString($_POST["ip"],true);	
 			if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
 			    $ip = $_SERVER['HTTP_CLIENT_IP'];
 			} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -363,7 +366,7 @@
 			    	$ip = $_SERVER['REMOTE_ADDR'];
 			    else
 			    	$ip = "127.0.0.1";
-			}
+			}		
 			return $ip;
 		}
 		/**
@@ -445,7 +448,7 @@
 				setcookie("SessionData", $token, time()+ $cookieLifeSpan * 60);	
 			}
 			else{				
-				setcookie("SessionData", $token);	
+				setcookie("SessionData", $token);
 			}						
 		}
 		/**
@@ -535,13 +538,13 @@
 			if (is_null($dbquery))
 				return true;			
 			foreach ($dbquery as $value){				
-				$ip =$this->GetIP();
-				$sessionStartedDateTime = date("Y-m-d H:i:s",strtotime($value["sessionStartedDateTime"]));
-				$compareToken = $this->GenerateToken($escapedLoginName,$sessionStartedDateTime,$ip);				
-				if ($compareToken == $value["token"]){									
-					if ($value["sessionEndDateTime"] == "0000-00-00 00:00:00")
+				$ip =$this->GetIP();			
+				$sessionStartedDateTime = date("Y-m-d H:i:s",strtotime($value["sessionStartedDateTime"]));			
+				$compareToken = $this->GenerateToken($escapedLoginName,$sessionStartedDateTime,$ip);							
+				if ($compareToken == $value["token"]){	
+					if ($value["sessionEndDateTime"] == "0000-00-00 00:00:00"){						
 						return $compareToken;
-					else{
+					}else{
 						$currentDateTime = date("Y-m-d H:i:s",time());
 						$sessionEndDateTime = date("Y-m-d H:i:s",strtotime($value["sessionEndDateTime"]	));					
 						if ($currentDateTime >= $sessionEndDateTime)

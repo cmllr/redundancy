@@ -84,23 +84,26 @@
 		* @param $args the arguments (json-decoded)
 		* @return the response content
 		*/
-		public function DoRequest($module,$method,$args){			
+		public function DoRequest($module,$method,$args){		
+
 			$curl = curl_init();	
 			$domain = $_SERVER['HTTP_HOST'];
 			$prefix = isset($_SERVER['HTTPS']) ? 'https://' : 'http://';
 			$relative = str_replace("index.php","",$_SERVER["SCRIPT_NAME"]).'Includes/api.inc.php';				
-			// Set some options - we are passing in a useragent too here
+			// Set some options - we are passing in a useragent too here		
 			curl_setopt_array($curl, array(
 			    CURLOPT_VERBOSE => TRUE,
 			    CURLOPT_RETURNTRANSFER => 1,
 			    CURLOPT_URL => $prefix.$domain.$relative,
-			    CURLOPT_USERAGENT => (isset($_SERVER['HTTP_USER_AGENT'])) ? 'Nys@'.$_SERVER['HTTP_USER_AGENT'] : 'Nys',
+			    CURLOPT_USERAGENT => (isset($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : 'Nys',
 			    CURLOPT_POST => 1,
 			    CURLOPT_POSTFIELDS => array(
-				'module' => $module,
-				'method' => $method,
-				'args' => $args
-			    )
+					'module' => $module,
+					'method' => $method,
+					'args' => $args,
+					'ip' => $_SERVER['REMOTE_ADDR']
+			    ),			   
+			    
 			));
 			// Send the request & save response to $resp
 			$resp = curl_exec($curl);	
