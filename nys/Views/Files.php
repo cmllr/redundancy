@@ -79,7 +79,7 @@ Init();
   				e.preventDefault();
   				var dialogTitle = "<?php echo $GLOBALS["Language"]->DeleteFileTitle; ?>".replace("%s",entry.DisplayName);  				
   				var text = "<?php echo $GLOBALS["Language"]->DeleteFileText; ?>".replace("%s",entry.DisplayName);  	
-  				$( "<p>"+text+"</p>" ).dialog({ title: dialogTitle,width: 350 ,buttons: {
+  				$( "<p>"+text+"</p>" ).dialog({ title: dialogTitle,width: 350 , modal: true,buttons: {
 		        "<?php echo $GLOBALS["Language"]->DeleteFileDeleteButton; ?>": function() {
 		        	StartDeleteFile(entry);
 		        	$( this ).dialog( "close" );
@@ -96,7 +96,7 @@ Init();
   				var dialogTitle = "<?php echo $GLOBALS["Language"]->RenameEntryTitle; ?>".replace("%s",entry.DisplayName);  				
   				var text = "<?php echo $GLOBALS["Language"]->RenameEntryText; ?>".replace("%s",entry.DisplayName);  	
 
-  				$( "<p>"+text+"</p>" ).dialog({ title: dialogTitle,width: 350 ,buttons: {
+  				$( "<p>"+text+"</p>" ).dialog({ title: dialogTitle,width: 350 , modal: true,buttons: {
 		        "<?php echo $GLOBALS["Language"]->RenameButton; ?>": function() {
 		        	var newName = $("#newname").val();		        	
 		        	if (newName != ""){
