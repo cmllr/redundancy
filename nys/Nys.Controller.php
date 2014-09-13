@@ -86,6 +86,30 @@
 			include 'Views/Main.php';
 		}
 		/**
+		* Display the file info-Page
+		* @param $router the Router-Object to be used.
+		*/
+		public function Detail($router){		
+			$data = $this->InjectSessionData($router);	
+			if (!isset($_GET["f"]) || $_GET["f"] == "")
+				$this->Files($router);
+			else{
+				$file = $_GET["f"];
+				$entry = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetEntryByHash',json_encode(array($_GET["f"],$_SESSION['Token'])));
+				if (is_null($entry)){
+					$router->DoRedirect('files');
+				}
+				else{
+					$filePath = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetSystemDir',json_encode(array(0))).$entry->FilePath;
+					$mediaPreview = $GLOBALS['Router']->DoRequest('Kernel.InterfaceKernel','MediaPreview',json_encode(array($filePath,"./nys/Views/Partials","preview")));
+					
+					$_SESSION["fileInject"] = $filePath;
+					$innerContent = 'Detail.php';			
+					include 'Views/Main.php';
+				}	
+			}					
+		}
+		/**
 		* Display the files list
 		* @param $router the Router-Object to be used.
 		*/
@@ -156,6 +180,56 @@
 		            $result[$key2][$key1] = $value2; 
 		    return $result; 
 		} 
+		/**
+		* Display the account info
+		* @param $router the Router-Object to be used.
+		*/
+		public function Account($router){	
+			if (isset($_POST["password"])){
+				
+				if ($_POST["password"] != $_POST["repeatpassword"] || $_POST["password"]=="" || $_POST["repeatpassword"] == "")
+					$ERROR=$GLOBALS['Language']->PasswordNotChanged;
+				else{
+					//$token,$oldPassword,$newPassword
+					$res = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','ChangePassword',json_encode(array($_SESSION['Token'],$_POST["oldpassword"],$_POST["repeatpassword"])));
+					if ($res == true)
+						$MESSAGE=$GLOBALS['Language']->PasswordChanged;
+					else 
+						$ERROR=$GLOBALS['Language']->PasswordNotChanged;
+				}
+			}	
+			$data = $this->InjectSessionData($router);	
+			$storageStats = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetStorage',json_encode(array($_SESSION['Token'])));	
+			$storageSize = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetCorrectedUnit',json_encode(array($storageStats->sizeInByte)));	
+			$usedStorageSize = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetCorrectedUnit',json_encode(array($storageStats->usedStorageInByte)));	 		
+			$percentage = ($storageStats->usedStorageInByte != 0) ? 100/($storageStats->sizeInByte/$storageStats->usedStorageInByte) : 0;			
+			$storageInfo = $usedStorageSize.' '.$GLOBALS['Language']->of.' '.$storageSize.' '.$GLOBALS['Language']->used;						
+			$PermissionSet = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','GetPermissionSet',json_encode(array($_SESSION['Token'])));
+			$allowPasswordChange = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],6)));
+			$innerContent = "Account.php";
+			include 'Views/Main.php';
+		}
+		/**
+		* Prepare the download
+		* @param $router the Router-Object to be used.
+		*/
+		public function Download($router){		
+			$data = $this->InjectSessionData($router);					
+			$fileHash = $_GET["f"];
+			$token = $_SESSION["Token"];
+			$entry = $router->DoRequest('Kernel.FileSystemKernel','GetEntryByHash',json_encode(array($fileHash,$token)));		
+			if (!is_null($entry)){
+				ob_end_clean();	
+				header("Content-Type: ".$entry->MimeType);
+			    header("Content-Disposition: attachment; filename=\"".$entry->DisplayName."\"");		
+				$resp = $router->DoRequest('Kernel.FileSystemKernel','GetContentOfFile',json_encode(array($fileHash,$_SESSION['Token'])));			
+				echo $resp;
+				exit();
+			}	
+			else{
+				$this->DoRedirect("main");
+			}		
+		}
 		/**
 		* Display the files list
 		* @param $router the Router-Object to be used.

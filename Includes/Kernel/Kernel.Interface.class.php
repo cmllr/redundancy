@@ -91,5 +91,12 @@
 			}
 			return $langs;
 		}
+		public function MediaPreview($path,$pathToImageProcessor,$cssclass){
+			$mimeType = mime_content_type($path);			
+			if (strpos($mimeType, "image") !== false){
+				return "<img src='".$pathToImageProcessor."/Image.php' class='$cssclass'>";
+			}
+			return \Redundancy\Classes\Errors::NoPreviewPossible;
+		}
 	}
 ?>

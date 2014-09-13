@@ -58,5 +58,9 @@
 		* The file physical path on the servers FS 
 		*/
 		public $FilePath;
+		/**
+		* The preview picture of the file or folder.
+		*/
+		public $Thumbnail =false;
 	}
 ?>

@@ -55,7 +55,7 @@
                 * @param string $absolutePath the absolute path of the entry
                 * @param string $token a valid session token
                 * @param int $shareMode the sharemode, can be taken from \Redundancy\Classes\ShareMode
-                * @return bool 
+                * @return bool the result of the check if the file/ folder is shared in the given mode
                 */
                 public function IsEntryShared($absolutePath,$token,$shareMode){
                      	$newCode = $this->GetFreeShareLink();
@@ -176,6 +176,12 @@
 				return $file;
 			}
 		}
+		/**
+		* Delete a user share (from code)
+		* @param string $code the code to delete
+		* @param string $token a valid session token
+		* @return bool the result of the deletion or an errorcode
+		*/
 		public function DeleteUserShare($code,$token){
 			$escapedCode = DBLayer::GetInstance()->EscapeString($code,true);
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);

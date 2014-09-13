@@ -21,5 +21,13 @@
 	 * @author  squarerootfury <me@0fury.de>
 	 **/	
 	class Folder extends FileSystemItem{
+		/**
+		* The filesize in Bytes			
+		*/
+		public $SizeInBytes;
+		/**
+		* The filesize with the Unit			
+		*/
+		public $SizeWithUnit;
 	}
 ?>

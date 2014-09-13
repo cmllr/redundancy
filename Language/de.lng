@@ -7,7 +7,7 @@ Repeat_Password = "Passwort wiederholen";
 Log_In = "Anmelden";
 Register = "Registrieren";
 Recover = "Passwort vergessen?";
-Delete_Account = "Account l&ouml;schen";
+Delete_Account = "Account löschen";
 New_Directory = "Neues Verzeichnis erstellen";
 New_Directory_Short = "Neues Verzeichnis";
 New_Directory_Button = "Erstellen";
@@ -208,3 +208,32 @@ DeleteFolderDeleteButton = "Löschen";
 RenameEntryTitle ="\'%s\' umbenennen"
 RenameEntryText = "Neuen Namen eingeben: </br><input id='newname' placeholder='%s'></input>";
 RenameButton = "Umbenennen";
+
+MoveEntryTitle ="\'%s\' verschieben"
+MoveEntryText = "Verschieben nach <select class='target'></select>";
+StartButton = "Vorgang starten";
+
+CopyEntryTitle ="\'%s\' kopieren"
+CopyEntryText = "Kopieren nach <select class='target'></select>";
+
+Move="Verschieben";
+
+FileUploaded="Hochgeladen";
+FileChanged="Zuletzt geändert";
+
+NoPreview="<div class='alert alert-warning>Derzeit ist noch keine Vorschau für diese Datei verfügbar.</div>"
+OpenEntry="Öffnen";
+OpenEntryNewTab="Öffnen in neuem Tab";
+MyAccount ="Mein Konto";
+
+Group="Benutzergruppe";
+Storage="Quota";
+GroupPermissions="Berechtigungen";
+
+Allowed="Erlaubt";
+NotAllowed="Verboten";
+
+PasswordChanged = "Das Passwort wurde erfolgreich geändert.";
+PasswordNotChanged = "Das Passwort wurde nicht geändert.";
+
+ChangePassword="Passwort ändern";

@@ -113,15 +113,24 @@
 			public function GetVersion(){			
 				return $this->Version;
 			}
+			function isJson($string) {
+			 json_encode($string);
+			 return (json_last_error() == JSON_ERROR_NONE);
+			}
 			/**
 			* print out the json equivalent of an object
 			* @param $result the object to print
 			* @return string the json string (will be printed out)
 			*/
 			public function Output($result){
-				$this->SetHTTPHeader($result);
-				echo json_encode($result);
-			}
+				if ($this->isJson($result)){
+					$this->SetHTTPHeader($result);
+					echo json_encode($result);
+				}else{
+					echo $result;
+				}
+				
+			}			
 			/**
 			* Sets the HTTP status code
 			* @param int $result the return code to represent. If $value is an errorcode (int), the Statuscode 503 Status Unavailable will be set. If the return value is not an errorcode, no additional status code will be set and 200 OK will be returned

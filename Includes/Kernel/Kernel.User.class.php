@@ -555,6 +555,14 @@
 				}
 			}		
 			return true;	
-		}				
+		}		
+		public function GetPermissionSet($token){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$user =  $this->GetUser($token);
+			if(is_null($user))
+				return \Redundancy\Classes\Errors::TokenNotValid;
+			$permissionSet = $user->Role->Permissions;	
+			return $permissionSet;
+		}		
 	}
 ?>

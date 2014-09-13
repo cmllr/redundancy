@@ -1,5 +1,5 @@
 <!-- Mobile view navbar-->
-<nav class='navbar navbar-default hidden-sm hidden-md hidden-lg' role='navigation'>
+<nav class='navbar navbar-default visible-xs visible-sm' role='navigation'>
 	<!-- Brand and toggle get grouped for better mobile display -->
 	<div class='navbar-header'>
 		<button type='button' class='navbar-toggle' data-toggle='collapse' data-target='.navbar-ex1-collapse'>
@@ -12,17 +12,28 @@
 			Redundancy		</a>
 	</div>
 	<!-- Collect the nav links, forms, and other content for toggling -->
-	<div class='collapse navbar-collapse navbar-ex1-collapse'>
-		<ul class='nav navbar-nav'>
-			<li class='active'>
-				<a href='index.php'>Main</a>
+	<div class='collapse navbar-collapse navbar-ex1-collapse  hidden-lg'>
+		<ul class='nav navbar-nav '>
+			<li>
+				<a href='?account'><?php echo $GLOBALS['Language']->My_Account;?></a>
+			</li>				
+			<li>
+				<a href='?admin'><?php echo $GLOBALS['Language']->Administration;?></a>
+			</li>
+					
+			<li>
+				<a href='?info'>Info</a>
+			</li>
+			<li class='divider'></li>
+			<li>
+				<a href='?logout'><?php echo $GLOBALS['Language']->LogOut;?></a>
 			</li>
 				
 		</ul>		
 	</div>
 	<!-- /.navbar-collapse -->
 </nav>
-<div class='col-lg-2 col-md-2 col-sm-3 hidden-xs'>
+<div class='col-lg-2 col-md-2 col-sm-3 hidden-sm hidden-xs visible-md visible-lg'>
 	<div class='sidebar-nav-fixed affix-top' id='leftSidebar' data-spy='affix' data-offset-top='140'>				
 		<ul class='nav nav-pills nav-stacked'>
 			<li>
@@ -87,17 +98,13 @@
 <div data-spy='affix' data-offset-top='140' class='affix-top'>
 	<div class='dropdown'>
 		<button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>
-			<span class='elusive icon-user glyphIcon'></span><?php echo $data['user']->LoginName; ?> <span class='caret'></span>
+			<span class='userbadge elusive icon-user glyphIcon'> </span><?php echo $data['user']->LoginName; ?> <span class='caret'></span>
 		</button>
 		<ul class='dropdown-menu' role='menu'>
 			<li>
-				<a href='?account'<?php echo $GLOBALS['Language']->My_Account;?></a>
-			</li>	
+				<a href='?account'><?php echo $GLOBALS['Language']->My_Account;?></a>
+			</li>						
 			<li>
-				<a href='?storageinfo'>
-					<?php echo $GLOBALS['Language']->Account_Storage_Info;?>				</a>
-			</li>		
-							<li>
 				<a href='?admin'><?php echo $GLOBALS['Language']->Administration;?></a>
 			</li>
 					

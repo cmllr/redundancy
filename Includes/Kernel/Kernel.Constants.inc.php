@@ -42,8 +42,10 @@
 		const DisplayNameNotAllowed = 19;
 		const CopyingFailed = 20;
 		const TargetIsNoDirectory = 21;
-                const EntryAlreadyShared = 22;
+        const EntryAlreadyShared = 22;
 		const ArgumentMissing = 23;
+		const NoTargetsExisting = 24;
+		const NoPreviewPossible = 25;
 	} 
 	/**
 	* The permission set in a human readable form
@@ -66,13 +68,14 @@
 	{
 	    const Storage = 0;
 	    const Temp = 1;
-            const Snapshots = 2;
+        const Snapshots = 2;
+        const Thumbnails = 3;
 	}
 	/**
 	* This class contains contanst for the system
 	*/
 	abstract class SystemConstants{
-	    const NotAllowedChars = "/";
+	    const NotAllowedChars = '/';
 	}
         /**
         * The systems share modes

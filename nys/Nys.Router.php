@@ -31,7 +31,7 @@
 		* The constructor
 		*/
 		public function __construct(){
-			$GLOBALS["Router"] = $this;
+			$GLOBALS['Router'] = $this;
 			$this->controller = new UIController();
 		}
 		/**
@@ -40,7 +40,7 @@
 		*/
 		public function SetLanguage($languageCode){
 			$args = array($languageCode);		
-			$GLOBALS["Language"] = $this->DoRequest("Kernel.InterfaceKernel","SetCurrentLanguage",json_encode($args));				
+			$GLOBALS['Language'] = $this->DoRequest('Kernel.InterfaceKernel','SetCurrentLanguage',json_encode($args));				
 		}	
 		/**
 		* Routes the user to the wanted view
@@ -50,33 +50,39 @@
 			//Start the SESSION-Array if needed.			
 			if (!isset($_SESSION))
 						session_start();
-			$this->SetLanguage("de");
+			$this->SetLanguage('de');
 
-			if (isset($_SESSION["Token"])){
-				if (isset($_GET["main"]))
+			if (isset($_SESSION['Token'])){
+				if (isset($_GET['main']))
 					$this->controller->Main($this);	
-				else if (isset($_GET["info"]))
+				else if (isset($_GET['info']))
 					$this->controller->Info($this);		
-				else if (isset($_GET["logout"]))
+				else if (isset($_GET['logout']))
 					$this->controller->LogOut($this);
-				else if (isset($_GET["files"]))
+				else if (isset($_GET['files']))
 					$this->controller->Files($this);	
-				else if (isset($_GET["newfolder"]))
+				else if (isset($_GET['newfolder']))
 					$this->controller->NewFolder($this);	
-				else if (isset($_GET["upload"]))
-					$this->controller->Upload($this);								
+				else if (isset($_GET['upload']))
+					$this->controller->Upload($this);	
+				else if (isset($_GET['detail']))
+					$this->controller->Detail($this);	
+				else if (isset($_GET['download']))
+					$this->controller->Download($this);		
+				else if (isset($_GET['account']))
+					$this->controller->Account($this);										
 				else
-					$this->DoRedirect("main");
+					$this->DoRedirect('main');
 			}		
 			else{
-				if (isset($_GET["info"]))
+				if (isset($_GET['info']))
 					$this->controller->Info($this);					
-				else if (isset($_GET["login"]))				
+				else if (isset($_GET['login']))				
 					$this->controller->LogIn($this);	
 				else
 					$this->controller->LogIn($this);		
 			}									
-		}
+		}		
 		/**
 		* POST-Request helper method
 		* @param $module the module
@@ -89,7 +95,7 @@
 			$curl = curl_init();	
 			$domain = $_SERVER['HTTP_HOST'];
 			$prefix = isset($_SERVER['HTTPS']) ? 'https://' : 'http://';
-			$relative = str_replace("index.php","",$_SERVER["SCRIPT_NAME"]).'Includes/api.inc.php';				
+			$relative = str_replace('index.php','',$_SERVER['SCRIPT_NAME']).'Includes/api.inc.php';				
 			// Set some options - we are passing in a useragent too here		
 			curl_setopt_array($curl, array(
 			    CURLOPT_VERBOSE => TRUE,
@@ -107,13 +113,16 @@
 			));
 			// Send the request & save response to $resp
 			$resp = curl_exec($curl);	
+			//When the file content is raw, dont do any json operations
+			if ($method =="GetContentOfFile")
+				return $resp;
 			if (is_int(json_decode($resp))){	
 				header('HTTP/1.1 403 Forbidden');				
 				//Special handling if the file upload is used.
-				if ($method=="UploadFileWrapper"){
+				if ($method=='UploadFileWrapper'){
 					header('Content-type: text/plain');
 					curl_close($curl);			
-					exit("##R_ERR_".$resp);
+					exit('##R_ERR_'.$resp);
 				}
 			}					
 			// Close request to clear up some resources
@@ -125,7 +134,7 @@
 		* @param $to the target page
 		*/
 		function DoRedirect($to){
-			header("Location:?$to");
+			header('Location:?'.$to);
 			exit;
 		}		
 	}	

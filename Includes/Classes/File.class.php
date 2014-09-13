@@ -24,7 +24,11 @@
 		/**
 		* The filesize in Bytes			
 		*/
-		public $SizeInBytes;		
+		public $SizeInBytes;
+		/**
+		* The filesize with the Unit			
+		*/
+		public $SizeWithUnit;
 		/**
 		* The used upload user agent
 		*/		
