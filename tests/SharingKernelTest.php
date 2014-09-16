@@ -134,6 +134,144 @@
 			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUser("testUser2","test2");		
 			$this->assertTrue($got);			
 		}
-					
+		//***********************Tests GetSharesOfUser()***********************
+		public function testGetSharesOfUser01(){	
+			$this->prepareUpload();		
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
+			$code = $GLOBALS["Kernel"]->SharingKernel->ShareByCode("/testUpload4Share",$token);
+			$this->assertTrue($code != false);			
+			$got = $GLOBALS["Kernel"]->SharingKernel->IsEntryShared("/testUpload4Share",$token,\Redundancy\Classes\ShareMode::ByCode);
+			$this->assertTrue($got);
+			$shares = $GLOBALS["Kernel"]->SharingKernel->GetSharesOfUser($token,\Redundancy\Classes\ShareDirection::ByMe);			
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUpload4Share",$token);
+			$this->assertTrue($got);		
+			$this->assertTrue(count($shares) == 1);
+		}
+		public function testGetSharesOfUser02(){	
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);		
+			$shares = $GLOBALS["Kernel"]->SharingKernel->GetSharesOfUser($token,\Redundancy\Classes\ShareDirection::ByMe);					
+			$this->assertTrue(count($shares) == 0);
+		}	
+		public function testGetSharesOfUser03(){
+			$this->prepareUpload();		
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			//ShareToUser($absolutePath,$to,$token)		
+			//create a target user...to share it to the user..
+			$GLOBALS["Kernel"]->UserKernel->RegisterUser("target","target","target@localhost.lan","target");		
+			$targetToken =  $GLOBALS["Kernel"]->UserKernel->LogIn("target","target",true);
+			$targetID = $owner = $GLOBALS["Kernel"]->UserKernel->GetUser($targetToken)->ID;
+			$code = $GLOBALS["Kernel"]->SharingKernel->ShareToUser("/testUpload4Share",$targetID,$token);
+			$this->assertTrue($code != false);			
+			$got = $GLOBALS["Kernel"]->SharingKernel->IsEntryShared("/testUpload4Share",$token,\Redundancy\Classes\ShareMode::ToUser);
+			$this->assertTrue($got);
+			$shares = $GLOBALS["Kernel"]->SharingKernel->GetSharesOfUser($token,\Redundancy\Classes\ShareDirection::ByMe);			
+			$sharesToTarget = $GLOBALS["Kernel"]->SharingKernel->GetSharesOfUser($targetToken,\Redundancy\Classes\ShareDirection::ToMe);	
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUpload4Share",$token);
+			$GLOBALS["Kernel"]->UserKernel->DeleteUser("target","target");		
+			$this->assertTrue($got);		
+			$this->assertTrue(count($shares) == 1);
+			$this->assertTrue(count($sharesToTarget) == 1);
+		}
+		//***********************Tests RefreshShareLink()***********************
+		public function testRefreshShareLink01(){	
+			$this->prepareUpload();		
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
+			$code = $GLOBALS["Kernel"]->SharingKernel->ShareByCode("/testUpload4Share",$token);
+			$this->assertTrue($code != false);			
+			$got = $GLOBALS["Kernel"]->SharingKernel->IsEntryShared("/testUpload4Share",$token,\Redundancy\Classes\ShareMode::ByCode);
+			$this->assertTrue($got);
+			$newCode = $GLOBALS["Kernel"]->SharingKernel->RefreshShareLink($code,$token);	
+
+			$shares = $GLOBALS["Kernel"]->SharingKernel->GetSharesOfUser($token,\Redundancy\Classes\ShareDirection::ByMe);		
+			$shareFound = $shares[0];
+			$this->assertTrue($code != $newCode);
+			$this->assertTrue($shareFound->Entry->DisplayName == "testUpload4Share");
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUpload4Share",$token);
+			$this->assertTrue($got);		
+			$this->assertTrue(count($shares) == 1);
+		}
+		//***********************Tests ShareToUser()***********************
+		public function testShareToUser01(){
+			$this->prepareUpload();		
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			//ShareToUser($absolutePath,$to,$token)		
+			//create a target user...to share it to the user..
+			$GLOBALS["Kernel"]->UserKernel->RegisterUser("target","target","target@localhost.lan","target");		
+			$targetToken =  $GLOBALS["Kernel"]->UserKernel->LogIn("target","target",true);
+			$targetID = $owner = $GLOBALS["Kernel"]->UserKernel->GetUser($targetToken)->ID;
+			$code = $GLOBALS["Kernel"]->SharingKernel->ShareToUser("/testUpload4Share",$targetID,$token);
+			$this->assertTrue($code != false);			
+			$got = $GLOBALS["Kernel"]->SharingKernel->IsEntryShared("/testUpload4Share",$token,\Redundancy\Classes\ShareMode::ToUser);
+			$this->assertTrue($got);
+			$shares = $GLOBALS["Kernel"]->SharingKernel->GetSharesOfUser($token,\Redundancy\Classes\ShareDirection::ByMe);			
+			$sharesToTarget = $GLOBALS["Kernel"]->SharingKernel->GetSharesOfUser($targetToken,\Redundancy\Classes\ShareDirection::ToMe);	
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUpload4Share",$token);
+			$GLOBALS["Kernel"]->UserKernel->DeleteUser("target","target");		
+			$this->assertTrue($got);		
+			$this->assertTrue(count($shares) == 1);
+			$this->assertTrue(count($sharesToTarget) == 1);
+		}
+		public function testShareToUser02(){
+			$this->prepareUpload();		
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			//ShareToUser($absolutePath,$to,$token)		
+			//create a target user...to share it to the user..
+			$GLOBALS["Kernel"]->UserKernel->RegisterUser("target","target","target@localhost.lan","target");		
+			$targetToken =  $GLOBALS["Kernel"]->UserKernel->LogIn("target","target",true);
+			$targetID = $owner = $GLOBALS["Kernel"]->UserKernel->GetUser($targetToken)->ID;
+			$code = $GLOBALS["Kernel"]->SharingKernel->ShareToUser("/testUpload4ShareDoesNOtExists",$targetID,$token);
+			$this->assertTrue($code == \Redundancy\Classes\Errors::EntryNotExisting);			
+			$got = $GLOBALS["Kernel"]->SharingKernel->IsEntryShared("/testUpload4Share",$token,\Redundancy\Classes\ShareMode::ToUser);
+			$this->assertFalse($got);
+			$shares = $GLOBALS["Kernel"]->SharingKernel->GetSharesOfUser($token,\Redundancy\Classes\ShareDirection::ByMe);			
+			$sharesToTarget = $GLOBALS["Kernel"]->SharingKernel->GetSharesOfUser($targetToken,\Redundancy\Classes\ShareDirection::ToMe);	
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUpload4Share",$token);
+			$GLOBALS["Kernel"]->UserKernel->DeleteUser("target","target");		
+			$this->assertTrue($got);		
+			$this->assertTrue(count($shares) == 0);
+			$this->assertTrue(count($sharesToTarget) == 0);
+		}
+		//***********************Tests IsEntrySharedByHash()***********************	
+		public function testIsEntrySharedByHash01(){
+			$this->prepareUpload();
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$code = $GLOBALS["Kernel"]->SharingKernel->ShareByCode("/testUpload4Share",$token);
+			$this->assertTrue($code != false);	
+			$hash = $GLOBALS["Kernel"]->SharingKernel->GetEntryByShareCode($code)->Hash;	
+			$isShared = $GLOBALS["Kernel"]->SharingKernel->IsEntrySharedByHash($hash,$token,\Redundancy\Classes\ShareMode::ByCode);
+			$this->assertTrue($isShared);
+			$got =$GLOBALS["Kernel"]->SharingKernel->DeleteCodeShare($code,$token);
+			$this->assertTrue($got);
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUpload4Share",$token);
+			$this->assertTrue($got);
+		}
+		public function testIsEntrySharedByHash02(){
+			$this->prepareUpload();
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$code = $GLOBALS["Kernel"]->SharingKernel->ShareByCode("/testUpload4Share",$token);
+			$this->assertTrue($code != false);			
+			$hash = $GLOBALS["Kernel"]->SharingKernel->GetEntryByShareCode($code)->Hash;
+			$got =$GLOBALS["Kernel"]->SharingKernel->DeleteCodeShare($code,$token);
+			$this->assertTrue($got);	
+			$isShared = $GLOBALS["Kernel"]->SharingKernel->IsEntrySharedByHash($hash,$token,\Redundancy\Classes\ShareMode::ByCode);
+			$this->assertFalse($isShared);			
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUpload4Share",$token);
+			$this->assertTrue($got);
+		}
+		public function testIsEntrySharedByHash03(){
+			$this->prepareUpload();
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$code = $GLOBALS["Kernel"]->SharingKernel->ShareByCode("/testUpload4Share",$token);
+			$this->assertTrue($code != false);	
+			$hash = $GLOBALS["Kernel"]->SharingKernel->GetEntryByShareCode($code)->Hash;	
+			$isShared = $GLOBALS["Kernel"]->SharingKernel->IsEntrySharedByHash($hash,$token,\Redundancy\Classes\ShareMode::ByCode);
+			$isSharedToUser = $GLOBALS["Kernel"]->SharingKernel->IsEntrySharedByHash($hash,$token,\Redundancy\Classes\ShareMode::ToUser);
+			$this->assertTrue($isShared);
+			$this->assertFalse($isSharedToUser);
+			$got =$GLOBALS["Kernel"]->SharingKernel->DeleteCodeShare($code,$token);
+			$this->assertTrue($got);
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUpload4Share",$token);
+			$this->assertTrue($got);
+		}		
 	}
 ?>

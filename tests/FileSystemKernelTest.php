@@ -95,6 +95,16 @@
 			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/testDirectory01NOTEXISTING",$token);
 			$this->assertTrue(is_null($got));
 		}
+		//***********************Tests GetEntryByHash()***********************
+		public function testGetEntryByHash01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/testDirectory01",$token);
+			$got2 = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByHash($got->Hash,$token);
+			$this->assertTrue($got2->DisplayName == $got->DisplayName);
+			$this->assertTrue($got2->DisplayName == "testDirectory01");
+		}
+
+
 		//***********************Tests IsEntryExisting()***********************
 		public function testIsEntryExisting01(){
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
@@ -138,6 +148,15 @@
 			$this->AssertTrue($got2);
 			$this->AssertFalse($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("testdirroot",-1,$token));
 			$this->assertTrue($got);
+		}
+		public function testDeleteSharedDirectory01(){					
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("testdirrootToShare",-1,$token);
+			$share = $GLOBALS["Kernel"]->SharingKernel->ShareByCode("/testdirrootToShare",$token);
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/testdirrootToShare/",$token);
+			$this->assertTrue($share != "" && $share != false);
+			$this->AssertTrue($got);
+			$this->AssertFalse($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("testdirrootToShare",-1,$token));
 		}
 		//***********************Tests RenameEntry()***********************
 		public function testRenameEntry01(){
@@ -266,6 +285,24 @@
 			$got =$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUploadX",$token);
 			$this->AssertTrue($got == \Redundancy\Classes\Errors::EntryNotExisting);			
 		}
+		public function testDeleteSharedFile01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
+			 $_FILES = array(
+			    'file' => array(
+				'name' => 'testTestDeleteSharedFile',
+				'type' => 'text/plain',
+				'size' => 16,
+				'tmp_name' => __REDUNDANCY_ROOT__."test",
+				'error' => 0
+			    )
+			);			
+			$GLOBALS["Kernel"]->FileSystemKernel->UploadFile(-1,$token);		
+			$share = $GLOBALS["Kernel"]->SharingKernel->ShareByCode("/testTestDeleteSharedFile",$token);
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testTestDeleteSharedFile",$token);
+			$this->assertTrue($share != "" && $share != false);
+			$this->AssertTrue($got);
+			$this->AssertFalse($GLOBALS["Kernel"]->FileSystemKernel->IsEntryExisting("testTestDeleteSharedFile",-1,$token));
+		}		
 		//***********************Test TestCopyEntry()***********************
 		//Implement me!	
 		//***********************Test MoveEntry()***********************	

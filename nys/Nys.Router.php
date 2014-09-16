@@ -70,7 +70,9 @@
 				else if (isset($_GET['download']))
 					$this->controller->Download($this);		
 				else if (isset($_GET['account']))
-					$this->controller->Account($this);										
+					$this->controller->Account($this);	
+				else if (isset($_GET['shares']))
+					$this->controller->Shares($this);											
 				else
 					$this->DoRedirect('main');
 			}		
@@ -79,6 +81,10 @@
 					$this->controller->Info($this);					
 				else if (isset($_GET['login']))				
 					$this->controller->LogIn($this);	
+				else if (isset($_GET["share"]))
+					$this->controller->Share($this);
+				else if (isset($_GET["shared"]))
+					$this->controller->SharedDownload($this);
 				else
 					$this->controller->LogIn($this);		
 			}									

@@ -96,7 +96,10 @@
 			else{
 				$file = $_GET["f"];
 				$entry = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetEntryByHash',json_encode(array($_GET["f"],$_SESSION['Token'])));
-				if (is_null($entry)){
+				//if the entry is null, it may be shared..
+				if (is_null($entry))
+					$entry = $GLOBALS["Router"]->DoRequest("Kernel.SharingKernel","GetSharedEntry",json_encode(array($file,$_SESSION['Token'])));
+				if (is_null($entry) || is_numeric($entry)){
 					$router->DoRedirect('files');
 				}
 				else{
@@ -179,7 +182,103 @@
 		        foreach($value1 as $key2 => $value2) 
 		            $result[$key2][$key1] = $value2; 
 		    return $result; 
-		} 
+		} 		
+		/**
+		* Display a shared file
+		* @param $router the Router-Object to be used.
+		* @todo language??
+		*/
+		function Share($router){
+			$router->SetLanguage("de");
+			$entry =  $GLOBALS['Router']->DoRequest('Kernel.SharingKernel','GetEntryByShareCode',json_encode(array($_GET["c"])));
+			$shareCode = $_GET["c"];
+			if (is_null($entry) || is_numeric($entry))
+				$router->DoRedirect("");
+			$filePath = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetSystemDir',json_encode(array(0))).$entry->FilePath;
+			$mediaPreview = $GLOBALS['Router']->DoRequest('Kernel.InterfaceKernel','MediaPreview',json_encode(array($filePath,"./nys/Views/Partials","preview")));
+			$_SESSION["fileInject"] = $filePath;
+			include 'Views/Share.php';
+		}
+		/**
+		* Prepare the download of a shared file
+		* @param $router the Router-Object to be used.
+		*/
+		function SharedDownload($router){
+			$entry =  $GLOBALS['Router']->DoRequest('Kernel.SharingKernel','GetEntryByShareCode',json_encode(array($_GET["c"])));		
+			if (!is_null($entry) && !is_numeric($entry)){
+				$fileHash = $entry->Hash;
+				ob_end_clean();	
+				header("Content-Type: ".$entry->MimeType);
+			    header("Content-Disposition: attachment; filename=\"".$entry->DisplayName."\"");				
+				if (is_null($entry))
+					return \Redundancy\Classes\Errors::EntryNotExisting;		   
+			   	$dir = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetSystemDir',json_encode(array(0)));
+			    echo file_get_contents($dir.$entry->FilePath);	
+				exit();
+			}	
+			else{
+				$router->DoRedirect("main");
+			}		
+		}
+		/**
+		* Prepare the download
+		* @param $router the Router-Object to be used.
+		*/
+		public function Download($router){		
+			$data = $this->InjectSessionData($router);					
+			$fileHash = $_GET["f"];
+			$token = $_SESSION["Token"];
+			if (!is_null($token))
+				$entry = $router->DoRequest('Kernel.FileSystemKernel','GetEntryByHash',json_encode(array($fileHash,$token)));		
+			if (!is_null($entry)){
+				ob_end_clean();	
+				header("Content-Type: ".$entry->MimeType);
+			    header("Content-Disposition: attachment; filename=\"".$entry->DisplayName."\"");		
+				$resp = $router->DoRequest('Kernel.FileSystemKernel','GetContentOfFile',json_encode(array($fileHash,$_SESSION['Token'])));			
+				echo $resp;
+				exit();
+			}	
+			else{
+				$this->DoRedirect("main");
+			}		
+		}
+		/**
+		* Display the account info
+		* @param $router the Router-Object to be used.
+		*/
+		public function Shares($router){	
+			$data = $this->InjectSessionData($router);		
+			//$GLOBALS['Router']->DoRequest('Kernel.SharingKernel','ShareToUser',json_encode(array("/PerfTests/",84,$_SESSION['Token'])));
+			if (isset($_GET["d"])){
+				if (isset($_GET["c"])){
+					//DeleteCodeShare($code,$token){
+					$result = $GLOBALS['Router']->DoRequest('Kernel.SharingKernel','DeleteCodeShare',json_encode(array($_GET["c"],$_SESSION['Token'])));
+					if (!is_numeric($result))
+						$MESSAGE=$GLOBALS["Language"]->ShareWasDeleted;
+					else if (is_numeric($result))
+						$ERROR="R_ERR_".$result;
+					else
+						$ERROR="R_ERR_27";
+				}
+			}
+			//RefreshShareLink
+			if (isset($_GET["r"])){
+				if (isset($_GET["c"])){
+					//DeleteCodeShare($code,$token){
+					$result = $GLOBALS['Router']->DoRequest('Kernel.SharingKernel','RefreshShareLink',json_encode(array($_GET["c"],$_SESSION['Token'])));
+					if (!is_numeric($result))
+						$MESSAGE=$GLOBALS["Language"]->ShareCodeWasRefreshed;
+					else if (is_numeric($result))
+						$ERROR="R_ERR_".$result;
+					else
+						$ERROR="R_ERR_27";
+				}
+			}
+			$shares = $GLOBALS['Router']->DoRequest('Kernel.SharingKernel','GetSharesOfUser',json_encode(array($_SESSION['Token'],1)));
+			$sharesToMe = 	$GLOBALS['Router']->DoRequest('Kernel.SharingKernel','GetSharesOfUser',json_encode(array($_SESSION['Token'],0)));		
+			$innerContent = "Shares.php";
+			include 'Views/Main.php';
+		}
 		/**
 		* Display the account info
 		* @param $router the Router-Object to be used.
@@ -209,27 +308,7 @@
 			$innerContent = "Account.php";
 			include 'Views/Main.php';
 		}
-		/**
-		* Prepare the download
-		* @param $router the Router-Object to be used.
-		*/
-		public function Download($router){		
-			$data = $this->InjectSessionData($router);					
-			$fileHash = $_GET["f"];
-			$token = $_SESSION["Token"];
-			$entry = $router->DoRequest('Kernel.FileSystemKernel','GetEntryByHash',json_encode(array($fileHash,$token)));		
-			if (!is_null($entry)){
-				ob_end_clean();	
-				header("Content-Type: ".$entry->MimeType);
-			    header("Content-Disposition: attachment; filename=\"".$entry->DisplayName."\"");		
-				$resp = $router->DoRequest('Kernel.FileSystemKernel','GetContentOfFile',json_encode(array($fileHash,$_SESSION['Token'])));			
-				echo $resp;
-				exit();
-			}	
-			else{
-				$this->DoRedirect("main");
-			}		
-		}
+		
 		/**
 		* Display the files list
 		* @param $router the Router-Object to be used.

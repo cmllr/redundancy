@@ -38,6 +38,7 @@
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/Folder.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/File.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/FileSystemAnalysis.class.php";
+		require_once __REDUNDANCY_ROOT__."Includes/Classes/Share.class.php";
 		//**********************************************third party stuff*********************************
 		require_once __REDUNDANCY_ROOT__.'Lib/Doctrine/Doctrine/Common/ClassLoader.php';	
 		/**

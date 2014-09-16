@@ -268,9 +268,10 @@
 					}	
 				}
 			}		
-			
 			//Delete Directory itself
 			$this->RefreshLastChangeDateTimeOfParent($folder->Id,$escapedToken);
+			//Delete sshares
+			$GLOBALS["Kernel"]->SharingKernel->DeleteAllSharesOfEntry($folder->Hash,$escapedToken);
 			$dbquery = DBLayer::GetInstance()->RunDelete(sprintf("Delete from FileSystem where Id = '%d' and ownerId = '%u' limit 1",$folder->Id,$ownerId));
 			return !$this->IsEntryExisting($folder->DisplayName,$folder->ParentID,$escapedToken);
 		}
@@ -293,7 +294,10 @@
 				return \Redundancy\Classes\Errors::NotAllowed;
 			$fileToDelete = $this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage).$entry->FilePath;
 			if (unlink($fileToDelete)){
+				//Delete the shares of the file
+				$GLOBALS["Kernel"]->SharingKernel->DeleteAllSharesOfEntry($entry->Hash,$escapedToken);
 				$dbquery = DBLayer::GetInstance()->RunDelete(sprintf("Delete from FileSystem where Id = '%d' and ownerId = '%u' limit 1",$entry->Id,$ownerId));
+				
 				return true;
 			}else{
 				return false;
@@ -735,6 +739,13 @@
 			else
 				return false;
 		}
+		/**
+		* Returns an filesystem entry by the given hash
+		* @param string $hash the entry's hash
+		* @param string $token a valid session token	
+		* @return \Redundancy\Classes\Folder | \Redundancy\Classes\File | null (if failed)
+		* @todo fix the folder size issue.
+		*/
 		function GetEntryByHash($hash,$token){		
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
 			$escapedhash = DBLayer::GetInstance()->EscapeString($hash,true);
@@ -903,8 +914,7 @@
 		*/
 		private function Hash($value){
 			return sha1($value);
-		}
-		
+		}		
 		public function GetContentOfFile($hash,$token) {   
 			$escapedHash = DBLayer::GetInstance()->EscapeString($hash,true);
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);

@@ -71,7 +71,14 @@
 				<span class='elusive icon-folder glyphIcon'></span>
 					<?php echo $GLOBALS['Language']->New_Directory_Short;?>
 				</a>
-			</li>											
+			</li>		
+			<li>
+				<a href='?shares'>
+				<span class='elusive fa-share-alt glyphIcon'></span>
+					<?php echo $GLOBALS['Language']->ShareMenu;?>
+				</a>
+			</li>	
+												
 		</ul>		
 	</div>
 </div>

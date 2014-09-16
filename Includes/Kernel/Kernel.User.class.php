@@ -274,6 +274,26 @@
 			}			
 			return $result;	
 		}
+		public function GetUserNameById($loginname, $token){
+			$result = null;			
+			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginname,true);
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$user = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken);			
+			if (is_null($user))
+				return \Redundancy\Classes\Errors::TokenNotValid;
+			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select *,u.Id as UserID from User u where u.Id ='%d' limit 1",$escapedLoginName));		
+			if (is_null($dbquery)){							
+				return null;
+			}					
+			foreach ($dbquery as $value){							
+				$user = new \Redundancy\Classes\User();
+				$user->ID = $value["UserID"];
+				$user->LoginName = $value["loginName"];
+				$user->DisplayName = $value["displayName"];				
+				$result = $user;			
+			}			
+			return $result;	
+		}
 		/**
 		* Get the user object by the current session. If there is no fitting session to this token, null will be returned
 		* Also, when the session is expired, this will be null

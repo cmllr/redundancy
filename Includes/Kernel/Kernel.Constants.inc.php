@@ -46,6 +46,10 @@
 		const ArgumentMissing = 23;
 		const NoTargetsExisting = 24;
 		const NoPreviewPossible = 25;
+		const NoShares = 26;
+		const ShareWasNotDeleted=27;
+		const UserNotExisting = 28;
+		const CannotShareToMyself = 29;		
 	} 
 	/**
 	* The permission set in a human readable form
@@ -77,11 +81,18 @@
 	abstract class SystemConstants{
 	    const NotAllowedChars = '/';
 	}
-        /**
-        * The systems share modes
-        */
-        abstract class ShareMode{
-            const ByCode = 0;
-            const ToUser = 1;
-        }
+    /**
+    * The systems share modes
+    */
+    abstract class ShareMode{
+        const ByCode = 0;
+        const ToUser = 1;
+    }
+    /**
+    * The share direction
+    */
+    abstract class ShareDirection{
+    	const ToMe = 0;
+    	const ByMe = 1;
+    }
 ?>

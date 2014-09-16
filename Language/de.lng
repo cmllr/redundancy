@@ -237,3 +237,21 @@ PasswordChanged = "Das Passwort wurde erfolgreich geändert.";
 PasswordNotChanged = "Das Passwort wurde nicht geändert.";
 
 ChangePassword="Passwort ändern";
+
+ShareMenu = "Meine Freigaben";
+SharedSubTitle ="Freigaben verwalten"
+
+SharedByLink = "Per <a href='?share&c=%s'>Link</a> am %s freigegeben";
+SharedToUser = "An Benutzer %s am %s freigegeben";
+RemoveShare = "Freigabe entfernen";
+ShareToUserGeneric ="An Benutzer teilen";
+ShareWithLinkGeneric="Mit Link teilen";
+NewCode = "Link erneuern";
+ShowShareLink="Link anzeigen";
+SharedByMe="Von mir freigegeben";
+SharedToMe="Für mich freigegeben";
+LinkToShareText = "Link zum freigeben:</br><input value='%s'></input>";
+ShareWasDeleted="Die Freigabe wurde gelöscht.";
+ShareCodeWasRefreshed="Der Freigabelink wurde erneuert";
+SharedToMeFromOthers = "An mich von %s am %s freigegeben";
+AbortShareToMe ="Freigabe ablehnen";
