@@ -50,6 +50,8 @@
 			$escapedPassword = DBLayer::GetInstance()->EscapeString($password,true);
 			if (empty($escapedLoginName) || empty($escapedMailAddress) || empty($escapedDisplayName) || empty($escapedPassword))
 				return \Redundancy\Classes\Errors::ArgumentMissing;
+			if ($GLOBALS["Kernel"]->GetConfigValue("Enable_register") == false)
+				return \Redundancy\Classes\Errors::RegistrationNotEnabled;
 			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select count(id) as Amount from User where loginName = '%s' or mailAddress = '%s'",$escapedLoginName,$escapedMailAddress));
 			if ($dbquery[0]["Amount"] == 0){
 				//Only proceed if there is no existing account with this email or loginName		
@@ -459,16 +461,17 @@
 		* @param $expires bool determines if the cookie should expire
 		*/
 		private function CreateCookie($token,$expires = false){
+			ob_end_clean();	
 			if ($expires){
 				$cookieLifeSpan = $GLOBALS["Kernel"]->Configuration["Program_Session_Timeout"];	
 				if ($cookieLifeSpan == -1)
 				{
 					$cookieLifeSpan = 5;
 				}		
-				setcookie("SessionData", $token, time()+ $cookieLifeSpan * 60);	
+				$res = setcookie("SessionData", $token, time()+ $cookieLifeSpan * 60);	
 			}
 			else{				
-				setcookie("SessionData", $token);
+				$res = setcookie("SessionData", $token);
 			}						
 		}
 		/**

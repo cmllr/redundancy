@@ -105,7 +105,7 @@
 <div data-spy='affix' data-offset-top='140' class='affix-top'>
 	<div class='dropdown'>
 		<button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>
-			<span class='userbadge elusive icon-user glyphIcon'> </span><?php echo $data['user']->LoginName; ?> <span class='caret'></span>
+			<span class='userbadge elusive icon-user glyphIcon'> </span><?php echo $data['user']->DisplayName; ?> <span class='caret'></span>
 		</button>
 		<ul class='dropdown-menu' role='menu'>
 			<li>

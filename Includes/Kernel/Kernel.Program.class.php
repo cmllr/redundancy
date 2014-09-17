@@ -114,6 +114,15 @@
 			public function GetVersion(){			
 				return $this->Version;
 			}
+			public function GetConfigValue($key){
+				//Get a _few_ values of config keys.							
+				//But not everything, due security reasons.
+				if ($key == "Enable_register")
+					return $this->Configuration["Enable_register"];
+				else 
+					return "te";
+			}
+
 			function isJson($string) {
 			 json_encode($string);
 			 return (json_last_error() == JSON_ERROR_NONE);

@@ -45,6 +45,15 @@
 			$got = $GLOBALS["Kernel"]->UserKernel->RegisterUser($loginName,$displayName,$mailAddress,$password);		
 			$this->assertTrue(\Redundancy\Classes\Errors::ArgumentMissing==$got);	
 		}
+		public function testRegisterUserDisabledBySystem(){
+			$loginName = "testUser";
+			$displayName = "testUser";
+			$mailAddress = "mail@localhost.lan";
+			$password = "test";
+			$GLOBALS["Kernel"]->Configuration["Enable_register"] = false;
+			$got = $GLOBALS["Kernel"]->UserKernel->RegisterUser($loginName,$displayName,$mailAddress,$password);		
+			$this->assertTrue(\Redundancy\Classes\Errors::RegistrationNotEnabled==$got);	
+		}
 		//***********************Tests LogIn()***********************
 		public function testLogInShouldSucceed(){
 			$loginName = "testUser";

@@ -1,6 +1,6 @@
 Translation_Author = "Phisherman";
 Loadtime = "Aufbau in %s s";
-Username = "Benutzer";
+Username = "Benutzername";
 Email = "E-Mail";
 Password = "Passwort";
 Repeat_Password = "Passwort wiederholen";
@@ -255,3 +255,7 @@ ShareWasDeleted="Die Freigabe wurde gelöscht.";
 ShareCodeWasRefreshed="Der Freigabelink wurde erneuert";
 SharedToMeFromOthers = "An mich von %s am %s freigegeben";
 AbortShareToMe ="Freigabe ablehnen";
+RegisterMissingValues="Die Registrierung ist fehlgeschlagen, da Deine Eingabe nicht komplett ist.";
+RegisterPasswordsDifferent="Die Passwörter sind unterschiedlich. Das kannst du besser!";
+RegisterSuccess="Glückwunsch, der Account wurde registriert!";
+Name="Dein Name, mit dem dich Redundancy ansprechen soll.";

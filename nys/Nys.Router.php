@@ -26,13 +26,45 @@
 		/**
 		* The current object of the UI Controller
 		*/
-		private $controller;
+		private $controller;	
 		/**
 		* The constructor
+		* @todo grab language from settings/ config
 		*/
 		public function __construct(){
 			$GLOBALS['Router'] = $this;
 			$this->controller = new UIController();
+			if (!isset($_SESSION))
+				session_start();
+			//GRAB from config
+			$this->SetLanguage('de');
+		}
+		/**
+		* Interacts with the cookies, creates or deletes them (if needed)
+		*/
+		public function CookieInteraction(){
+			if (isset($_SESSION["StayLoggedIn"])){
+				setcookie("SessionData", $_SESSION["Token"]);
+				setcookie("SessionDataLang", $_SESSION["Language"]);
+				unset($_SESSION["StayLoggedIn"]);
+			}
+
+			if (!empty($_COOKIE["SessionData"])){
+				if(!isset($_GET["logout"])){
+					//only set the token if it is not saved already.
+					if (!isset($_SESSION["Token"]) ||empty($_SESSION["Token"])){
+						$_SESSION["Token"] = $_COOKIE["SessionData"];
+						$_SESSION["Language"] = $_COOKIE["SessionDataLang"];
+					}					
+				}
+				else{
+					unset($_COOKIE["SessionData"]);
+					unset($_COOKIE["SessionDataLang"]);
+					// empty value and expiration one hour before
+					setcookie("SessionData", '', time() - 3600);
+					setcookie("SessionDataLang", '', time() - 3600);		
+				}
+			}
 		}
 		/**
 		* Sets the global language object
@@ -48,11 +80,9 @@
 		*/	
 		public function Route($url){				
 			//Start the SESSION-Array if needed.			
-			if (!isset($_SESSION))
-						session_start();
-			$this->SetLanguage('de');
+			
 
-			if (isset($_SESSION['Token'])){
+			if (isset($_SESSION['Token']) && !empty($_SESSION["Token"])){
 				if (isset($_GET['main']))
 					$this->controller->Main($this);	
 				else if (isset($_GET['info']))
@@ -85,6 +115,8 @@
 					$this->controller->Share($this);
 				else if (isset($_GET["shared"]))
 					$this->controller->SharedDownload($this);
+				else if (isset($_GET["register"]))
+					$this->controller->Register($this);
 				else
 					$this->controller->LogIn($this);		
 			}									

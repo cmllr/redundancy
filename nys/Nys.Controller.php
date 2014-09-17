@@ -30,20 +30,24 @@
 		* Display the LogIn-Page
 		* @param $router the Router-Object to be used.
 		*/
-		public function LogIn($router){			
+		public function LogIn($router){	
+			$isRegistrationEnabled = $router->DoRequest('Kernel','GetConfigValue',json_encode(array("Enable_register")));					
 			if (!isset($_POST['username'],$_POST['password'])){				
 				include 'Views/LogIn.php';
 			}else
 			{
-				$args = array($_POST['username'],$_POST['password'],true);
+				$args = array($_POST['username'],$_POST['password'],isset($_POST["stayloggedin"]));
 				
-				$result = $router->DoRequest('Kernel.UserKernel','LogIn',json_encode($args));							
+				$result = $router->DoRequest('Kernel.UserKernel','LogIn',json_encode($args));						
+				
 				if (is_numeric($result)){
 					$ERROR=$GLOBALS['Language']->wrongcredentials;					
 					include 'Views/LogIn.php';
 				}
 				else{					
 					if (!isset($_SESSION['Token'])){
+						if (isset($_POST["stayloggedin"]) && $_POST["stayloggedin"] == "true")
+							$_SESSION["StayLoggedIn"] = true;
 						$_SESSION['Token'] = $result;
 						$_SESSION['Language'] = $_POST['lang'];
 					}								
@@ -51,6 +55,52 @@
 				}					
 			}
 		}
+		/**
+		* Does the configuration
+		* @param $router the router object
+		*/
+		public function Register($router){
+			//Display the login screen and a error if the regsitration is disabled.
+			if ($router->DoRequest('Kernel','GetConfigValue',json_encode(array("Enable_register"))) == false)
+			{
+				$ERROR=$GLOBALS['Language']->Register_disabled;	
+				include 'Views/LogIn.php';	
+				return;
+			}
+			//Only proceed if every value is set.
+			if (!isset($_POST['username'],$_POST['password'],$_POST["email"],$_POST["passwordrepeat"],$_POST["name"])){				
+				include 'Views/Register.php';
+			}
+			else
+			{		
+				//Check if every data field has a value	
+				$isEveryValueSet = !empty($_POST['username'])&& !empty($_POST['password'])&& !empty($_POST["email"])&& !empty($_POST["passwordrepeat"]) && !empty($_POST["name"]);
+				if (!$isEveryValueSet){
+					$ERROR=$GLOBALS['Language']->RegisterMissingValues;	
+					include 'Views/Register.php';	
+				}else{
+					if ($_POST["password"] != $_POST["passwordrepeat"]){
+						$ERROR=$GLOBALS["Language"]->RegisterPasswordsDifferent;
+						include 'Views/Register.php';	
+					}
+					else{
+						$args = array($_POST['username'],$_POST["name"],$_POST['email'],$_POST['password'],true);
+						//Register the User!
+						$result = $router->DoRequest('Kernel.UserKernel','RegisterUser',json_encode($args));							
+						if (is_numeric($result)){
+							$ERROR="R_ERR_".$result;				
+							include 'Views/Register.php';
+						}
+						else{					
+							$MESSAGE=$GLOBALS['Language']->RegisterSuccess;					
+							include 'Views/LogIn.php';
+						}	
+					}
+				}										
+			}
+		}
+
+
 		/**
 		* Display the LogOut-Page
 		* @param $router the Router-Object to be used.
@@ -358,7 +408,7 @@
 		* @return an array containg the session data
 		*/
 		private function InjectSessionData($router){
-			$router->SetLanguage($_SESSION['Language']);
+			$router->SetLanguage(isset($_SESSION['Language']) ? $_SESSION['Language'] :  $GLOBALS["Language"]);
 			$args = array($_SESSION['Token']);			
 			$user = $router->DoRequest('Kernel.UserKernel','GetUser',json_encode($args));		
 			$data = array();

@@ -49,7 +49,8 @@
 		const NoShares = 26;
 		const ShareWasNotDeleted=27;
 		const UserNotExisting = 28;
-		const CannotShareToMyself = 29;		
+		const CannotShareToMyself = 29;	
+		const RegistrationNotEnabled = 30;	
 	} 
 	/**
 	* The permission set in a human readable form

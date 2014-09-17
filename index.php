@@ -1,6 +1,15 @@
-<?php ob_start();?>
-<html>
+<?php 
+error_reporting(E_ALL);		
+include './nys/Nys.Controller.php';
+include './nys/Nys.Router.php';
+$router = new \Redundancy\Nys\Router();		
+ob_start();
+//Set the cookies if needed
+$router->CookieInteraction();
+?>
+<!DOCTYPE html>
 <head>
+<meta charset="UTF-8">	
 <link rel = 'stylesheet' href='./Lib/bootstrap/css/bootstrap.min.css' type = 'text/css'/>
 <link rel = 'stylesheet' href='./nys/Views/css/nys.css' type = 'text/css'/>
 <link rel='stylesheet' href='Lib/bootstrap/css/elusive-webfont.css'>
@@ -17,6 +26,7 @@
 
 <link rel="stylesheet" href="./Lib/jquery.contextMenu.css">
 <script src='./nys/Views/js/Nys.Helper.js'></script>
+<script src='./nys/Views/js/Nys.Files.js'></script>
 <script src='./nys/Views/js/Nys.Dialogs.js'></script>
 <link rel='stylesheet' href='Lib/Dropzone.js/css/dropzone.css' type='text/css'/>
 
@@ -25,12 +35,7 @@
 <body >
 <div class='container'>
 <div class='row'>	
-
-<?php	
-	error_reporting(E_ALL);		
-	include './nys/Nys.Controller.php';
-	include './nys/Nys.Router.php';
-	$router = new \Redundancy\Nys\Router();				
+<?php				
 	$router->Route($_SERVER['REQUEST_URI']);			
 ?>
 </div>
