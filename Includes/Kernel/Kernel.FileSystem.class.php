@@ -914,7 +914,13 @@
 		*/
 		private function Hash($value){
 			return sha1($value);
-		}		
+		}	
+		/**
+		* Get the content of a file
+		* @param string $hash the hashcode of the file
+		* @param string $token the session token
+		* @return the content of the file.
+		*/		
 		public function GetContentOfFile($hash,$token) {   
 			$escapedHash = DBLayer::GetInstance()->EscapeString($hash,true);
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
@@ -927,6 +933,76 @@
 				return \Redundancy\Classes\Errors::EntryNotExisting;		   
 		   	$dir = $this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage);
 		    return file_get_contents($dir.$entry->FilePath);		    
+		}
+		/**
+		* Initialize the creation of the zip file.
+		* @param int $id the folder id
+		* @param string $token the session token
+		* @param int $id the root folder id
+		* @return an string containt the filename or errorcode.
+		*/
+		public function StartZipCreation($id,$token,$rootpath){
+			$escapedId = DBLayer::GetInstance()->EscapeString($id,true);
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedRootPath = DBLayer::GetInstance()->EscapeString($rootpath,true);
+			$owner = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken);	
+			if (is_null($owner))
+				return \Redundancy\Classes\Errors::TokenNotValid; 
+			$ownerId = $owner->ID;
+			$entry = $this->GetEntryById($escapedId,$escapedToken);
+			if (is_null($entry))
+				return \Redundancy\Classes\Errors::EntryNotExisting;
+			//Start Zipfile creation
+			$path =  $this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Temp);
+			$filename = $owner->LoginName."".str_replace("/", "", $this->GetAbsolutePathById($escapedRootPath,$escapedToken));
+			if (file_exists($path.$filename.".zip"))
+				return \Redundancy\Classes\Errors::ZipFileExisting;
+			$zip = new \ZipArchive;
+			$res = $zip->open($path.$filename.".zip", \ZipArchive::CREATE);
+			if ($res !== true){
+				return \Redundancy\Classes\Errors::ZipFileCreationFailed;
+			}
+			$this->CreateZipFileOfFolder($zip,$entry,$escapedRootPath,$escapedToken);
+			$zip->close();
+			return $this->GetAbsolutePathById($escapedRootPath,$escapedToken)	;
+		}
+		/**
+		* Create a zip file
+		* @param mixed $zip the zip object
+		* @param FileSystemItem $entry the entry
+		* @param string $escapedRootPath the root folder
+		* @param string token a valid session token
+		* @return an string containt the filename or errorcode.
+		*/
+		private function CreateZipFileOfFolder($zip,$entry,$escapedRootPath,$escapedToken){
+			$zip->addEmptyDir(iconv("UTF-8","CP437",$this->GetAbsolutePathById($entry->Id,$escapedToken)));
+			$entries = $this->GetContent($this->GetAbsolutePathById($entry->Id,$escapedToken),$escapedToken);
+			$storagePath = $this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage);
+			foreach ($entries as $key => $value) {
+				if (!is_null($value->FilePath)){
+					$path = iconv("UTF-8","CP437",$this->GetAbsolutePathById($value->Id,$escapedToken));
+					$zip->addFile($storagePath.$value->FilePath,$path);
+				}
+				else{
+					$this->CreateZipFileOfFolder($zip,$value,$escapedRootPath,$escapedToken);
+				}
+			}
+		}
+		/**
+		* Get a list of the newest entries
+		* @param string $token the session token
+		* @return an array containg the changed files
+		*/
+		public function GetLastChangesOfFileSystem($token){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$owner = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken);	
+			if (is_null($owner))
+				return \Redundancy\Classes\Errors::TokenNotValid; 
+			$ownerId = $owner->ID;
+			$query =sprintf("Select id,displayName,date(uploadDateTime) as Day,time(uploadDateTime) as DayTime,\"new\" as Source,FilePath,Hash from FileSystem where ownerID = %d union all Select id,displayName,date(lastChangeDateTime) as Day,time(lastChangeDateTime) as DayTime,\"changed\" as Source,FilePath,Hash from FileSystem where ownerID = %d order by Day desc, DayTime desc limit 25",$ownerId,$ownerId);
+			$result = DBLayer::GetInstance()->RunSelect($query);
+			$changed = array();
+			return $result;
 		}
 	}
 ?>

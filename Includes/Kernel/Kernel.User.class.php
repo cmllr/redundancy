@@ -125,9 +125,15 @@
 			$token = $this->LogIn($escapedLoginName,$escapedPassword,false);
 			
 			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($token,\Redundancy\Classes\PermissionSet::AllowDeletingUser))
-				return \Redundancy\Classes\Errors::NotAllowed;		
+				return \Redundancy\Classes\Errors::NotAllowed;	
+			//Delete all files
+			$deletion = $GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/",$token);
+			if (!$deletion)
+				return \Redundancy\Classes\Errors::CannotDeleteFolder;
+ 			
 			//Kill all sessions
 			$dbquery = DBLayer::GetInstance()->RunDelete(sprintf("Delete from Session where userID = (Select  id from User where User.loginName = '%s')",$escapedLoginName));
+			$deleteShares = DBLayer::GetInstance()->RunDelete(sprintf("Delete from SharedFileSystem where userID = (Select  id from User where User.loginName = '%s')",$escapedLoginName));
 			$sessioncheck = DBLayer::GetInstance()->RunSelect(sprintf("Select count(s.id) as Amount from Session s inner join User u on u.id = s.userID where u.loginName = '%s' ",$escapedLoginName));
 			//If the check returns values, there must be a problem and the deletion failed					
 			//Delete the user			
@@ -207,6 +213,92 @@
 			}
 			else
 				return false;	
+		}
+		public function DeleteUserByAdminPanel($loginname,$token){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginname,true);	
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
+				return \Redundancy\Classes\Errors::NotAllowed;	
+
+			if ($this->GetUser($escapedToken)->LoginName == $escapedLoginName)
+				return \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify;
+
+			//Delete all files
+			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select * from FileSystem inner join User u on u.id = FileSystem.ownerId   where u.loginName = '%s'",$escapedLoginName));
+			$storagePath = $GLOBALS["Kernel"]->FileSystemKernel->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage);
+			foreach ($dbquery as $value){
+				if (!is_null($value)){
+					unlink($storagePath.$value["filePath"]);
+				}
+			}
+			DBLayer::GetInstance()->RunDelete(sprintf("Delete from FileSystem where ownerId = (Select id from User where loginName = '%s' limit 1)",$escapedLoginName));
+			//Kill all sessions
+			$dbquery = DBLayer::GetInstance()->RunDelete(sprintf("Delete from Session where userID = (Select  id from User where User.loginName = '%s')",$escapedLoginName));
+			$deleteShares = DBLayer::GetInstance()->RunDelete(sprintf("Delete from SharedFileSystem where userID = (Select  id from User where User.loginName = '%s')",$escapedLoginName));
+			$sessioncheck = DBLayer::GetInstance()->RunSelect(sprintf("Select count(s.id) as Amount from Session s inner join User u on u.id = s.userID where u.loginName = '%s' ",$escapedLoginName));
+			//If the check returns values, there must be a problem and the deletion failed					
+			//Delete the user			
+			$dbquery = DBLayer::GetInstance()->RunDelete(sprintf("Delete from User where loginName = '%s'",$escapedLoginName));
+			$check = DBLayer::GetInstance()->RunSelect(sprintf("Select count(u.id) as Amount from User u where u.loginName = '%s' ",$escapedLoginName));
+			//If the check returns values, there must be a problem and the deletion failed		
+			if ($check[0]["Amount"] != 0 || $sessioncheck[0]["Amount"] != 0)
+				return false;	
+			return true;
+
+		}
+		public function ResetPasswordByAdminPanel($loginname,$token){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginname,true);	
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
+				return \Redundancy\Classes\Errors::NotAllowed;	
+			if ($this->GetUser($escapedToken)->LoginName == $escapedLoginName)
+				return \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify;
+			$newPassword = $this->GeneratePassword(-1);
+			$newPasswordHash = $this->HashPassword($newPassword);
+			$query = sprintf("Update User set passwordHash = '%s' where loginName = '%s' limit 1",$newPasswordHash,$escapedLoginName);
+			DBLayer::GetInstance()->RunUpdate($query);
+			$check = DBLayer::GetInstance()->RunSelect(sprintf("Select count(id) as Amount from User where passwordHash = '%s' and loginName = '%s'",$newPasswordHash,$escapedLoginName));
+			if (is_null($check))
+				return false;			
+			if ($check[0]["Amount"] != "0")
+			{
+				return $newPassword;
+			}
+			else{
+				return \Redundancy\Classes\Errors::CannotResetPassword;	
+			}
+		}
+		public function GetUserByAdminPanel($loginname,$token){
+				$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginname,true);	
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
+				return \Redundancy\Classes\Errors::NotAllowed;	
+			if ($this->GetUser($escapedToken)->LoginName == $escapedLoginName)
+				return \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify;
+			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select *,u.Id as UserID from User u where u.loginName =  '%s' limit 1",$escapedLoginName));		
+			if (is_null($dbquery)){							
+				return null;
+			}			
+			
+			foreach ($dbquery as $value){
+				//only proceed if the token was valid				
+							
+				$user = new \Redundancy\Classes\User();
+				$user->ID = $value["UserID"];
+				$user->LoginName = $value["loginName"];
+				$user->DisplayName = $value["displayName"];
+				$user->MailAddress = $value["mailAddress"];
+				$user->RegistrationDateTime = $value["registrationDateTime"];
+				$user->LastLoginDateTime = $value["lastLoginDateTime"];
+				//@todo security?
+				$user->PasswordHash = $value["passwordHash"];
+				$user->IsEnabled = $value["isEnabled"];
+				$user->ContingentInByte = $value["contingentInByte"];
+				$user->Role = $this->GetUserRole($user->LoginName);
+				$user->FailedLogins = $value["failedLogins"];
+				$result = $user;			
+			}			
+			return $result;
 		}
 		/**
 		* Return the currently installed roles (e. g. admin, user, guest)
@@ -469,9 +561,11 @@
 					$cookieLifeSpan = 5;
 				}		
 				$res = setcookie("SessionData", $token, time()+ $cookieLifeSpan * 60);	
+				error_log("Cookie set: $res");
 			}
 			else{				
 				$res = setcookie("SessionData", $token);
+				error_log("Cookie set: $res");
 			}						
 		}
 		/**

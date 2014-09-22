@@ -89,7 +89,7 @@ Program_Enable_Preview = "Vorschaufeatures aktivieren";
 Save="Speichern";
 No_JS="Bitte aktivieren Sie JavaScript in Ihrem Browser. Falls Ihr Browser JavaScript nicht unterst&uuml;tzt, deaktivieren Sie die jQuery - Features in Ihren <a href = \"index.php?module=account\">Benutzereinstellungen</a>. Redundancy wird anschlie&szlig;end in einem Ausweichmodus ausgef&uuml;hrt. Der Ausweichmodus wird <i>nicht</i> empfohlen.";
 DeadLink="Dieser Link ist ung&uuml;ltig.";
-reset_pass="Passwort zur&uuml;cksetzen";
+reset_pass="Passwort zurücksetzen";
 get_user_info="Benutzerinformationen ermitteln";
 pass_hint ="Passwortbeispiel";
 recover_off_fail = "Die Passwort&auml;nderung ist ausgeschaltet.";
@@ -219,7 +219,7 @@ CopyEntryText = "Kopieren nach <select class='target'></select>";
 Move="Verschieben";
 
 FileUploaded="Hochgeladen";
-FileChanged="Zuletzt geändert";
+FileChanged="Kürzlich veränderte Dateien und Ordner";
 
 NoPreview="<div class='alert alert-warning>Derzeit ist noch keine Vorschau für diese Datei verfügbar.</div>"
 OpenEntry="Öffnen";
@@ -259,3 +259,19 @@ RegisterMissingValues="Die Registrierung ist fehlgeschlagen, da Deine Eingabe ni
 RegisterPasswordsDifferent="Die Passwörter sind unterschiedlich. Das kannst du besser!";
 RegisterSuccess="Glückwunsch, der Account wurde registriert!";
 Name="Dein Name, mit dem dich Redundancy ansprechen soll.";
+FileChangesInfo="Redundancy ermittelt aus Deinen aktuellen Daten die letzten Änderungen. Daher werden gelöschte Dateien nicht angezeigt.";
+FilesChangesNoFiles="Du hast noch keine Dateien und Ordner in deinem Speicher. Redundancy kann hier nichts anzeigen.";
+FileAddedInfo ="Um %s hinzugefügt";
+FileChangedInfo="Um %s geändert";
+Delete_Account_Warning = "Diese Funktion löscht den Account samt sämtlicher Dateien. Dieser Schritt kann nicht rückgängig gemacht werden!";
+Delete_Account_Fail ="Der Account wurde nicht gelöscht";
+ResetPasswortInfo="Du kannst hier das Passwort eines Benutzers zurücksetzen.";
+UserEnableDisableHeader="Benutzerstatus";
+DisableUser="Benutzer deaktivieren";
+EnableUser="Benutzer aktivieren";
+UserEnableDisableInfo="Du kannst hier einen Benutzer deaktivieren oder auch einen bereits deaktivierten Benutzer wieder aktivieren";
+NewPassword="Das neue Passwort für %s lautet %s";
+UserDeleted="Der Benutzer wurde gelöscht";
+UserNotExisting ="Der Benutzer wurde nicht gelöscht bzw. existiert nicht";
+DisplayName="Anzeigename";
+EditUserInfo="Du kannst hier einen Benutzer bearbeiten und Eigenschaften verändern.";

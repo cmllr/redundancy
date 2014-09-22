@@ -46,7 +46,7 @@
                                 else if ($key == 8)
                                     $p = "AllowCopying";
                                 else if ($key == 9){
-                                    $p = "Unknown";
+                                    $p = "AllowAdministration";
                                 }                                 
                                 echo "<option>$p => $output</option>";
                             }
@@ -61,33 +61,42 @@
             </div>
         </div>
         <?php if ($allowPasswordChange) :?>
-        <div class="form-group">
-            <label for="inputPassword" class="control-label col-xs-2"><?php echo $GLOBALS["Language"]->Password;?></label>
-            <div class="col-xs-10">
-                <input type="password" class="form-control" name="oldpassword" placeholder="<?php echo $GLOBALS["Language"]->Password;?>">
+            <div class="form-group">
+                <label for="inputPassword" class="control-label col-xs-2"><?php echo $GLOBALS["Language"]->Password;?></label>
+                <div class="col-xs-10">
+                    <input type="password" class="form-control" name="oldpassword" placeholder="<?php echo $GLOBALS["Language"]->Password;?>">
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label for="inputPassword" class="control-label col-xs-2"><?php echo $GLOBALS["Language"]->New_Pass;?></label>
-            <div class="col-xs-10">
-                <input type="password" class="form-control" name="password" placeholder="<?php echo $GLOBALS["Language"]->New_Pass;?>">
+            <div class="form-group">
+                <label for="inputPassword" class="control-label col-xs-2"><?php echo $GLOBALS["Language"]->New_Pass;?></label>
+                <div class="col-xs-10">
+                    <input type="password" class="form-control" name="password" placeholder="<?php echo $GLOBALS["Language"]->New_Pass;?>">
+                </div>
             </div>
-        </div>
-         <div class="form-group">
-            <label for="inputPassword" class="control-label col-xs-2"><?php echo $GLOBALS["Language"]->New_Pass_Repeat;?></label>
-            <div class="col-xs-10">
-                <input type="password" class="form-control" name="repeatpassword" placeholder="<?php echo $GLOBALS["Language"]->New_Pass_Repeat;?>">
+             <div class="form-group">
+                <label for="inputPassword" class="control-label col-xs-2"><?php echo $GLOBALS["Language"]->New_Pass_Repeat;?></label>
+                <div class="col-xs-10">
+                    <input type="password" class="form-control" name="repeatpassword" placeholder="<?php echo $GLOBALS["Language"]->New_Pass_Repeat;?>">
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-xs-offset-2 col-xs-10">
-                <button type="submit" class="btn btn-primary"><?php echo $GLOBALS["Language"]->ChangePassword;?></button>
+            <div class="form-group">
+                <div class="col-xs-offset-2 col-xs-10">
+                    <button type="submit" class="btn btn-primary"><?php echo $GLOBALS["Language"]->ChangePassword;?></button>
+                </div>
             </div>
-        </div>
-    <?php endif; ?>
-        <div class="form-group">
-            <div class="col-xs-offset-2 col-xs-12">
-                <div class="alert alert-danger"><?php echo $GLOBALS["Language"]->Delete_Account;?> NOT IMPLEMENTED YET</div>
+        <?php endif; ?>
+        <?php if ($allowAccountDelete) :?>
+            <div class="alert alert-danger"><?php echo $GLOBALS["Language"]->Delete_Account_Warning;?></div>
+            <div class="form-group">
+                <label for="deletepassword" class="control-label col-xs-2"><?php echo $GLOBALS["Language"]->Password;?></label>
+                <div class="col-xs-10">
+                    <input type="password" class="form-control" name="deletepassword" placeholder="<?php echo $GLOBALS["Language"]->Password;?>">
+                </div>
             </div>
-        </div>
+            <div class="form-group">
+                <div class="col-xs-offset-2 col-xs-10">
+                    <button type="submit" class="btn btn-danger"><?php echo $GLOBALS["Language"]->Delete_Account;?></button>
+                </div>
+            </div>
+        <?php endif; ?>
     </form>

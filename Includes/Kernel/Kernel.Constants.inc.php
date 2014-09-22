@@ -51,6 +51,11 @@
 		const UserNotExisting = 28;
 		const CannotShareToMyself = 29;	
 		const RegistrationNotEnabled = 30;	
+		const ZipFileCreationFailed = 31;
+		const ZipFileExisting = 32;
+		const CannotDeleteFolder = 33;
+		const CannotResetPassword = 34;
+		const SystemAdminAccountNotAllowedToModify = 35;
 	} 
 	/**
 	* The permission set in a human readable form
@@ -65,6 +70,7 @@
 		const AllowChangingPassword = 6;
 		const AllowMoving = 7;
 		const AllowCopying = 8;
+		const AllowAdministration = 9;
 	}
 	/**
 	* File system constants to use

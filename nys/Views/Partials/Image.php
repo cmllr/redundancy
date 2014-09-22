@@ -54,5 +54,6 @@
 			}			
 		}	
 		unset($_SESSION["fileInject"]);
+		$_SESSION["fileInject"] = "";
 	}		
 ?> 

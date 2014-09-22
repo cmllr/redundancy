@@ -106,9 +106,9 @@ function Init(){
   }
   function ReturnIcon(mime){
   	if (mime.indexOf("image") != -1)
-  		return "fa-file-image-o";
+  		return "fa fa-file-image-o";
   	else if (mime.indexOf("directory") != -1)
-		return "fa-folder-open-o";
+		return "fa fa-folder-open-o";
 	else if (mime.indexOf("pdf") != -1)
 		return "fa-file-pdf-o";
 	else if (mime.indexOf("audio") != -1)

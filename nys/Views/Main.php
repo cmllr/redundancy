@@ -38,43 +38,43 @@
 		<ul class='nav nav-pills nav-stacked'>
 			<li>
 				<a href='index.php'>
-				<span class='elusive icon-home glyphIcon'></span>
+				<span class='glyphicon glyphicon-home'></span>
 					<?php echo $GLOBALS['Language']->Home;?>
 				</a>
 			</li>	
 			<li>
 				<a href='?files'>
-				<span class='elusive icon-file glyphIcon'></span>
+				<span class='glyphicon glyphicon-hdd'></span>
 					<?php echo $GLOBALS['Language']->Files;?>
 				</a>
 			</li>	
 			<li>
 				<a href='?history'>
-				<span class='elusive icon-time glyphIcon'></span>
+				<span class='glyphicon glyphicon-time'></span>
 					<?php echo $GLOBALS['Language']->changes;?>
 				</a>
 			</li>	
 			<li>
 				<a href='?search'>
-				<span class='elusive icon-search glyphIcon'></span>
+				<span class='glyphicon glyphicon-search'></span>
 					<?php echo $GLOBALS['Language']->Search;?>
 				</a>
 			</li>	
 			<li>
 				<a href='?upload'>
-				<span class='elusive icon-file-new glyphIcon'></span>
+				<span class='glyphicon glyphicon-open'></span>
 					<?php echo $GLOBALS['Language']->Upload;?>
 				</a>
 			</li>	
 			<li>
 				<a href='?newfolder'>
-				<span class='elusive icon-folder glyphIcon'></span>
+				<span class='glyphicon glyphicon-folder-open'></span>
 					<?php echo $GLOBALS['Language']->New_Directory_Short;?>
 				</a>
 			</li>		
 			<li>
 				<a href='?shares'>
-				<span class='elusive fa-share-alt glyphIcon'></span>
+				<span class='glyphicon glyphicon-share-alt'></span>
 					<?php echo $GLOBALS['Language']->ShareMenu;?>
 				</a>
 			</li>	
@@ -105,16 +105,17 @@
 <div data-spy='affix' data-offset-top='140' class='affix-top'>
 	<div class='dropdown'>
 		<button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>
-			<span class='userbadge elusive icon-user glyphIcon'> </span><?php echo $data['user']->DisplayName; ?> <span class='caret'></span>
+			<span class='userbadge glyphicon glyphicon-userx'> </span><?php echo $data['user']->DisplayName; ?> <span class='caret'></span>
 		</button>
 		<ul class='dropdown-menu' role='menu'>
 			<li>
 				<a href='?account'><?php echo $GLOBALS['Language']->My_Account;?></a>
-			</li>						
+			</li>	
+			<?php if($GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],9)))) :?>					
 			<li>
 				<a href='?admin'><?php echo $GLOBALS['Language']->Administration;?></a>
 			</li>
-					
+			<?php endif;?>		
 			<li>
 				<a href='?info'>Info</a>
 			</li>

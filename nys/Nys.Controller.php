@@ -166,6 +166,49 @@
 		* Display the files list
 		* @param $router the Router-Object to be used.
 		*/
+		public function Admin($router){		
+			$data = $this->InjectSessionData($router);		
+			$allowed  = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],9)));
+			if (!$allowed)
+				$router->DoRedirect("main");
+			if (isset($_POST["username"])){
+				if (isset($_GET["t"]) && $_GET["t"] == "r"){
+					//Reset the password
+					$pass = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','ResetPasswordByAdminPanel',json_encode(array($_POST["username"],$_SESSION['Token'])));
+					if (!is_numeric($pass))
+						$MESSAGE = sprintf($GLOBALS["Language"]->NewPassword,$_POST["username"],$pass);
+					else
+						$ERROR = "R_ERR_".$pass;
+				}
+				else if (isset($_GET["t"]) && $_GET["t"] == "d"){
+					//Delete the account
+					$result = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','DeleteUserByAdminPanel',json_encode(array($_POST["username"],$_SESSION['Token'])));
+					
+					if ($result == 1 && $result == true)
+						$MESSAGE = $GLOBALS["Language"]->UserDeleted;
+					else
+						$ERROR = "R_ERR_".$result;
+				}
+				else if (isset($_GET["t"]) && $_GET["t"] == "e"){
+					//Delete the account
+					$result = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','GetUserByAdminPanel',json_encode(array($_POST["username"],$_SESSION['Token'])));
+					
+					if (is_null($result) || is_numeric($result)){
+						$ERROR = (is_null($result)) ? "R_ERR_NULL" : "R_ERR_".$result;
+					}
+					else{
+						$user = $result;
+					}
+				}
+			}
+			$innerContent = 'Admin.php';	
+			include 'Views/Main.php';
+		}
+
+		/**
+		* Display the files list
+		* @param $router the Router-Object to be used.
+		*/
 		public function Files($router){		
 			$data = $this->InjectSessionData($router);					
 			$entries = array('test','test2');
@@ -234,6 +277,26 @@
 		    return $result; 
 		} 		
 		/**
+		* Display the file changes site.
+		* @param $router the Router-Object to be used.
+		*/
+		function Changes($router){
+			$data = $this->InjectSessionData($router);	
+			$entries = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetLastChangesOfFileSystem',json_encode(array($_SESSION["Token"])));
+			$tmpEntries = array();
+			if (count($entries) != 0){
+				foreach ($entries as $key => $value) {
+					if (!isset($tmpEntries[$value->Day])){
+						$tmpEntries[$value->Day] = array();
+					}
+					$tmpEntries[$value->Day][] = array($value->displayName,$value->DayTime,$value->Source,$value->FilePath,$value->id,$value->Hash);
+				}
+			}
+			$entries = $tmpEntries;
+			$innerContent = "Changes.php";
+			include 'Views/Main.php';
+		}
+		/**
 		* Display a shared file
 		* @param $router the Router-Object to be used.
 		* @todo language??
@@ -244,6 +307,11 @@
 			$shareCode = $_GET["c"];
 			if (is_null($entry) || is_numeric($entry))
 				$router->DoRedirect("");
+			//folder handling
+			if (is_null($entry->FilePath)){
+				echo "Folder.";
+				return;
+			}
 			$filePath = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetSystemDir',json_encode(array(0))).$entry->FilePath;
 			$mediaPreview = $GLOBALS['Router']->DoRequest('Kernel.InterfaceKernel','MediaPreview',json_encode(array($filePath,"./nys/Views/Partials","preview")));
 			$_SESSION["fileInject"] = $filePath;
@@ -289,11 +357,35 @@
 				exit();
 			}	
 			else{
-				$this->DoRedirect("main");
+				$router->DoRedirect("main");
 			}		
 		}
 		/**
-		* Display the account info
+		* Download a zipped folder (only works when already zipped and the session is the one of the owner)
+		* @param route $router object
+		*/
+		public function DownloadZip($router){
+			$data = $this->InjectSessionData($router);
+			$user = $data["user"];
+			$loginName = $user->LoginName;
+			$folderPath= urldecode(str_replace("/", "",$_GET["d"]));
+			$filename = $loginName.$folderPath.".zip";
+			$tempPath = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetSystemDir',json_encode(array(1)));
+			if (file_exists($tempPath.$filename)){
+				ob_end_clean();	
+				header("Content-Type: application/zip");
+			    header("Content-Disposition: attachment; filename=\"".$filename."\"");		
+				$resp = file_get_contents($tempPath.$filename);			
+				echo $resp;
+				unlink($tempPath.$filename);
+				exit();
+			}	
+			else{
+				$router->DoRedirect("main");
+			}		
+		}
+		/**
+		* Display the shares info
 		* @param $router the Router-Object to be used.
 		*/
 		public function Shares($router){	
@@ -333,7 +425,8 @@
 		* Display the account info
 		* @param $router the Router-Object to be used.
 		*/
-		public function Account($router){	
+		public function Account($router){
+			$data = $this->InjectSessionData($router);		
 			if (isset($_POST["password"])){
 				
 				if ($_POST["password"] != $_POST["repeatpassword"] || $_POST["password"]=="" || $_POST["repeatpassword"] == "")
@@ -347,7 +440,15 @@
 						$ERROR=$GLOBALS['Language']->PasswordNotChanged;
 				}
 			}	
-			$data = $this->InjectSessionData($router);	
+			else if (isset($_POST["deletepassword"])){
+				$deleteResult = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','DeleteUser',json_encode(array($data["user"]->LoginName,$_POST["deletepassword"])));
+				if (!$deleteResult){
+					$ERROR=$GLOBALS['Language']->Delete_Account_Fail;
+				}	
+				else{
+					$this->LogOut($router);
+				}
+			}
 			$storageStats = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetStorage',json_encode(array($_SESSION['Token'])));	
 			$storageSize = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetCorrectedUnit',json_encode(array($storageStats->sizeInByte)));	
 			$usedStorageSize = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetCorrectedUnit',json_encode(array($storageStats->usedStorageInByte)));	 		
@@ -355,6 +456,7 @@
 			$storageInfo = $usedStorageSize.' '.$GLOBALS['Language']->of.' '.$storageSize.' '.$GLOBALS['Language']->used;						
 			$PermissionSet = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','GetPermissionSet',json_encode(array($_SESSION['Token'])));
 			$allowPasswordChange = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],6)));
+			$allowAccountDelete  = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],5)));
 			$innerContent = "Account.php";
 			include 'Views/Main.php';
 		}
@@ -413,6 +515,8 @@
 			$user = $router->DoRequest('Kernel.UserKernel','GetUser',json_encode($args));		
 			$data = array();
 			$data['user'] = $user;
+			if (is_null($user))
+				$router->DoRedirect("login");
 			return $data;
 		}
 	}

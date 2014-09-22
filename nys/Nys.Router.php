@@ -102,7 +102,13 @@
 				else if (isset($_GET['account']))
 					$this->controller->Account($this);	
 				else if (isset($_GET['shares']))
-					$this->controller->Shares($this);											
+					$this->controller->Shares($this);
+				else if (isset($_GET["zipfolder"]))
+					$this->controller->DownloadZip($this);	
+				else if (isset($_GET["history"]))
+					$this->controller->Changes($this);	
+				else if (isset($_GET["admin"]))
+					$this->controller->Admin($this);									
 				else
 					$this->DoRedirect('main');
 			}		

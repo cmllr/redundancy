@@ -45,7 +45,7 @@
 	font-family: "Lato", Helvetica, Arial, sans-serif !important;
 }
 .context-menu-item :hover{
-	background-color:black !important;
+	background-color: #DEE1E2  !important;
 }
 .context-menu-item {	
 	position: relative !important;
@@ -53,6 +53,10 @@
 	padding: 8px 16px !important;;
 	line-height: 1.429 !important;;
 	color: #606d7a !important;;
+}
+.context-menu-item span : hover{
+	cursor: pointer;
+    background-color: #DEE1E2  !important;
 }
 .context-menu-separator{
 	padding: 8px 16px !important;;
@@ -66,4 +70,7 @@
 	display: block;
 	margin: auto;
 	width:100%;
+}
+.glyphicon{
+	padding-right:5px !important;
 }

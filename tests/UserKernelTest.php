@@ -93,6 +93,7 @@
 			$expected[0]->Permissions[] = "1";	
 			$expected[0]->Permissions[] = "1";
 			$expected[0]->Permissions[] = "1";
+			$expected[0]->Permissions[] = "1";
 			$this->assertEquals($value,$expected);		
 		}
 		//***********************Tests ChangePassword()***********************
@@ -112,6 +113,7 @@
 			$expected->Id = 1;
 			$expected->Description = "Root";
 			$expected->Permissions = array();
+			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";

@@ -1,3 +1,20 @@
+function StartFolderDownload(entry,dialogTitle,dialogText){
+	var arguments = [];
+	arguments.push(entry.Id);
+	arguments.push(token);
+	arguments.push(entry.Id);
+	$.post('./Includes/api.inc.php', { module: 'Kernel.FileSystemKernel', method: 'StartZipCreation',args: arguments })
+		.done(function( data ) {
+			var dir= $.parseJSON(data);	
+			window.location.href ='?zipfolder&d='+dir;
+		})
+		.fail(function(e) {
+		  console.log(e);			 
+		  ErrorDialog(e.responseText);	
+		}
+	);
+}
+
 function StartSharingByLink(entry,dialogTitle,dialogText){
 	//,'ShareToUser',json_encode(array("/PerfTests/",84,$_SESSION['Token'])));
 	var arguments = [];
