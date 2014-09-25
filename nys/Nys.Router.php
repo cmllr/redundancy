@@ -1,4 +1,7 @@
 <?php
+	/**
+	* Nys.Router.php
+	*/
 	namespace Redundancy\Nys;
 	/**
 	 * PHP UI routing module
@@ -21,7 +24,7 @@
 	 * @section DESCRIPTION
 	 *
 	 * PHP UI routing module
-	 **/	
+	 */	
 	class Router{
 		/**
 		* The current object of the UI Controller
@@ -75,13 +78,24 @@
 			$GLOBALS['Language'] = $this->DoRequest('Kernel.InterfaceKernel','SetCurrentLanguage',json_encode($args));				
 		}	
 		/**
+		* Triggers the logout if the session token is not valid anymore (for example when it is already expired.)
+		*/
+		private function TriggerLogoutIfNeeded(){
+			$args = array($_SESSION['Token']);			
+			$user = $this->DoRequest('Kernel.UserKernel','GetUser',json_encode($args));		
+			if (is_null($user)){
+				$this->controller->LogOut($this);
+				return false;
+			}
+			else
+				return true;
+		}
+		/**
 		* Routes the user to the wanted view
 		* @param $url the current url
 		*/	
 		public function Route($url){				
-			//Start the SESSION-Array if needed.			
-			
-
+			$this->TriggerLogoutIfNeeded()
 			if (isset($_SESSION['Token']) && !empty($_SESSION["Token"])){
 				if (isset($_GET['main']))
 					$this->controller->Main($this);	

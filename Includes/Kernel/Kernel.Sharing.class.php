@@ -276,6 +276,11 @@ class SharingKernel{
 			return \Redundancy\Classes\Errors::EntryNotExisting;
 		return $this->GetSharedEntryByID($result[0]["id"]);
 	}
+        /**
+        * Delete all shares of the file.
+        * @param string $hash the hash of the file
+        * @param string $token the user sessiont oken
+        */
         public function DeleteAllSharesOfEntry($hash,$token){
                 $escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
                 $escapedHash = DBLayer::GetInstance()->EscapeString($hash,true);        

@@ -95,6 +95,17 @@
 			$got = $GLOBALS["Kernel"]->SharingKernel->GetEntryByShareCode("fkjawfööaklfklaklöwfjkölawklf");			
 			$this->assertTrue($got == \Redundancy\Classes\Errors::EntryNotExisting);				
 		}
+		//***********************Tests DeleteAllSharesOfEntry()***********************
+		public function testDeleteAllSharesOfEntry01(){	
+			$this->prepareUpload();		
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$code = $GLOBALS["Kernel"]->SharingKernel->ShareByCode("/testUpload4Share",$token);						
+			$hash = $GLOBALS["Kernel"]->SharingKernel->GetEntryByShareCode($code)->Hash;	
+			$GLOBALS["Kernel"]->SharingKernel->DeleteAllSharesOfEntry($hash,$token);
+			$got = $GLOBALS["Kernel"]->SharingKernel->IsEntryShared("/testUpload4Share",$token,\Redundancy\Classes\ShareMode::ByCode);
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUpload4Share",$token);
+			$this->assertFalse($got);		
+		}
 		//***********************Tests DeleteUserShare()***********************
 		public function testDeleteUserShare01(){	
 			$this->prepareUpload();		

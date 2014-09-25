@@ -96,6 +96,27 @@
 			$expected[0]->Permissions[] = "1";
 			$this->assertEquals($value,$expected);		
 		}
+		//***********************Tests GetPermissionSet()***********************
+		function testGetPermissionSet01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("test","test",false);	
+			$got = $GLOBALS["Kernel"]->UserKernel->GetPermissionSet($token);
+			$expected = array();
+			$expected[] = "1";
+			$expected[] = "1";
+			$expected[] = "1";
+			$expected[] = "1";
+			$expected[] = "1";
+			$expected[] = "1";
+			$expected[] = "1";
+			$expected[] = "1";
+			$expected[] = "1";
+			$expected[] = "1";
+			$this->assertEquals($expected,$got);
+		}
+		function testGetPermissionSet02(){
+			$got = $GLOBALS["Kernel"]->UserKernel->GetPermissionSet("fail");
+			$this->assertTrue(\Redundancy\Classes\Errors::TokenNotValid == $got);
+		}
 		//***********************Tests ChangePassword()***********************
 		public function testChangePassword(){
 			// ChangePassword($token,$oldPassword,$newPassword){

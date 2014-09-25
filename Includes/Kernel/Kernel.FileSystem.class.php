@@ -938,7 +938,7 @@
 		* Initialize the creation of the zip file.
 		* @param int $id the folder id
 		* @param string $token the session token
-		* @param int $id the root folder id
+		* @param int $rootpath the root folder id
 		* @return an string containt the filename or errorcode.
 		*/
 		public function StartZipCreation($id,$token,$rootpath){
@@ -971,7 +971,7 @@
 		* @param mixed $zip the zip object
 		* @param FileSystemItem $entry the entry
 		* @param string $escapedRootPath the root folder
-		* @param string token a valid session token
+		* @param string $escapedToken a valid session token
 		* @return an string containt the filename or errorcode.
 		*/
 		private function CreateZipFileOfFolder($zip,$entry,$escapedRootPath,$escapedToken){

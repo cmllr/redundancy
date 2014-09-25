@@ -114,18 +114,27 @@
 			public function GetVersion(){			
 				return $this->Version;
 			}
+			/**
+			* Get a config value
+			* @param string $key the key to find
+			* @return mixed the value or false 
+			*/
 			public function GetConfigValue($key){
 				//Get a _few_ values of config keys.							
 				//But not everything, due security reasons.
 				if ($key == "Enable_register")
 					return $this->Configuration["Enable_register"];
 				else 
-					return "te";
+					return false;
 			}
-
+			/**
+			* Check if a string is json
+			* @param string $string the string to check
+			* @return bool the rsult of the check
+			*/
 			function isJson($string) {
-			 json_encode($string);
-			 return (json_last_error() == JSON_ERROR_NONE);
+				json_encode($string);
+				return (json_last_error() == JSON_ERROR_NONE);
 			}
 			/**
 			* print out the json equivalent of an object

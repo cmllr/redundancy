@@ -510,6 +510,8 @@
 				else{
 					$token =  $this->GenerateToken($escapedLoginName,$sessionStartedDateTime,$ip);
 					$userId = $dbquery[0]["Id"];
+					//Delete old sessions
+					$this->DeleteExpiredSession($escapedLoginName);
 					if ($stayLoggedIn || $GLOBALS["Kernel"]->Configuration["Program_Session_Timeout"] == -1){
 						$dbquery = sprintf("Insert into Session (userId,token,sessionStartedDateTime,sessionEndDateTime) values('%u','%s','%s','%s')",$userId,$token,$sessionStartedDateTime,null);
 						if (!$GLOBALS["Kernel"]->SystemKernel->IsInTestEnvironment())
@@ -650,7 +652,7 @@
 		private function IsNewSessionNeeded($loginName){
 			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginName,true);
 			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select token,sessionStartedDateTime,sessionEndDateTime from Session inner join User u on u.Id = userId where u.loginName = '%s'",$escapedLoginName));
-
+		
 			//If there is no token, a new one can be created
 			if (is_null($dbquery))
 				return true;			
@@ -673,6 +675,21 @@
 			}		
 			return true;	
 		}		
+		/**
+		* Delete old sessions (except it is a keep alive session!)
+		* @param string $loginName the login name
+		*/
+		private function DeleteExpiredSession($loginName){
+			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginName,true);
+			$currentDateTime = date("Y-m-d H:i:s",time());
+			$query = sprintf("Delete from Session where sessionEndDateTime <> '0000-00-00 00:00:00' and sessionEndDateTime < '%s' and userID = (Select ID from User where loginName = '%s' limit 1)", $currentDateTime,$loginName);
+			DBLayer::GetInstance()->RunDelete($query);
+		}
+		/**
+		* Get the permissions of an user
+		* @param string $token the session token
+		* @return array | errorcode
+		*/
 		public function GetPermissionSet($token){
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
 			$user =  $this->GetUser($token);

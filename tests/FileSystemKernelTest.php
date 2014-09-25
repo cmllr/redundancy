@@ -414,5 +414,78 @@
 			$got =$GLOBALS["Kernel"]->FileSystemKernel->CalculateFolderSize("/thisisnothere",$token);			
 			$this->AssertTrue($got == -1);			
 		}
+		//***********************Test GetContentOfFile()***********************	
+		public function testGetContentOfFile01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$_FILES = array(
+			    'file' => array(
+				'name' => 'testUpload2',
+				'type' => 'text/plain',
+				'size' => 16,	
+				'tmp_name' => __REDUNDANCY_ROOT__."test",
+				'error' => 0
+			    )
+			);	
+			$GLOBALS["Kernel"]->FileSystemKernel->UploadFile(-1,$token);	
+			$hash = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath("/testUpload2",$token)->Hash;
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->GetContentOfFile($hash,$token);			
+			$this->AssertTrue($got =="döner.");		
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUpload2",$token);	
+		}
+		public function testGetContentOfFile02(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$hash ="notexisting.";
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->GetContentOfFile($hash,$token);			
+			$this->AssertTrue($got == \Redundancy\Classes\Errors::EntryNotExisting);		
+		}
+		//***********************Test GetLastChangesOfFileSystem()***********************	
+		public function testGetLastChangesOfFileSystem01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);				
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->GetLastChangesOfFileSystem($token);			
+			$this->AssertTrue(count($got) == 0);			
+		}
+		public function testGetLastChangesOfFileSystem02(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("testDir",-1,$token);				
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->GetLastChangesOfFileSystem($token);			
+			$this->AssertTrue(count($got) == 2);	
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/testDir/",$token);		
+		}
+		//***********************Test StartZipCreation()***********************	
+		public function testStartZipCreation01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);		
+			$_FILES = array(
+			    'file' => array(
+				'name' => 'testUpload2',
+				'type' => 'text/plain',
+				'size' => 16,	
+				'tmp_name' => __REDUNDANCY_ROOT__."test",
+				'error' => 0
+			    )
+			);	
+			$GLOBALS["Kernel"]->FileSystemKernel->UploadFile(-1,$token);	
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->StartZipCreation(-1,$token,-1);
+			$this->AssertTrue($got != "");	
+			//TODO: Look into the file.
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUpload2",$token);	
+		}
+		public function testStartZipCreation02(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);		
+			$_FILES = array(
+			    'file' => array(
+				'name' => 'testUpload2',
+				'type' => 'text/plain',
+				'size' => 16,	
+				'tmp_name' => __REDUNDANCY_ROOT__."test",
+				'error' => 0
+			    )
+			);	
+			$GLOBALS["Kernel"]->FileSystemKernel->UploadFile(-1,$token);	
+			$got =$GLOBALS["Kernel"]->FileSystemKernel->StartZipCreation(-1,$token,-1);
+			$this->AssertTrue($got == \Redundancy\Classes\Errors::ZipFileExisting);	
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUpload2",$token);	
+			$tempPath = $GLOBALS["Kernel"]->FileSystemKernel->GetSystemDir(1);
+			unlink($tempPath."testFS.zip");
+		}
 	}
 ?>

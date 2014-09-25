@@ -91,6 +91,13 @@
 			}
 			return $langs;
 		}
+		/**
+		* Display an HTML5-Tag to display multimedia files
+		* @param string $path the path
+		* @param string $pathToImageProcessor the path to the image processing file
+		* @param string $cssclass the css class to use
+		* @return the tag or an errocode
+		*/
 		public function MediaPreview($path,$pathToImageProcessor,$cssclass){
 			$mimeType = mime_content_type($path);			
 			if (strpos($mimeType, "image") !== false){
