@@ -33,9 +33,11 @@
 	{			
 		//Display image if existing
 		//supported are: jpeg,jpg,bmp,png (atm)
-		if (file_exists($imagepath)){		
-			header('Content-Type: ' .mime_content_type($imagepath));		
-			$mimetype = mime_content_type($imagepath);		
+		if (file_exists($imagepath)){	
+			$file = file_get_contents($imagepath);
+			$finfo = new finfo(FILEINFO_MIME_TYPE);		
+			$mimetype = $finfo->buffer($file);	
+			header('Content-Type: ' .$mimetype);			
 			if ($mimetype == "image/jpeg"){
 				$im = imagecreatefromjpeg($imagepath);					
 				imagejpeg($im);					
