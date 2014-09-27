@@ -81,21 +81,26 @@
 		* Triggers the logout if the session token is not valid anymore (for example when it is already expired.)
 		*/
 		private function TriggerLogoutIfNeeded(){
-			$args = array($_SESSION['Token']);			
-			$user = $this->DoRequest('Kernel.UserKernel','GetUser',json_encode($args));		
-			if (is_null($user)){
-				$this->controller->LogOut($this);
+			if (isset($_SESSION["Token"])){
+				$args = array($_SESSION['Token']);			
+				$user = $this->DoRequest('Kernel.UserKernel','GetUser',json_encode($args));
+				if (is_null($user)){
+					$this->controller->LogOut($this);
+					return false;
+				}
+				else
+					return true;
+			}
+			else{
 				return false;
 			}
-			else
-				return true;
 		}
 		/**
 		* Routes the user to the wanted view
 		* @param $url the current url
 		*/	
 		public function Route($url){				
-			$this->TriggerLogoutIfNeeded()
+			$this->TriggerLogoutIfNeeded();
 			if (isset($_SESSION['Token']) && !empty($_SESSION["Token"])){
 				if (isset($_GET['main']))
 					$this->controller->Main($this);	
@@ -122,7 +127,9 @@
 				else if (isset($_GET["history"]))
 					$this->controller->Changes($this);	
 				else if (isset($_GET["admin"]))
-					$this->controller->Admin($this);									
+					$this->controller->Admin($this);	
+				else if (isset($_GET["search"]))
+					$this->controller->Search($this);								
 				else
 					$this->DoRedirect('main');
 			}		

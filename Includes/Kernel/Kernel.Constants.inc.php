@@ -56,6 +56,8 @@
 		const CannotDeleteFolder = 33;
 		const CannotResetPassword = 34;
 		const SystemAdminAccountNotAllowedToModify = 35;
+		const NoSearchResults = 36;
+		const SearchSyntaxWrong = 37;
 	} 
 	/**
 	* The permission set in a human readable form

@@ -106,17 +106,22 @@
 		* @param $router the Router-Object to be used.
 		*/
 		public function LogOut($router){
-			$args = array($_SESSION['Token']);
-			$router->DoRequest('Kernel.UserKernel','KillSessionByToken',json_encode($args));			
-			session_destroy();			
+			if (isset($_SESSION["Token"])){
+				$args = array($_SESSION['Token']);
+				$router->DoRequest('Kernel.UserKernel','KillSessionByToken',json_encode($args));			
+				session_destroy();	
+			}		
 			$router->DoRedirect('login');
 		}
 		/**
 		* Display the Main-Page
 		* @param $router the Router-Object to be used.
+		* @param string $e an error to get displayed
 		*/
-		public function Main($router){			
+		public function Main($router,$e = ""){			
 			$data = $this->InjectSessionData($router);		
+			if ($e != "")
+				$ERROR = $e;
 			$innerContent = 'StartPage.php';				
 			//Set the varaiables to be injected.
 			$storageStats = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetStorage',json_encode(array($_SESSION['Token'])));	
@@ -161,6 +166,24 @@
 					include 'Views/Main.php';
 				}	
 			}					
+		}
+		/**
+		* Displays the search results
+		* @param $router the router object
+		*/
+		public function Search($router){
+			$data = $this->InjectSessionData($router);	
+			if (!isset($_POST["Search"]))
+				$router->DoRedirect('main');
+			$results = $GLOBALS["Router"]->DoRequest("Kernel.FileSystemKernel","SearchFileSystem",json_encode(array($_POST["Search"],$_SESSION["Token"])));
+			$searchTerm = $_POST["Search"];
+			if (is_numeric($results) || is_null($results) || empty($results)){
+				$ERROR="R_ERR_".$results;
+				$this->Main($router,$ERROR);
+			}else{
+				$innerContent = 'Search.php';			
+				include 'Views/Main.php';
+			}	
 		}
 		/**
 		* Display the files list

@@ -1004,5 +1004,81 @@
 			$changed = array();
 			return $result;
 		}
+		/**
+		* Extracts the needed values and builds a SQL query.
+		* @param string $SearchTerm the search term containing the values
+		* @return the SQL query or errorcode
+		*/
+		public function GetSearchTerms($SearchTerm){
+			$partials = explode(",",$SearchTerm);
+			$SearchTerms = array();
+			for ($i = 0;$i<(count($partials));$i++){
+				if ($partials[$i] != ""){
+					$pattern ="/(?<column>[^\s=<>%;$]+)\s{0,}(?<operator>[=<>%]{1,2})\s{0,}(?<term>[^$,;]*)/";
+					$result;
+					preg_match($pattern, $partials[$i], $result);
+					if (!empty($result["column"]) && !empty($result["operator"]) && !empty($result["term"])){
+						$operator = ($result["operator"] == "%") ? " like " : $result["operator"];
+
+						$SearchTerms[] = array($result["column"],$operator,$result["term"]);
+					}
+					else
+						return "";
+				}
+			}
+			return $this->BuildQuery($SearchTerms);
+		}
+		/**
+		* Builds from the given values a sql query
+		* @param array $Terms the terms
+		* @return the SQL query
+		*/
+		public function BuildQuery($Terms){
+			$query = "Select Id from FileSystem where ";
+			for ($i = 0;$i<(count($Terms));$i++){
+				$like = ($Terms[$i][1] == " like ") ? "%" :"";
+				$query = $query.$Terms[$i][0]. " ". $Terms[$i][1]. " '$like".$Terms[$i][2]."$like'";
+				if ($i !=  count($Terms) -1)
+					$query = $query ." and ";
+			}
+			return $query;
+		}
+		/**
+		* Search in the file system
+		* @param string $searchTerm the term to search
+		* @param string $token the session token
+		* @returns array | Errorcode 
+		*/
+		public function SearchFileSystem($searchTerm, $token){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedSearchTerm = DBLayer::GetInstance()->EscapeString($searchTerm,true);
+			$owner = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken);	
+			if (is_null($owner))
+				return \Redundancy\Classes\Errors::TokenNotValid; 
+			$ownerId = $owner->ID;
+			$results = "";//query result;
+			$query ="";
+			if (preg_match("/[=<>%]{1,}/", $escapedSearchTerm)){
+				$query = $this->GetSearchTerms($escapedSearchTerm);
+				if ($query == "")
+					return \Redundancy\Classes\Errors::SearchSyntaxWrong;
+			}
+			else{
+				$query = "Select Id from FileSystem where displayName like '%".sprintf("%s",$escapedSearchTerm)."%'"; 
+			}
+			$query = $query .sprintf(" and ownerID = '%d'",$ownerId);
+			$result = DBLayer::GetInstance()->RunSelect($query);
+			if (count($result) == 0 || is_null($result)){
+				return \Redundancy\Classes\Errors::NoSearchResults;	
+			}
+			else{
+				$entries = array();
+				foreach ($result as $key => $value) {
+					$id = $value["Id"];
+					$entries[] = $this->GetEntryById($id,$escapedToken);
+				}
+				return $entries;
+			}
+		}
 	}
 ?>

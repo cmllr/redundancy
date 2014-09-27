@@ -34,7 +34,7 @@
 	<!-- /.navbar-collapse -->
 </nav>
 <div class='col-lg-2 col-md-2 col-sm-3 hidden-sm hidden-xs visible-md visible-lg'>
-	<div class='sidebar-nav-fixed affix-top' id='leftSidebar' data-spy='affix' data-offset-top='140'>				
+	<div class='sidebar-nav-fixed affix-top  white-flat' id='leftSidebar' data-spy='affix' data-offset-top='140'>				
 		<ul class='nav nav-pills nav-stacked'>
 			<li>
 				<a href='index.php'>
@@ -53,13 +53,7 @@
 				<span class='glyphicon glyphicon-time'></span>
 					<?php echo $GLOBALS['Language']->changes;?>
 				</a>
-			</li>	
-			<li>
-				<a href='?search'>
-				<span class='glyphicon glyphicon-search'></span>
-					<?php echo $GLOBALS['Language']->Search;?>
-				</a>
-			</li>	
+			</li>
 			<li>
 				<a href='?upload'>
 				<span class='glyphicon glyphicon-open'></span>
@@ -78,8 +72,12 @@
 					<?php echo $GLOBALS['Language']->ShareMenu;?>
 				</a>
 			</li>	
-												
-		</ul>		
+			<li>
+				<form method="POST" action="?search">
+					<input type="text" value="<?php echo (isset($_POST["Search"])) ? $_POST["Search"] : "";?>" name="Search" placeholder = "<?php echo $GLOBALS['Language']->Search;?>">
+				</form>
+			</li>										
+		</ul>
 	</div>
 </div>
 <div class='col-lg-8 col-md-8 col-sm-9 col-xs-12'>
@@ -91,9 +89,9 @@
 	if (isset($MESSAGE))
 		include 'Partials/Message.php';	
 	?>	
-	<div class='panel panel-default'> 
+	<div class='panel panel-default white-flat'> 
 
-		<div class='panel-body'>
+		<div class='panel-body main'>
 			<?php
 					if (isset($innerContent))
 						include $innerContent;

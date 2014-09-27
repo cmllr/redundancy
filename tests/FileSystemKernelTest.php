@@ -487,5 +487,88 @@
 			$tempPath = $GLOBALS["Kernel"]->FileSystemKernel->GetSystemDir(1);
 			unlink($tempPath."testFS.zip");
 		}
+		//***********************Test GetSearchTerms()***********************	
+		public function testGetSearchTerms01(){
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetSearchTerms("file=value");
+			$expected = "Select Id from FileSystem where file = 'value'";
+			$this->AssertTrue($got == $expected);
+		}
+		public function testGetSearchTerms02(){
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetSearchTerms("file = value");
+			$expected = "Select Id from FileSystem where file = 'value'";
+			$this->AssertTrue($got == $expected);
+		}
+		public function testGetSearchTerms03(){
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetSearchTerms("file <> value");
+			$expected = "Select Id from FileSystem where file <> 'value'";
+			$this->AssertTrue($got == $expected);
+		}
+		public function testGetSearchTerms04(){
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetSearchTerms("file <> value");
+			$expected = "Select Id from FileSystem where file <> 'value'";
+			$this->AssertTrue($got == $expected);
+		}
+		public function testGetSearchTerms05(){
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetSearchTerms("file > value");
+			$expected = "Select Id from FileSystem where file > 'value'";
+			$this->AssertTrue($got == $expected);
+		}
+		public function testGetSearchTerms06(){
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetSearchTerms("file < value");
+			$expected = "Select Id from FileSystem where file < 'value'";
+			$this->AssertTrue($got == $expected);
+		}
+		public function testGetSearchTerms07(){
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetSearchTerms("file <= value");
+			$expected = "Select Id from FileSystem where file <= 'value'";
+			$this->AssertTrue($got == $expected);
+		}
+		public function testGetSearchTerms08(){
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetSearchTerms("file >= value");
+			$expected = "Select Id from FileSystem where file >= 'value'";
+			$this->AssertTrue($got == $expected);
+		}
+		public function testGetSearchTerms09(){
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetSearchTerms("file % value");
+			$expected = "Select Id from FileSystem where file  like  '%value%'";
+			$this->AssertTrue($got == $expected);
+		}
+		public function testGetSearchTerms10(){
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->GetSearchTerms("file fjafjajfl value");
+			$expected = "";
+			$this->AssertTrue($got == $expected);
+		}
+		//***********************Test SearchFileSystem()***********************	
+		public function testSearchFileSystem01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->SearchFileSystem("notexisting",$token);
+			$this->AssertTrue($got == \Redundancy\Classes\Errors::NoSearchResults);
+		}
+		public function testSearchFileSystem02(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("searchTest",-1,$token);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->SearchFileSystem("searchTest",$token);
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/searchTest/",$token);
+			$this->AssertTrue(count($got) == 1);
+		}
+		public function testSearchFileSystem03(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("searchTest",-1,$token);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->SearchFileSystem("displayName=searchTest",$token);
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/searchTest/",$token);
+			$this->AssertTrue(count($got) == 1);
+		}
+		public function testSearchFileSystem04(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("searchTest",-1,$token);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->SearchFileSystem("displayName%Test",$token);
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/searchTest/",$token);
+			$this->AssertTrue(count($got) == 1);
+		}
+		public function testSearchFileSystem05(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->SearchFileSystem("displayName/Test;",$token);
+			$this->AssertTrue($got == \Redundancy\Classes\Errors::NoSearchResults);
+		}
 	}
 ?>
