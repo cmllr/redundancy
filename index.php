@@ -10,26 +10,30 @@ ob_start();
 <!DOCTYPE html>
 <head>
 <meta charset="UTF-8">	
-<link rel = 'stylesheet' href='./Lib/bootstrap/css/bootstrap.min.css' type = 'text/css'/>
-<link rel = 'stylesheet' href='./nys/Views/css/nys.css' type = 'text/css'/>
-<link rel='stylesheet' href='Lib/bootstrap/css/elusive-webfont.css'>
-<link rel='stylesheet' href='Lib/bootstrap/css/custom.css'>
-<link rel="stylesheet" href="./Lib/themes/flat/jquery-ui-1.9.2.custom.css">
-<link rel="stylesheet" href="./Lib/font-awesome.min.css">
-<script src='./Lib/jquery-1.10.2.min.js'></script>
-<script src='./Lib/bootstrap/js/bootstrap.min.js'></script>
-<script src='./Lib/Dropzone.js/dropzone.js'  charset='UTF-8'></script>
-<script src="./Lib/ui/jquery-ui.js"></script>
-<script src='./Lib/spin.min.js'></script>
+<!-- Bootstrap -->
+<link rel = 'stylesheet' href='./Lib/Lenticularis/r2-bootstrap.css' type = 'text/css'/>
+<script src='./Lib/Bootstrap/js/bootstrap.min.js'></script>
+<!-- FontAwesome -->
+<link rel="stylesheet" href="./Lib/FontAwesome/font-awesome.css">
+<!-- jQuery -->
+<script src="./Lib/jQuery/jquery-1.10.2.min.js"></script>
+<!-- jQuery UI -->
+<script src="./Lib/jQuery/UI/jquery-ui.js"></script>
+<!-- MISSING -->
+<!-- jQuery Context Menu -->
 <script src='./Lib/jquery.contextMenu.js'></script>
 <script src='./Lib/jquery.ui.position.js'></script>
-
 <link rel="stylesheet" href="./Lib/jquery.contextMenu.css">
+<!-- Spin.js -->
+<script src='./Lib/spin.min.js'></script>
+<!-- Dropzone.js -->
+<script src='./Lib/Dropzone.js/dropzone.js'  charset='UTF-8'></script>
+<link rel='stylesheet' href='Lib/Dropzone.js/css/dropzone.css' type='text/css'/>
+<!-- Others -->
+<link rel = 'stylesheet' href='./nys/Views/css/nys.css' type = 'text/css'/>
 <script src='./nys/Views/js/Nys.Helper.js'></script>
 <script src='./nys/Views/js/Nys.Files.js'></script>
 <script src='./nys/Views/js/Nys.Dialogs.js'></script>
-<link rel='stylesheet' href='Lib/Dropzone.js/css/dropzone.css' type='text/css'/>
-
 <title>Redundancy</title>
 </head>
 <body >
