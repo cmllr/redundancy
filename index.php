@@ -18,8 +18,8 @@ ob_start();
 <!-- FontAwesome -->
 <link rel="stylesheet" href="./Lib/FontAwesome/css/font-awesome.css">
 <!-- jQuery UI -->
-<script src="./Lib/jQuery/UI/jquery-ui.js"></script>
-<!-- MISSING -->
+<script src="./Lib/jQuery/UI/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="./Lib/jQuery/UI/jquery-ui.min.css">
 <!-- jQuery Context Menu -->
 <script src='./Lib/jQuery/jquery.contextMenu.js'></script>
 <script src='./Lib/jQuery/jquery.ui.position.js'></script>
