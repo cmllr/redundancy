@@ -47,19 +47,24 @@
 		ini_set('error_reporting', E_ALL);
 		ini_set('display_errors', '1');
 		ini_set('display_startup_errors', '1');
-	}
+	}	
 	if (isset($_POST["method"])){	
 		$method = $_POST["method"];
 				
 		if (isset($_POST["args"]))
 			$params = is_array($_POST["args"]) ? $_POST["args"] : json_decode($_POST["args"]);
 		else
-			$params = array();
+			$params = array();		
+		
 		//If the regular parsing fails, try to decode the data first (for example if files are send)	
 		//Wenn maybe same solution of line 55
 		if (is_null($params))
-			$params = json_decode(urldecode($_POST["args"]));	
+			$params = json_decode(urldecode($_POST["args"]));			
 		$module = $_POST["module"];
+
+		//TODO: ban XSS attackers
+		if ($Redundancy->SystemKernel->IsAffectedByXSS($params))
+			die($Redundancy->Output(\Redundancy\Classes\Errors::XSSAttack));	
 		if (!isset($module))
 			die("Fatal Error :( ".\Redundancy\Classes\Errors::ModuleMissing);		
 		//TODO: A more professional solution			

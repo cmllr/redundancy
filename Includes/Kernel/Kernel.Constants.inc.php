@@ -58,6 +58,7 @@
 		const SystemAdminAccountNotAllowedToModify = 35;
 		const NoSearchResults = 36;
 		const SearchSyntaxWrong = 37;
+		const XSSAttack = 38;
 	} 
 	/**
 	* The permission set in a human readable form
@@ -88,7 +89,8 @@
 	* This class contains contanst for the system
 	*/
 	abstract class SystemConstants{
-	    const NotAllowedChars = '/';
+	    const NotAllowedChars = '/;<;>';
+	    const XSSChars = "<;>;<script;< script;script";
 	}
     /**
     * The systems share modes

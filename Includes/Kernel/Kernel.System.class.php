@@ -37,5 +37,30 @@
 			}
 			return false;
 		}
+		/**
+		* Check if an data array contains XSS parts
+		* @param string | array $data the data to check
+		* @return bool
+		*/
+		public function IsAffectedByXSS($data){
+			$chars = explode(";", \Redundancy\Classes\SystemConstants::XSSChars);
+			if (!is_array($data))
+			{
+				foreach ($chars as $key => $value) {
+					if (!empty($value) && strpos($data, $value))
+						return true;
+				}
+				return false;
+			}
+			else{
+				for ($i=0;$i<count($data);$i++){
+					foreach ($chars as $key => $value) {
+					if (!empty($value) && strpos($data[$i], $value))
+						return true;
+					}
+					return false;
+				}
+			}
+		}
 	}
 ?>
