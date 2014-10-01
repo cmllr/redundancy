@@ -3,6 +3,8 @@
 	* Nys.Router.php
 	*/
 	namespace Redundancy\Nys;
+		
+	require './nys/Nys.Controller.php';
 	/**
 	 * PHP UI routing module
 	 * @file

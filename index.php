@@ -1,7 +1,6 @@
 <?php 
 error_reporting(E_ALL);		
-include './nys/Nys.Controller.php';
-include './nys/Nys.Router.php';
+require './nys/Nys.Router.php';
 $router = new \Redundancy\Nys\Router();		
 ob_start();
 //Set the cookies if needed
