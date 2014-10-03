@@ -38,43 +38,43 @@
 		<ul class='nav nav-pills nav-stacked'>
 			<li>
 				<a href='index.php'>
-				<span class='glyphicon glyphicon-home'></span>
+				<span class='fa fa-home'></span>
 					<?php echo $GLOBALS['Language']->Home;?>
 				</a>
 			</li>	
 			<li>
 				<a href='?files'>
-				<span class='glyphicon glyphicon-hdd'></span>
+				<span class='fa fa-cloud'></span>
 					<?php echo $GLOBALS['Language']->Files;?>
 				</a>
 			</li>	
 			<li>
 				<a href='?history'>
-				<span class='glyphicon glyphicon-time'></span>
+				<span class='fa fa-clock-o'></span>
 					<?php echo $GLOBALS['Language']->changes;?>
 				</a>
 			</li>
 			<li>
 				<a href='?upload'>
-				<span class='glyphicon glyphicon-open'></span>
+				<span class='fa fa-cloud-upload'></span>
 					<?php echo $GLOBALS['Language']->Upload;?>
 				</a>
 			</li>	
 			<li>
 				<a href='?newfolder'>
-				<span class='glyphicon glyphicon-folder-open'></span>
+				<span class='fa fa-folder-open'></span>
 					<?php echo $GLOBALS['Language']->New_Directory_Short;?>
 				</a>
 			</li>		
 			<li>
 				<a href='?shares'>
-				<span class='glyphicon glyphicon-share-alt'></span>
+				<span class='fa fa-share-alt'></span>
 					<?php echo $GLOBALS['Language']->ShareMenu;?>
 				</a>
 			</li>	
 			<li>
 				<form method="POST" action="?search">
-					<input type="text" value="<?php echo (isset($_POST["Search"])) ? $_POST["Search"] : "";?>" name="Search" placeholder = "<?php echo $GLOBALS['Language']->Search;?>">
+					<input class="form-control search" type="text" value="<?php echo (isset($_POST["Search"])) ? $_POST["Search"] : "";?>" name="Search" placeholder = "<?php echo $GLOBALS['Language']->Search;?>">
 				</form>
 			</li>										
 		</ul>
