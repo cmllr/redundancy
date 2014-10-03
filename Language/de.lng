@@ -278,3 +278,4 @@ EditUserInfo="Du kannst hier einen Benutzer bearbeiten und Eigenschaften veränd
 SearchResults="Deine Suchergebnisse";
 NoSearchResults = "Keine passenden Einträge gefunden";
 SearchTerm= "Dein Suchbegriff: %s";
+LastChangedFile = "Zuletzt geändert";

@@ -1,17 +1,14 @@
 <h1 class="hidden-xs"><?php echo $entry->DisplayName?></h1>
 <h3 class="visible-xs"><?php echo $entry->DisplayName?></h3>		
 
-
-	<div class="panel panel-default">
 <div class="panel-body">
 	<?php 
-		if (is_numeric($mediaPreview)){
-			echo "R_ERR_$mediaPreview";
-		}
-		else
-			echo $mediaPreview;
-	 ?>
-</div>
+	if (is_numeric($mediaPreview)){
+		echo "R_ERR_$mediaPreview";
+	}
+	else
+		echo $mediaPreview;
+	?>
 </div>
 <div class="btn-group" id="fileActionBtnGroup">
 
@@ -34,38 +31,38 @@
 						</p>
 						<div class="col-lg-2"></div>
 					</div>
-			</div>
-			<div class="form-group">
-				<label class="col-lg-2 control-label">
-					<?php echo $GLOBALS['Language']->Source;?>			</label>
-					<div class="col-lg-8">
-						<p class="form-control-static">
-							<?php
-							echo (strpos($entry->UsedUserAgent,"Mozilla") !== false) ? $GLOBALS['Language']->Uploaded_Browser : $GLOBALS['Language']->Uploaded_API;
-						?></p>
-						<div class="col-lg-2"></div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-2 control-label">
+						<?php echo $GLOBALS['Language']->Source;?>			</label>
+						<div class="col-lg-8">
+							<p class="form-control-static">
+								<?php
+								echo (strpos($entry->UsedUserAgent,"Mozilla") !== false) ? $GLOBALS['Language']->Uploaded_Browser : $GLOBALS['Language']->Uploaded_API;
+								?></p>
+								<div class="col-lg-2"></div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-lg-2 control-label">
+								<?php echo $GLOBALS['Language']->FileUploaded;?>			</label>
+								<div class="col-lg-8">
+									<p class="form-control-static">
+										<?php echo $entry->CreateDateTime; ?>			
+									</p>
+									<div class="col-lg-2"></div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-lg-2 control-label">
+									<?php echo $GLOBALS['Language']->LastChangedFile;?>			</label>
+									<div class="col-lg-8">
+										<p class="form-control-static">
+											<?php echo $entry->LastChangeDateTime; ?>			
+										</p>
+										<div class="col-lg-2"></div>
+									</div>
+								</div>
+							</form>
+						</div>
 					</div>
-			</div>
-			<div class="form-group">
-				<label class="col-lg-2 control-label">
-					<?php echo $GLOBALS['Language']->FileUploaded;?>			</label>
-					<div class="col-lg-8">
-						<p class="form-control-static">
-							<?php echo $entry->CreateDateTime; ?>			
-						</p>
-						<div class="col-lg-2"></div>
-					</div>
-			</div>
-			<div class="form-group">
-				<label class="col-lg-2 control-label">
-					<?php echo $GLOBALS['Language']->FileChanged;?>			</label>
-					<div class="col-lg-8">
-						<p class="form-control-static">
-							<?php echo $entry->LastChangeDateTime; ?>			
-						</p>
-						<div class="col-lg-2"></div>
-					</div>
-			</div>
-		</form>
-	</div>
-</div>

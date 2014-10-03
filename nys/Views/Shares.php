@@ -45,6 +45,9 @@
 	<?php endif;?>
 <?php endforeach; ?>	
 </ul>
+<?php if (count($shares) == 0) :?>
+<div class="alert alert-info"><?php echo $GLOBALS["Language"]->NothingShared;?></div>
+<?php endif ;?>
 <h3><?php echo $GLOBALS["Language"]->SharedToMe;?></h3>
 <ul class="list-group">
 <?php foreach($sharesToMe as $key=>$value): ?>		
@@ -72,6 +75,9 @@
 	<?php endif;?>
 <?php endforeach; ?>	
 </ul>
+<?php if (count($sharesToMe) == 0) :?>
+<div class="alert alert-info"><?php echo $GLOBALS["Language"]->NothingShared;?></div>
+<?php endif ;?>
 <script>
 	$(".displaylink").click(function(e){
 			e.preventDefault();			
