@@ -105,29 +105,43 @@ function Init(){
   		}
   }
   function ReturnIcon(mime){
-  	if (mime.indexOf("image") != -1)
-  		return "fa fa-file-image-o";
-  	else if (mime.indexOf("directory") != -1)
-		return "fa fa-folder-open-o";
-	else if (mime.indexOf("pdf") != -1)
-		return "fa-file-pdf-o";
-	else if (mime.indexOf("audio") != -1)
-		return "fa-file-audio-o";
-	else if (mime.indexOf("word") != -1)
-		return "fa-file-word-o";
-	else if (mime.indexOf("java") != -1)
-		return "fa-coffee";
-	else if (mime.indexOf("shell") != -1)
-		return "fa-terminal";
-  	else
-  		return "fa-file-o";
+    var inner;
+    var files = {};
+    //todo implement a better algorithm
+    //add the filetypes
+    files["image"] = "fa-image";
+    files["zip"] = "fa-compress";
+    files["audio"] = "fa-audio-circle";
+    files["video"] = "fa-video-camera";
+    files["plain"] = "fa-header";
+    //office filetypes
+    files["msword"] = "fa-keyboard-o";
+    files["document"] = "fa-keyboard-o";
+    files["presentation"] = "fa-line-chart";
+    files["pdf"] = "fa-font";
+    files["spreadsheetml"] = "fa-table";
+    files["src"] ="fa-code";
+    files["ms-dos"] ="fa-windows";
+    files["sql"] = "fa-database";
+    files["html"] = "fa-html5";
+    var length = Object.keys(files).length;
+    for (var key in files) {
+      var value = files[key];
+      if (mime.indexOf(key) != -1)
+      {
+        inner = value;
+        break;
+      }
+    }
+    var content = "<span class=\"fa-stack\"><i class=\"fa fa-file-o fa-stack-2x\"></i><i class=\"fa "+inner+" fa-stack-1x\"></i> </span>";
+    return content;
   }
   function DisplayContent(data){   	
   		for (var i = 0; i < data.length;i++){  	  			
   			var content = '';  						
   			content = "<tr class='entry' id='"+data[i].Hash+"'><td>";
   			//if (data[i].Thumbnail != true)
-  				content += "<i class='fa "+ReturnIcon(data[i].MimeType)+"'></i></td>";
+  				content += ReturnIcon(data[i].MimeType)+"</td>";
   			//else
   			//	content += "<img src ='"+"./Thumbs/"+data[i].FilePath+"thumb"+"'></td>";
   			content += "<td><a class='filelink' id='HrefOf"+data[i].Id+"' href=''>"+data[i].DisplayName+"</a></td><td class='hidden-xs'>"+data[i].CreateDateTime+"</td><td class='size hidden-xs' id='SizeOf"+data[i].Id+"'>"+data[i].SizeWithUnit+"</td>";
