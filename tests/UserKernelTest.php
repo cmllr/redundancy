@@ -83,6 +83,7 @@
 			$expected[0] = new \Redundancy\Classes\Role();
 			$expected[0]->Id = 1;
 			$expected[0]->Description = "Root";
+			$expected[0]->IsDefault = true;
 			$expected[0]->Permissions = array();
 			$expected[0]->Permissions[] = "1";
 			$expected[0]->Permissions[] = "1";
@@ -94,11 +95,11 @@
 			$expected[0]->Permissions[] = "1";
 			$expected[0]->Permissions[] = "1";
 			$expected[0]->Permissions[] = "1";
-			$this->assertEquals($value,$expected);		
+			$this->assertEquals($value[0],$expected[0]);		
 		}
 		//***********************Tests GetPermissionSet()***********************
 		function testGetPermissionSet01(){
-			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser","test",false);	
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("test","test",false);	
 			$got = $GLOBALS["Kernel"]->UserKernel->GetPermissionSet($token);
 			$expected = array();
 			$expected[] = "1";
@@ -116,6 +117,34 @@
 		function testGetPermissionSet02(){
 			$got = $GLOBALS["Kernel"]->UserKernel->GetPermissionSet("fail");
 			$this->assertTrue(\Redundancy\Classes\Errors::TokenNotValid == $got);
+		}
+		//***********************Tests GetPermissionValues()***********************
+		function testGetPermissionValues01(){
+			$got = $GLOBALS["Kernel"]->UserKernel->GetPermissionValues();
+			$this->assertTrue(count($got) == 10);
+		}
+		//***********************Tests GetRoleByName()***********************
+		function testGetRoleByName01(){
+			$got = $GLOBALS["Kernel"]->UserKernel->GetRoleByName("Root");
+			$this->assertTrue(!is_numeric($got));
+			$this->assertTrue($got->Description == "Root");
+		}
+		function testGetRoleByName02(){
+			$got = $GLOBALS["Kernel"]->UserKernel->GetRoleByName("RootDoesNotExist");
+			$this->assertTrue($got == \Redundancy\Classes\Errors::PermissionNotFound);
+		}
+		//***********************Tests GetPermission()***********************
+		function testGetPermission01(){
+			$got = $GLOBALS["Kernel"]->UserKernel->GetPermission("Root","AllowUpload");
+			$this->assertTrue($got == 1);
+		}
+		function testGetPermission02(){
+			$got = $GLOBALS["Kernel"]->UserKernel->GetPermission("Root","AllowUpload2");
+			$this->assertTrue($got == \Redundancy\Classes\Errors::PermissionNotFound);
+		}
+		function testGetPermission03(){
+			$got = $GLOBALS["Kernel"]->UserKernel->GetPermission("Root2","AllowUpload");
+			$this->assertTrue($got == \Redundancy\Classes\Errors::PermissionNotFound);
 		}
 		//***********************Tests ChangePassword()***********************
 		public function testChangePassword(){
@@ -144,6 +173,7 @@
 			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
+			$expected->IsDefault = true;
 			$foo = self::getMethod('GetUserRole');
 		  	$obj = $GLOBALS["Kernel"]->UserKernel;	  
 			$got = $foo->invokeArgs($obj, array("testUser"));			

@@ -195,15 +195,7 @@
 			if (!$allowed)
 				$router->DoRedirect("main");
 			if (isset($_POST["username"])){
-				if (isset($_GET["t"]) && $_GET["t"] == "r"){
-					//Reset the password
-					$pass = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','ResetPasswordByAdminPanel',json_encode(array($_POST["username"],$_SESSION['Token'])));
-					if (!is_numeric($pass))
-						$MESSAGE = sprintf($GLOBALS["Language"]->NewPassword,$_POST["username"],$pass);
-					else
-						$ERROR = "R_ERR_".$pass;
-				}
-				else if (isset($_GET["t"]) && $_GET["t"] == "d"){
+				if (isset($_GET["t"]) && $_GET["t"] == "d"){
 					//Delete the account
 					$result = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','DeleteUserByAdminPanel',json_encode(array($_POST["username"],$_SESSION['Token'])));
 					
@@ -213,16 +205,86 @@
 						$ERROR = "R_ERR_".$result;
 				}
 				else if (isset($_GET["t"]) && $_GET["t"] == "e"){
-					//Delete the account
-					$result = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','GetUserByAdminPanel',json_encode(array($_POST["username"],$_SESSION['Token'])));
-					
-					if (is_null($result) || is_numeric($result)){
-						$ERROR = (is_null($result)) ? "R_ERR_NULL" : "R_ERR_".$result;
+					//Edit user
+					if (!isset($_POST["group"])){
+						//Get
+						$result = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','GetUserByAdminPanel',json_encode(array($_POST["username"],$_SESSION['Token'])));
+						
+						if (is_null($result) || is_numeric($result)){
+							$ERROR = (is_null($result)) ? "R_ERR_NULL" : "R_ERR_".$result;
+						}
+						else{
+							$user = $result;
+						}
 					}
 					else{
-						$user = $result;
+						//Set
+						$args = array($_SESSION["Token"],$_POST["username"],$_POST["displayname"],(isset($_POST["enabled"])) ? $_POST["enabled"] : false,$_POST["contingent"]*1024,$_POST["newPassword"],$_POST["group"]);
+						$result = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','SetUserByAdminPanel',json_encode($args));
+						if ($result != true){
+							$ERROR ="R_ERR_39";
+						}
+						else{
+							$MESSAGE = $GLOBALS["Language"]->user_changes_success;
+						}
 					}
 				}
+			}
+			else if (isset($_POST["group"])){
+				$group=$GLOBALS['Router']->DoRequest('Kernel.UserKernel','GetRoleByName',json_encode(array($_POST["group"])));
+				if (is_numeric($group) && $group == 40){
+					//the group is new
+					$group = new \stdClass();
+					$group->Description = $_POST["group"];
+					$group->IsDefault = false;
+					$permissions = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','GetPermissionValues',json_encode(array()));
+					foreach ($permissions as $key => $value) {
+						$group->Permissions[$value] = "0";
+					}
+				}
+				else{
+					//group is existing
+					$permissions = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','GetPermissionValues',json_encode(array()));
+					$permissionsValues = $group->Permissions;
+					$group->Permissions = array();
+					for ($i=0; $i < count($permissions); $i++) { 
+						$group->Permissions[$permissions[$i]] = $permissionsValues[$i];	
+					}
+				}
+			}
+			else if (isset($_POST["groupname"])){
+				//Store or update the new or old group
+				//Build the permission set
+				$permissions = "";
+				$permissionsToBeSet = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','GetPermissionValues',json_encode(array()));
+				foreach ($permissionsToBeSet as $key => $value) {
+					if (isset($_POST[$value])){
+						$permissions .= "1";
+					}
+					else{
+						$permissions .= "0";	
+					}
+				}
+				$result = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','UpdateOrCreateGroup',json_encode(array($_POST["groupname"],$permissions,$_SESSION["Token"])));
+				//Update default user group
+				if (isset($_POST["IsDefault"])){
+					$default = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','SetAsDefaultGroup',json_encode(array($_POST["groupname"],$_SESSION["Token"])));
+				}
+				
+				if (is_numeric($result) && $result == 0 || (isset($default) && !$default))
+					$ERROR = "R_ERR_41";
+				else
+					$MESSAGE = $GLOBALS["Language"]->GroupEditedSuccess;
+			}
+			else if (isset($_POST["groupnameToDelete"])){
+				$result = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','DeleteGroup',json_encode(array($_POST["groupnameToDelete"],$_SESSION["Token"])));
+			
+				if (is_numeric($result))
+					$ERROR = "R_ERR_".$result;
+				else if ($result == "")
+					$ERROR = "R_ERR_42";
+				else
+					$MESSAGE = $GLOBALS["Language"]->GroupDeleted;
 			}
 			$innerContent = 'Admin.php';	
 			include 'Views/Main.php';

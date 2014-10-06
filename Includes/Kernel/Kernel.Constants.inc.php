@@ -59,6 +59,11 @@
 		const NoSearchResults = 36;
 		const SearchSyntaxWrong = 37;
 		const XSSAttack = 38;
+		const EditUserFailed = 39;
+		const PermissionNotFound = 40;
+		const UpdateOrCreationOfRoleFailed = 41;
+		const CannotDeleteGroup = 42;
+		const CannotDeleteDefaultGroup = 43;
 	} 
 	/**
 	* The permission set in a human readable form
@@ -74,6 +79,7 @@
 		const AllowMoving = 7;
 		const AllowCopying = 8;
 		const AllowAdministration = 9;
+		const CurrentPermissions = "AllowUpload,AllowCreatingFolder,AllowDeletingUser,AllowDeletingFile,AllowRenaming,AllowDeletingUser,AllowChangingPassword,AllowMoving,AllowCopying,AllowAdministration";
 	}
 	/**
 	* File system constants to use

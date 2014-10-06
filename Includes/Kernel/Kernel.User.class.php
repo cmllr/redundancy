@@ -57,7 +57,7 @@
 				//Only proceed if there is no existing account with this email or loginName		
 				$safetypass = $this->HashPassword($password);
 				$registered= date("Y-m-d H:i:s",time());
-				$role = $GLOBALS["Kernel"]->Configuration["User_Default_Role"];
+				//$role = $GLOBALS["Kernel"]->Configuration["User_Default_Role"];
 				$storage = $GLOBALS["Kernel"]->Configuration["User_Contingent"]*1024*1024;
 				$user = new \Redundancy\Classes\User();				
 				$user->LoginName = $escapedLoginName;
@@ -70,7 +70,7 @@
 				$user->ContingentInByte = $storage;
 				$systemRoles = $this->GetInstalledRoles();			
 				foreach ($systemRoles as $value){
-					if ($value->Id == $role)
+					if ($value->IsDefault)
 					{
 						$user->Role = $value;					
 						break;
@@ -246,30 +246,8 @@
 			return true;
 
 		}
-		public function ResetPasswordByAdminPanel($loginname,$token){
-			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
-			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginname,true);	
-			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
-				return \Redundancy\Classes\Errors::NotAllowed;	
-			if ($this->GetUser($escapedToken)->LoginName == $escapedLoginName)
-				return \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify;
-			$newPassword = $this->GeneratePassword(-1);
-			$newPasswordHash = $this->HashPassword($newPassword);
-			$query = sprintf("Update User set passwordHash = '%s' where loginName = '%s' limit 1",$newPasswordHash,$escapedLoginName);
-			DBLayer::GetInstance()->RunUpdate($query);
-			$check = DBLayer::GetInstance()->RunSelect(sprintf("Select count(id) as Amount from User where passwordHash = '%s' and loginName = '%s'",$newPasswordHash,$escapedLoginName));
-			if (is_null($check))
-				return false;			
-			if ($check[0]["Amount"] != "0")
-			{
-				return $newPassword;
-			}
-			else{
-				return \Redundancy\Classes\Errors::CannotResetPassword;	
-			}
-		}
 		public function GetUserByAdminPanel($loginname,$token){
-				$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
 			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginname,true);	
 			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
 				return \Redundancy\Classes\Errors::NotAllowed;	
@@ -301,6 +279,218 @@
 			return $result;
 		}
 		/**
+		* Updates the user
+		* @param string $token the session token
+		* @param string $loginName the login name to use
+		* @param string $displayname
+		* @param bool $enabled
+		* @param int $contingentInByte
+		* @param string $newPassword
+		* @param string $group the groupname
+		* @return bool| errorcode
+		*/
+		public function SetUserByAdminPanel($token,$loginName,$displayName,$enabled,$contingentInByte,$newPassword,$group){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
+				return \Redundancy\Classes\Errors::NotAllowed;	
+			//values to set
+			$escapedDisplayName = DBLayer::GetInstance()->EscapeString($displayName,true);
+			$escapedEnabled = DBLayer::GetInstance()->EscapeString($enabled,true);
+			$escapedContingent = DBLayer::GetInstance()->EscapeString($contingentInByte,true);
+			$escapedNewPassword = DBLayer::GetInstance()->EscapeString($newPassword,true);
+			$escapedGroup = DBLayer::GetInstance()->EscapeString($group,true);
+			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginName,true);
+			$userToModify = $this->GetUserByAdminPanel($escapedLoginName,$escapedToken);
+			$escapedEnabled = ($escapedEnabled == "on" ? true : false);
+			if ($this->GetUser($escapedToken)->LoginName == $userToModify->LoginName)
+				return \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify;
+			//update the values
+			//Update displayname if needed
+			if ($userToModify->DisplayName != $escapedDisplayName && $escapedDisplayName != ""){
+				$query = sprintf("Update User set DisplayName = '%s' where ID = %d",$escapedDisplayName,$userToModify->ID);
+				DBLayer::GetInstance()->RunUpdate($query);
+			}
+			//Update enabled state if needed
+			if ($userToModify->IsEnabled != $escapedEnabled){
+				$query = sprintf("Update User set isEnabled = '%d' where ID = %d",$escapedEnabled,$userToModify->ID);
+				DBLayer::GetInstance()->RunUpdate($query);
+			}
+			//Update quota if needed
+			if ($userToModify->ContingentInByte != $escapedContingent){
+				$used = $this->GetStorageByAdminPanel($escapedToken,$userToModify->ID);
+				//Only update if the size is greater than the currently used.
+				if ($used->usedStorageInByte < $escapedContingent){
+					$query = sprintf("Update User set contingentInByte = '%d' where ID = %d",$escapedContingent,$userToModify->ID);
+					DBLayer::GetInstance()->RunUpdate($query);
+				}
+				else{
+					return false;
+				}
+			}
+			//Update password if needed
+			if ($escapedNewPassword != ""){
+				$hashed = $this->HashPassword($escapedNewPassword);
+				$query = sprintf("Update User set passwordHash = '%s' where ID = %d",$hashed,$userToModify->ID);
+				DBLayer::GetInstance()->RunUpdate($query);
+			}
+			//Update group if needed
+			if ($escapedGroup != $userToModify->Role->Description){
+				$installedGroups  = $this->GetInstalledRoles();
+				foreach ($installedGroups as $key => $value) {
+					if ($value->Description == $escapedGroup){
+						$query = sprintf("Update User set roleID = '%d' where ID = %d",$value->Id,$userToModify->ID);
+						DBLayer::GetInstance()->RunUpdate($query);
+						break;
+					}
+				}
+			}
+			return true;
+		}
+		/**
+		* Get the descriptions of the currently installed permissions
+		* @return array containing the permissions
+		*/
+		public function GetPermissionValues(){
+			return explode(",", \Redundancy\Classes\PermissionSet::CurrentPermissions);
+		}
+		/**
+		* Get a Role by its name (description)
+		* @param string $name the name to search
+		* @return the role | errorcode
+		*/
+		public function GetRoleByName($name){
+			$roles = $this->GetInstalledRoles();
+			$role = null;
+			foreach ($roles as $key => $value) {
+				if ($value->Description == $name){
+					return $value;
+				}
+			}
+			if (is_null($role))
+				return \Redundancy\Classes\Errors::PermissionNotFound;
+		}
+		/**
+		* Get the value of a permission of a role
+		* @param string $roleDesc the name of the role
+		* @param string $permission the name of the permission
+		* @return int the value or 40 (PermissionNotFound)
+		*/
+		public function GetPermission($roleDesc,$permission){
+			$roles = $this->GetInstalledRoles();
+			$role = null;
+			foreach ($roles as $key => $value) {
+				if ($value->Description == $roleDesc){
+					$role = $value;
+					break;
+				}
+			}
+			if (is_null($role))
+				return \Redundancy\Classes\Errors::PermissionNotFound;
+			$rights = $this->GetPermissionValues();
+			for ($i=0; $i < count($rights); $i++) { 
+				if ($rights[$i] == $permission){
+					return $role->Permissions[$i];
+					break;
+				}
+			}
+			return \Redundancy\Classes\Errors::PermissionNotFound;
+		}
+		public function UpdateOrCreateGroup($roleName,$rolePermissions,$token){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
+				return \Redundancy\Classes\Errors::NotAllowed;	
+			$permissionValue = DBLayer::GetInstance()->EscapeString($rolePermissions,true);
+			$escapedRoleName = DBLayer::GetInstance()->EscapeString($roleName,true);
+			$roleSearchResult = $this->GetRoleByName($escapedRoleName);
+			if (is_numeric($roleSearchResult) && $roleSearchResult  == \Redundancy\Classes\Errors::PermissionNotFound){
+				//Create new group;
+				$query = sprintf("Insert into Role (description,permissions) values('%s','%s')",$escapedRoleName,$permissionValue);
+			}
+			else{
+				//update
+				$query = sprintf("Update Role set permissions = '%s' where id = %d",$permissionValue,$roleSearchResult->Id);
+			}
+			//return $query;
+			DBLayer::GetInstance()->RunInsert($query);
+			return (is_numeric($this->GetRoleByName($escapedRoleName)) == false);
+		}
+		public function SetAsDefaultGroup($roleName,$token){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
+				return \Redundancy\Classes\Errors::NotAllowed;	
+			$escapedRoleName = DBLayer::GetInstance()->EscapeString($roleName,true);
+			$roleSearchResult = $this->GetRoleByName($escapedRoleName);
+			if (is_numeric($roleSearchResult))
+				return false;
+			//If the role is already default, no further actions are needed.
+			if ($roleSearchResult->IsDefault)
+				return true;
+			$query = sprintf("Update Role set IsDefault = 0 where id <> '%d'",$roleSearchResult->Id);
+			DBLayer::GetInstance()->RunUpdate($query);
+			$query = sprintf("Update Role set IsDefault = 1 where id = '%d'",$roleSearchResult->Id);
+			DBLayer::GetInstance()->RunUpdate($query);
+			return true;
+		}
+		public function DeleteGroup($roleName,$token){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
+				return \Redundancy\Classes\Errors::NotAllowed;	
+			$escapedRoleName = DBLayer::GetInstance()->EscapeString($roleName,true);
+			$roleSearchResult = $this->GetRoleByName($escapedRoleName);
+			if (is_numeric($roleSearchResult))
+				return false;
+			if ($roleSearchResult->IsDefault)
+				return \Redundancy\Classes\Errors::CannotDeleteDefaultGroup;
+			$roles = $this->GetInstalledRoles();
+			foreach ($roles as $key => $value) {
+				if ($value->IsDefault){
+					$query = sprintf("Update User set roleID = '%d' where roleID='%d'",$value->Id,$roleSearchResult->Id);	
+					DBLayer::GetInstance()->RunUpdate($query);
+					$query =sprintf("Delete from Role where Id = '%d' limit 1",$roleSearchResult->Id);
+					DBLayer::GetInstance()->RunDelete($query);
+					return true;
+				}
+			}
+			return false;
+		}
+		/**
+		* Translates the permission of a role to a string
+		* @param Role the role to translate
+		* @return string the permissions of the role
+		*/
+		public function GetPermissionValueFromRole($role){
+			$permissions = "";
+			foreach ($role->Permissions as $key => $value) {
+				$permissions .= $value;
+			}
+			return $permissions;
+		}
+		/**
+		* Get the storage informations
+		* @param string $token a valid session token to identify the user
+		* @param int $userId the target user id
+		* @return \Redundancy\Classes\FileSystemAnalysis object or an errorcode
+		*/
+		public function GetStorageByAdminPanel($token,$userId){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
+				return \Redundancy\Classes\Errors::NotAllowed;	
+			$escapedId =DBLayer::GetInstance()->EscapeString($userId,true);			
+			$result = new \Redundancy\Classes\FileSystemAnalysis();
+			$result->sizeInByte = -1; //Not needed in this case		
+			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select sizeInByte from FileSystem where ownerID = '%d'",$escapedId));			
+			if (is_null($dbquery))
+				$result->usedStorageInByte = 0;
+			else{
+				foreach ($dbquery as $value){
+					//only proceed if the token was valid				
+					$result->usedStorageInByte = $result->usedStorageInByte + $value["sizeInByte"];
+				}
+			}				
+			return $result;	
+		}
+		/**
 		* Return the currently installed roles (e. g. admin, user, guest)
 		* @return \Redundancy\Classes\Role[]|null an array containing the roles or null (in case of no roles and if the query failed)
 		*/
@@ -318,7 +508,8 @@
 				$role->Permissions = array();
 				for ($i = 0; $i < strlen($value["permissions"]);$i++){
 					$role->Permissions[] = $value["permissions"][$i];
-				}			
+				}	
+				$role->IsDefault = $value["IsDefault"];		
 				$result[] = $role;
 			}			
 			return $result;			
@@ -363,7 +554,8 @@
 				$role->Permissions = array();
 				for ($i = 0; $i < strlen($value["permissions"]);$i++){
 					$role->Permissions[] = $value["permissions"][$i];
-				}						
+				}	
+				$role->IsDefault = $value["IsDefault"];							
 				$result = $role;
 			}			
 			return $result;	

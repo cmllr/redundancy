@@ -21,12 +21,13 @@ CREATE TABLE IF NOT EXISTS `FileSystem` (
 CREATE TABLE IF NOT EXISTS `Role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `description` text COLLATE utf8_bin,
-  `permissions` int(11) DEFAULT NULL,
+  `permissions` text,
+  `isEnabled` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
 
 INSERT INTO `Role` (`id`, `description`, `permissions`) VALUES
-(1, 'Root', 1111111111);
+(1, 'Root', '1111111111',1);
 
 CREATE TABLE IF NOT EXISTS `Session` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

@@ -32,6 +32,10 @@
 		/**
 		* The permissions of the role. It is an binary value describing if several actions are allowed or not.
 		*/
-		public $Permissions;				
+		public $Permissions;
+		/**
+		* Is the role the systems default one?
+		*/	
+		public $IsDefault;			
 	}
 ?>
