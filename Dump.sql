@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `Role` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
 
-INSERT INTO `Role` (`id`, `description`, `permissions`) VALUES
+INSERT INTO `Role` (`id`, `description`, `permissions`,`isEnabled`) VALUES
 (1, 'Root', '1111111111',1);
 
 CREATE TABLE IF NOT EXISTS `Session` (
