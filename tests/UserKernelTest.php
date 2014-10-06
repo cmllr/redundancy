@@ -99,7 +99,7 @@
 		}
 		//***********************Tests GetPermissionSet()***********************
 		function testGetPermissionSet01(){
-			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("test","test",false);	
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",false);	
 			$got = $GLOBALS["Kernel"]->UserKernel->GetPermissionSet($token);
 			$expected = array();
 			$expected[] = "1";
