@@ -12,7 +12,7 @@ ob_start();
 <!-- jQuery -->
 <script src="./Lib/jQuery/jquery-1.10.2.min.js"></script>	
 <!-- Bootstrap -->
-<link rel = 'stylesheet' href='./Lib/Lenticularis/r2-bootstrap.css' type = 'text/css'/>
+<link rel = 'stylesheet' href='./Lib/Lenticularis/theme.css' type = 'text/css'/>
 <script src='./Lib/Bootstrap/js/bootstrap.min.js'></script>
 <!-- FontAwesome -->
 <link rel="stylesheet" href="./Lib/FontAwesome/css/font-awesome.css">
