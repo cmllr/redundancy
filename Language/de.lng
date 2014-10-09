@@ -1,6 +1,6 @@
 Translation_Author = "Phisherman";
 Loadtime = "Aufbau in %s s";
-Username = "Benutzername";
+Username = "Anmeldename";
 Email = "E-Mail";
 Password = "Passwort";
 Repeat_Password = "Passwort wiederholen";
@@ -9,7 +9,7 @@ Register = "Registrieren";
 Recover = "Passwort vergessen?";
 Delete_Account = "Account löschen";
 New_Directory = "Neues Verzeichnis erstellen";
-New_Directory_Short = "Neues Verzeichnis";
+New_Directory_Short = "Verzeichnis erst.";
 New_Directory_Button = "Erstellen";
 Download = "Herunterladen";
 Share = "Extern freigeben";
@@ -187,7 +187,7 @@ UpdateFilesFinished ="Aktualisierung der Dateien abgeschlossen.";
 Update = "Nach Aktualisierungen suchen";
 setpass_fail = "Passwort&auml;nderung fehlgeschlagen.";
 setpass_success = "Das Passwort wurde erfolgreich gesetzt.";
-Manage_shares ="Freigaben verwalten";
+Manage_shares ="Freigaben";
 SharedBy = " (freigegeben von %s)";
 ShareRemove = "Freigabe ablehnen";
 ShareManageTip ="Sie k&ouml;nnen Freigaben eines Benutzers ablehnen, in dem Sie den jeweiligen Link anklicken. Die Dateien werden anschlie&szlig;end nicht mehr angezeigt und die Freigabe wird entfernt.";
@@ -238,7 +238,7 @@ PasswordNotChanged = "Das Passwort wurde nicht geändert.";
 
 ChangePassword="Passwort ändern";
 
-ShareMenu = "Meine Freigaben";
+ShareMenu = "Freigaben";
 SharedSubTitle ="Freigaben verwalten"
 
 SharedByLink = "Per <a href='?share&c=%s'>Link</a> am %s freigegeben";
@@ -258,7 +258,7 @@ AbortShareToMe ="Freigabe ablehnen";
 RegisterMissingValues="Die Registrierung ist fehlgeschlagen, da Deine Eingabe nicht komplett ist.";
 RegisterPasswordsDifferent="Die Passwörter sind unterschiedlich. Das kannst du besser!";
 RegisterSuccess="Glückwunsch, der Account wurde registriert!";
-Name="Dein Name, mit dem dich Redundancy ansprechen soll.";
+Name="Anzeigename";
 FileChangesInfo="Redundancy ermittelt aus Deinen aktuellen Daten die letzten Änderungen. Daher werden gelöschte Dateien nicht angezeigt.";
 FilesChangesNoFiles="Du hast noch keine Dateien und Ordner in deinem Speicher. Redundancy kann hier nichts anzeigen.";
 FileAddedInfo ="Um %s hinzugefügt";

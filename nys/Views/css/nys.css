@@ -1,9 +1,11 @@
 .logo{
-	display: block;
-	max-width: 70%;
-	height: auto;
-	margin-right: 15%;
-	margin-left: 15%;
+	margin-bottom: 10px;
+}
+.branding{
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+	z-index: -1;
 }
 .infologo{	
 	max-width: 20%;

@@ -99,7 +99,9 @@
 		* @return the tag or an errocode
 		*/
 		public function MediaPreview($path,$pathToImageProcessor,$cssclass){
-			$mimeType = mime_content_type($path);			
+			$file = file_get_contents($path);
+			$finfo = new \finfo(FILEINFO_MIME_TYPE);		
+			$mimeType = $finfo->buffer($file);			
 			if (strpos($mimeType, "image") !== false){
 				return "<img src='".$pathToImageProcessor."/Image.php' class='$cssclass'>";
 			}

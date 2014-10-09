@@ -25,7 +25,7 @@
 
 <form class="form-horizontal" role="form">
 	<div class="form-group">
-	<img class="infologo hidden-xs" src="./nys/Views/img/logo.png">
+	<img class="img-responsive" src="./nys/Views/img/logoWithText.png">
 	</div>
 	<div class="form-group">
 		<label class="col-lg-2 control-label">Version</label>

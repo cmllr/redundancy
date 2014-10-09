@@ -28,19 +28,32 @@
 <div class="page-header">
   <h2><?php echo $GLOBALS["Language"]->QuickButtons;?><small> - <?php echo$GLOBALS["Language"]->QuickButtons_Description?></small></h2>
 </div>	
-<div class="btn-group" >
-		<a type="a" href="./Change.log" class="btn btn-default">
-		<span class="elusive icon-plus glyphIcon">
-		</span><span class='hidden-xs'>Changelog</span></a>
-		<a type="a" href="?account" class="btn btn-default">
-		<span class="elusive icon-user glyphIcon">
-		</span><span class='hidden-xs'><?php echo $GLOBALS["Language"]->My_Account;?></span></a>
-		<a type="a" href="?upload" class="btn btn-default">
-		<span class="elusive icon-file-new glyphIcon">
-		</span><span class='hidden-xs'><?php echo $GLOBALS["Language"]->Upload?></a>
-		<a type="a" href="?newfolder" class="btn btn-default">
-		<span class="elusive icon-folder glyphIcon">
-		</span><span class='hidden-xs'><?php echo $GLOBALS["Language"]->New_Directory_Short;?></span></a>
-		<a type="a" href = '?shares'class="btn btn-default">
-		<span class="elusive icon-share glyphIcon"></span><span class='hidden-xs'><?php echo $GLOBALS["Language"]->Manage_shares;?></span></a>
+<div class="btn-group">
+    <a type="a" href="./Change.log" class="btn btn-default">
+        <span class="elusive icon-plus glyphIcon">
+        </span>
+        <span class='hidden-xs'>Changelog</span>
+    </a>
+    <a type="a" href="?account" class="btn btn-default">
+        <span class="elusive icon-user glyphIcon">
+        </span>
+        <span class='hidden-xs'>
+            <?php echo $GLOBALS[ "Language"]->My_Account;?></span>
+    </a>
+    <a type="a" href="?upload" class="btn btn-default">
+        <span class="elusive icon-file-new glyphIcon">
+        </span>
+        <span class='hidden-xs'>
+            <?php echo $GLOBALS[ "Language"]->Upload?></a>
+    <a type="a" href="?newfolder" class="btn btn-default">
+        <span class="elusive icon-folder glyphIcon">
+        </span>
+        <span class='hidden-xs'>
+            <?php echo $GLOBALS[ "Language"]->New_Directory_Short;?></span>
+    </a>
+    <a type="a" href='?shares' class="btn btn-default">
+        <span class="elusive icon-share glyphIcon"></span>
+        <span class='hidden-xs'>
+            <?php echo $GLOBALS[ "Language"]->Manage_shares;?></span>
+    </a>
 </div>
