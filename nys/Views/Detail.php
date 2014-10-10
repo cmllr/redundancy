@@ -1,27 +1,7 @@
-<?php
-	//erwartet einen Dateinamen (Bsp.: "sommerurlaub.jpg") und gibt Dateinamen und -endung als Array zurück
-	//1. Index ist Dateiname, 2. Index Dateiendung
-	function splitFileNameAndExtension($name){
-		$result = array();
-		$lastPoint = strrpos($name, '.');
-
-		//falls keine Endung vorhanden, enthält das zweite Feld einen leeren String
-		if($lastPoint == false)
-			$lastPoint = strlen($name);
-		$result[] = substr($name, 0, $lastPoint);
-		$result[] = substr($name, $lastPoint);
-		return $result;
-	}
-
-?>
-
-
 <h1 class="hidden-xs light-header">
 	<a href="?files"><span class='fa fa-chevron-left lightblue'></span></a>
 	<?php
-		$result = splitFileNameAndExtension($entry->DisplayName);
-
-		echo $result[0] . '<span class="gray">' . $result[1] . '</span>';
+		echo $filenameParts[0] . '<span class="gray">' . $filenameParts[1] . '</span>';
 	?>
 </h1>
 <h3 class="visible-xs"><?php echo $entry->DisplayName?></h3>

@@ -101,11 +101,28 @@
 		public function MediaPreview($path,$pathToImageProcessor,$cssclass){
 			$file = file_get_contents($path);
 			$finfo = new \finfo(FILEINFO_MIME_TYPE);		
-			$mimeType = $finfo->buffer($file);			
+			$mimeType = $finfo->buffer($file);	
 			if (strpos($mimeType, "image") !== false){
 				return "<img src='".$pathToImageProcessor."/Image.php' class='$cssclass'>";
 			}
 			return \Redundancy\Classes\Errors::NoPreviewPossible;
+		}
+
+		/**
+		* Separates the filename and the extension
+		* @param string $name the complete name
+		* @return the parts
+		*/
+		public function SplitFileNameAndExtension($name){
+			$result = array();
+			$lastPoint = strrpos($name, '.');
+
+			//falls keine Endung vorhanden, enthält das zweite Feld einen leeren String
+			if($lastPoint == false)
+				$lastPoint = strlen($name);
+			$result[] = substr($name, 0, $lastPoint);
+			$result[] = substr($name, $lastPoint);
+			return $result;
 		}
 	}
 ?>
