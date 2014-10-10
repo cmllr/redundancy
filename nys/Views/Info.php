@@ -22,52 +22,28 @@
 	 */
 	 //Include uri check
 ?> 
+<img class="img-responsive" src="./nys/Views/img/logoWithText.png">
 
-<form class="form-horizontal" role="form">
-	<div class="form-group">
-	<img class="img-responsive" src="./nys/Views/img/logoWithText.png">
-	</div>
-	<div class="form-group">
-		<label class="col-lg-2 control-label">Version</label>
-			<div class="col-lg-8">
-			<p class="form-control-static">
-				<?php
-					echo  $GLOBALS["Router"]->DoRequest("Kernel","GetAppName",json_encode(array()));
-					echo " ";
-					$version = $router->DoRequest("Kernel","GetVersion",json_encode(array()));
-					echo $version;
-				?>
-			</p>
-			<div class="col-lg-2"></div>
-		</div>
-	</div>
-	<div class="form-group">
-		<label class="col-lg-2 control-label">Status</label>
-			<div class="col-lg-8">
-				<p class="form-control-static">
-					<?php 
-					if (strpos($version,"eol") !== false)
-						echo "<span class=\"label label-danger\">".$GLOBALS["Language"]->EOL."</span>";
-					else if (strpos($version,"dev") !== false || strpos($version,"beta") !== false)
-						echo "<span class=\"label label-warning\">".$GLOBALS["Language"]->Unstable."</span>";
-					else
-						echo "<span class=\"label label-success\">".$GLOBALS["Language"]->Stable."</span>";
-					
-					?>
-				</p>
-				<div class="col-lg-2"></div>
-			</div>
-	</div> 			
-	<div class="form-group">
-		<label class="col-lg-2 control-label">Codename</label>
-		<div class="col-lg-8">
-			<p class="form-control-static">
-				<i>
-					Lenticularis
-				</i>
-			</p>
-		</div>
-		<div class="col-lg-2"></div>
-	</div> 			
-</form>
-
+<table class="table table-responsive">
+	<tr>
+		<td>Version</td>
+		<td><?php echo  $version = $router->DoRequest("Kernel","GetVersion",json_encode(array())); ?></td>
+	</tr>
+	<tr>
+		<td>Status</td>
+		<td>
+			<?php 
+				if (strpos($version,"eol") !== false)
+					echo "<span class=\"label label-danger\">".$GLOBALS["Language"]->EOL."</span>";
+				else if (strpos($version,"dev") !== false || strpos($version,"beta") !== false)
+					echo "<span class=\"label label-warning\">".$GLOBALS["Language"]->Unstable."</span>";
+				else
+					echo "<span class=\"label label-success\">".$GLOBALS["Language"]->Stable."</span>";
+			?>
+		</td>
+	</tr>
+	<tr>
+		<td>Codename</td>
+		<td>Lenticularis</td>
+	</tr>
+</table>

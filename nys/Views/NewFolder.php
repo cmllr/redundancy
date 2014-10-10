@@ -1,4 +1,4 @@
-<h2><?php echo $GLOBALS["Language"]->New_Directory." ". $absolutePathCurrentDirectory;?></h2>
+<h1 class="light-header"><span class="gray"><?php echo $GLOBALS["Language"]->New_Directory."</span> ". $absolutePathCurrentDirectory;?></h1>
 <div class="panel-body">
 <form class="form-horizontal" method="POST" action="?newfolder">	
 	<div class="form-group">

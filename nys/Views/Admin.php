@@ -1,6 +1,6 @@
-<h2><?php echo $GLOBALS["Language"]->Administration;?></h2>
+<h1 class="light-header"><?php echo $GLOBALS["Language"]->Administration;?></h1>
 <!-- Nav tabs -->
-<ul class="nav nav-tabs" role="tablist">
+<ul class="nav nav-pills" role="tablist">
 	<li><a href="#start" role="tab" data-toggle="tab">Start</a></li>
 	<li><a href="#edit" role="tab" data-toggle="tab"><?php echo $GLOBALS["Language"]->admin_edit;?></a></li>
 	<li><a href="#delete" role="tab" data-toggle="tab"><?php echo $GLOBALS["Language"]->Delete_Account;?></a></li>
@@ -10,7 +10,7 @@
 <!-- Tab panes -->
 <div class="tab-content">
 	<div class="tab-pane active" id="start">
-		<div class="well">
+		<div class="well">f
 			We trust you have received the usual lecture from the local System</br>
 			Administrator. It usually boils down to these three things:</br>
 		</br>
@@ -42,12 +42,12 @@
 		<div class="form-group">
 			<label for="inputPassword" class="control-label col-xs-2"><?php echo $GLOBALS["Language"]->Username;?></label>
 			<div class="col-xs-10">
-				<input type="text" class="form-control" name="username" placeholder="<?php echo $GLOBALS["Language"]->Username;?>">
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-xs-offset-2 col-xs-10">
-				<button type="submit" class="btn"><?php echo $GLOBALS["Language"]->admin_edit;?></button>
+				<div class="form-group">
+					<input type="text" class="form-control" name="username" placeholder="<?php echo $GLOBALS["Language"]->Username;?>">
+			    </div>
+			    <div class="form-group">
+			 	   <button type="submit" class="btn btn-primary"><?php echo $GLOBALS["Language"]->admin_edit;?></button>
+			    </div>
 			</div>
 		</div>
 	</form>
@@ -216,4 +216,6 @@
 	   		$('a[href="#groupdelete"]').click()
 	   	
 	});
+
+	 $('a[href="#start"]').tab('show');
 </script>

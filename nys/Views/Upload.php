@@ -1,28 +1,20 @@
 <?php	
-	echo '<h2>'.$GLOBALS['Language']->Upload_Title.' '.$absolutePathCurrentDirectory.'.</h2>';
+	echo '<h1 class="light"><span class="gray">'.$GLOBALS['Language']->Upload_Title.'</span> '.$absolutePathCurrentDirectory.'<span class="gray">.</span></h1>';
 ?>
 
-<div id = 'result'>
+<div id = 'result'></div>
 
+<form class ='dropzone' id = 'my-awesome-dropzone' action='?upload' method='POST' >
+<div class = 'dz-message'>
+    <h3 class="text-center"><span class='fa fa-file'>&nbsp;</span>
+       <?php echo $GLOBALS['Language']->dictUploadTitle ;?>
+    </h3>
 </div>
-
-<div class='panel panel-default'>
-	<?php
-		echo '<h3 class=\'text-center\'>';	
-		echo $GLOBALS['Language']->dictUploadTitle.'</h3>';
-	?>
-<form class ='dropzone panel-body' id = 'my-awesome-dropzone' action='?upload' method='POST' >
- <div class = 'dz-message'>
-	<center>
-		<span class='elusive icon-file-new glyphIcon text-center'></span>
-	</center>
- </div>
 	<div class='fallback'>
     <input name='file' type='file'/>
   </div>
 </form>
 
-</div>
 <script>
 Dropzone.options.myAwesomeDropzone = {
   paramName: 'file', 

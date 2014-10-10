@@ -8,7 +8,7 @@ Log_In = "Anmelden";
 Register = "Registrieren";
 Recover = "Passwort vergessen?";
 Delete_Account = "Account löschen";
-New_Directory = "Neues Verzeichnis erstellen";
+New_Directory = "Neues Verzeichnis erstellen in";
 New_Directory_Short = "Verzeichnis erst.";
 New_Directory_Button = "Erstellen";
 Download = "Herunterladen";
@@ -225,6 +225,7 @@ NoPreview="<div class='alert alert-warning>Derzeit ist noch keine Vorschau für 
 OpenEntry="Öffnen";
 OpenEntryNewTab="Öffnen in neuem Tab";
 MyAccount ="Mein Konto";
+AccountOf = "Konto von";
 
 Group="Benutzergruppe";
 Storage="Quota";

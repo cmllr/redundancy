@@ -1,5 +1,6 @@
-<h2><?php echo $GLOBALS["Language"]->FileChanged;?></h2>
-<div class="alert alert-info"><?php echo $GLOBALS["Language"]->FileChangesInfo;?></div>
+<h1 class="light"><?php echo $GLOBALS["Language"]->FileChanged;?></h1>
+<p class="gray"><?php echo $GLOBALS["Language"]->FileChangesInfo;?></p>
+<br>
 <?php if (!is_null($entries)) :?>
 <?php foreach ($entries as $key => $value) :?>
 	<div class="panel panel-default">

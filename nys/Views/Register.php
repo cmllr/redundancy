@@ -7,9 +7,9 @@
     <div class="hidden-xs">
         <img class='img-responsive logo' src='./nys/Views/img/logoWithText.png'>
     </div>
-    <div class='panel panel-default'>
+    <div class='panel panel-default white-flat'>
         <div class="panel-body">
-            <h1 class="light-header">
+            <h1 class="light header-form gray">
                 <?php echo $GLOBALS['Language']->Register;?></h1>
             <form class='form' role='form' method='POST' action='?register'>
                 <div class='form-group '>

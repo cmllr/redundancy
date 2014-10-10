@@ -12,9 +12,9 @@
             <img class='img-responsive logo' src='./nys/Views/img/logoWithText.png'>
         </div>
         <!--<h2 class='appname'><?php  echo $GLOBALS['Router']->DoRequest('Kernel','GetAppName',json_encode(array())); ?></h2>-->
-        <div class='panel panel-default'>
+        <div class='panel panel-default white-flat'>
             <div class='panel-body'>
-                <h1 class="light-header">Login</h1>
+                <h1 class="light header-form gray">Login</h1>
                 <form class='form' role='form' method='POST' action='?login'>
                     <div class='form-group '>
                         <label for='username'>

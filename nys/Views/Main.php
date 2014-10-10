@@ -34,10 +34,10 @@
     </div>
     <!-- /.navbar-collapse -->
 </nav>
-<div class='col-sm-3 col-md-3 col-lg-2 hidden-xs'>
-    <div class='sidebar-nav-fixed affix-top' id='leftSidebar' data-spy='affix' data-offset-top='140'>
+<div class='col-sm-3 col-md-2 col-lg-2 hidden-xs'>
+    <div class='affix-top' id='leftSidebar' data-spy='affix' data-offset-top='0'>
         <div class='dropdown'>
-            <button type='button' class='btn btn-default btn-block dropdown-toggle' data-toggle='dropdown'>
+            <button type='button' class='btn btn-primary btn-block dropdown-toggle' data-toggle='dropdown'>
                 <span class='userbadge glyphicon glyphicon-userx'></span>
                 <?php echo $data[ 'user']->DisplayName; ?>
                 <span class='caret'></span>
@@ -68,37 +68,37 @@
             <ul class='nav nav-pills nav-stacked'>
                 <li>
                     <a href='index.php'>
-                        <span class='fa fa-home'></span>
+                        <span class='fa fa-home'>&nbsp;</span>
                         <?php echo $GLOBALS['Language']->Home;?>
                     </a>
                 </li>
                 <li>
                     <a href='?files'>
-                        <span class='fa fa-cloud'></span>
+                        <span class='fa fa-cloud'>&nbsp;</span>
                         <?php echo $GLOBALS['Language']->Files;?>
                     </a>
                 </li>
                 <li>
                     <a href='?history'>
-                        <span class='fa fa-clock-o'></span>
+                        <span class='fa fa-clock-o'>&nbsp;</span>
                         <?php echo $GLOBALS['Language']->changes;?>
                     </a>
                 </li>
                 <li>
                     <a href='?upload'>
-                        <span class='fa fa-cloud-upload'></span>
+                        <span class='fa fa-cloud-upload'>&nbsp;</span>
                         <?php echo $GLOBALS['Language']->Upload;?>
                     </a>
                 </li>
                 <li>
                     <a href='?newfolder'>
-                        <span class='fa fa-folder-open'></span>
+                        <span class='fa fa-folder-open'>&nbsp;</span>
                         <?php echo $GLOBALS['Language']->New_Directory_Short;?>
                     </a>
                 </li>
                 <li>
                     <a href='?shares'>
-                        <span class='fa fa-share-alt'></span>
+                        <span class='fa fa-share-alt'>&nbsp;</span>
                         <?php echo $GLOBALS['Language']->ShareMenu;?>
                     </a>
                 </li>
@@ -111,7 +111,7 @@
         </div>
     </div>
 </div>
-<div class='col-sm-9 col-md-9 col-lg-10'>
+<div class='col-sm-9 col-md-10 col-lg-10'>
     <?php //Display the error message if needed. if (isset($ERROR)) include 'Partials/ErrorMessage.php'; //Display other messages if (isset($MESSAGE)) include 'Partials/Message.php'; ?>
     <div class='panel panel-default white-flat'>
 

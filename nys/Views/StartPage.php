@@ -1,13 +1,11 @@
-<div class="page-header">
-  <h2>Redundancy 2 <small>- 
-	<?php
-		echo  $GLOBALS["Router"]->DoRequest("Kernel","GetAppName",json_encode(array()));
-		echo " ";
-		$version = $router->DoRequest("Kernel","GetVersion",json_encode(array()));
-		echo $version;
-	?>
-  </small></h2>
-</div>			
+<h1 class="light">Redundancy 2 <span class="gray">- 
+<?php
+	$appName = $GLOBALS["Router"]->DoRequest("Kernel","GetAppName",json_encode(array()));
+	$version = $router->DoRequest("Kernel","GetVersion",json_encode(array()));
+	echo $appName . ' ' . $version;
+?>
+</span></h1>	
+<h4>	
 <?php 
 	if (strpos($version,"eol") !== false)
 		echo "<span class=\"label label-danger\">".$GLOBALS["Language"]->EOL."</span>";
@@ -17,18 +15,18 @@
 		echo "<span class=\"label label-success\">".$GLOBALS["Language"]->Stable."</span>";
 	
 ?>
-<div class="page-header">
-
-  <h2><?php echo $GLOBALS["Language"]->Files;?> <small> - <?php echo "&nbsp;"."&nbsp;(".$storageInfo.")";?></small></h2>
-</div>	
+</h4>
+<h3><?php echo $GLOBALS["Language"]->Files;?> <small> - <?php echo "&nbsp;"."&nbsp;(".$storageInfo.")";?></small></h3>
+	
 <div class="progress">	
 	<div class="progress-bar" role="progressbar" aria-valuenow="<?php echo $percentage;?>" aria-valuemin="0" aria-valuemax="100" style="width: <?php echo $percentage;?>%;">
 	</div>
 </div>
+<!--
 <div class="page-header">
   <h2><?php echo $GLOBALS["Language"]->QuickButtons;?><small> - <?php echo$GLOBALS["Language"]->QuickButtons_Description?></small></h2>
 </div>	
-<div class="btn-group">
+<div class="btn-group btn-group-justified">
     <a type="a" href="./Change.log" class="btn btn-default">
         <span class="elusive icon-plus glyphIcon">
         </span>
@@ -57,3 +55,4 @@
             <?php echo $GLOBALS[ "Language"]->Manage_shares;?></span>
     </a>
 </div>
+-->
