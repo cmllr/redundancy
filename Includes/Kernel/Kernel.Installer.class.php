@@ -71,16 +71,16 @@
 		}
 		public function WriteDBConfig($user,$pass,$host,$dbname,$driver){
 			$content = file_get_contents(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Config.class.php");
-			$content =preg_replace("/const\s+DBName+\s+=\s+\".+\";/", "const DBName = \"$dbname\";", $content);
-			$content =preg_replace("/const\s+DBUser+\s+=\s+\".+\";/", "const DBUser = \"$user\";", $content);
-			$content =preg_replace("/const\s+DBPassword+\s+=\s+\".+\";/", "const DBPassword = \"$pass\";", $content);
-			$content =preg_replace("/const\s+DBHost+\s+=\s+\".+\";/", "const DBHost = \"$host\";", $content);
+			$content =preg_replace("/const\s+DBName+\s+=\s+\".{0,}\";/", "const DBName = \"$dbname\";", $content);
+			$content =preg_replace("/const\s+DBUser+\s+=\s+\".{0,}\";/", "const DBUser = \"$user\";", $content);
+			$content =preg_replace("/const\s+DBPassword+\s+=\s+\".{0,}\";/", "const DBPassword = \"$pass\";", $content);
+			$content =preg_replace("/const\s+DBHost+\s+=\s+\".{0,}\";/", "const DBHost = \"$host\";", $content);
+
 			if ($driver == "MySQL")
 				$driver = "pdo_mysql";
-			$content =preg_replace("/const\s+DBDriver+\s+=\s+\".+\";/", "const DBDriver = \"$driver\";", $content);
+			$content =preg_replace("/const\s+DBDriver+\s+=\s+\".{0,}\";/", "const DBDriver = \"$driver\";", $content);
 			if (file_exists($dbname))
-				$content =preg_replace("/const\s+DBPath+\s+=\s+\".+\";/", "const DBDriver = \"$DBPath\";", $content);
-
+				$content =preg_replace("/const\s+DBPath+\s+=\s+\".{0,}\";/", "const DBDriver = \"$DBPath\";", $content);
 			if (file_put_contents(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Config.class.php", $content) === false)
 				return false;
 			else
