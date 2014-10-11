@@ -70,7 +70,7 @@
 			return $result;
 		}
 		public function WriteDBConfig($user,$pass,$host,$dbname,$driver){
-			$content = file_get_contents(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.php");
+			$content = file_get_contents(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.class.php");
 			$content =preg_replace("/const\s+DBName+\s+=\s+\".+\";/", "const DBName = \"$dbname\";", $content);
 			$content =preg_replace("/const\s+DBUser+\s+=\s+\".+\";/", "const DBUser = \"$user\";", $content);
 			$content =preg_replace("/const\s+DBPassword+\s+=\s+\".+\";/", "const DBPassword = \"$pass\";", $content);
@@ -81,7 +81,7 @@
 			if (file_exists($dbname))
 				$content =preg_replace("/const\s+DBPath+\s+=\s+\".+\";/", "const DBDriver = \"$DBPath\";", $content);
 
-			if (file_put_contents(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.php", $content) === false)
+			if (file_put_contents(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.class.php", $content) === false)
 				return false;
 			else
 				return true;
@@ -94,7 +94,7 @@
 			return $dirs;
 		}
 		public function DoTheImport(){
-			require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.php";
+			require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.class.php";
 			$content = file_get_contents(__REDUNDANCY_ROOT__."Dump.sql");
 			$queries = explode(";", $content);
 			try{
@@ -139,7 +139,7 @@
 			return password_hash($password, PASSWORD_BCRYPT, $options);
 		}
 		public function SetUser($user,$pass){
-			require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.php";
+			require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.class.php";
 			try{
 				$classLoader = new ClassLoader('Doctrine\DBAL', __REDUNDANCY_ROOT__."Lib/Doctrine");
 				$commonLoader = new ClassLoader('Doctrine\Common', __REDUNDANCY_ROOT__."Lib/Doctrine");
