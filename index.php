@@ -1,5 +1,10 @@
 <?php
 error_reporting(E_ALL);
+if (!file_exists("./lock"))
+{
+    header("Location: install.php");
+    exit;
+}
 require './nys/Nys.Router.php';
 $router = new \Redundancy\Nys\Router();
 ob_start();
