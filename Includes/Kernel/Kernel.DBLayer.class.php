@@ -59,18 +59,18 @@
 				$classLoader->register();
 				$commonLoader->register();
 				$config = new \Doctrine\DBAL\Configuration();
-				//TODO: Make this settings variable
 				$connectionParams = array(
-				    'dbname' => 'Lenticularis',
-				    'user' => 'root',
-				    'password' => '',
-				    'host' => 'localhost',
-				    'driver' => 'pdo_mysql',
+					'dbname' => \Redundancy\Kernel\Config::DBName,
+				    'user' =>  \Redundancy\Kernel\Config::DBUser,
+				    'password' =>\Redundancy\Kernel\Config::DBPassword,
+				    'host' => \Redundancy\Kernel\Config::DBHost,
+				    'driver' => \Redundancy\Kernel\Config::DBDriver,
 				);
+				if (!empty(\Redundancy\Kernel\Config::DBPath))
+					$connectionParams["path"] =  \Redundancy\Kernel\Config::DBPath;
 				$conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
 				$this->connection = $conn;		
 			}catch(PDOException $e){
-				echo "upps";
 				die(Errors::DataBaseError);	
 			}				
 		}

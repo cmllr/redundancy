@@ -1,6 +1,3 @@
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
 CREATE TABLE IF NOT EXISTS `FileSystem` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sizeInByte` int(11) NOT NULL DEFAULT '0',
@@ -17,18 +14,15 @@ CREATE TABLE IF NOT EXISTS `FileSystem` (
   KEY `ownerId` (`ownerId`),
   KEY `parentFolder` (`parentFolder`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
 CREATE TABLE IF NOT EXISTS `Role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `description` text COLLATE utf8_bin,
-  `permissions` text,
-  `IsDefault` tinyint(1) DEFAULT NULL,
+  `permissions` text COLLATE utf8_bin,
+  `IsDefault` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
-
-INSERT INTO `Role` (`id`, `description`, `permissions`,`IsDefault`) VALUES
-(1, 'Root', '1111111111',1);
-
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+INSERT INTO `Role` (`id`, `description`, `permissions`, `IsDefault`) VALUES
+(1, 'Root', '1111111111', 1);
 CREATE TABLE IF NOT EXISTS `Session` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userID` int(11) NOT NULL,
@@ -37,8 +31,7 @@ CREATE TABLE IF NOT EXISTS `Session` (
   `sessionEndDateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `userID` (`userID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
-
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 CREATE TABLE IF NOT EXISTS `SharedFileSystem` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `entryID` int(11) NOT NULL,
@@ -50,8 +43,7 @@ CREATE TABLE IF NOT EXISTS `SharedFileSystem` (
   PRIMARY KEY (`id`),
   KEY `entryID` (`entryID`),
   KEY `userID` (`userID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
-
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 CREATE TABLE IF NOT EXISTS `User` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `loginName` text COLLATE utf8_bin,
@@ -67,10 +59,9 @@ CREATE TABLE IF NOT EXISTS `User` (
   PRIMARY KEY (`id`),
   KEY `fk_Role` (`roleID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
 INSERT INTO `User` (`id`, `loginName`, `displayName`, `mailAddress`, `registrationDateTime`, `lastLoginDateTime`, `passwordHash`, `isEnabled`, `contingentInByte`, `roleID`, `failedLogins`) VALUES
-(9, 'fuxry', 'CM', 'bla@blxa.de', '2014-05-17 14:12:59', '2014-07-13 11:25:47', '$2y$11$KY/Tjuko2xX/4WqhhyYj6.FnzdN/9Ui7D2JUUujy/bPSVKheUoKJO', 1, 5242880, 1, 0),
-(84, 'testFS', 'FileSystemTestUser', 'test@fs.local', '2014-07-06 15:52:01', '2014-07-20 13:05:22', '$2y$11$y1ldtxNAWEa6HTOWkHQtRuwU1pagqX0GydlLx2RMpPx5KLa7zizqK', 1, 5242880, 1, 0);
+(1, 'root', 'root', 'info@rdcy.de', '2014-09-21 15:01:42', '2014-10-11 11:06:59', '', 1, 1, 1, 0),
+(99, 'testFS', 'testFS', 'jfafalfjl', '2014-10-27 00:00:00', '2014-10-11 11:12:40', '$2y$11$V0Fhy/2nVYpmT9RmPyaj3eiXKuE.Vb9tKUABb6Dylh.r8RKv/LROW', 1, 42424320, 1, 0);
 
 
 ALTER TABLE `FileSystem`
@@ -85,4 +76,3 @@ ALTER TABLE `SharedFileSystem`
 
 ALTER TABLE `User`
   ADD CONSTRAINT `fk_Role` FOREIGN KEY (`roleID`) REFERENCES `Role` (`id`);
-

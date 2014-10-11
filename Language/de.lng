@@ -293,3 +293,23 @@ DefaultGroupExplanation="Bei der Standardgruppe handelt es sich um eine Benutzer
 GroupDeleted = "Die Gruppe wurde gelöscht.";
 EditGroup ="Bearbeiten";
 CreateGroup="Anlegen";
+
+Installation ="Installation";
+InstallationWelcomeText ="Danke, dass du dich für Redundancy entschieden hast. Dieser Assistent wird dir helfen, Redundancy zu installieren. Die Installation dauert etwa 5 Minuten.";
+NextLicense ="Weiter (Lizenzvereinbarung)";
+NextDB = "Weiter (Datenbankeinstellungen)";
+NextUser = "Testen und weiter";
+NextFinish ="Installation abschließen";
+UnstableWarning ="Achtung: Die Arbeiten an dieser Software sind noch nicht abgeschlossen. Die Nutzung dieser Version auf eigene Gefahr."
+InstallationLicenseText ="Redundancy ist unter den Bedingungen der GNU GPL v3 lizensiert. Du kannst den Lizenztext unter <a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">https://www.gnu.org/licenses/gpl-3.0.html</a> oder in der LICENSE-Datei nachlesen. Die Lizenz wird mit Nutzung von Redundancy akzeptiert.";
+InstallationDB = "Redundancy benutzt eine so genannte Datebank, um Informationen zu den Dateien zu speichern. Bitte geben an dieser Stelle die Datenbankeinstellungen an.";
+Database ="Datenbankname";
+Driver ="Datenbanktyp";
+DBConFailed="Die Datenbankverbindung konnte nicht aufgebaut werden!";
+DBConTrue="Redundancy konnte sich mit der Datenbank verbinden!";
+AlmostDone="Fast geschafft! Füge nun noch deinen Systemverwalteraccount hinzu. Dieser Account verfügt über Administrationsrechte. Du solltest dir für deinen altäglichen gebrauch einen regulären Account registrieren.";
+CanWrite ="schreibbar";
+CannotWrite="Nicht beschreibbar! Bitte korrigieren!";
+Dirs="Folgende Verzeichnisse müssen für Redundancy schreibbar sein. Ansonsten wird es zu Problemen kommen!";
+Installed = "Glückwunsch. Redundancy wurde installiert :).";
+GoToInstance ="Redundancy öffnen";

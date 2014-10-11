@@ -24,6 +24,7 @@
 	namespace Redundancy\Kernel;	
 		//TODO: Include _every_ needed file here	
 		//**********************************************Kernel modules************************************
+		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Config.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.System.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.User.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Interface.class.php";
