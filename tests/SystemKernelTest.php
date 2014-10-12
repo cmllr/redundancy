@@ -67,7 +67,7 @@
 			$GLOBALS["Kernel"]->SystemKernel->UnBan("127.0.0.1",$token);	
 			$got = $GLOBALS["Kernel"]->SystemKernel->IsBanned("127.0.0.1");
 			$GLOBALS["Kernel"]->UserKernel->DeleteUser("testUser2","test2");	
-			$this->assertTrue($got);
+			$this->assertFalse($got);
 		}
 	}
 ?>
