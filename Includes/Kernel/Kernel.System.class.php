@@ -38,16 +38,91 @@
 			return false;
 		}
 		/**
+		* Bans a user with the given IP 
+		* @param string $ip the users IP
+		* @param string $why the reason for the ban
+		*/
+		public function BanUser($ip,$why){
+			$escapedIP = DBLayer::GetInstance()->EscapeString($ip,true);
+			$escapedWhy = DBLayer::GetInstance()->EscapeString($why,true);
+			if (!$this->IsBanned($escapedIP)){
+				$timeout = $GLOBALS["Kernel"]->GetConfigValue("Program_XSS_Timeout");
+				$banDate = date("Y-m-d H:i:s",time());
+				$query = sprintf("Insert into Bans (Ip,Reason,BanDateTime) Values ('%s','%s','%s')",$escapedIP,$escapedWhy,$banDate);
+				DBLayer::GetInstance()->RunInsert($query);	
+			}
+		}
+		/**
+		* Check if a given IP is banned
+		* @param string $ip the ip to check
+		* @return bool
+		*/
+		public function IsBanned($ip){
+			$escapedIP = DBLayer::GetInstance()->EscapeString($ip,true);
+			$query = sprintf("Select id from Bans where Ip = '%s'",$escapedIP);
+			$checkresult = DBLayer::GetInstance()->RunSelect($query);		
+			if (count($checkresult) == 0)
+				return false;
+			else
+				return true;
+		}
+		/**
+		* Check if the current IP is banned
+		* @return bool
+		*/
+		public function IsMyIPBanned(){
+			$escapedIP = $GLOBALS["Kernel"]->UserKernel->GetIP();
+			$query = sprintf("Select id from Bans where Ip = '%s'",$escapedIP);
+			$checkresult = DBLayer::GetInstance()->RunSelect($query);		
+			if (count($checkresult) == 0)
+				return false;
+			else
+				return true;
+		}
+		/**
+		* Unban the users IP
+		* @param string $ip the IP to unban
+		* @param string $token the admin session token
+		* @return the result if the ban was deleted
+		*/
+		public function UnBan($ip,$token){
+			$escapedIP = DBLayer::GetInstance()->EscapeString($ip,true);
+			$escapedToken= DBLayer::GetInstance()->EscapeString($token,true);
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
+				return \Redundancy\Classes\Errors::NotAllowed;
+			$query = sprintf("Delete from Bans where Ip = '%s'",$escapedIP);
+			DBLayer::GetInstance()->RunDelete($query);
+			return !$this->IsBanned($escapedIP);
+		}
+		/**
+		* Get a list of the banned IP's 
+		* @param string $token the admin session token 
+		* @return array | errocode (if not allowed)
+		*/
+		public function GetBannedIPs($token){
+			$escapedToken= DBLayer::GetInstance()->EscapeString($token,true);
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
+				return \Redundancy\Classes\Errors::NotAllowed;
+			$query = "Select Ip,BanDateTime from Bans";
+			$results = array();
+			$dbquery = DBLayer::GetInstance()->RunSelect($query);
+			foreach ($dbquery as $value){
+				$results[$value["Ip"]] = $value["BanDateTime"];
+			}
+			return $results;
+		}
+		/**
 		* Check if an data array contains XSS parts
 		* @param string | array $data the data to check
 		* @return bool
 		*/
 		public function IsAffectedByXSS($data){
 			$chars = explode(";", \Redundancy\Classes\SystemConstants::XSSChars);
+
 			if (!is_array($data))
 			{
 				foreach ($chars as $key => $value) {
-					if (!empty($value) && strpos($data, $value))
+					if (!empty($value) && strpos($data, $value) !== false)
 						return true;
 				}
 				return false;
@@ -55,8 +130,8 @@
 			else{
 				for ($i=0;$i<count($data);$i++){
 					foreach ($chars as $key => $value) {
-					if (!empty($value) && strpos($data[$i], $value))
-						return true;
+						if (!empty($value) && strpos($data[$i], $value) !== false)
+							return true;
 					}
 					return false;
 				}

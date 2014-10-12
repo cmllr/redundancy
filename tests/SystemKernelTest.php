@@ -31,5 +31,43 @@
 			$got = $GLOBALS["Kernel"]->SystemKernel->IsAffectedByXSS(array("<script type=\"text/javascript\">alert(\"XSS\");</script>","data"));	 			
 		  	$this->assertTrue($got);
 		}
+		//***********************Tests BanUser()***********************
+		public function testBanUser(){				
+		  	$GLOBALS["Kernel"]->SystemKernel->BanUser("127.0.0.1","Test");	 			
+		  	$got = $GLOBALS["Kernel"]->SystemKernel->IsBanned("127.0.0.1");	
+		  	$this->assertTrue($got);
+		}
+		//***********************Tests IsBanned()***********************
+		public function testIsBanned01(){				
+		  	$GLOBALS["Kernel"]->SystemKernel->BanUser("127.0.0.1","Test");	 			
+		  	$got = $GLOBALS["Kernel"]->SystemKernel->IsBanned("127.0.0.1");	
+		  	$this->assertTrue($got);
+		}
+		public function testIsBanned02(){				 			
+		  	$got = $GLOBALS["Kernel"]->SystemKernel->IsBanned("127.0.0.2");	
+		  	$this->assertFalse($got);
+		}
+		//***********************Tests GetBannedIPs()***********************
+		public function testGetBannedIPs01(){
+			$got =  $GLOBALS["Kernel"]->UserKernel->RegisterUser("testUser2","testuser","lba@jlbajlkfjfj","test2");		
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser2","test2",true);			
+		  	$got = $GLOBALS["Kernel"]->SystemKernel->GetBannedIPs($token);	
+		  	$this->assertTrue(count($got) == 1);
+			$GLOBALS["Kernel"]->UserKernel->DeleteUser("testUser2","test2");	
+		}
+		public function testGetBannedIPs02(){				
+		  	$GLOBALS["Kernel"]->SystemKernel->BanUser("127.0.0.1","Test");	 			
+		  	$got = $GLOBALS["Kernel"]->SystemKernel->GetBannedIPs("fjjfwlajlfajklwfjklawf");	
+		  	$this->assertTrue($got == \Redundancy\Classes\Errors::NotAllowed);
+		}
+		//***********************Tests UnBan()***********************
+		public function testUnBan01(){
+			$got =  $GLOBALS["Kernel"]->UserKernel->RegisterUser("testUser2","testuser","lba@jlbajlkfjfj","test2");		
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser2","test2",true);	
+			$GLOBALS["Kernel"]->SystemKernel->UnBan("127.0.0.1",$token);	
+			$got = $GLOBALS["Kernel"]->SystemKernel->IsBanned("127.0.0.1");
+			$GLOBALS["Kernel"]->UserKernel->DeleteUser("testUser2","test2");	
+			$this->assertTrue($got);
+		}
 	}
 ?>

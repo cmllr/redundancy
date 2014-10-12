@@ -6,6 +6,7 @@
 	<li><a href="#delete" role="tab" data-toggle="tab"><?php echo $GLOBALS["Language"]->Delete_Account;?></a></li>
 	<li><a href="#group" role="tab" data-toggle="tab"><?php echo $GLOBALS["Language"]->admin_groups;?></a></li>
 	<li><a href="#groupdelete" role="tab" data-toggle="tab"><?php echo $GLOBALS["Language"]->Delete_Group;?></a></li>
+	<li><a href="#ipunban" role="tab" data-toggle="tab"><?php echo $GLOBALS["Language"]->UnlockIP;?></a></li>
 </ul>
 <!-- Tab panes -->
 <div class="tab-content">
@@ -201,6 +202,31 @@
 		</div>
 	</form>
 </div>
+<div class="tab-pane" id="ipunban">
+	<div class="alert alert-info"><?php echo $GLOBALS["Language"]->UnlockIPDescription;?></div>
+	<?php if (count($ips) > 0) :?>
+	<form action ="?admin&t=uip" method='POST' class="form-horizontal" autocomplete="off">
+		<div class="form-group">
+			<label for="iptounlock" class="control-label col-xs-2"><?php echo $GLOBALS["Language"]->UnlockIP;?></label>
+			<div class="col-xs-10">
+				<select class="form-control" name="iptounlock">
+					<?php foreach($ips as $key => $value) :?>
+						<option><?php echo $key;?></option>
+					<?php endforeach;?>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-xs-offset-2 col-xs-10">
+				<button type="submit" class="btn btn-danger"><?php echo $GLOBALS["Language"]->UnlockIPButton;?></button>
+			</div>
+		</div>
+	</form>
+	<?php endif;?>
+	<?php if (count($ips) == 0) :?>
+		<div class="alert alert-info"><?php echo $GLOBALS["Language"]->UnlockIPNothing;?></div>
+	<?php endif;?>
+</div>
 </div>
 <script type="text/javascript">
 	
@@ -214,7 +240,8 @@
 	   		$('a[href="#group"]').click()
 		else if (window.location.href.indexOf("?admin&t=dg") != -1)
 	   		$('a[href="#groupdelete"]').click()
-	   	
+	   else if (window.location.href.indexOf("?admin&t=uip") != -1)
+	   		$('a[href="#ipunban"]').click()	
 	});
 
 	 $('a[href="#start"]').tab('show');

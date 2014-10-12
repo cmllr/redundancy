@@ -101,7 +101,12 @@
 		* Routes the user to the wanted view
 		* @param $url the current url
 		*/	
-		public function Route($url){				
+		public function Route($url){					
+			$banned = $this->DoRequest('Kernel.SystemKernel','IsMyIPBanned',json_encode(array()));
+			if ($banned){
+				$this->controller->Banned($this);
+				return;
+			}	
 			$this->TriggerLogoutIfNeeded();
 			if (isset($_SESSION['Token']) && !empty($_SESSION["Token"])){
 				if (isset($_GET['main']))

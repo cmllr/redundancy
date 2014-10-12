@@ -142,6 +142,14 @@
 			include 'Views/Main.php';
 		}
 		/**
+		* Display the Info-Page
+		* @param $router the Router-Object to be used.
+		*/
+		public function Banned($router){		
+			$ip = $GLOBALS["Router"]->DoRequest("Kernel.UserKernel","GetIP",json_encode(array()));
+			include 'Views/Partials/Banned.php';
+		}
+		/**
 		* Display the file info-Page
 		* @param $router the Router-Object to be used.
 		*/
@@ -287,6 +295,14 @@
 				else
 					$MESSAGE = $GLOBALS["Language"]->GroupDeleted;
 			}
+			else if (isset($_POST["iptounlock"]) && !empty($_POST["iptounlock"])){
+				$result = $GLOBALS['Router']->DoRequest('Kernel.SystemKernel','UnBan',json_encode(array($_POST["iptounlock"],$_SESSION["Token"])));
+				if ($result == true)
+					$MESSAGE = $GLOBALS["Language"]->UnlockIPOk;
+				else	
+					$ERROR = $GLOBALS["Language"]->UnlockIPFail;
+			}
+			$ips = $GLOBALS['Router']->DoRequest('Kernel.SystemKernel','GetBannedIPs',json_encode(array($_SESSION['Token'])));
 			$innerContent = 'Admin.php';	
 			include 'Views/Main.php';
 		}

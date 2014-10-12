@@ -63,8 +63,15 @@
 		$module = $_POST["module"];
 
 		//TODO: ban XSS attackers
-		if ($Redundancy->SystemKernel->IsAffectedByXSS($params))
+		if ($Redundancy->SystemKernel->IsAffectedByXSS($params)){
+			$ip = $Redundancy->UserKernel->GetIP();
+			$Redundancy->SystemKernel->BanUser($ip,"XSS");
 			die($Redundancy->Output(\Redundancy\Classes\Errors::XSSAttack));	
+		}
+		if ($Redundancy->SystemKernel->IsMyIPBanned() && $method != "GetIP")
+		{
+			die ($Redundancy->Output(\Redundancy\Classes\Errors::Banned));
+		}
 		if (!isset($module))
 			die("Fatal Error :( ".\Redundancy\Classes\Errors::ModuleMissing);		
 		//TODO: A more professional solution			
@@ -83,6 +90,9 @@
 			break;
 			case "Kernel.SharingKernel":
 			$Redundancy->Output(call_user_func_array(array($Redundancy->SharingKernel,$method), $params));
+			break;
+			case "Kernel.SystemKernel":
+			$Redundancy->Output(call_user_func_array(array($Redundancy->SystemKernel,$method), $params));
 			break;
 		}	
 	}		
