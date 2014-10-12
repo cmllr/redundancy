@@ -60,8 +60,9 @@
 		* @param $router the router object
 		*/
 		public function Register($router){
+			$isRegistrationEnabled = $router->DoRequest('Kernel','GetConfigValue',json_encode(array("Enable_register")));				
 			//Display the login screen and a error if the regsitration is disabled.
-			if ($router->DoRequest('Kernel','GetConfigValue',json_encode(array("Enable_register"))) == false)
+			if ($isRegistrationEnabled == false)
 			{
 				$ERROR=$GLOBALS['Language']->Register_disabled;	
 				include 'Views/LogIn.php';	
