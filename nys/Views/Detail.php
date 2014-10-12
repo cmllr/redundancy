@@ -8,12 +8,13 @@
 
 <?php if (is_numeric($mediaPreview)){
 		  echo "R_ERR_$mediaPreview"; }
-	  else
-		  echo $mediaPreview;
+	  else {
+		  echo '<div class="img-preview">' . $mediaPreview . '</div>';
+	  }
 ?>
 <div class="btn-group" id="fileActionBtnGroup">
 
-    <a type="a" href="?download&f=<?php echo $entry->Hash; ?>" target="_blank" class="btn btn-default">
+    <a type="a" href="?download&f=<?php echo $entry->Hash; ?>" target="_blank" class="btn btn-link">
         <span class="elusive icon-screen glyphIcon">
         </span>
         <span class="hidden-xs">
@@ -21,49 +22,22 @@
     </a>
 
 </div>
-<div class="panel panel-default">
-    <div class="panel-body">
-        <form class="form-horizontal" role="form">
-            <div class="form-group">
-                <label class="col-lg-2 control-label">
-                    <?php echo $GLOBALS['Language']->Size;?></label>
-                <div class="col-lg-8">
-                    <p class="form-control-static">
-                        <?php echo $entry->SizeWithUnit; ?>
-                    </p>
-                    <div class="col-lg-2"></div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-lg-2 control-label">
-                    <?php echo $GLOBALS['Language']->Source;?></label>
-                <div class="col-lg-8">
-                    <p class="form-control-static">
-                        <?php echo (strpos($entry->UsedUserAgent,"Mozilla") !== false) ? $GLOBALS['Language']->Uploaded_Browser : $GLOBALS['Language']->Uploaded_API; ?>
-                    </p>
-                    <div class="col-lg-2"></div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-lg-2 control-label">
-                    <?php echo $GLOBALS['Language']->FileUploaded;?></label>
-                <div class="col-lg-8">
-                    <p class="form-control-static">
-                        <?php echo $entry->CreateDateTime; ?>
-                    </p>
-                    <div class="col-lg-2"></div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-lg-2 control-label">
-                    <?php echo $GLOBALS['Language']->LastChangedFile;?></label>
-                <div class="col-lg-8">
-                    <p class="form-control-static">
-                        <?php echo $entry->LastChangeDateTime; ?>
-                    </p>
-                    <div class="col-lg-2"></div>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+
+<table class="table table-hover table-subtile table-first-bold">
+	<tr>
+		<td><?php echo $GLOBALS['Language']->Size;?></td>
+		<td><?php echo $entry->SizeWithUnit; ?></td>
+	</tr>
+	<tr>
+		<td><?php echo $GLOBALS['Language']->Source;?></td>
+		<td><?php echo (strpos($entry->UsedUserAgent,"Mozilla") !== false) ? $GLOBALS['Language']->Uploaded_Browser : $GLOBALS['Language']->Uploaded_API; ?></td>
+	</tr>
+	<tr>
+		<td><?php echo $GLOBALS['Language']->FileUploaded;?></td>
+		<td><?php echo $entry->CreateDateTime; ?></td>
+	</tr>
+	<tr>
+		<td><?php echo $GLOBALS['Language']->LastChangedFile;?></td>
+		<td> <?php echo $entry->LastChangeDateTime; ?></td>
+	</tr>
+</table>

@@ -2,7 +2,12 @@
 <ol class="breadcrumb" id="bc">	
 </ol>
 <table id='list' class="table table-striped table-hover">
-	<tr><th></th><th id="namecolumn">Name</th><th class='hidden-xs' id="uploadcolumn">Hochgeladen am</th><th class='hidden-xs' id="sizecolumn">Größe</th></tr>
+	<tr>
+		<th></th>
+		<th id="namecolumn">Name</th>
+		<th class='hidden-xs' id="uploadcolumn">Hochgeladen am</th>
+		<th class='hidden-xs' id="sizecolumn">Größe</th>
+	</tr>
 <script>
 var SortBy = null;
 var SortOrder = 1;

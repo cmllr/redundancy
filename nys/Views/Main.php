@@ -98,7 +98,7 @@
                 </li>
                 <li>
                     <a href='?shares'>
-                        <span class='fa fa-share-alt'>&nbsp;</span>
+                        <span class='fa fa-share'>&nbsp;</span>
                         <?php echo $GLOBALS['Language']->ShareMenu;?>
                     </a>
                 </li>

@@ -6224,13 +6224,18 @@ body {
   padding: 0; }
   .panel-body.main > h1, .panel-body.main > h2, .panel-body.main > h3, .panel-body.main > h4, .panel-body.main > h5, .panel-body.main > h6,
   .panel-body.main > form,
-  .panel-body.main > span, .panel-body.main > p, .panel-body.main > div:not(.btn-group), .panel-body.main > ul {
+  .panel-body.main > span,
+  .panel-body.main > p,
+  .panel-body.main > div:not(.img-preview):not(.btn-group),
+  .panel-body.main > ul {
     margin-left: 15px;
     margin-right: 15px; }
   .panel-body.main > .table {
     margin-bottom: 0; }
   .panel-body.main > .breadcrumb {
     background: #326692;
+    margin: -1px;
+    margin-bottom: 0;
     border-bottom: 1px solid #e6e6e6; }
     .panel-body.main > .breadcrumb a {
       color: white; }
@@ -6246,7 +6251,7 @@ body {
   border-color: #e6e6e6; }
 
 .gray {
-  color: #cccccc !important; }
+  color: gray !important; }
 
 .light, .light-header {
   font-weight: lighter; }
@@ -6263,10 +6268,31 @@ body {
   color: #3f81b8 !important; }
 
 .img-preview {
-  max-height: 600px;
+  max-height: 650px;
   text-align: center;
   display: block;
   margin: auto; }
+
+.logo {
+  margin-bottom: 10px; }
+
+.branding {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  z-index: -1; }
+
+.table-subtile td {
+  border-top: 1px solid #f2f2f2 !important; }
+
+.table-first-bold tr > td:first-child {
+  font-weight: bold; }
+
+.fa-stack-1x {
+  font-size: 1em; }
+
+.fat-stack-05x {
+  font-size: 0.5em; }
 
 @media (max-width: 767px) {
   .affix, .affix-top {
@@ -6280,3 +6306,30 @@ body {
 @media (min-width: 1200px) {
   #leftSidebar {
     width: 175px; } }
+.context-menu-list {
+  background-color: white;
+  border: 1px solid #cccccc;
+  font-size: 14px;
+  font-family: "Exo2";
+  color: #326692;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175); }
+
+.context-menu-item span {
+  padding-left: 13px; }
+
+.context-menu-item:hover {
+  color: #1e3e59;
+  background-color: whitesmoke; }
+
+.context-menu-item {
+  background: transparent;
+  position: relative !important;
+  display: block !important;
+  padding: 8px 16px !important;
+  line-height: 1.429 !important; }
+
+.context-menu-item span:hover {
+  cursor: pointer; }
+
+.context-menu-separator {
+  padding: 8px 16px !important; }
