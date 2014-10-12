@@ -6234,6 +6234,9 @@ body {
     margin-bottom: 0; }
   .panel-body.main > .breadcrumb {
     background: #326692;
+    border: 1px solid #1e3e59;
+    border-bottom-width: 4px;
+    padding: 6px 12px;
     margin: -1px;
     margin-bottom: 0;
     border-bottom: 1px solid #e6e6e6; }
