@@ -6333,3 +6333,17 @@ body {
 
 .context-menu-separator {
   padding: 8px 16px !important; }
+
+.ui-dialog {
+  background: white;
+  border-radius: 0 !important;
+  border: 1px solid #cccccc;
+  padding: 0;
+  color: black; }
+
+.ui-dialog-titlebar {
+  background: white;
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid #cccccc;
+  color: black; }
