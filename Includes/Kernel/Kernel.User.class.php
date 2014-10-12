@@ -660,7 +660,7 @@
 		* Get the clients IP
 		* @returns string the IP
 		*/
-		private function GetIP(){			
+		public function GetIP(){			
 			if (isset($_POST["ip"]))
 				return DBLayer::GetInstance()->EscapeString($_POST["ip"],true);	
 			if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
