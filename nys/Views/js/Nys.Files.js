@@ -153,7 +153,19 @@ function ReturnIcon(mime) {
     var content = "<span class=\"fa-stack\"><i class=\"fa fa-file-o fa-stack-2x\"></i><i class=\"fa " + inner + " fa-stack-1x\"></i> </span>";
     return content;
 }
-
+function GetEllipsedDisplayName(name){
+    var parts = name.split(".");
+    var displayName = parts[0];
+    var extension = parts[1];
+    if (displayName.length > 30){
+        var result = "";
+        result = displayName.substring(0,30)+"..."+extension;
+        return result;
+    }
+    else{
+        return name;
+    }
+} 
 function DisplayContent(data) {
     for (var i = 0; i < data.length; i++) {
         var content = '';
@@ -162,7 +174,7 @@ function DisplayContent(data) {
         content += ReturnIcon(data[i].MimeType) + "</td>";
         //else
         //	content += "<img src ='"+"./Thumbs/"+data[i].FilePath+"thumb"+"'></td>";
-        content += "<td><a class='filelink' id='HrefOf" + data[i].Id + "' href=''>" + data[i].DisplayName + "</a></td><td class='hidden-xs'>" + data[i].CreateDateTime + "</td><td class='size hidden-xs' id='SizeOf" + data[i].Id + "'>" + data[i].SizeWithUnit + "</td>";
+        content += "<td><a title='"+data[i].DisplayName+"' class='filelink' id='HrefOf" + data[i].Id + "' href=''>" + GetEllipsedDisplayName(data[i].DisplayName) + "</a></td><td class='hidden-xs'>" + data[i].CreateDateTime + "</td><td class='size hidden-xs' id='SizeOf" + data[i].Id + "'>" + data[i].SizeWithUnit + "</td>";
         content += "</tr>";
         $('#list').append(content);
         if (data[i].FilePath != null) {

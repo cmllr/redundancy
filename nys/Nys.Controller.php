@@ -169,7 +169,7 @@
 				else{
 					$filePath = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetSystemDir',json_encode(array(0))).$entry->FilePath;
 					$mediaPreview = $GLOBALS['Router']->DoRequest('Kernel.InterfaceKernel','MediaPreview',json_encode(array($filePath,"./nys/Views/Partials","img-responsive img-preview")));
-					$filenameParts = $GLOBALS['Router']->DoRequest('Kernel.InterfaceKernel','SplitFileNameAndExtension',json_encode(array($entry->DisplayName))); 
+					$filenameParts = $GLOBALS['Router']->DoRequest('Kernel.InterfaceKernel','GetEllipsedDisplayName',json_encode(array($entry->DisplayName))); 
 					$_SESSION["fileInject"] = $filePath;
 					$innerContent = 'Detail.php';			
 					include 'Views/Main.php';

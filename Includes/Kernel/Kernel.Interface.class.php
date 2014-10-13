@@ -116,13 +116,34 @@
 		public function SplitFileNameAndExtension($name){
 			$result = array();
 			$lastPoint = strrpos($name, '.');
-
-			//falls keine Endung vorhanden, enthält das zweite Feld einen leeren String
+			//If there is no extension, use the complete name
 			if($lastPoint == false)
 				$lastPoint = strlen($name);
 			$result[] = substr($name, 0, $lastPoint);
 			$result[] = substr($name, $lastPoint);
 			return $result;
+		}
+		/**
+		* ellipses the displayname
+		* @param string $name the complete name
+		* @return the ellipsed DisplayName
+		*/
+		public function GetEllipsedDisplayName($name){
+			$parts = $this->SplitFileNameAndExtension($name);
+			$displayName = $parts[0];
+			$extension = $parts[1];
+			if (strlen($displayName) > 30){
+				$result = array();
+				$result[] = substr($displayName, 0,30)."...";
+				$result[] = $extension;
+				return $result;
+			}
+			else{
+				$result = array();
+				$result[] = $displayName;
+				$result[] = $extension;
+				return $result;
+			}
 		}
 	}
 ?>
