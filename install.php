@@ -42,7 +42,7 @@
         if ($dbConnResult && $write )
             $step = 5;
     }
-    else if (isset($_POST["username"])){
+    else if (isset($_POST["username"]) && $_POST["password"] == $_POST["password_repeat"]){
         if ($k->SetUser($_POST["username"],$_POST["password"]))
             $k->Lock();
         $step = 6;
@@ -82,16 +82,16 @@
                                        ?></li>
                                     <?php endforeach;?>
                                 </ul>
-                                <a class="btn btn-primary" href ="./install.php"><?php echo $GLOBALS["Language"]["Back"];?></a>
+                                <a class="btn btn-default" href ="./install.php"><?php echo $GLOBALS["Language"]["Back"];?></a>
                                 <?php if (!isset($fail)) :?>
-                                <a class="btn btn-default" href ="./install.php?step=license&lng=<?php echo  $lng ;?>"><?php echo $GLOBALS["Language"]["NextLicense"];?></a>
+                                <a class="btn btn-primary" href ="./install.php?step=license&lng=<?php echo  $lng ;?>"><?php echo $GLOBALS["Language"]["NextLicense"];?></a>
                             <?php endif;?>
                             <?php endif ;?>
                             <?php if ($step == 3) :?>
                                 <h1 class="light header-form gray"><?php echo $GLOBALS["Language"]["Installation"];?></h1>
                                 <div class="well"><?php echo $GLOBALS["Language"]["InstallationLicenseText"];?></div>
-                                <a class="btn btn-primary" href ="./install.php?lng=<?php echo  $lng ;?>"><?php echo $GLOBALS["Language"]["Back"];?></a>
-                                <a class="btn btn-default" href ="./install.php?step=db&lng=<?php echo  $lng ;?>"><?php echo $GLOBALS["Language"]["NextDB"];?></a>
+                                <a class="btn btn-default" href ="./install.php?lng=<?php echo  $lng ;?>"><?php echo $GLOBALS["Language"]["Back"];?></a>
+                                <a class="btn btn-primary" href ="./install.php?step=db&lng=<?php echo  $lng ;?>"><?php echo $GLOBALS["Language"]["NextDB"];?></a>
                             <?php endif ;?>
                             <?php if ($step == 4) :?>
                                 <h1 class="light header-form gray"><?php echo $GLOBALS["Language"]["Installation"];?></h1>
@@ -135,8 +135,8 @@
                                                 <option>MySQL</option>
                                             </select>
                                     </div>
-                                     <a class="btn btn-primary" href ="./install.php?step=license&lng=<?php echo  $lng ;?>"><?php echo $GLOBALS["Language"]["Back"];?></a>
-                                <input type ="submit" class="btn btn-default" value="<?php echo $GLOBALS["Language"]["NextUser"];?>"</input>
+                                     <a class="btn btn-default" href ="./install.php?step=license&lng=<?php echo  $lng ;?>"><?php echo $GLOBALS["Language"]["Back"];?></a>
+                                <input type ="submit" class="btn btn-primary" value="<?php echo $GLOBALS["Language"]["NextUser"];?>"</input>
                                 </form>
                                
                             <?php endif ;?>
@@ -159,8 +159,8 @@
                                             <?php echo $GLOBALS['Language']["Repeat_Password"];?></label>
                                         <input type='password' class='form-control' name='password_repeat' placeholder='<?php echo $GLOBALS['Language']["Repeat_Password"];?>' >
                                     </div>
-                                    <a class="btn btn-primary" href ="./install.php?step=license&lng=<?php echo  $lng ;?>"><?php echo $GLOBALS["Language"]["Back"];?></a>
-                                <input type ="submit" class="btn btn-default" value="<?php echo $GLOBALS["Language"]["NextFinish"];?>"</input>
+                                    <a class="btn btn-default" href ="./install.php?step=license&lng=<?php echo  $lng ;?>"><?php echo $GLOBALS["Language"]["Back"];?></a>
+                                <input type ="submit" class="btn btn-primary" value="<?php echo $GLOBALS["Language"]["NextFinish"];?>"</input>
                                 </form>
                             <?php endif ;?>
                             <?php if ($step == 6) :?>
