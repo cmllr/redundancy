@@ -19,29 +19,6 @@
     </div>
     <div class="form-group">
         <label for="inputEmail" class="control-label col-xs-2">
-            <?php echo $GLOBALS[ "Language"]->GroupPermissions;?></label>
-        <div class="col-xs-10">
-            <select class="form-control">
-                <?php foreach($PermissionSet as $key=>$value) {
-                    $output = ($value == 1) ? $GLOBALS["Language"]->Allowed : $GLOBALS["Language"]->NotAllowed;
-                    $p = "-";
-                    if ($key == 0) $p = "AllowUpload";
-                    else if ($key == 1) $p = "AllowCreatingFolder";
-                    else if ($key == 2) $p = "AllowDeletingFolder";
-                    else if ($key == 3) $p = "AllowDeletingFile";
-                    else if ($key == 4) $p = "AllowRenaming";
-                    else if ($key == 5) $p = "AllowDeletingUser";
-                    else if ($key == 6) $p = "AllowChangingPassword";
-                    else if ($key == 7) $p = "AllowMoving";
-                    else if ($key == 8) $p = "AllowCopying";
-                    else if ($key == 9){ $p = "AllowAdministration"; }
-                    echo "<option>$p => $output</option>"; }
-                ?>
-            </select>
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="inputEmail" class="control-label col-xs-2">
             <?php echo $GLOBALS[ "Language"]->Storage;?></label>
         <div class="col-xs-10">
             <input type="email" class="form-control" id="inputEmail" readonly value="<?php echo $storageSize?>">
@@ -58,9 +35,30 @@
         <?php echo round($percentage,2); ?>%
     </div>
  </div>
+ <div class="well">        
+    <h3 class="header-form"><?php echo $GLOBALS["Language"]->MyPermissions;?></h3>
+    <div class="panel-group" id="accordion">
+     <?php foreach($PermissionSet as $key=>$value):?>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#<?php echo $permissionNames[$key];?>">
+              <?php echo $permissionNames[$key];?>
+            </a>
+          </h4>
+        </div>
+        <div class="panel-collapse">
+          <div class="panel-body">
+            <?php echo ($PermissionSet[$key] == 1) ? $GLOBALS["Language"]->Allowed : $GLOBALS["Language"]->NotAllowed;?>
+          </div>
+        </div>
+      </div>
+  <?php endforeach;?>
+    </div>
+    </div>
  <?php if ($allowPasswordChange) :?>
     <div class="well">        
-        <h3 class="header-form">Passwortänderung</h3>
+        <h3 class="header-form"><?php echo $GLOBALS["Language"]->ChangePassword;?></h3>
         <div class="form-group">
             <label for="inputPassword" class="control-label col-xs-2">
                 <?php echo $GLOBALS["Language"]->Password;?></label>
@@ -112,3 +110,6 @@
     </div>
     <?php endif; ?>
 </form>
+<script type="text/javascript">
+$('.collapse').collapse()
+</script>

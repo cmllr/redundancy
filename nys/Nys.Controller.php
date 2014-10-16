@@ -532,6 +532,7 @@
 		*/
 		public function Account($router){
 			$data = $this->InjectSessionData($router);		
+			$permissionNames = 	$GLOBALS['Router']->DoRequest('Kernel.UserKernel','GetListOfInstalledPermissions',json_encode(array($_SESSION['Token'])));
 			if (isset($_POST["password"])){
 				
 				if ($_POST["password"] != $_POST["repeatpassword"] || $_POST["password"]=="" || $_POST["repeatpassword"] == "")

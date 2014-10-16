@@ -319,3 +319,5 @@ UnlockIPDescription ="Redundancy sperrt verdächtige IP-Adressen. An dieser Stel
 UnlockIPFail = "Die IP konnte nicht entsperrt werden.";
 UnlockIPOk = "Die IP konnte entsperrt werden.";
 UnlockIPNothing ="Es gibt derzeit noch keine gesperrten IP's.";
+
+MyPermissions="Meine Berechtigungen";
