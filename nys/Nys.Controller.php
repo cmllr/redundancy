@@ -186,13 +186,8 @@
 				$router->DoRedirect('main');
 			$results = $GLOBALS["Router"]->DoRequest("Kernel.FileSystemKernel","SearchFileSystem",json_encode(array($_POST["Search"],$_SESSION["Token"])));
 			$searchTerm = $_POST["Search"];
-			if (is_numeric($results) || is_null($results) || empty($results)){
-				$ERROR="R_ERR_".$results;
-				$this->Main($router,$ERROR);
-			}else{
-				$innerContent = 'Search.php';			
-				include 'Views/Main.php';
-			}	
+			$innerContent = 'Search.php';
+			include 'Views/Main.php';	
 		}
 		/**
 		* Display the files list
@@ -326,6 +321,14 @@
 		public function NewFolder($router){	
 			if (!isset($_SESSION['currentFolder']))				
 				$_SESSION['currentFolder'] = '/';
+			if (!$GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],1))))
+			{
+				$MESSAGE="R_ERR_15";
+				$data = $this->InjectSessionData($router);
+				$innerContent = 'Files.php';			
+				include 'Views/Main.php';
+				return;
+			}
 			$currentDirectory = $router->DoRequest('Kernel.FileSystemKernel','GetEntryByAbsolutePath',json_encode(array($_SESSION['currentFolder'],$_SESSION['Token'])));			
 			$absolutePathCurrentDirectory = $router->DoRequest('Kernel.FileSystemKernel','GetAbsolutePathById',json_encode(array($currentDirectory->Id,$_SESSION['Token'])));
 			if (isset($_POST['directory'])){
@@ -571,6 +574,14 @@
 			$data = $this->InjectSessionData($router);	
 			if (!isset($_SESSION['currentFolder']))						
 				$_SESSION['currentFolder'] = '/';;
+			if (!$GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],0))))
+			{
+				$MESSAGE="R_ERR_15";
+				$data = $this->InjectSessionData($router);
+				$innerContent = 'Files.php';			
+				include 'Views/Main.php';
+				return;
+			}
 			$absolutePathCurrentDirectory = $_SESSION['currentFolder'];				
 			if (isset($_FILES['file'])){
 				$fileToUpload = array();

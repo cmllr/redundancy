@@ -112,7 +112,12 @@
     </div>
 </div>
 <div class='col-sm-9 col-md-10 col-lg-10'>
-    <?php //Display the error message if needed. if (isset($ERROR)) include 'Partials/ErrorMessage.php'; //Display other messages if (isset($MESSAGE)) include 'Partials/Message.php'; ?>
+    <?php 
+        //Display the error message if needed.
+        if (isset($ERROR)) include 'Partials/ErrorMessage.php'; 
+        //Display other messages
+        if (isset($MESSAGE)) include 'Partials/Message.php'; 
+    ?>
     <div class='panel panel-default white-flat'>
 
         <div class='panel-body main'>
