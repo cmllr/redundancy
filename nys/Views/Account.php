@@ -58,9 +58,9 @@
         <?php echo round($percentage,2); ?>%
     </div>
  </div>
-    <div class="well">
+ <?php if ($allowPasswordChange) :?>
+    <div class="well">        
         <h3 class="header-form">Passwortänderung</h3>
-        <?php if ($allowPasswordChange) :?>
         <div class="form-group">
             <label for="inputPassword" class="control-label col-xs-2">
                 <?php echo $GLOBALS["Language"]->Password;?></label>

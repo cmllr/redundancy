@@ -1,6 +1,9 @@
 <h1 class="light-header"><?php echo $GLOBALS["Language"]->ShareMenu;?></h1>
 <div class="well">
 	<h3 class="header-form"><?php echo $GLOBALS["Language"]->SharedByMe;?></h3>
+	<?php if (count($shares) == 0) :?>
+		<div class="alert alert-info"><?php echo $GLOBALS["Language"]->NothingShared;?></div>
+	<?php endif ;?>
 	<?php
 		//var_dump($shares);
 	?>
@@ -48,9 +51,6 @@
 	</ul>
 </div>
 <div class="well">
-<?php if (count($shares) == 0) :?>
-<div class="alert alert-info"><?php echo $GLOBALS["Language"]->NothingShared;?></div>
-<?php endif ;?>
 <h3 class="header-form"><?php echo $GLOBALS["Language"]->SharedToMe;?></h3>
 <ul class="list-group">
 <?php foreach($sharesToMe as $key=>$value): ?>		
@@ -79,7 +79,7 @@
 <?php endforeach; ?>	
 </ul>
 <?php if (count($sharesToMe) == 0) :?>
-<div class="alert alert-info"><?php echo $GLOBALS["Language"]->NothingShared;?></div>
+	<div class="alert alert-info"><?php echo $GLOBALS["Language"]->NothingShared;?></div>
 <?php endif ;?>
 </div>
 <script>
