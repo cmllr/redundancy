@@ -91,6 +91,7 @@
 			$dirs["/Storage/"] = is_writeable(__REDUNDANCY_ROOT__."Storage/");
 			$dirs["/Temp/"] = is_writeable(__REDUNDANCY_ROOT__."Temp/");
 			$dirs["/Snapshots/"] = is_writeable(__REDUNDANCY_ROOT__."Snapshots/");
+			$dirs["Database-Config"] = is_writeable(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.class.php");
 			return $dirs;
 		}
 		public function DoTheImport(){
