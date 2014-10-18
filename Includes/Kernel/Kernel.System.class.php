@@ -112,6 +112,64 @@
 			return $results;
 		}
 		/**
+		* Get the current settings
+		* @return array with setting objects
+		*/
+		public function GetSettings(){
+			$query = "Select * from Settings";
+			$results = array();
+			$dbquery = DBLayer::GetInstance()->RunSelect($query);
+			foreach ($dbquery as $value){
+				$s = new \Redundancy\Classes\Setting();
+				$s->Name = $value["SettingName"];
+				$s->Type = $value["SettingType"];
+				$s->Value = $value["SettingValue"];
+				$results[] = $s;
+			}
+			return $results;
+		}
+		/**
+		* Get a specific setting
+		* @param string $name the settings name
+		* @return the setting or null;
+		*/
+		public function GetSetting($name) {
+			$escapedName =  DBLayer::GetInstance()->EscapeString($name,true);
+			$query = sprintf("Select * from Settings where SettingName = '%s'",$escapedName);			
+			$dbquery = DBLayer::GetInstance()->RunSelect($query);
+			if (is_null($dbquery) || count($dbquery) == 0)
+				return null;
+			foreach ($dbquery as $value){
+				$s = new \Redundancy\Classes\Setting();
+				$s->Name = $value["SettingName"];
+				$s->Type = $value["SettingType"];
+				//A special bool handling
+				if ($s->Type =="Boolean")
+					$s->Value = ($value["SettingValue"] == "true")? true : false;
+				else
+					$s->Value = $value["SettingValue"];
+				return $s;
+			}
+			return null;
+		}
+		/**
+		* Set a specific setting
+		* @param string $token the admin session token
+		* @param string $name the name of the setting
+		* @param mixed $value the value to set.
+		* @return errorcode, if failed, otherwise true
+		*/
+		public function SetSetting($token,$name,$value) {
+			$escapedToken= DBLayer::GetInstance()->EscapeString($token,true);
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
+				return \Redundancy\Classes\Errors::NotAllowed;
+			$escapedName =  DBLayer::GetInstance()->EscapeString($name,true);
+			$escapedValue=  DBLayer::GetInstance()->EscapeString($value,true);
+			$query = sprintf("Update Settings set SettingValue = '%s' where SettingName = '%s'",$escapedValue, $escapedName);	
+			$dbquery = DBLayer::GetInstance()->RunUpdate($query);	
+			return true;
+		}
+		/**
 		* Check if an data array contains XSS parts
 		* @param string | array $data the data to check
 		* @return bool

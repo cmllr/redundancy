@@ -50,7 +50,7 @@
 			$escapedPassword = DBLayer::GetInstance()->EscapeString($password,true);
 			if (empty($escapedLoginName) || empty($escapedMailAddress) || empty($escapedDisplayName) || empty($escapedPassword))
 				return \Redundancy\Classes\Errors::ArgumentMissing;
-			if ($GLOBALS["Kernel"]->GetConfigValue("Enable_register") == false)
+			if ($GLOBALS["Kernel"]->GetConfigValue("Enable_Register") == false)
 				return \Redundancy\Classes\Errors::RegistrationNotEnabled;
 			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select count(id) as Amount from User where loginName = '%s' or mailAddress = '%s'",$escapedLoginName,$escapedMailAddress));
 			if ($dbquery[0]["Amount"] == 0){
@@ -58,7 +58,7 @@
 				$safetypass = $this->HashPassword($password);
 				$registered= date("Y-m-d H:i:s",time());
 				//$role = $GLOBALS["Kernel"]->Configuration["User_Default_Role"];
-				$storage = $GLOBALS["Kernel"]->Configuration["User_Contingent"]*1024*1024;
+				$storage = $GLOBALS["Kernel"]->GetConfigValue("User_Contingent")*1024*1024;
 				$user = new \Redundancy\Classes\User();				
 				$user->LoginName = $escapedLoginName;
 				$user->DisplayName = $escapedDisplayName;
@@ -183,7 +183,7 @@
 		public function GeneratePassword($length = -1){
 			//https://stackoverflow.com/questions/6101956/generating-a-random-password-in-php
 			if ($length == -1)
-				$length = $GLOBALS["Kernel"]->Configuration["User_Recover_Password_Length"];
+				$length = $GLOBALS["Kernel"]->GetConfigValue("User_Recover_Password_Length");
 			$alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
 			$pass = '';                           //password is a string
 			$alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
@@ -704,13 +704,13 @@
 					$userId = $dbquery[0]["Id"];
 					//Delete old sessions
 					$this->DeleteExpiredSession($escapedLoginName);
-					if ($stayLoggedIn || $GLOBALS["Kernel"]->Configuration["Program_Session_Timeout"] == -1){
+					if ($stayLoggedIn || $GLOBALS["Kernel"]->GetConfigValue("Program_Session_Timeout") == -1){
 						$dbquery = sprintf("Insert into Session (userId,token,sessionStartedDateTime,sessionEndDateTime) values('%u','%s','%s','%s')",$userId,$token,$sessionStartedDateTime,null);
 						if (!$GLOBALS["Kernel"]->SystemKernel->IsInTestEnvironment())
 							$this->CreateCookie($token,false);						
 					}else{
 					
-						$minutes = $GLOBALS["Kernel"]->Configuration["Program_Session_Timeout"];					
+						$minutes = $GLOBALS["Kernel"]->GetConfigValue("Program_Session_Timeout");					
 						$sessionEndDateTime = date("Y-m-d H:i:s",strtotime("+$minutes minutes"));
 						$dbquery = sprintf("Insert into Session (userId,token,sessionStartedDateTime,sessionEndDateTime) values('%u','%s','%s','%s')",$userId,$token,$sessionStartedDateTime,$sessionEndDateTime);
 					}
@@ -749,7 +749,7 @@
 		private function CreateCookie($token,$expires = false){
 			ob_end_clean();	
 			if ($expires){
-				$cookieLifeSpan = $GLOBALS["Kernel"]->Configuration["Program_Session_Timeout"];	
+				$cookieLifeSpan = $GLOBALS["Kernel"]->GetConfigValue("Program_Session_Timeout");	
 				if ($cookieLifeSpan == -1)
 				{
 					$cookieLifeSpan = 5;

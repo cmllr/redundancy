@@ -25,5 +25,10 @@
 		  	$this->assertTrue($got[0] == "test.");
 		  	$this->assertTrue($got[1] == ".png");
 		}
+		public function testSplitFileNameAndExtension04(){				
+		  	$got = $GLOBALS["Kernel"]->InterfaceKernel->SplitFileNameAndExtension("test.tar.gz");	 			
+		  	$this->assertTrue($got[0] == "test.tar");
+		  	$this->assertTrue($got[1] == ".gz");
+		}
 	}
 ?>

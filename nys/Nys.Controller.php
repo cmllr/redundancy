@@ -31,7 +31,8 @@
 		* @param $router the Router-Object to be used.
 		*/
 		public function LogIn($router){	
-			$isRegistrationEnabled = $router->DoRequest('Kernel','GetConfigValue',json_encode(array("Enable_register")));					
+			$isRegistrationEnabled = $router->DoRequest('Kernel','GetConfigValue',json_encode(array("Enable_Register")));			
+			
 			if (!isset($_POST['username'],$_POST['password'])){				
 				include 'Views/LogIn.php';
 			}else
@@ -60,7 +61,7 @@
 		* @param $router the router object
 		*/
 		public function Register($router){
-			$isRegistrationEnabled = $router->DoRequest('Kernel','GetConfigValue',json_encode(array("Enable_register")));				
+			$isRegistrationEnabled = $router->DoRequest('Kernel','GetConfigValue',json_encode(array("Enable_Register")));				
 			//Display the login screen and a error if the regsitration is disabled.
 			if ($isRegistrationEnabled == false)
 			{
@@ -198,6 +199,7 @@
 			$allowed  = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],9)));
 			if (!$allowed)
 				$router->DoRedirect("main");
+			$settings = $GLOBALS['Router']->DoRequest('Kernel.SystemKernel','GetSettings',json_encode(array()));
 			if (isset($_POST["username"])){
 				if (isset($_GET["t"]) && $_GET["t"] == "d"){
 					//Delete the account
@@ -296,6 +298,22 @@
 					$MESSAGE = $GLOBALS["Language"]->UnlockIPOk;
 				else	
 					$ERROR = $GLOBALS["Language"]->UnlockIPFail;
+			}
+			else if (isset($_POST["settings"])){			
+				foreach ($settings as $key => $value) {
+					if (isset($_POST[$value->Name])){
+						//Setting was set						
+						$valToSet = ($value->Type =="Boolean") ? "true" : $_POST[$value->Name];
+						$r = $GLOBALS['Router']->DoRequest('Kernel.SystemKernel','SetSetting',json_encode(array($_SESSION['Token'],$value->Name,$valToSet)));	
+					}
+					else
+					{					
+						$r = $GLOBALS['Router']->DoRequest('Kernel.SystemKernel','SetSetting',json_encode(array($_SESSION['Token'],$value->Name,"false")));	
+					}
+				}
+				//Grab the results
+				$settings = $GLOBALS['Router']->DoRequest('Kernel.SystemKernel','GetSettings',json_encode(array()));
+			
 			}
 			$ips = $GLOBALS['Router']->DoRequest('Kernel.SystemKernel','GetBannedIPs',json_encode(array($_SESSION['Token'])));
 			$innerContent = 'Admin.php';	

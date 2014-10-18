@@ -37,7 +37,7 @@
 		*/
 		public function __construct($languageCode = -1){
 			if ($languageCode == -1)
-				$languageCode = $GLOBALS["Kernel"]->Configuration["Program_Language"];
+				$languageCode = $GLOBALS["Kernel"]->GetConfigValue("Program_Language");
 			if (file_exists(__REDUNDANCY_ROOT__."Language/".$languageCode.".lng")){
 				$this->Language = parse_ini_file(__REDUNDANCY_ROOT__."Language/".$languageCode.".lng");	
 				$this->LanguageCode = $languageCode;
@@ -132,9 +132,9 @@
 			$parts = $this->SplitFileNameAndExtension($name);
 			$displayName = $parts[0];
 			$extension = $parts[1];
-			if (strlen($displayName) > 30){
+			if (strlen($displayName) > 20){
 				$result = array();
-				$result[] = substr($displayName, 0,30)."...";
+				$result[] = substr($displayName, 0,20)."...";
 				$result[] = $extension;
 				return $result;
 			}

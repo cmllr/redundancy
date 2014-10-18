@@ -69,5 +69,40 @@
 			$GLOBALS["Kernel"]->UserKernel->DeleteUser("testUser2","test2");	
 			$this->assertFalse($got);
 		}
+		//***********************Tests GetSystemSettings***********************
+		public function testGetSettings01(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->GetSettings(); 
+			$er = $got[0];			
+			$this->assertTrue(!is_null($got));
+			$this->assertTrue($er->Name=="Enable_Register");
+			$this->assertTrue($er->Type=="Boolean");
+		}
+		//***********************Tests GetSetting***********************
+		public function testGetSetting01(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->GetSetting("Enable_Register"); 				
+			$this->assertTrue(!is_null($got));
+			$this->assertTrue($got->Name=="Enable_Register");
+			$this->assertTrue($got->Type=="Boolean");
+		}
+		public function testGetSetting02(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->GetSetting("Notexisting"); 				
+			$this->assertTrue(is_null($got));
+		}
+		//***********************Tests SetSetting***********************
+		public function testSetSetting01(){			
+			$old = $GLOBALS["Kernel"]->SystemKernel->GetSetting("Enable_Register"); 
+
+			$got =  $GLOBALS["Kernel"]->UserKernel->RegisterUser("testUser2","testuser","lba@jlbajlkfjfj","test2");		
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser2","test2",true);	
+
+			$GLOBALS["Kernel"]->SystemKernel->SetSetting($token,"Enable_Register","false");	
+
+			$got =  $GLOBALS["Kernel"]->SystemKernel->GetSetting("Enable_Register");
+			$GLOBALS["Kernel"]->SystemKernel->SetSetting($token,"Enable_Register","true");	
+			$GLOBALS["Kernel"]->UserKernel->DeleteUser("testUser2","test2");				
+			$this->assertTrue($got->Value == false);
+			$this->assertTrue($got->Name=="Enable_Register");
+			$this->assertTrue($got->Type=="Boolean");
+		}
 	}
 ?>

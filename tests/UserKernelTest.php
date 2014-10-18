@@ -22,7 +22,7 @@
 			$displayName = "testUser";
 			$mailAddress = "mail@localhost.lan";
 			$password = "test";
-			$got = $value = $GLOBALS["Kernel"]->UserKernel->RegisterUser($loginName,$displayName,$mailAddress,$password);			
+			$got= $GLOBALS["Kernel"]->UserKernel->RegisterUser($loginName,$displayName,$mailAddress,$password);		
 			$this->assertTrue(!is_null($got));
 			$this->assertTrue(!is_null($got),"Got no new User object");
 			$this->assertEquals($loginName,$got->LoginName);
@@ -50,16 +50,18 @@
 			$displayName = "testUser";
 			$mailAddress = "mail@localhost.lan";
 			$password = "test";
-			$GLOBALS["Kernel"]->Configuration["Enable_register"] = false;
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("test","test",false);	
+			$GLOBALS["Kernel"]->SystemKernel->SetSetting($token,"Enable_Register","false");
 			$got = $GLOBALS["Kernel"]->UserKernel->RegisterUser($loginName,$displayName,$mailAddress,$password);		
 			$this->assertTrue(\Redundancy\Classes\Errors::RegistrationNotEnabled==$got);	
+			$GLOBALS["Kernel"]->SystemKernel->SetSetting($token,"Enable_Register","true");
 		}
 		//***********************Tests LogIn()***********************
 		public function testLogInShouldSucceed(){
 			$loginName = "testUser";
 			$password = "test";
 			$stayLoggedIn = "true";
-			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn($loginName,$password,$stayLoggedIn);					
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn($loginName,$password,$stayLoggedIn);		
 			$this->assertTrue($token != \Redundancy\Classes\Errors::PasswordOrUserNameWrong);
 		}
 		public function testLogInShouldFail(){
@@ -99,7 +101,7 @@
 		}
 		//***********************Tests GetPermissionSet()***********************
 		function testGetPermissionSet01(){
-			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",false);	
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("test","test",false);	
 			$got = $GLOBALS["Kernel"]->UserKernel->GetPermissionSet($token);
 			$expected = array();
 			$expected[] = "1";
@@ -206,7 +208,7 @@
 			$password = "test1";
 			$stayLoggedIn = "true";
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn($loginName,$password,$stayLoggedIn);		
-			$got =  $GLOBALS["Kernel"]->UserKernel->GetUser($token);			
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetUser($token);	
 			$this->assertTrue($got->LoginName == $loginName);			
 			$this->assertTrue(!is_null($got));
 		}

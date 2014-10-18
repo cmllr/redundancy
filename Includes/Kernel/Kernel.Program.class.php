@@ -40,6 +40,7 @@
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/File.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/FileSystemAnalysis.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/Share.class.php";
+		require_once __REDUNDANCY_ROOT__."Includes/Classes/Setting.class.php";
 		//**********************************************third party stuff*********************************
 		require_once __REDUNDANCY_ROOT__.'Lib/Doctrine/Doctrine/Common/ClassLoader.php';	
 		/**
@@ -100,7 +101,7 @@
 				//Initialize all the needed Kernel modules
 				$this->UserKernel = new \Redundancy\Kernel\UserKernel();
 				//TODO: Add further kernel modules
-				$this->Configuration = parse_ini_file(__REDUNDANCY_ROOT__."Redundancy.conf");
+				//$this->Configuration = parse_ini_file(__REDUNDANCY_ROOT__."Redundancy.conf");
 				//Add the current object to the globals that other Kernel parts kann access others (over this object)
 				$GLOBALS["Kernel"] = $this;
 				$this->InterfaceKernel = new \Redundancy\Kernel\InterfaceKernel(-1);							
@@ -123,9 +124,35 @@
 			public function GetConfigValue($key){
 				//Get a _few_ values of config keys.							
 				//But not everything, due security reasons.
-				if ($key == "Enable_register")
-					return $this->Configuration["Enable_register"];
+				if (is_null($this->SystemKernel)){
+					$this->SystemKernel =  new \Redundancy\Kernel\SystemKernel();	
+				}				
+				$result = false;
+				if ($key == "Enable_Register")
+					$result =  $this->SystemKernel->GetSetting("Enable_Register");//$this->Configuration["Enable_register"];
+				else if ($key == "Program_XSS_Timeout")
+					$result =  $this->SystemKernel->GetSetting("Program_XSS_Timeout");//$this->Configuration["Program_XSS_Timeout"];
+				else if ($key == "Program_Storage_Dir")
+					$result =  $this->SystemKernel->GetSetting("Program_Storage_Dir");
+				else if ($key == "Program_Temp_Dir")
+					$result =  $this->SystemKernel->GetSetting("Program_Temp_Dir");
+				else if ($key == "Program_Snapshots_Dir")
+					$result =  $this->SystemKernel->GetSetting("Program_Snapshots_Dir");
+				else if ($key == "User_Contingent")
+					$result =  $this->SystemKernel->GetSetting("User_Contingent");
+				else if ($key == "User_Recover_Password_Length")
+					$result =  $this->SystemKernel->GetSetting("User_Recover_Password_Length");
+				else if ($key == "Program_Session_Timeout")
+					$result =  $this->SystemKernel->GetSetting("Program_Session_Timeout");		
+				else if ($key == "Program_Language")
+					$result =  $this->SystemKernel->GetSetting("Program_Language");		
+				else if ($key == "Program_Share_Link_Length")
+					$result =  $this->SystemKernel->GetSetting("Program_Share_Link_Length");								
 				else 
+					return false;
+				if (!is_null($result))
+					return $result->Value;
+				else
 					return false;
 			}
 			/**
@@ -166,7 +193,7 @@
 			* @return the application name
 			*/
 			public function GetAppName(){
-				return $this->Configuration["Program_Name_ALT"];
+				return $this->SystemKernel->GetSetting("Program_Name")->Value;//$this->Configuration["Program_Name_ALT"];
 			}
 		}
 ?>

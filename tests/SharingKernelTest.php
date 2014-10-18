@@ -131,7 +131,7 @@
 			$displayName = "testUser2";
 			$mailAddress = "mail2@localhost.lan";
 			$password = "test2";
-			$got = $value = $GLOBALS["Kernel"]->UserKernel->RegisterUser($loginName,$displayName,$mailAddress,$password);		
+			$got =  $GLOBALS["Kernel"]->UserKernel->RegisterUser($loginName,$displayName,$mailAddress,$password);		
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser2","test2",true);	
 			//Upload the file and share it
 			$this->prepareUpload();		

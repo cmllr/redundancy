@@ -321,3 +321,5 @@ UnlockIPOk = "Die IP konnte entsperrt werden.";
 UnlockIPNothing ="Es gibt derzeit noch keine gesperrten IP's.";
 
 MyPermissions="Meine Berechtigungen";
+SystemSettings="Systemeinstellungen";
+SystemSettingsDescription="Du kannst an dieser Stelle die Einstellungen für Redundancy steuern. #Wikilink#"

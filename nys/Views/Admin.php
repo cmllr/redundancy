@@ -7,11 +7,12 @@
 	<li><a href="#group" role="tab" data-toggle="tab"><?php echo $GLOBALS["Language"]->admin_groups;?></a></li>
 	<li><a href="#groupdelete" role="tab" data-toggle="tab"><?php echo $GLOBALS["Language"]->Delete_Group;?></a></li>
 	<li><a href="#ipunban" role="tab" data-toggle="tab"><?php echo $GLOBALS["Language"]->UnlockIP;?></a></li>
+	<li><a href="#settings" role="tab" data-toggle="tab"><?php echo $GLOBALS["Language"]->SystemSettings;?></a></li>
 </ul>
 <!-- Tab panes -->
 <div class="tab-content">
 	<div class="tab-pane active" id="start">
-		<div class="well">f
+		<div class="well">
 			We trust you have received the usual lecture from the local System</br>
 			Administrator. It usually boils down to these three things:</br>
 		</br>
@@ -227,6 +228,33 @@
 		<div class="alert alert-info"><?php echo $GLOBALS["Language"]->UnlockIPNothing;?></div>
 	<?php endif;?>
 </div>
+	<div class="tab-pane" id="settings">
+		<div class="alert alert-info"><?php echo $GLOBALS["Language"]->SystemSettingsDescription;?></div>
+		<form action ="?admin&t=settings" method='POST' class="form-horizontal" autocomplete="off">
+			<input type="hidden" value="whereismysauerkraut" name="settings"></input>
+			<?php foreach($settings as $key => $value) :?>
+				<div class="form-group">
+					<label for="<?php echo $value->Name;?>" class="control-label col-xs-3"><?php echo $value->Name;?></label>
+					<div class="col-xs-9">
+						<?php if ($value->Type == "Boolean") :?>
+							<input type="checkbox" name="<?php echo $value->Name;?>" <?php echo ($value->Value == "true") ? "checked" : "";?>>
+						<?php endif;?>		
+						<?php if ($value->Type == "Text") :?>
+							<input type="text" class="form-control" name="<?php echo $value->Name;?>" value="<?php echo $value->Value;?>">
+						<?php endif;?>	
+						<?php if ($value->Type == "Number") :?>
+							<input type="number" class="form-control" name="<?php echo $value->Name;?>" value="<?php echo $value->Value;?>">
+						<?php endif;?>	
+					</div>
+				</div>
+			<?php endforeach;?>
+		<div class="form-group">
+			<div class="col-xs-offset-3 col-xs-10">
+				<button type="submit" class="btn btn-primary"><?php echo $GLOBALS["Language"]->Save;?></button>
+			</div>
+		</div>
+		</form>
+	</div>
 </div>
 <script type="text/javascript">
 	
@@ -242,6 +270,8 @@
 	   		$('a[href="#groupdelete"]').click()
 	   else if (window.location.href.indexOf("?admin&t=uip") != -1)
 	   		$('a[href="#ipunban"]').click()	
+	   	else if (window.location.href.indexOf("?admin&t=settings") != -1)
+	   		$('a[href="#settings"]').click()	
 	});
 
 	 $('a[href="#start"]').tab('show');
