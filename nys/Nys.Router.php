@@ -136,7 +136,9 @@
 				else if (isset($_GET["admin"]))
 					$this->controller->Admin($this);	
 				else if (isset($_GET["search"]))
-					$this->controller->Search($this);								
+					$this->controller->Search($this);
+				else if (isset($_GET["update"]))
+					$this->controller->Update($this);									
 				else
 					$this->DoRedirect('main');
 			}		
