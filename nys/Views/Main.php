@@ -52,6 +52,10 @@
                     <a href='?admin'>
                         <?php echo $GLOBALS['Language']->Administration;?></a>
                 </li>
+                <li>
+                    <a href='?update'>
+                        <?php echo $GLOBALS['Language']->Update;?></a>
+                </li>
                 <?php endif;?>
                 <li>
                     <a href='?info'>Info</a>

@@ -319,7 +319,28 @@
 			$innerContent = 'Admin.php';	
 			include 'Views/Main.php';
 		}
-
+		/**
+		* Display the update dialog
+		* @param $router the Router-Object to be used.
+		*/
+		public function Update($router){
+			$data = $this->InjectSessionData($router);		
+			$allowed  = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],9)));
+			if (!$allowed)
+				$router->DoRedirect("main");
+			$remoteVersion=  $router->DoRequest("Kernel.UpdateKernel","GetLatestVersionAsString",json_encode(array()));
+			if (isset($_GET["go"])){
+				//Start the update
+			}
+			else{
+				$localVersion = $router->DoRequest("Kernel","GetVersion",json_encode(array()));
+			
+				$updateState =  $router->DoRequest("Kernel.UpdateKernel","IsUpdateNeeded",json_encode(array()));
+				$updateSource =  $router->DoRequest("Kernel.UpdateKernel","GetUpdateSource",json_encode(array()));
+			}
+			$innerContent = 'Update.php';
+			include 'Views/Main.php';
+		}
 		/**
 		* Display the files list
 		* @param $router the Router-Object to be used.

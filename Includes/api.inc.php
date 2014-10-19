@@ -94,6 +94,9 @@
 			case "Kernel.SystemKernel":
 			$Redundancy->Output(call_user_func_array(array($Redundancy->SystemKernel,$method), $params));
 			break;
+			case "Kernel.UpdateKernel":
+			$Redundancy->Output(call_user_func_array(array($Redundancy->UpdateKernel,$method), $params));
+			break;
 		}	
 	}		
 ?>

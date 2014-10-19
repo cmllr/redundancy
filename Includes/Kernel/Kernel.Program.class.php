@@ -32,6 +32,7 @@
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.FileSystem.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Sharing.class.php";
+		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Updater.class.php";
 		//**********************************************Data classes**************************************
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/User.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/Role.class.php";
@@ -63,9 +64,9 @@
 		class Kernel{
 			/**
 			* The programs version
-			* Structurized in {1.9.X-codenameorbranch-state-update}
+			* Structurized in {1.9.X-codenameorbranch-state}
 			*/
-			public $Version = "1.9.15-lenticularis-dev1-0";
+			public $Version = "1.9.15-Lenticularis-beta1-0";
 			/**
 			* The programs release date
 			*/
@@ -91,9 +92,9 @@
 			*/
 			public $SharingKernel;
 			/**
-			* The systems configuration. Parsed from __REDUNDANCY_ROOT__Redundancy.conf
+			* The kernel part which handles the update process
 			*/
-			public $Configuration;
+			public $UpdateKernel;
 			/**
 			* The class does not have any parameters to deliver with the base constructor.
 			*/
@@ -108,6 +109,7 @@
 				$this->SystemKernel =  new \Redundancy\Kernel\SystemKernel();	
 				$this->FileSystemKernel = new \Redundancy\Kernel\FileSystemKernel();
 				$this->SharingKernel = new \Redundancy\Kernel\SharingKernel();
+				$this->UpdateKernel = new \Redundancy\Kernel\UpdateKernel();
 			}
 			/**
 			* Return the current server version
