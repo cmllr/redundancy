@@ -59,7 +59,6 @@
 		* @return bool
 		*/
 		public function Update($token){
-			exit;
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
 			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
 				return \Redundancy\Classes\Errors::NotAllowed;
@@ -75,22 +74,26 @@
 			$zip = new \ZipArchive;
 			$entries = array();
 			//Ignore following files which are not needed for the retail-system
-			$ignoredItems = array("redundancy-".$branch."/Storage/",
-				"redundancy-".$branch."/Temp/",
-				"redundancy-".$branch."/Snapshots/",
-				"redundancy-".$branch."/Includes/Kernel/Kernel.Config.class.php",
-				"redundancy-".$branch."/webclient/",
-				"redundancy-".$branch."/runTests.xml",
-				"redundancy-".$branch."/test",
-				"redundancy-".$branch."/tests",
-				"redundancy-".$branch."/.travis.yml",	
-				"redundancy-".$branch."/Language/.htaccess",
-				"redundancy-".$branch."/System.log",
-				"redundancy-".$branch."/README.md",
-				"redundancy-".$branch."/install.php"				
+			$ignoredItems = array("/Storage/",
+				"Temp/",
+				"Snapshots/",
+				"Includes/Kernel/Kernel.Config.class.php",
+				"webclient/",
+				"runTests.xml",
+				"test",
+				"tests/",
+				".travis.yml",	
+				"Language/.htaccess",
+				"System.log",
+				"README.md",
+				"install.php",
+				"redundancy-$branch"				
 				);
 			if ($zip->open($targetPath."update.zip") === true) {
 				for($i = 0; $i < $zip->numFiles; $i++) { 
+					$oldName = $zip->getNameIndex($i);
+					$zip->renameIndex($i, str_replace("redundancy-".$branch."/", "", $oldName)); 
+
 					$entry = $zip->getNameIndex($i);
 					$itemBlacklisted = false;
 					foreach ($ignoredItems as $key => $value) {
@@ -102,15 +105,12 @@
 					}			
 					if (!$itemBlacklisted)
 						$entries[] = $entry;			
-				}  
-				$zip->ExtractTo($extractPath,$entries);
+				}  			
+				$zip->ExtractTo(__REDUNDANCY_ROOT__,$entries);
 				$zip->close();
-			}
-			//Copy the update contents to the root dir
-			$this->recurse_copy($extractPath,$updateTargetPath);
-			$this->recurse_copy($updateTargetPath."redundancy-$branch/",__REDUNDANCY_ROOT__);	 //for debugging is the target path set to /Temp/
-			//Update the database
-			$content = file_get_contents($updateTargetPath."Dump.sql");
+			}			
+			return true;
+			$content = file_get_contents(__REDUNDANCY_ROOT__."Dump.sql");
 			$queries = explode(";", $content);
 			try{
 				foreach ($queries as $key => $value) {
@@ -126,49 +126,9 @@
 				//return false;
 			}
 			//Cleanup
-			$this->recursiveDelete($extractPath);
-			$this->recursiveDelete($updateTargetPath."redundancy-$branch/");
-			$this->recursiveDelete($targetPath."update.zip");
+			//TODO: Cleanup the mess...
 			return true;
 		}
-		/**
-		* Copies the directory.
-		* @param string $src sourcedir
-		* @param string $dst destination dir
-		*/
-		function recurse_copy($src,$dst) { 
-		    $dir = opendir($src); 
-		    if (!is_dir($dst))
-		    	@mkdir($dst); 
-		    while(false !== ( $file = readdir($dir)) ) { 
-		        if (( $file != '.' ) && ( $file != '..' )) { 
-		            if ( is_dir($src . '/' . $file) ) { 
-		                $this->recurse_copy($src . '/' . $file,$dst . '/' . $file); 
-		            } 
-		            else { 
-		                copy($src . '/' . $file,$dst . '/' . $file); 
-		            } 
-		        } 
-		    } 
-		    closedir($dir); 
-		}
-		 /**
-	     * Delete a file or recursively delete a directory
-	     *
-	     * @param string $str Path to file or directory
-	     */
-	    function recursiveDelete($str){
-	        if(is_file($str)){
-	            return @unlink($str);
-	        }
-	        elseif(is_dir($str)){
-	            $scan = glob(rtrim($str,'/').'/*');
-	            foreach($scan as $index=>$path){
-	                $this->recursiveDelete($path);
-	            }
-	            return @rmdir($str);
-	        }
-	    }
 		/**
 		* Get the current version (as array/ dictionary)
 		* @return array | empty string, if failure
