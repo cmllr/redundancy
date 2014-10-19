@@ -59,6 +59,7 @@
 		* @return bool
 		*/
 		public function Update($token){
+			exit;
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
 			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
 				return \Redundancy\Classes\Errors::NotAllowed;
