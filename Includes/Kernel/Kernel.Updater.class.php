@@ -91,9 +91,11 @@
 				);
 			if ($zip->open($targetPath."update.zip") === true) {
 				for($i = 0; $i < $zip->numFiles; $i++) { 
-					$oldName = $zip->getNameIndex($i);
-					$zip->renameIndex($i, str_replace("redundancy-".$branch."/", "", $oldName)); 
-
+					$oldName = $zip->getNameIndex($i);		
+					$newName = 	str_replace("redundancy-".$branch."/", "", $oldName);
+					if ($newName == "")
+						$newName = "oldName";	
+					$zip->renameIndex($i,$newName ); 
 					$entry = $zip->getNameIndex($i);
 					$itemBlacklisted = false;
 					foreach ($ignoredItems as $key => $value) {
@@ -105,11 +107,11 @@
 					}			
 					if (!$itemBlacklisted)
 						$entries[] = $entry;			
-				}  			
-				$zip->ExtractTo(__REDUNDANCY_ROOT__,$entries);
+				}  	
+				$targetPath = __REDUNDANCY_ROOT__;
+				$zip->ExtractTo($targetPath,$entries);
 				$zip->close();
 			}			
-			return true;
 			$content = file_get_contents(__REDUNDANCY_ROOT__."Dump.sql");
 			$queries = explode(";", $content);
 			try{
