@@ -23,16 +23,4 @@ for client:
 License and components
 ----------------------
 
-- Redundancy is licensed under the terms and conditions of the GNU GPL v3.
-- Redundancy uses JQuery, it can be found on https://jquery.org/.
-- Redundancy uses parts of Faenza, it can be found on http://gnome-look.org/content/show.php?content=128143
-- Redundancy uses Twitter Bootstrap, licensed under the terms and conditions of Apache License 2.0
-- Redundancy uses webfont Elusive (http://shoestrap.org/downloads/elusive-icons-webfont/), licensed under the terms and conditions of the SIL Open Font License (OFL)
-- Redundancy uses an image from http://subtlepatterns.com/
-
-Note/ Disclaimer
-----------------
-
-Redundancy's default branch is unstable. At the moment there is no stable version available. The program runs on every configured server, but the possibility of loosing data caused by hidden bugs is very high. Please feel free to inform me about these issues over the github issue tracker. Thanks :).
-
-Since 1.9.7 it is possible to create snapshots. It will be recommended (if the feature is out of beta state) to run these snapshots via cronjobs or tasks cyclic to avoid data loss.
+This information will be added when this branch ist stable.
