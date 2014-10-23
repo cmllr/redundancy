@@ -150,7 +150,7 @@ function ReturnIcon(mime) {
             break;
         }
     }
-    var content = "<span class=\"fa-stack\"><i class=\"fa fa-file-o fa-stack-2x\"></i><i class=\"fa " + inner + " fa-stack-1x\"></i> </span>";
+    var content = "<i class=\"fa "+inner+"\"></i>";
     return content;
 }
 function GetEllipsedDisplayName(name){
