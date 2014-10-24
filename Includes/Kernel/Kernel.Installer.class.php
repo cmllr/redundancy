@@ -1,6 +1,6 @@
 <?php
 	/**
-	* Kernel.INstaller.class.php
+	* Kernel.Installer.class.php
 	*/	
 	namespace Redundancy\Kernel;
 
