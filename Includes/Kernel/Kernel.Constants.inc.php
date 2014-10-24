@@ -64,6 +64,7 @@
 		const UpdateOrCreationOfRoleFailed = 41;
 		const CannotDeleteGroup = 42;
 		const CannotDeleteDefaultGroup = 43;
+		const GroupNameAlreadyGiven = 44;
 	} 
 	/**
 	* The permission set in a human readable form

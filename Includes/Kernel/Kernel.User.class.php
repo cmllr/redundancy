@@ -396,25 +396,44 @@
 			}
 			return \Redundancy\Classes\Errors::PermissionNotFound;
 		}
-		public function UpdateOrCreateGroup($roleName,$rolePermissions,$token){
+		/**
+		* Update or creates a group (role)
+		* @param string $roleName the role name to search/ create
+		* @param string $roleId the ID to search or the string "-1" if you create a new group
+		* @param string $rolePermissions the string which describes the permission of the role
+		* @param string $token the session token
+		* @return bool | int (in case of any errors)
+		*/
+		public function UpdateOrCreateGroup($roleName,$roleId,$rolePermissions,$token){
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
 			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
 				return \Redundancy\Classes\Errors::NotAllowed;	
 			$permissionValue = DBLayer::GetInstance()->EscapeString($rolePermissions,true);
 			$escapedRoleName = DBLayer::GetInstance()->EscapeString($roleName,true);
-			$roleSearchResult = $this->GetRoleByName($escapedRoleName);
-			if (is_numeric($roleSearchResult) && $roleSearchResult  == \Redundancy\Classes\Errors::PermissionNotFound){
+			$escapedRoleId = DBLayer::GetInstance()->EscapeString($roleId,true);
+			$role = $this->GetRoleByName($escapedRoleName);
+			if ($escapedRoleId == "-1"){
+				//PRevent groups with the same name!
+				if (!is_int($role))
+					return \Redundancy\Classes\Errors::GroupNameAlreadyGiven;
 				//Create new group;
 				$query = sprintf("Insert into Role (description,permissions) values('%s','%s')",$escapedRoleName,$permissionValue);
-			}
-			else{
+			}else{
 				//update
-				$query = sprintf("Update Role set permissions = '%s' where id = %d",$permissionValue,$roleSearchResult->Id);
+				if (!is_int($role) && $role->Id != $escapedRoleId)
+					return \Redundancy\Classes\Errors::GroupNameAlreadyGiven;
+				$query = sprintf("Update Role set permissions = '%s',description= '%s' where id = %d",$permissionValue,$escapedRoleName,$escapedRoleId);
 			}
 			//return $query;
 			DBLayer::GetInstance()->RunInsert($query);
 			return (is_numeric($this->GetRoleByName($escapedRoleName)) == false);
 		}
+		/**
+		* Sets an group flag as the default one
+		* @param string $roleName the name of the group
+		* @param string $token a administrative session token
+		* @return bool
+		*/
 		public function SetAsDefaultGroup($roleName,$token){
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
 			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
@@ -432,6 +451,12 @@
 			DBLayer::GetInstance()->RunUpdate($query);
 			return true;
 		}
+		/**
+		* Deletes a group with the given name
+		* @param string $toleName the role name
+		* @param string $token the token to use
+		* @return bool | errorcode if an error occurs
+		*/
 		public function DeleteGroup($roleName,$token){
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
 			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))

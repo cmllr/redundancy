@@ -271,7 +271,7 @@
 						$permissions .= "0";	
 					}
 				}
-				$result = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','UpdateOrCreateGroup',json_encode(array($_POST["groupname"],$permissions,$_SESSION["Token"])));
+				$result = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','UpdateOrCreateGroup',json_encode(array($_POST["groupname"],$_POST["groupid"],$permissions,$_SESSION["Token"])));
 				//Update default user group
 				if (isset($_POST["IsDefault"])){
 					$default = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','SetAsDefaultGroup',json_encode(array($_POST["groupname"],$_SESSION["Token"])));

@@ -158,6 +158,7 @@
 			<label for="groupname" class="control-label col-xs-3"><?php echo $GLOBALS["Language"]->Groupname;?></label>
 			<div class="col-xs-9">
 				<input type="text" class="form-control" name="groupname" value="<?php echo $group->Description;?>">
+				<input type ="hidden" name="groupid" value ="<?php echo (isset($group->Id)) ? $group->Id : "-1";?>">
 			</div>
 		</div>
 		<?php foreach ($group->Permissions as $key => $value) :?>

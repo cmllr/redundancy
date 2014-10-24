@@ -341,6 +341,63 @@
 			$got = $GLOBALS["Kernel"]->UserKernel->IsLoginOrMailFree("testUser");		
 			$this->assertFalse($got);	
 		}
+		//***********************Tests UpdateOrCreateGroup()***********************
+		public function testUpdateOrCreateGroup01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser","test1",true);	
+			$got =  $GLOBALS["Kernel"]->UserKernel->UpdateOrCreateGroup("sauerkraut","-1","000000000",$token);
+			$this->assertTrue($got);
+		}
+		public function testUpdateOrCreateGroup02(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser","test1",true);	
+			$got =  $GLOBALS["Kernel"]->UserKernel->UpdateOrCreateGroup("sauerkraut","-1","000000000",$token);
+			$this->assertTrue(is_numeric($got));
+		}
+		public function testUpdateOrCreateGroup03(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser","test1",true);	
+			$groupTotest = $GLOBALS["Kernel"]->UserKernel->GetRoleByName("sauerkraut");
+			$got =  $GLOBALS["Kernel"]->UserKernel->UpdateOrCreateGroup("sauerkrautRenamed",$groupTotest->Id,"000000001",$token);
+			$groupTotest = $GLOBALS["Kernel"]->UserKernel->GetRoleByName("sauerkraut");
+			//Test old name
+			$this->assertTrue(is_numeric($groupTotest));
+			$groupTotest = $GLOBALS["Kernel"]->UserKernel->GetRoleByName("sauerkrautRenamed");
+			$this->assertTrue($groupTotest->Description == "sauerkrautRenamed");
+		}
+		//***********************Tests SetAsDefaultGroup()***********************
+		public function SetAsDefaultGroup01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser","test1",true);	
+			$got =  $GLOBALS["Kernel"]->UserKernel->SetAsDefaultGroup("sauerkrautRenamed",$token);
+			$this->assertTrue($got);
+			$groupTotest = $GLOBALS["Kernel"]->UserKernel->GetRoleByName("sauerkrautRenamed");
+			$this->assertTrue($groupTotest->IsDefault);
+			//Reset the group permission
+			$GLOBALS["Kernel"]->UserKernel->SetAsDefaultGroup("Root",$token);
+		}
+		//***********************Tests DeleteGroup()***********************
+		public function testDeleteGroup01(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser","test1",true);	
+			$GLOBALS["Kernel"]->UserKernel->SetAsDefaultGroup("sauerkrautRenamed",$token);
+			$got =  $GLOBALS["Kernel"]->UserKernel->DeleteGroup("sauerkrautRenamed",$token);
+			$this->assertTrue($got == 43);
+			$groupTotest = $GLOBALS["Kernel"]->UserKernel->GetRoleByName("sauerkrautRenamed");
+			$this->assertTrue(!is_numeric($groupTotest));
+			//Reset the group permission
+			$GLOBALS["Kernel"]->UserKernel->SetAsDefaultGroup("Root",$token);
+		}
+
+		public function testDeleteGroup02(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser","test1",true);	
+			$got =  $GLOBALS["Kernel"]->UserKernel->DeleteGroup("sauerkrautRenamed",$token);
+			$this->assertTrue($got);
+			$groupTotest = $GLOBALS["Kernel"]->UserKernel->GetRoleByName("sauerkrautRenamed");
+			$this->assertTrue(is_numeric($groupTotest));
+		}
+		public function testDeleteGroup03(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser","test1",true);	
+			$got =  $GLOBALS["Kernel"]->UserKernel->DeleteGroup("sauerkrautRenamed",$token);
+			$this->assertFalse($got);
+			$groupTotest = $GLOBALS["Kernel"]->UserKernel->GetRoleByName("sauerkrautRenamed");
+			$this->assertTrue(is_numeric($groupTotest));
+		}
 		//***********************Tests DeleteUser()***********************
 		public function testDeleteUser(){
 			$loginName = "testUser";		
