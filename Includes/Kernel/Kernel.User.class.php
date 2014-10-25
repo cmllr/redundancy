@@ -222,6 +222,10 @@
 
 			if ($this->GetUser($escapedToken)->LoginName == $escapedLoginName)
 				return \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify;
+			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select count(id) as Amount from User where loginName = '%s'",$escapedLoginName));
+			if ($dbquery[0]["Amount"] == 0)
+				return \Redundancy\Classes\Errors::UserNotExisting;
+
 
 			//Delete all files
 			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select * from FileSystem inner join User u on u.id = FileSystem.ownerId   where u.loginName = '%s'",$escapedLoginName));
