@@ -14,7 +14,6 @@
   padding: 1em;*/
 
   position: relative;
-  //border: 1px solid rgba(0,0,0,0.08);
   background: rgba(0,0,0,0.02);
   min-height: 200px;
 }
@@ -206,7 +205,6 @@
   filter: alpha(opacity=15);
 }
 .dropzone.dz-started .dz-message {
-  //display: block;
   opacity: 0;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   filter: alpha(opacity=0);
