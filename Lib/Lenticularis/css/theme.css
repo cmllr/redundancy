@@ -6202,12 +6202,12 @@ select[multiple].input-lg,
 @font-face {
   font-family: "Exo2";
   font-style: normal;
-  font-weight: normal;
+  font-weight: 400;
   src: url("../fonts/Exo2-Regular.ttf"); }
 @font-face {
   font-family: "Exo2";
   font-style: normal;
-  font-weight: lighter;
+  font-weight: 300;
   src: url("../fonts/Exo2-Thin.ttf"); }
 * {
   font-family: "Exo2"; }
