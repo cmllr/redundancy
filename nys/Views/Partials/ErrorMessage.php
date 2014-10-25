@@ -15,12 +15,11 @@
 		echo "<ul>";
 		foreach($ERROR as $key=>$value){
 			if (isset($GLOBALS["Language"]->{$value})){
-				echo "<li>$value</li>";
+				echo "<li>".$GLOBALS["Language"]->{$value}."</li>";
 			}
 			else{
 				echo "<li>$value</li>";
 			}
-			echo "<li>$value</li>";
 		}
 		echo "</ul>";
 	}

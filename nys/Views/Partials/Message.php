@@ -1,12 +1,22 @@
 <div class="alert alert-info dismissable">
 <?php
 	if (!is_array($MESSAGE))
-		echo $MESSAGE;
+		if (isset($GLOBALS["Language"]->{$MESSAGE})){
+			echo $GLOBALS["Language"]->{$MESSAGE};
+		}
+		else{
+			echo $MESSAGE;
+		}
 	else
 	{
 		echo "<ul>";
 		foreach($MESSAGE as $key=>$value){
-			echo "<li>$value</li>";
+			if (isset($GLOBALS["Language"]->{$value})){
+				echo "<li>".$GLOBALS["Language"]->{$value}."</li>";
+			}
+			else{
+				echo "<li>$value</li>";
+			}
 		}
 		echo "</ul>";
 	}
