@@ -16,7 +16,7 @@
   position: relative;
   //border: 1px solid rgba(0,0,0,0.08);
   background: rgba(0,0,0,0.02);
-  height: 200px;
+  min-height: 200px;
 }
 .dropzone h3{
   vertical-align: middle;
@@ -206,7 +206,7 @@
   filter: alpha(opacity=15);
 }
 .dropzone.dz-started .dz-message {
-  display: block;
+  //display: block;
   opacity: 0;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   filter: alpha(opacity=0);
@@ -363,6 +363,10 @@
 .dropzone a.dz-remove:hover,
 .dropzone-previews a.dz-remove:hover {
   color: #666;
+}
+.dz-message h3{
+  margin-top: 0;
+  margin-bottom: 0;
 }
 @-moz-keyframes loading {
   from {

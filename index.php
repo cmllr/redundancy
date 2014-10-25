@@ -33,7 +33,7 @@ ob_start();
     <script src='./Lib/Dropzone.js/dropzone.js' charset='UTF-8'></script>
     <link rel='stylesheet' href='Lib/Dropzone.js/css/dropzone.css' type='text/css' />
     <!-- Bootstrap -->
-    <link rel='stylesheet' href='./Lib/Lenticularis/css/theme.css' type='text/css' />
+    <link rel='stylesheet' href='./Lib/Lenticularis/css/theme.min.css' type='text/css' />
     <script src='./Lib/Bootstrap/js/bootstrap.min.js'></script>
     <!-- Others -->
     <link rel='stylesheet' href='./nys/Views/css/nys.css' type='text/css' />
