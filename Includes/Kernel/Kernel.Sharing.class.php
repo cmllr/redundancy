@@ -95,6 +95,8 @@ class SharingKernel{
 		$owner = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken);
         	if (is_null($owner))
         		return \Redundancy\Classes\Errors::TokenNotValid;
+                if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowSharing))
+                        return \Redundancy\Classes\Errors::NotAllowed;
         	$ownerId = $owner->ID;
         	$newCode = $this->GetFreeShareLink();
         	$isExistingQuery = sprintf("Select count(id) as amount from SharedFileSystem where shareCode = '%s' and userID = '%d'",$escapedOldCode,$ownerId);
@@ -118,6 +120,8 @@ class SharingKernel{
         	$owner = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken);
         	if (is_null($owner))
         		return \Redundancy\Classes\Errors::TokenNotValid;
+                if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowSharing))
+                        return \Redundancy\Classes\Errors::NotAllowed;
         	$ownerId = $owner->ID;
         	$entry = $GLOBALS["Kernel"]->FileSystemKernel->GetEntryByAbsolutePath($escapedabsolutePath,$escapedToken);
         	if (is_null($entry))
@@ -147,6 +151,8 @@ class SharingKernel{
         	if (is_null($owner))
         		return false;			
         	$ownerId = $owner->ID;      
+                if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowSharing))
+                        return \Redundancy\Classes\Errors::NotAllowed;
         	if ($ownerId == $escapedTo)
         		return \Redundancy\Classes\Errors::CannotShareToMyself;        	  
         	$targetUser = $GLOBALS["Kernel"]->UserKernel->GetUserNameById($escapedTo,$escapedToken);
@@ -255,6 +261,8 @@ class SharingKernel{
         	$owner = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken);
         	if (is_null($owner))
         		return \Redundancy\Classes\Errors::TokenNotValid;
+                if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowSharing))
+                        return \Redundancy\Classes\Errors::NotAllowed;
         	$isExistingQuery = sprintf("Select count(id) as amount from SharedFileSystem where shareCode = '%s' and (userID = '%d' or targetUserID = '%d')",$escapedCode,$owner->ID,$owner->ID);
         	$isExisting = DBLayer::GetInstance()->RunSelect($isExistingQuery);			
         	if ($isExisting["0"]["amount"] == 0)
@@ -287,6 +295,8 @@ class SharingKernel{
                 $owner = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken);
                 if (is_null($owner))
                         return \Redundancy\Classes\Errors::TokenNotValid;
+                if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowSharing))
+                        return \Redundancy\Classes\Errors::NotAllowed;
                 $deleteQuery = sprintf("Delete from SharedFileSystem where (Select count(id) from FileSystem fs where fs.hash = '%s' and fs.ownerId ='%d' and fs.id = SharedFileSystem.entryId) = 1",$escapedHash,$owner->ID);
                 DBLayer::GetInstance()->RunDelete($deleteQuery);                   
         }
@@ -369,6 +379,8 @@ class SharingKernel{
 		$owner = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken);
 		if (is_null($owner))
 			return \Redundancy\Classes\Errors::TokenNotValid;
+                if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowSharing))
+                        return \Redundancy\Classes\Errors::NotAllowed;
 		$entry = $this->GetEntryByShareCode($escapedCode);
 		if (is_null($GLOBALS["Kernel"]->FileSystemKernel->GetEntryById($entry->Id,$escapedToken))){
 			return false;

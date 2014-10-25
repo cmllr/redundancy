@@ -90,6 +90,8 @@ INSERT INTO `Settings` (`ID`, `SettingName`, `SettingType`, `SettingValue`) VALU
 (10, 'Program_Share_Link_Length', 'Number', '7'),
 (11, 'Program_Language', 'Text', 'en');
 
+Update Role set permissions = '11111111111' where id = 1;
+
 ALTER TABLE `FileSystem`
   ADD CONSTRAINT `FileSystem_ibfk_1` FOREIGN KEY (`ownerId`) REFERENCES `User` (`id`);
 

@@ -97,6 +97,7 @@
 			$expected[0]->Permissions[] = "1";
 			$expected[0]->Permissions[] = "1";
 			$expected[0]->Permissions[] = "1";
+			$expected[0]->Permissions[] = "1";
 			$this->assertEquals($value[0],$expected[0]);		
 		}
 		//***********************Tests GetPermissionSet()***********************
@@ -104,6 +105,7 @@
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("test","test",false);	
 			$got = $GLOBALS["Kernel"]->UserKernel->GetPermissionSet($token);
 			$expected = array();
+			$expected[] = "1";
 			$expected[] = "1";
 			$expected[] = "1";
 			$expected[] = "1";
@@ -123,7 +125,7 @@
 		//***********************Tests GetPermissionValues()***********************
 		function testGetPermissionValues01(){
 			$got = $GLOBALS["Kernel"]->UserKernel->GetPermissionValues();
-			$this->assertTrue(count($got) == 10);
+			$this->assertTrue(count($got) == 11);
 		}
 		//***********************Tests GetRoleByName()***********************
 		function testGetRoleByName01(){
@@ -165,6 +167,7 @@
 			$expected->Id = 1;
 			$expected->Description = "Root";
 			$expected->Permissions = array();
+			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
