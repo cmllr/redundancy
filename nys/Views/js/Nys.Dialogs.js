@@ -8,8 +8,7 @@ function StartFolderDownload(entry,dialogTitle,dialogText){
 			var dir= $.parseJSON(data);	
 			window.location.href ='?zipfolder&d='+dir;
 		})
-		.fail(function(e) {
-		  console.log(e);			 
+		.fail(function(e) {			 
 		  ErrorDialog(e.responseText);	
 		}
 	);
@@ -24,8 +23,7 @@ function StartSharingByLink(entry,dialogTitle,dialogText){
 		.done(function( data ) {	
 			ShareByLink($.parseJSON(data),dialogTitle,dialogText);
 		})
-		.fail(function(e) {
-		  console.log(e);			 
+		.fail(function(e) {		 
 		  ErrorDialog(e.responseText);	
 		}
 	);
@@ -41,8 +39,7 @@ function ShareByLink(absolutepath,dialogTitle,dialogText){
 			var text = dialogText.replace("%s",code);  
 			DisplayShareLink(text,dialogTitle);
 		})
-		.fail(function(e) {
-		  console.log(e);			 
+		.fail(function(e) {		 
 		  ErrorDialog(e.responseText);	
 		}
 	);
@@ -56,8 +53,7 @@ function StartSharingByLink(entry,dialogTitle,dialogText){
 		.done(function( data ) {	
 			ShareByLink($.parseJSON(data),dialogTitle,dialogText);
 		})
-		.fail(function(e) {
-		  console.log(e);			 
+		.fail(function(e) {		 
 		  ErrorDialog(e.responseText);	
 		}
 	);
@@ -73,8 +69,7 @@ function ShareByLink(absolutepath,dialogTitle,dialogText){
 			var text = dialogText.replace("%s",code);  
 			DisplayShareLink(text,dialogTitle);
 		})
-		.fail(function(e) {
-		  console.log(e);			 
+		.fail(function(e) {		 
 		  ErrorDialog(e.responseText);	
 		}
 	);

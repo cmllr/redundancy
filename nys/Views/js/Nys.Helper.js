@@ -1,29 +1,26 @@
 /**
-	needed jquery extension...
+needed jquery extension...
 */
 $.urlParam = function(name){
-    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-    if (results==null){
-       return null;
-    }
-    else{
-       return results[1] || 0;
-    }
+	var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+	if (results==null){
+		return null;
+	}
+	else{
+		return results[1] || 0;
+	}
 }
 //https://stackoverflow.com/questions/881510/jquery-sorting-json-by-properties
 function sortJSON(data, key, way) {
-    return data.sort(function(a, b) {
-        var x = a[key]; var y = b[key];
-        if (way == 1 ) { return ((x < y) ? -1 : ((x > y) ? 1 : 0)); }
-        if (way == -1) { return ((x > y) ? -1 : ((x < y) ? 1 : 0)); }
-    });
+	return data.sort(function(a, b) {
+		var x = a[key]; var y = b[key];
+		if (way == 1 ) { return ((x < y) ? -1 : ((x > y) ? 1 : 0)); }
+		if (way == -1) { return ((x > y) ? -1 : ((x < y) ? 1 : 0)); }
+	});
 }
-
-
-
 function DisplaySpinner(){  
-  	$(".entry").hide();	
-  	var opts = {
+	$(".entry").hide();	
+	var opts = {
 	    lines: 13, // The number of lines to draw
 		length: 0, // The length of each line
 		width: 9, // The line thickness
@@ -43,12 +40,12 @@ function DisplaySpinner(){
 	};
 	var target = document.getElementById('spinner');
 	var spinner = new Spinner(opts).spin(target);
-  }
-  function HideSpinner(){
-  	var target = document.getElementById('spinner');
+}
+function HideSpinner(){
+	var target = document.getElementById('spinner');
 	
 	$( document ).ready( function(){
 		$("#spinner").html("");
 		$(".entry").fadeIn();
 	});
-  }
+}

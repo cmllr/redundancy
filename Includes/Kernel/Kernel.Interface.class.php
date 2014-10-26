@@ -145,5 +145,18 @@
 				return $result;
 			}
 		}
+		/**
+		* Get the translation for an errorcode
+		* @param string the errorcode (format R_ERR_{Number})
+		* @return string the errorcode translation or the code itself, when no translation was found
+		*/
+		public function GetErrorCodeTranslation($code){	
+			if (isset($this->GetAllLanguageValues()[$code])){
+				return $this->GetAllLanguageValues()[$code];
+			}
+			else{
+				return $code;
+			}
+		}
 	}
 ?>

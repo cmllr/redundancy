@@ -1,14 +1,14 @@
 /**
 	needed jquery extension...
-*/
-$.urlParam = function(name) {
-    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-    if (results == null) {
-        return null;
-    } else {
-        return results[1] || 0;
+    */
+    $.urlParam = function(name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        } else {
+            return results[1] || 0;
+        }
     }
-}
 //https://stackoverflow.com/questions/881510/jquery-sorting-json-by-properties
 function sortJSON(data, key, way) {
     return data.sort(function(a, b) {
@@ -66,45 +66,45 @@ function Init() {
         method: 'GetFolderList',
         args: arguments
     })
+    .done(function(data) {
+        targets = $.parseJSON(data);
+        $(".entry").remove();
+        $("#bc").empty();
+        $.contextMenu('destroy');
+        var arguments = [];
+        arguments.push(currentDir);
+        arguments.push(token);
+        $.post('./Includes/api.inc.php', {
+            module: 'Kernel.FileSystemKernel',
+            method: 'GetContent',
+            args: arguments
+        })
         .done(function(data) {
-            targets = $.parseJSON(data);
-            $(".entry").remove();
-            $("#bc").empty();
-            $.contextMenu('destroy');
-            var arguments = [];
-            arguments.push(currentDir);
-            arguments.push(token);
-            $.post('./Includes/api.inc.php', {
-                module: 'Kernel.FileSystemKernel',
-                method: 'GetContent',
-                args: arguments
-            })
-                .done(function(data) {
-                    var files = $.parseJSON(data);
-                    if (SortBy == "name") {
-                        files = sortJSON(files, "DisplayName", SortOrder);
-                    }
-                    if (SortBy == "upload") {
-                        files = sortJSON(files, "CreateDateTime", SortOrder);
-                    }
-                    if (SortBy == "size") {
-                        files = sortJSON(files, "SizeInBytes", SortOrder);
-                    }
-                    DisplayContent(files);
-                    DisplayBreadcrumbs(currentDir);
-                    HideSpinner();
-                })
-                .fail(function(e) {
-                    $("#list").remove();
-                    $(".panel-body").append("<div class='alert alert-danger'>R_ERR_" + e.responseText + "</div>");
-                    DisplayBreadcrumbs("/");
-                    HideSpinner();
-                });
+            var files = $.parseJSON(data);
+            if (SortBy == "name") {
+                files = sortJSON(files, "DisplayName", SortOrder);
+            }
+            if (SortBy == "upload") {
+                files = sortJSON(files, "CreateDateTime", SortOrder);
+            }
+            if (SortBy == "size") {
+                files = sortJSON(files, "SizeInBytes", SortOrder);
+            }
+            DisplayContent(files);
+            DisplayBreadcrumbs(currentDir);
+            HideSpinner();
         })
         .fail(function(e) {
-            console.log(e);
-            ErrorDialog(e.responseText);
+            $("#list").remove();
+            $(".panel-body").append("<div class='alert alert-danger'>R_ERR_" + e.responseText + "</div>");
+            DisplayBreadcrumbs("/");
+            HideSpinner();
         });
+    })
+.fail(function(e) {
+    console.log(e);
+    ErrorDialog(e.responseText);
+});
 
 }
 
@@ -224,14 +224,14 @@ function CopyEntry(entry, target) {
         method: 'CopyEntryById',
         args: arguments
     })
-        .done(function(data) {
-            var string = $.parseJSON(data);
-            Init();
-        })
-        .fail(function(e) {
-            console.log(e);
-            ErrorDialog(e.responseText);
-        });
+    .done(function(data) {
+        var string = $.parseJSON(data);
+        Init();
+    })
+    .fail(function(e) {
+        console.log(e);
+        ErrorDialog(e.responseText);
+    });
 }
 
 function MoveEntry(entry, target) {
@@ -245,14 +245,14 @@ function MoveEntry(entry, target) {
         method: 'MoveEntryById',
         args: arguments
     })
-        .done(function(data) {
-            var string = $.parseJSON(data);
-            Init();
-        })
-        .fail(function(e) {
-            console.log(e);
-            ErrorDialog(e.responseText);
-        });
+    .done(function(data) {
+        var string = $.parseJSON(data);
+        Init();
+    })
+    .fail(function(e) {
+        console.log(e);
+        ErrorDialog(e.responseText);
+    });
 }
 
 function RenameEntry(id, newname) {
@@ -265,16 +265,16 @@ function RenameEntry(id, newname) {
         method: 'RenameEntry',
         args: arguments
     })
-        .done(function(data) {
-            var res = $.parseJSON(data);
-            if (res == false)
-                ErrorDialog("12");
-            Init();
-        })
-        .fail(function(e) {
-            console.log(e);
-            ErrorDialog(e.responseText);
-        });
+    .done(function(data) {
+        var res = $.parseJSON(data);
+        if (res == false)
+            ErrorDialog("12");
+        Init();
+    })
+    .fail(function(e) {
+        console.log(e);
+        ErrorDialog(e.responseText);
+    });
 }
 
 function StartDeleteFile(entry) {
@@ -286,30 +286,40 @@ function StartDeleteFile(entry) {
         method: 'GetAbsolutePathById',
         args: arguments
     })
-        .done(function(data) {
-            var string = $.parseJSON(data);
-            Delete(string, false);
-        })
-        .fail(function(e) {
-            ErrorDialog(e.responseText);
-        });
-}
-
-function ErrorDialog(message) {
-
-    var dialogTitle = "R2_ERR_" + message;
-    var text = "R2_ERR_" + message;
-    $("<p>" + text + "</p>").dialog({
-        title: dialogTitle,
-        width: 350,
-        buttons: {
-            "OK": function() {
-                $(this).dialog("close");
-            }
-        }
+    .done(function(data) {
+        var string = $.parseJSON(data);
+        Delete(string, false);
+    })
+    .fail(function(e) {
+        ErrorDialog(e.responseText);
     });
 }
 
+function ErrorDialog(message) {
+    var dialogTitle = "";
+    var text = "";
+    var arguments = [];
+    arguments.push("R_ERR_" + message);
+    $.post('./Includes/api.inc.php', {
+        module: 'Kernel.InterfaceKernel',
+        method: 'GetErrorCodeTranslation',
+        args: arguments
+    })
+    .done(function(data) {
+        var string = $.parseJSON(data);
+        dialogTitle = "Redundancy";
+        text = string;
+        $("<p>" + text + "</p>").dialog({
+            title: dialogTitle,
+            width: 350,
+            buttons: {
+                "OK": function() {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    })   
+}
 function StartDeleteFolder(entry) {
     var arguments = [];
     arguments.push(entry.Id);
@@ -319,13 +329,13 @@ function StartDeleteFolder(entry) {
         method: 'GetAbsolutePathById',
         args: arguments
     })
-        .done(function(data) {
-            var string = $.parseJSON(data);
-            Delete(string, true);
-        })
-        .fail(function(e) {
-            console.log(e);
-        });
+    .done(function(data) {
+        var string = $.parseJSON(data);
+        Delete(string, true);
+    })
+    .fail(function(e) {
+        console.log(e);
+    });
 }
 
 function Delete(path, folder) {
@@ -338,18 +348,18 @@ function Delete(path, folder) {
         method: (folder) ? 'DeleteDirectory' : 'DeleteFile',
         args: arguments
     })
-        .done(function(data) {
-            var string = $.parseJSON(data);
-            Init();
-        })
-        .fail(function(e) {
-            console.log(e);
-        });
+    .done(function(data) {
+        var string = $.parseJSON(data);
+        Init();
+    })
+    .fail(function(e) {
+        console.log(e);
+    });
 }
 /**
-		Display Methods.
+	Display Methods.
   **/
-function DisplayLinksForFolder(id) {
+  function DisplayLinksForFolder(id) {
     var arguments = [];
     arguments.push(id);
     arguments.push(token);
@@ -358,10 +368,10 @@ function DisplayLinksForFolder(id) {
         method: 'GetAbsolutePathById',
         args: arguments
     })
-        .done(function(data) {
-            $("#HrefOf" + id).attr("href", "?files&d=" + encodeURI($.parseJSON(data)));
-            $("#DownloadOf" + id).attr("href", "?download&d=" + $.parseJSON(data));
-        });
+    .done(function(data) {
+        $("#HrefOf" + id).attr("href", "?files&d=" + encodeURI($.parseJSON(data)));
+        $("#DownloadOf" + id).attr("href", "?download&d=" + $.parseJSON(data));
+    });
 }
 
 function GetSizeWithUnit(value, id) {
@@ -372,9 +382,9 @@ function GetSizeWithUnit(value, id) {
         method: 'GetCorrectedUnit',
         args: arguments
     })
-        .done(function(data) {
-            $("#SizeOf" + id).text($.parseJSON(data));
-        });
+    .done(function(data) {
+        $("#SizeOf" + id).text($.parseJSON(data));
+    });
 }
 
 function GetExistingTargetCount(entry) {
