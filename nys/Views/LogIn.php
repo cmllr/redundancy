@@ -1,4 +1,4 @@
-<div class='col-sm-offset-2 col-sm-8 col-lg-offset-4 col-lg-4'>
+<div class='col-sm-12 col-lg-offset-4 col-lg-4'>
     <div>
         <?php //Display the error message if needed.
             if (isset($ERROR))

@@ -34,7 +34,7 @@
     </div>
     <!-- /.navbar-collapse -->
 </nav>
-<div class='col-sm-3 col-md-2 col-lg-2 hidden-xs'>
+<div class='hidden-xs hidden-sm col-md-2 col-lg-2'>
     <div class='affix-top' id='leftSidebar' data-spy='affix' data-offset-top='0'>
         <div class='dropdown'>
             <button type='button' class='btn btn-primary btn-block dropdown-toggle' data-toggle='dropdown'>
@@ -115,7 +115,7 @@
         </div>
     </div>
 </div>
-<div class='col-sm-9 col-md-10 col-lg-10'>
+<div class='col-xs-12 col-sm-12 col-md-10 col-lg-10'>
     <?php 
         //Display the error message if needed.
         if (isset($ERROR)) include 'Partials/ErrorMessage.php'; 
