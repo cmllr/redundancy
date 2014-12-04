@@ -168,7 +168,7 @@
 
 			$curl = curl_init();	
 			$domain = $_SERVER['HTTP_HOST'];
-			$prefix = isset($_SERVER['HTTPS']) ? 'https://' : 'http://';
+			$prefix = (isset($_SERVER['HTTPS']) && $_SERVER["HTTPS"] != "off") ? 'https://' : 'http://';
 			$relative = str_replace('index.php','',$_SERVER['SCRIPT_NAME']).'Includes/api.inc.php';				
 			// Set some options - we are passing in a useragent too here		
 			curl_setopt_array($curl, array(
