@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <!-- Bootstrap -->
-    <link rel='stylesheet' href='./Lib/Lenticularis/css/theme.css' type='text/css' />
+    <link rel='stylesheet' href='./Lib/Lenticularis/css/theme.min.css' type='text/css' />
     <script src='./Lib/Bootstrap/js/bootstrap.min.js'></script>
     <title>Redundancy</title>
 </head>
