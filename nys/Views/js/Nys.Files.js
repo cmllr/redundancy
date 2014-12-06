@@ -124,7 +124,7 @@ function ReturnIcon(mime) {
     var inner;
     var files = {};
     if (mime.indexOf("inode") != -1)
-        return "<i class=\"fa fa-folder-open-o fa-2x\"></i>";
+        return "<i class=\"fa fa-folder-open-o\"></i>";
     //todo implement a better algorithm
     //add the filetypes
     files["image"] = "fa-image";
