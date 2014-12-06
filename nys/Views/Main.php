@@ -15,21 +15,66 @@
         <ul class='nav navbar-nav '>
             <li>
                 <a href='?account'>
+                    <span class='fa fa-user'>&nbsp;</span>
                     <?php echo $GLOBALS['Language']->My_Account;?></a>
             </li>
+            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],9)))) :?>
             <li>
                 <a href='?admin'>
+                    <span class='fa fa-wrench'>&nbsp;</span>
                     <?php echo $GLOBALS['Language']->Administration;?></a>
             </li>
             <li>
-                <a href='?info'>Info</a>
+                <a href='?update'>
+                    <span class='fa fa-download'>&nbsp;</span>
+                    <?php echo $GLOBALS['Language']->Update;?></a>
+            </li>
+            <?php endif;?>  
+            <li>
+                <a href='?files'>
+                    <span class='fa fa-cloud'>&nbsp;</span>
+                    <?php echo $GLOBALS['Language']->Files;?>
+                </a>
+            </li>
+            <li>
+                <a href='?history'>
+                    <span class='fa fa-clock-o'>&nbsp;</span>
+                    <?php echo $GLOBALS['Language']->changes;?>
+                </a>
+            </li>
+            <li>
+                <a href='?upload'>
+                    <span class='fa fa-cloud-upload'>&nbsp;</span>
+                    <?php echo $GLOBALS['Language']->Upload;?>
+                </a>
+            </li>
+            <li>
+                <a href='?newfolder'>
+                    <span class='fa fa-folder-open'>&nbsp;</span>
+                    <?php echo $GLOBALS['Language']->New_Directory_Short;?>
+                </a>
+            </li>
+            <li>
+                <a href='?shares'>
+                    <span class='fa fa-share'>&nbsp;</span>
+                    <?php echo $GLOBALS['Language']->ShareMenu;?>
+                </a>
             </li>
             <li class='divider'></li>
             <li>
+                <form method="POST" action="?search">
+                    <input class="form-control search" type="text" value="<?php echo (isset($_POST[" Search "])) ? $_POST["Search "] : "";?>" name="Search" placeholder="<?php echo $GLOBALS['Language']->Search;?>">
+                </form>
+            </li>  
+            <li class='divider'></li>      
+            <li>
+                <a href='?info'><span class='fa fa-info'>&nbsp;</span>Info</a>
+            </li>          
+            <li>
                 <a href='?logout'>
+                    <span class='fa fa-power-off'>&nbsp;</span>
                     <?php echo $GLOBALS['Language']->LogOut;?></a>
             </li>
-
         </ul>
     </div>
     <!-- /.navbar-collapse -->

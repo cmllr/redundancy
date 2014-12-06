@@ -16,6 +16,7 @@ ob_start();
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- jQuery -->
     <script src="./Lib/jQuery/jquery-1.10.2.min.js"></script>
     <!-- FontAwesome -->
@@ -49,8 +50,7 @@ ob_start();
             <?php
 $router->Route($_SERVER['REQUEST_URI']); ?>
         </div>
-    </div>
-    <img class='branding visible-xs' src='./nys/Views/img/logoWithTextSmall.png'>
+    </div>   
 </body>
 
 </html>

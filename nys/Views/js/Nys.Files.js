@@ -25,23 +25,25 @@ function sortJSON(data, key, way) {
 
 function DisplaySpinner() {
     $(".entry").hide();
+    //Hide the spinner on small screens
+    $("#spinner").addClass("hidden-xs");
     var opts = {
-        lines: 13, // The number of lines to draw
-        length: 0, // The length of each line
-        width: 9, // The line thickness
-        radius: 27, // The radius of the inner circle
-        corners: 1, // Corner roundness (0..1)
-        rotate: 5, // The rotation offset
-        direction: 1, // 1: clockwise, -1: counterclockwise
-        color: 'black', // #rgb or #rrggbb or array of colors
-        speed: 1, // Rounds per second
-        trail: 95, // Afterglow percentage
-        shadow: false, // Whether to render a shadow
-        hwaccel: false, // Whether to use hardware acceleration
-        className: 'spinner', // The CSS class to assign to the spinner
-        zIndex: 2e9, // The z-index (defaults to 2000000000)
-        top: '65%', // Top position relative to parent
-        left: '50%' // Left position relative to parent
+      lines: 13, // The number of lines to draw
+      length: 40, // The length of each line
+      width: 10, // The line thickness
+      radius: 60, // The radius of the inner circle
+      corners: 0.8, // Corner roundness (0..1)
+      rotate: 5, // The rotation offset
+      direction: 1, // 1: clockwise, -1: counterclockwise
+      color: '#000', // #rgb or #rrggbb or array of colors
+      speed: 1, // Rounds per second
+      trail: 100, // Afterglow percentage
+      shadow: false, // Whether to render a shadow
+      hwaccel: false, // Whether to use hardware acceleration
+      className: 'spinner', // The CSS class to assign to the spinner
+      zIndex: 2e9, // The z-index (defaults to 2000000000)
+     // top: '50%', // Top position relative to parent
+    //  left: '50%' // Left position relative to parent
     };
     var target = document.getElementById('spinner');
     var spinner = new Spinner(opts).spin(target);
@@ -52,7 +54,7 @@ function HideSpinner() {
 
     $(document).ready(function() {
         $("#spinner").html("");
-        $(".entry").fadeIn();
+        $(".entry").fadeIn();       
     });
 }
 
@@ -121,14 +123,14 @@ function DisplayBreadcrumbs(absolutePath) {
 }
 
 function ReturnIcon(mime) {
-    var inner;
+    var inner = "fa-file-o";
     var files = {};
     if (mime.indexOf("inode") != -1)
         return "<i class=\"fa fa-folder-open-o\"></i>";
     //todo implement a better algorithm
     //add the filetypes
     files["image"] = "fa-image";
-    files["zip"] = "fa-compress";
+    files["zip"] = "fa-compress";  
     files["audio"] = "fa-audio-circle";
     files["video"] = "fa-video-camera";
     files["plain"] = "fa-header";
@@ -139,7 +141,7 @@ function ReturnIcon(mime) {
     files["pdf"] = "fa-font";
     files["spreadsheetml"] = "fa-table";
     files["src"] = "fa-code";
-    files["ms-dos"] = "fa-windows";
+    files["ms"] = "fa-windows";
     files["sql"] = "fa-database";
     files["html"] = "fa-html5";
     var length = Object.keys(files).length;

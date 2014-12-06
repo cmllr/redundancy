@@ -42,3 +42,8 @@
 .glyphicon{
 	padding-right:5px !important;
 }
+#spinner{
+	position: fixed;
+	top: 30%;
+	left: 54%;
+}

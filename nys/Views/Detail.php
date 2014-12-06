@@ -1,10 +1,9 @@
-<h1 class="hidden-xs light-header">
+<h1 class="light-header">
 	<a href="?files"><span class='fa fa-chevron-left lightblue'></span></a>
 	<?php
 		echo $filenameParts[0] . '<span class="gray">' . $filenameParts[1] . '</span>';
 	?>
 </h1>
-<h3 class="visible-xs"><?php echo $entry->DisplayName?></h3>
 
 <?php if (is_numeric($mediaPreview)){
 		  echo "R_ERR_$mediaPreview"; }
@@ -17,7 +16,7 @@
     <a type="a" href="?download&f=<?php echo $entry->Hash; ?>" target="_blank" class="btn btn-link">
         <span class="elusive icon-screen glyphIcon">
         </span>
-        <span class="hidden-xs">
+        <span>
             <?php echo $GLOBALS['Language']->Download;?></span>
     </a>
 
