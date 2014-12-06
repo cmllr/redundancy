@@ -91,9 +91,17 @@
 			$dirs["/Storage/"] = is_writeable(__REDUNDANCY_ROOT__."Storage/");
 			$dirs["/Temp/"] = is_writeable(__REDUNDANCY_ROOT__."Temp/");
 			$dirs["/Snapshots/"] = is_writeable(__REDUNDANCY_ROOT__."Snapshots/");
-			$dirs["Database-Config"] = is_writeable(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.class.php");
+			$dirs["Database-Config"] = is_writeable(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.class.php");			
 			return $dirs;
 		}
+		public function GetExtensionStatus(){
+			$extensions = array();
+			$extensions["php-gd"] = function_exists("gd_info");
+			$extensions["mcrypt"] = function_exists("mcrypt_list_modes");
+			$extensions["file"] = function_exists("finfo_open");
+			return $extensions;
+		}
+
 		public function DoTheImport(){
 			require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Config.class.php";
 			$content = file_get_contents(__REDUNDANCY_ROOT__."Dump.sql");

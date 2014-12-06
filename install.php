@@ -26,6 +26,7 @@
         $step = 2;
         $lng = $_GET["lng"];
         $dirs = $k->GetDirectoryPermissions();
+        $extensions = $k->GetExtensionStatus();
     }
     if (isset($_GET["step"]) && $_GET["step"] == "license"){
         $step = 3;
@@ -74,11 +75,24 @@
                                     <?php foreach($dirs as $key => $value) :?>
                                        <li class="list-group-item"><?php echo $key;?> - <?php
                                         if ($value == false){
-                                            echo $GLOBALS["Language"]["CannotWrite"];
+                                            echo "<span class='label label-danger'>".$GLOBALS["Language"]["CannotWrite"]."</span>";
                                             $fail = true;
                                         }                                           
                                         else
-                                            echo $GLOBALS["Language"]["CanWrite"];
+                                            echo "<span class='label label-success'>".$GLOBALS["Language"]["CanWrite"]."</span>";
+                                       ?></li>
+                                    <?php endforeach;?>
+                                </ul>
+                                <div class="alert alert-info "><?php echo $GLOBALS["Language"]["Extensions"];?></div>
+                                <ul class="list-group">
+                                    <?php foreach($extensions as $key => $value) :?>
+                                       <li class="list-group-item"><?php echo $key;?> - <?php
+                                        if ($value == false){
+                                            echo  "<span class='label label-danger'>".$GLOBALS["Language"]["Extension_Missing"]."</span>";
+                                            $fail = true;
+                                        }                                           
+                                        else
+                                            echo "<span class='label label-success'>".$GLOBALS["Language"]["Extension_Existing"]."</span>";
                                        ?></li>
                                     <?php endforeach;?>
                                 </ul>

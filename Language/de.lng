@@ -328,6 +328,9 @@ LocalVersion ="Lokal installierte Redundancy-Version: ";
 RemoteVersion ="Online verfügbare Version: ";
 UpdateSource="Quelle des Updates";
 Updating = "Aktualisieren auf %s";
+Extensions="Redundancy benötigt folgende Erweiterungen, um zu funktionieren:"
+Extension_Existing = "installiert";
+Extension_Missing = "nicht installiert"
 
 R_ERR_3 = "Der Benutzername oder Email ist bereits vergeben.";
 R_ERR_4 = "Die Gruppe konnte nicht gefunden werden.";
