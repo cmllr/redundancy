@@ -89,6 +89,6 @@
 			var dialogTitle = "<?php echo $GLOBALS["Language"]->ShowShareLink;?>";  
 			var code = window.location.origin+window.location.pathname+"?share&c="+link;
 			var text = "<?php echo $GLOBALS["Language"]->LinkToShareText; ?>".replace("%s",code);  		
-			DisplayShareLink(text,dialogTitle);			
+			nys.DisplayShareLink(text,dialogTitle);			
 	});		  
 </script>

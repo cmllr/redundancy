@@ -41,7 +41,7 @@ if ($.urlParam("d") != null)
 	currentDir = decodeURI($.urlParam("d"));
 var token = "<?php echo $_SESSION['Token']; ?>";
 var targets = null;
-Init();  	   
+nys.Init();  	   
   function AddContextMenu(entry){
   	$(function(){
 	    $.contextMenu({
@@ -57,10 +57,10 @@ Init();
 	           			DeleteFileDialog(entry);
 	           }
 	           else if (key == "copy"){
-	           		DisplayMoveOrCopy(entry,false);
+	           		nys.DisplayMoveOrCopy(entry,false);
 	           }
 	           else if (key == "move"){
-	           		DisplayMoveOrCopy(entry,true);
+	           		nys.DisplayMoveOrCopy(entry,true);
 	           }else if (key == "download"){
 	           		if (entry.FilePath != null)
 	           			window.open('?download&f='+entry.Hash,'_blank');
@@ -83,14 +83,14 @@ Init();
 	           }   
 	           else if (key =="shareWithLink"){
 	           		if (entry.FilePath != null)
-	           			StartSharingByLink(entry,"<?php echo $GLOBALS["Language"]->ShowShareLink;?>","<?php echo $GLOBALS["Language"]->LinkToShareText; ?>");          			
+	           			nys.StartSharingByLink(entry,"<?php echo $GLOBALS["Language"]->ShowShareLink;?>","<?php echo $GLOBALS["Language"]->LinkToShareText; ?>");          			
 	           		else{
 	           			alert("Not implemented yet. :(");
 	           		}	
 	           }  
 	            else if (key =="shareToUser"){
 	           		if (entry.FilePath != null)
-	           			StartSharingByLink(entry,"<?php echo $GLOBALS["Language"]->ShowShareLink;?>","<?php echo $GLOBALS["Language"]->LinkToShareText; ?>");          			
+	           			nys.StartSharingByLink(entry,"<?php echo $GLOBALS["Language"]->ShowShareLink;?>","<?php echo $GLOBALS["Language"]->LinkToShareText; ?>");          			
 	           		else{
 	           			alert("Not implemented yet. :(");
 	           		}	
@@ -115,9 +115,9 @@ Init();
   
   function MoveOrCopyFileDialog(entry,move,targets){  	 	
   	var currentAbsolutePath = currentDir;  				
-  	var existingTargetsCount = GetExistingTargetCount(entry);
+  	var existingTargetsCount = nys.GetExistingTargetCount(entry);
   	if (existingTargetsCount == 0){
-  		ErrorDialog("24");	
+  		nys.ErrorDialog("24");	
   		return ;
   	}
   	var dialogTitle = (move) ? "<?php echo $GLOBALS["Language"]->MoveEntryTitle; ?>".replace("%s",entry.DisplayName) : "<?php echo $GLOBALS["Language"]->CopyEntryTitle; ?>".replace("%s",entry.DisplayName);  				
@@ -127,10 +127,10 @@ Init();
   			var target = $(".target").val();
   			if (target != ""){
   				if (move)
-  					MoveEntry(entry,target);
+  					nys.MoveEntry(entry,target);
   				else
-  					CopyEntry(entry,target);
-  				DisplaySpinner();
+  					nys.CopyEntry(entry,target);
+  				nys.DisplaySpinner();
   				$( this ).dialog( "close" );
   			}		        
   		},
@@ -142,7 +142,7 @@ Init();
   	var currentAbsolutePath = currentDir;  				
   	if (entry.FilePath == null)
   		currentAbsolutePath = currentDir+entry.DisplayName+"/";  			
-  	AppendEntriesToTargetList(entry,currentAbsolutePath)
+  	nys.AppendEntriesToTargetList(entry,currentAbsolutePath)
   }  
  
   function DeleteFolderDialog(entry){  
@@ -150,7 +150,7 @@ Init();
 	var text = "<?php echo $GLOBALS["Language"]->DeleteFolderText; ?>".replace("%s",entry.DisplayName);  	
 		$( "<p>"+text+"</p>" ).dialog({ title: dialogTitle,width: 350 ,draggable:false, buttons: {
 	"<?php echo $GLOBALS["Language"]->DeleteFolderDeleteButton; ?>": function() {
-		StartDeleteFolder(entry);
+		nys.StartDeleteFolder(entry);
 		$( this ).dialog( "close" );
 	},
 	"<?php echo $GLOBALS["Language"]->Abort; ?>": function() {
@@ -164,7 +164,7 @@ Init();
 	var text = "<?php echo $GLOBALS["Language"]->DeleteFileText; ?>".replace("%s",entry.DisplayName);  	
 	$( "<p>"+text+"</p>" ).dialog({ title: dialogTitle,width: 350 , modal: true,draggable:false, buttons: {
 	"<?php echo $GLOBALS["Language"]->DeleteFileDeleteButton; ?>": function() {		        
-		StartDeleteFile(entry);		        	
+		nys.StartDeleteFile(entry);		        	
 			$( this ).dialog( "close" );
 		},
 		"<?php echo $GLOBALS["Language"]->Abort; ?>": function() {
@@ -180,7 +180,7 @@ Init();
 			var newName = $("#newname").val();		        	
 			if (newName != ""){
 				console.log(newName);
-				RenameEntry(entry.Id,newName);			        		  			        
+				nys.RenameEntry(entry.Id,newName);			        		  			        
 				$( this ).dialog( "close" );
 				$("#dialogcontent").remove();		      
 			}	        	

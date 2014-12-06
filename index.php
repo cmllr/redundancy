@@ -38,7 +38,6 @@ ob_start();
     <script src='./Lib/Bootstrap/js/bootstrap.min.js'></script>
     <!-- Others -->
     <link rel='stylesheet' href='./nys/Views/css/nys.css' type='text/css' />
-    <script src='./nys/Views/js/Nys.Helper.js'></script>
     <script src='./nys/Views/js/Nys.Files.js'></script>
     <script src='./nys/Views/js/Nys.Dialogs.js'></script>
     <title>Redundancy</title>
