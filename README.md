@@ -1,22 +1,6 @@
 Redundancy
 ==========
 
-Redundancy is a ligthweight php based cloud storage tool.
+Please change to the branch [Lenticularis] for the newest version. At the moment there is no stable version available.
 
-Redundancy uses PHP and MySQL (later other database engine will be used, if you want).
-
-
-License
-=======
-
-Redundancy is licensed under the terms and conditions of the GNU GPL v3.
-
-Installation
-============
-
-See INSTALL_MANUAL for more details
-
-Note
-====
-
-Redundancy is still a very unstable program. It is still under active development.
+[Lenticularis]: https://github.com/squarerootfury/redundancy/tree/Lenticularis
