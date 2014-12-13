@@ -227,7 +227,7 @@
 						//Set
 						$args = array($_SESSION["Token"],$_POST["username"],$_POST["displayname"],(isset($_POST["enabled"])) ? $_POST["enabled"] : false,$_POST["contingent"]*1024,$_POST["newPassword"],$_POST["group"]);
 						$result = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','SetUserByAdminPanel',json_encode($args));
-						if ($result != true){
+						if ($result != true || $result == 35){
 							$ERROR ="R_ERR_39";
 						}
 						else{

@@ -50,7 +50,7 @@
 			$displayName = "testUser";
 			$mailAddress = "mail@localhost.lan";
 			$password = "test";
-			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("test","test",false);	
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",false);	
 			$GLOBALS["Kernel"]->SystemKernel->SetSetting($token,"Enable_Register","false");
 			$got = $GLOBALS["Kernel"]->UserKernel->RegisterUser($loginName,$displayName,$mailAddress,$password);		
 			$this->assertTrue(\Redundancy\Classes\Errors::RegistrationNotEnabled==$got);	
@@ -102,7 +102,7 @@
 		}
 		//***********************Tests GetPermissionSet()***********************
 		function testGetPermissionSet01(){
-			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("test","test",false);	
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",false);	
 			$got = $GLOBALS["Kernel"]->UserKernel->GetPermissionSet($token);
 			$expected = array();
 			$expected[] = "1";
@@ -417,6 +417,38 @@
 			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUser($loginName,"test1");		
 			$this->assertTrue(!$got);	
 		}
-		
+		//************************GetUserByAdminPanel**********************
+		public function testGetUserByAdminPanel01(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$got = $GLOBALS["Kernel"]->UserKernel->GetUserByAdminPanel("testFS",$token);		
+			$this->assertTrue(!is_null($got));
+			$this->assertTrue($got->DisplayName == "testFS");
+			$this->assertTrue($got->LoginName == "testFS");			
+		}
+		public function testGetUserByAdminPanel02(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$got = $GLOBALS["Kernel"]->UserKernel->GetUserByAdminPanel("sauerkraut",$token);		
+			$this->assertTrue(is_null($got));	
+		}
+		//************************DeleteUserByAdminPanel**********************
+		public function testDeleteUserByAdminPanel01(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("testFS",$token);		
+			$this->assertTrue($got == \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify);
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$this->assertTrue($token != \Redundancy\Classes\Errors::PasswordOrUserNameWrong);
+		}
+		public function testDeleteUserByAdminPanel02(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("sauerkraut",$token);		
+			$this->assertTrue($got == \Redundancy\Classes\Errors::UserNotExisting);
+		}
+		//************************SetUserByAdminPanel**********************
+		public function testSetUserByAdminPanel01(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$testFS =  $GLOBALS["Kernel"]->UserKernel->GetUser($token);	
+			$got = $GLOBALS["Kernel"]->UserKernel->SetUserByAdminPanel($token,"testFS","testFS","off",$testFS->ContingentInByte,"",1);	
+			$this->assertTrue($got == \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify);
+		}		
 	}
 ?>

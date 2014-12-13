@@ -255,8 +255,8 @@
 			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginname,true);	
 			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowAdministration))
 				return \Redundancy\Classes\Errors::NotAllowed;	
-			if ($this->GetUser($escapedToken)->LoginName == $escapedLoginName)
-				return \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify;
+			//if ($this->GetUser($escapedToken)->LoginName == $escapedLoginName)
+			//	return \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify;
 			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select *,u.Id as UserID from User u where u.loginName =  '%s' limit 1",$escapedLoginName));		
 			if (is_null($dbquery)){							
 				return null;
@@ -307,19 +307,26 @@
 			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginName,true);
 			$userToModify = $this->GetUserByAdminPanel($escapedLoginName,$escapedToken);
 			$escapedEnabled = ($escapedEnabled == "on" ? true : false);
-			if ($this->GetUser($escapedToken)->LoginName == $userToModify->LoginName)
-				return \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify;
+			//if ($this->GetUser($escapedToken)->LoginName == $userToModify->LoginName)
+			//	return \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify;
 			//update the values
 			//Update displayname if needed
 			if ($userToModify->DisplayName != $escapedDisplayName && $escapedDisplayName != ""){
 				$query = sprintf("Update User set DisplayName = '%s' where ID = %d",$escapedDisplayName,$userToModify->ID);
 				DBLayer::GetInstance()->RunUpdate($query);
 			}
+			
 			//Update enabled state if needed
 			if ($userToModify->IsEnabled != $escapedEnabled){
-				$query = sprintf("Update User set isEnabled = '%d' where ID = %d",$escapedEnabled,$userToModify->ID);
-				DBLayer::GetInstance()->RunUpdate($query);
+				if ($this->GetUser($escapedToken)->LoginName != $userToModify->LoginName){
+					$query = sprintf("Update User set isEnabled = '%d' where ID = %d",$escapedEnabled,$userToModify->ID);
+					DBLayer::GetInstance()->RunUpdate($query);
+				}
+				else{
+					return \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify;
+				}
 			}
+				
 			//Update quota if needed
 			if ($userToModify->ContingentInByte != $escapedContingent){
 				$used = $this->GetStorageByAdminPanel($escapedToken,$userToModify->ID);
@@ -338,17 +345,24 @@
 				$query = sprintf("Update User set passwordHash = '%s' where ID = %d",$hashed,$userToModify->ID);
 				DBLayer::GetInstance()->RunUpdate($query);
 			}
+			
 			//Update group if needed
 			if ($escapedGroup != $userToModify->Role->Description){
-				$installedGroups  = $this->GetInstalledRoles();
-				foreach ($installedGroups as $key => $value) {
-					if ($value->Description == $escapedGroup){
-						$query = sprintf("Update User set roleID = '%d' where ID = %d",$value->Id,$userToModify->ID);
-						DBLayer::GetInstance()->RunUpdate($query);
-						break;
+				//Only update the group of other users to prevent locking out
+				if ($this->GetUser($escapedToken)->LoginName != $userToModify->LoginName){
+					$installedGroups  = $this->GetInstalledRoles();
+					foreach ($installedGroups as $key => $value) {
+						if ($value->Description == $escapedGroup){
+							$query = sprintf("Update User set roleID = '%d' where ID = %d",$value->Id,$userToModify->ID);
+							DBLayer::GetInstance()->RunUpdate($query);
+							break;
+						}
 					}
-				}
-			}
+				}				
+				else{
+					return \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify;
+				}	
+			}					
 			return true;
 		}
 		/**
