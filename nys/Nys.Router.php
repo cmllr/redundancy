@@ -205,10 +205,16 @@
 		}
 		/**
 		* Redirects the user to a page. POST-Data will be lost
-		* @param $to the target page
+		* @param string $to the target page
+		* @param bool $denied determines if the action was redirected because insufficient permissions. If true, the main view will inject an R_ERR_15 (Access denied error message)
 		*/
-		function DoRedirect($to){
-			header('Location:?'.$to);
+		function DoRedirect($to,$denied = false){
+			if ($denied != false){
+				header('Location:?'.$to."&d=1");
+			}
+			else{
+				header('Location:?'.$to);
+			}			
 			exit;
 		}		
 	}	

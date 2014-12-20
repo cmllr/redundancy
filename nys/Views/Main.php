@@ -162,10 +162,15 @@
 </div>
 <div class='col-xs-12 col-sm-12 col-md-10 col-lg-10'>
     <?php 
-        //Display the error message if needed.
-        if (isset($ERROR)) include 'Partials/ErrorMessage.php'; 
-        //Display other messages
-        if (isset($MESSAGE)) include 'Partials/Message.php'; 
+        if (isset($_GET["d"])){
+            $ERROR="R_ERR_15";
+            if (isset($ERROR)) include 'Partials/ErrorMessage.php'; 
+        }else{
+            //Display the error message if needed.
+            if (isset($ERROR)) include 'Partials/ErrorMessage.php'; 
+            //Display other messages
+            if (isset($MESSAGE)) include 'Partials/Message.php';
+        }
     ?>
     <div class='panel panel-default white-flat'>
 

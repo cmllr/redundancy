@@ -198,7 +198,7 @@
 			$data = $this->InjectSessionData($router);		
 			$allowed  = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],9)));
 			if (!$allowed)
-				$router->DoRedirect("main");
+				$router->DoRedirect("main",true);
 			$settings = $GLOBALS['Router']->DoRequest('Kernel.SystemKernel','GetSettings',json_encode(array()));
 			if (isset($_POST["username"])){
 				if (isset($_GET["t"]) && $_GET["t"] == "d"){
