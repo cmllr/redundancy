@@ -360,7 +360,7 @@
 		*/
 		public function NewFolder($router){	
 			if (!isset($_SESSION['currentFolder']))				
-				$_SESSION['currentFolder'] = '/';
+				$_SESSION['currentFolder'] = '/';		
 			if (!$GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],1))))
 			{
 				$MESSAGE="R_ERR_15";
@@ -372,6 +372,7 @@
 			$currentDirectory = $router->DoRequest('Kernel.FileSystemKernel','GetEntryByAbsolutePath',json_encode(array($_SESSION['currentFolder'],$_SESSION['Token'])));			
 			$absolutePathCurrentDirectory = $router->DoRequest('Kernel.FileSystemKernel','GetAbsolutePathById',json_encode(array($currentDirectory->Id,$_SESSION['Token'])));
 			if (isset($_POST['directory'])){
+				$this->InjectSessionData($router);		
 				$values = array();			
 				if (strpos($_POST['directory'],';') !== false){
 					$values = explode(';',$_POST['directory']);
@@ -447,7 +448,7 @@
 		* @todo language??
 		*/
 		function Share($router){
-			$router->SetLanguage("de");
+			//$router->SetLanguage("de");
 			$entry =  $GLOBALS['Router']->DoRequest('Kernel.SharingKernel','GetEntryByShareCode',json_encode(array($_GET["c"])));
 			$shareCode = $_GET["c"];
 			if (is_null($entry) || is_numeric($entry))
@@ -663,7 +664,7 @@
 		* @param $router the Router-Object to be used.
 		* @return an array containg the session data
 		*/
-		private function InjectSessionData($router){
+		private function InjectSessionData($router){			
 			$router->SetLanguage(isset($_SESSION['Language']) ? $_SESSION['Language'] :  $GLOBALS["Language"]);
 			$args = array($_SESSION['Token']);			
 			$user = $router->DoRequest('Kernel.UserKernel','GetUser',json_encode($args));		

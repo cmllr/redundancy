@@ -4,9 +4,9 @@
 <table id='list' class="table table-striped table-hover">
 	<tr>
 		<th></th>
-		<th id="namecolumn">Name</th>
-		<th class='hidden-xs' id="uploadcolumn">Hochgeladen am</th>
-		<th class='hidden-xs' id="sizecolumn">Größe</th>
+		<th id="namecolumn"><?php echo $GLOBALS["Language"]->Files_Name;?></th>
+		<th class='hidden-xs' id="uploadcolumn"><?php echo $GLOBALS["Language"]->Files_Uploaded;?></th>
+		<th class='hidden-xs' id="sizecolumn"><?php echo $GLOBALS["Language"]->Files_Size;?></th>
 	</tr>
 <script>
 var SortBy = null;

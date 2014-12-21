@@ -42,7 +42,8 @@
 			if (!isset($_SESSION))
 				session_start();
 			//GRAB from config
-			$this->SetLanguage('de');
+			$lang = $this->DoRequest('Kernel','GetConfigValue',json_encode(array("Program_Language")));	
+			$this->SetLanguage($lang);		
 		}
 		/**
 		* Interacts with the cookies, creates or deletes them (if needed)
@@ -210,7 +211,7 @@
 		*/
 		function DoRedirect($to,$denied = false){
 			if ($denied != false){
-				header('Location:?'.$to."&d=1");
+				header('Location:?'.$to."&rd=1");
 			}
 			else{
 				header('Location:?'.$to);

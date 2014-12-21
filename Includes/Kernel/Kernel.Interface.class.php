@@ -72,7 +72,7 @@
 		public function SetCurrentLanguage($languageCode){
 			if (file_exists(__REDUNDANCY_ROOT__."Language/".$languageCode.".lng")){
 				$this->Language = parse_ini_file(__REDUNDANCY_ROOT__."Language/".$languageCode.".lng");	
-				$this->LanguageCode = $languageCode;
+				$this->LanguageCode = $languageCode;			
 				return $this->Language;
 			}
 		}
@@ -102,12 +102,30 @@
 			$file = file_get_contents($path);
 			$finfo = new \finfo(FILEINFO_MIME_TYPE);		
 			$mimeType = $finfo->buffer($file);	
+			//Image
 			if (strpos($mimeType, "image") !== false){
 				return "<img src='".$pathToImageProcessor."/Image.php' class='$cssclass'>";
 			}
+			//Audio
+			else if (strpos($mimeType,"audio") !== false){
+				if (!isset($_SESSION))
+					session_start();
+				$_SESSION["html5MediaPath"] = str_replace(__REDUNDANCY_ROOT__, "", $path);					
+				return "<audio controls> <source src=\"".$_SESSION["html5MediaPath"] ."\" type=\"$mimeType\">Your browser does not support the video tag.</audio>";			
+			}
+			//Video
+			else if (strpos($mimeType,"video") !== false || strpos($mimeType,"ogg") !== false){
+				if (!isset($_SESSION))
+					session_start();
+				$_SESSION["html5MediaPath"] = str_replace(__REDUNDANCY_ROOT__, "", $path);		
+				return "<video width='100%'controls autobuffer > <source src=\"".$_SESSION["html5MediaPath"] ."\" type=\"$mimeType\">Your browser does not support the video tag.</video>";
+			}
+			else if (strpos($mimeType,"xml") !== false || strpos($mimeType,"plain") !== false){
+				$content = htmlentities(file_get_contents($path));	
+				return "<textarea style=\"width:100%\" rows=\"10\">$content</textarea>";
+			}
 			return \Redundancy\Classes\Errors::NoPreviewPossible;
 		}
-
 		/**
 		* Separates the filename and the extension
 		* @param string $name the complete name

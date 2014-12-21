@@ -199,7 +199,10 @@
 			//Do the insertion only if there is enough space
 			if ($this->GetStorage($escapedToken)->usedStorageInByte + $sizeInByte < $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ContingentInByte){
 				$uploadDateTime = date('Y-m-d H:i:s');			
-				$type =  DBLayer::GetInstance()->EscapeString($_FILES["file"]["type"],true);				
+				//$type =  DBLayer::GetInstance()->EscapeString($_FILES["file"]["type"],true);	
+				$filecontent = file_get_contents($tempPath);
+				$finfo = new \finfo(FILEINFO_MIME_TYPE);		
+				$type = $finfo->buffer($filecontent);			
 				$hash = $this->GetUniqueHash($displayName);
 				$filePath = $this->GetUniqueStorageFileName($displayName);
 				$userAgent = (!isset($_SERVER['HTTP_USER_AGENT'])) ? "The platform could not be detected!" : $_SERVER['HTTP_USER_AGENT'];
