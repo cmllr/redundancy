@@ -194,7 +194,11 @@
 				$this->CleanUpTemp($tempPath);	
 				return \Redundancy\Classes\Errors::DisplayNameNotAllowed;	
 			}
-							
+			//When the file is not existing..return an error
+			if (!file_exists($tempPath))
+			{
+				return \Redundancy\Classes\Errors:TempFileCouldNotBeMoved;
+			}				
 			$sizeInByte = DBLayer::GetInstance()->EscapeString($_FILES["file"]["size"],true);			
 			//Do the insertion only if there is enough space
 			if ($this->GetStorage($escapedToken)->usedStorageInByte + $sizeInByte < $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ContingentInByte){
