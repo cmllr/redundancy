@@ -197,7 +197,7 @@
 			//When the file is not existing..return an error
 			if (!file_exists($tempPath))
 			{
-				return \Redundancy\Classes\Errors:TempFileCouldNotBeMoved;
+				return \Redundancy\Classes\Errors::TempFileCouldNotBeMoved;
 			}				
 			$sizeInByte = DBLayer::GetInstance()->EscapeString($_FILES["file"]["size"],true);			
 			//Do the insertion only if there is enough space
