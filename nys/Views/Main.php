@@ -162,7 +162,7 @@
 </div>
 <div class='col-xs-12 col-sm-12 col-md-10 col-lg-10'>
     <?php 
-        if (isset($_GET["d"])){
+        if (isset($_GET["rd"])){
             $ERROR="R_ERR_15";
             if (isset($ERROR)) include 'Partials/ErrorMessage.php'; 
         }else{
