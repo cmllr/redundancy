@@ -116,6 +116,7 @@ user_create_admin_fail = "Benutzer anlegen fehlgeschlagen.";
 enabled_user = "Benutzer aktiv";
 Source = "Quelle";
 Unstable = "Entwicklungs- oder Vorabversion.";
+RC ="Release Candidate Version"
 Stable = "Herzlichen Gl&uuml;wunsch, Sie benutzen eine stabile Redundancy - Version!";
 Lang = "Sprache";
 Search_Description= "Die Suche findet jede Datei und jedes Verzeichnis, welche den Suchbegriff beinhalten.";

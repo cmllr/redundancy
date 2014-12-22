@@ -10,7 +10,7 @@ $router = new \Redundancy\Nys\Router();
 ob_start();
 
 //Set the cookies if needed
-//$router->CookieInteraction();
+$router->CookieInteraction();
 ?>
 <!DOCTYPE html>
 

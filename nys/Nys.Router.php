@@ -49,13 +49,15 @@
 		* Interacts with the cookies, creates or deletes them (if needed)
 		*/
 		public function CookieInteraction(){
+			//If the logged in feature is requested, set the cookie
 			if (isset($_SESSION["StayLoggedIn"])){
-				setcookie("SessionData", $_SESSION["Token"]);
-				setcookie("SessionDataLang", $_SESSION["Language"]);
+				setcookie("SessionData", $_SESSION["Token"]);//,time()+5);
+				setcookie("SessionDataLang", $_SESSION["Language"]);//,time()+5);
 				unset($_SESSION["StayLoggedIn"]);
 			}
-
+			//If the session cookie is not empty
 			if (!empty($_COOKIE["SessionData"])){
+				//If any route except logout is requested and the token is empty, fill it with the values from the cookie
 				if(!isset($_GET["logout"])){
 					//only set the token if it is not saved already.
 					if (!isset($_SESSION["Token"]) ||empty($_SESSION["Token"])){
@@ -64,6 +66,7 @@
 					}					
 				}
 				else{
+					//If logout is requested, kill the cookie (SESSION will be killed in Controller)
 					unset($_COOKIE["SessionData"]);
 					unset($_COOKIE["SessionDataLang"]);
 					// empty value and expiration one hour before

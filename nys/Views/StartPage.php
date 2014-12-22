@@ -9,8 +9,10 @@
 <?php 
 	if (strpos($version,"eol") !== false)
 		echo "<span  class=\"label label-danger\">".$GLOBALS["Language"]->EOL."</span>";
-	else if (strpos($version,"dev") !== false || strpos($version,"beta") !== false)
+	else  if (strpos($version,"beta") !== false)
 		echo "<span class=\"label label-warning\">".$GLOBALS["Language"]->Unstable."</span>";
+	else if (strpos($version,"rc") !== false)
+		echo "<span class=\"label label-warning\">".$GLOBALS["Language"]->RC."</span>";
 	else
 		echo "<span class=\"label label-success\">".$GLOBALS["Language"]->Stable."</span>";
 	

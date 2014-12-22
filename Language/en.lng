@@ -330,7 +330,7 @@ admin_admin = "Administrator";
 
 Unstable = "Development version";
 Stable = "Congratulations, you are using the latest version of Redundancy.";
-
+RC ="Release Candidate Version"
 Files_Name = "Name";
 Files_Uploaded ="Uploaded";
 Files_Size = "Size";
