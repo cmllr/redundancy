@@ -172,6 +172,11 @@
 					$mediaPreview = $GLOBALS['Router']->DoRequest('Kernel.InterfaceKernel','MediaPreview',json_encode(array($filePath,"./nys/Views/Partials","img-responsive img-preview")));
 					$filenameParts = $GLOBALS['Router']->DoRequest('Kernel.InterfaceKernel','GetEllipsedDisplayName',json_encode(array($entry->DisplayName))); 
 					$_SESSION["fileInject"] = $filePath;
+					if (is_numeric($mediaPreview)){
+						$MESSAGE= "R_ERR_".$mediaPreview;
+						$mediaPreview = "";
+					}
+
 					$innerContent = 'Detail.php';			
 					include 'Views/Main.php';
 				}	
@@ -328,14 +333,13 @@
 			$data = $this->InjectSessionData($router);		
 			$allowed  = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],9)));
 			if (!$allowed)
-				$router->DoRedirect("main");
-			$remoteVersion=  $router->DoRequest("Kernel.UpdateKernel","GetLatestVersionAsString",json_encode(array()));
+				$router->DoRedirect("main",true);
+			$remoteVersion=  $router->DoRequest("Kernel.UpdateKernel","GetLatestVersionAsString",json_encode(array()));		
 			if (isset($_GET["go"])){
-				//Start the update
+				//Start the update, will be started over the view
 			}
 			else{
 				$localVersion = $router->DoRequest("Kernel","GetVersion",json_encode(array()));
-			
 				$updateState =  $router->DoRequest("Kernel.UpdateKernel","IsUpdateNeeded",json_encode(array()));
 				$updateSource =  $router->DoRequest("Kernel.UpdateKernel","GetUpdateSource",json_encode(array()));
 			}
