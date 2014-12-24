@@ -172,6 +172,10 @@
 			* @return string the json string (will be printed out)
 			*/
 			public function Output($result){
+				if ($_POST["method"] == "GetContentOfFile"){
+					echo $result;
+					return;
+				}
 				if ($this->isJson($result)){
 					$this->SetHTTPHeader($result);
 					echo json_encode($result);
