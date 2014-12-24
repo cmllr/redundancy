@@ -22,7 +22,14 @@
 	 */
 	 //Include uri check
 ?> 
-<img class="img-responsive" src="./nys/Views/img/logoWithText.png">
+<?php
+	$now = getdate();
+	if ($now["mon"] == 12)
+		echo "<img class=\"img-responsive\" src=\"./nys/Views/img/logoWithTextS.png\">";
+	else
+		echo "<img class=\"img-responsive\" src=\"./nys/Views/img/logoWithText.png\">";
+?>
+
 
 <table class="table table-responsive">
 	<tr>
