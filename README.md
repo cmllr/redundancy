@@ -1,4 +1,4 @@
-Redundancy  1.9.15 branch
+Redundancy Lenticularis (1.9.15 and up)  branch
 =================================
 [![Build Status](https://travis-ci.org/squarerootfury/redundancy.svg?branch=Lenticularis)](https://travis-ci.org/squarerootfury/redundancy)
 
@@ -12,13 +12,15 @@ Requirements
 ------------
 
 for server:
-- PHP 5.5.x is recommended
+- PHP 5.5.x is required
 - PHP GD modules
 - PHP zip modules
+- PHP mcrypt modules
+- cUrl enabled in PHP
 - MySQL(i) or equivalent
 
 for client:
-- Javascript support
+- JavaScript support
 
 License and components
 ----------------------
