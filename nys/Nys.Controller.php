@@ -492,17 +492,18 @@
 		* Prepare the download
 		* @param $router the Router-Object to be used.
 		*/
-		public function Download($router){		
-			$data = $this->InjectSessionData($router);					
+		public function Download($router){	
+			if (!is_null($_SESSION["Token"]))	
+				$data = $this->InjectSessionData($router);					
 			$fileHash = $_GET["f"];
-			$token = $_SESSION["Token"];
+			$token = $_SESSION["Token"];			
 			if (!is_null($token))
 				$entry = $router->DoRequest('Kernel.FileSystemKernel','GetEntryByHash',json_encode(array($fileHash,$token)));		
 			if (!is_null($entry)){
 				ob_end_clean();	
 				header("Content-Type: ".$entry->MimeType);
 			    header("Content-Disposition: attachment; filename=\"".$entry->DisplayName."\"");		
-				$resp = $router->DoRequest('Kernel.FileSystemKernel','GetContentOfFile',json_encode(array($fileHash,$_SESSION['Token'])));			
+				$resp = $router->DoRequest('Kernel.FileSystemKernel','GetContentOfFile',json_encode(array($fileHash,$token)));			
 				echo $resp;
 				exit();
 			}	

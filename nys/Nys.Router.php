@@ -154,7 +154,7 @@
 				else if (isset($_GET["share"]))
 					$this->controller->Share($this);
 				else if (isset($_GET["shared"]))
-					$this->controller->SharedDownload($this);
+					$this->controller->SharedDownload($this);				
 				else if (isset($_GET["register"]))
 					$this->controller->Register($this);
 				else
