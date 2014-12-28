@@ -119,6 +119,16 @@
 				return $this->Version;
 			}
 			/**
+			* Return the current server version - but shortened (only numeric parts)
+			* @return string the version X.Y.Z
+			*/
+			public function GetShortenedVersion(){
+				$pattern = "/(?<major>\d+).(?<minor>\d+).(?<patch>\d+)+-(?<branch>[^-]+)-(?<stage>[^-]+)-(?<update>\d+)/";
+				$matches;
+				preg_match($pattern,$this->Version,$matches);
+				return sprintf("%s.%s.%s",$matches["major"],$matches["minor"],$matches["patch"]);
+			}
+			/**
 			* Get a config value
 			* @param string $key the key to find
 			* @return mixed the value or false 
