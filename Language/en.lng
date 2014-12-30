@@ -346,6 +346,17 @@ Uploaded_API = "Uploaded with the API";
 
 Source = "Source";
 
+Startpage_Title="Thank you for using Redundancy!";
+Startpage_Title_Description ="We added many updates to this version.";
+
+Startpage_Version="Version";
+Startpage_VersionInfo="Information about this version";
+Version_used = "You are using %s.";
+Startpage_Wiki = "Help";
+Startpage_Wiki_Description = "Problems? We can help you in our <a href='http://wiki.rdcy.de'>wiki</a>!"
+Startpage_Board="Forum";
+Startpage_Board_Description = "In our <a href='http://board.rdcy.de'>Forum</a> boards you can talk with other users or get in touch with the developers"
+
 R_ERR_3 = "Username or password already given";
 R_ERR_4 = "The group could not be found";
 R_ERR_5 = "This username is already given";

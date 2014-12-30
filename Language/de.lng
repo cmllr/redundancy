@@ -337,6 +337,17 @@ Files_Name = "Name";
 Files_Uploaded ="Hochgeladen";
 Files_Size = "Größe";
 
+Startpage_Title="Danke, dass du Redundancy verwendest!";
+Startpage_Title_Description ="Wir haben in dieser Version wieder viele Updates eingebaut.";
+
+Startpage_Version="Version";
+Startpage_VersionInfo="Versionsinfo";
+Version_used = "Du benutzt Version %s.";
+Startpage_Wiki = "Hilfe";
+Startpage_Wiki_Description = "Probleme? In Unserem <a href='http://wiki.rdcy.de'>Wiki</a> kann dir geholfen werden!"
+Startpage_Board="Forum";
+Startpage_Board_Description = "In unserem <a href='http://board.rdcy.de'>Forum</a> kannst du dich mit anderen Benutzern austauschen oder mit den Entwicklern in Kontakt treten."
+
 R_ERR_3 = "Der Benutzername oder Email ist bereits vergeben.";
 R_ERR_4 = "Die Gruppe konnte nicht gefunden werden.";
 R_ERR_5 = "Dieser Benutzername ist bereits belegt.";

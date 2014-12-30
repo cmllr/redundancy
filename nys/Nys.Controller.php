@@ -131,6 +131,16 @@
 			$usedStorageSize = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetCorrectedUnit',json_encode(array($storageStats->usedStorageInByte)));	 		
 			$percentage = ($storageStats->usedStorageInByte != 0) ? 100/($storageStats->sizeInByte/$storageStats->usedStorageInByte) : 0;			
 			$storageInfo = $usedStorageSize.' '.$GLOBALS['Language']->of.' '.$storageSize.' '.$GLOBALS['Language']->used;		
+			$completeVersion = $version = $GLOBALS["Router"]->DoRequest("Kernel","GetVersion",json_encode(array()));
+			$version = $GLOBALS["Router"]->DoRequest("Kernel","GetShortenedVersion",json_encode(array()));
+			if (strpos($completeVersion,"eol") !== false)
+				$state = $GLOBALS["Language"]->EOL;
+			else  if (strpos($completeVersion,"beta") !== false)
+				$state = $GLOBALS["Language"]->Unstable;
+			else if (strpos($completeVersion,"rc") !== false)
+				$state = $GLOBALS["Language"]->RC;
+			else
+				$state = $GLOBALS["Language"]->Stable;
 			include 'Views/Main.php';
 		}
 		/**
