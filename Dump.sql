@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `User` (
   `lastLoginDateTime` datetime DEFAULT NULL,
   `passwordHash` text COLLATE utf8_bin,
   `isEnabled` tinyint(1) DEFAULT NULL,
-  `contingentInByte` int(11) DEFAULT NULL,
+  `contingentInByte` bigint(11) DEFAULT NULL,
   `roleID` int(11) DEFAULT NULL,
   `failedLogins` int(11) NOT NULL,
   PRIMARY KEY (`id`),
