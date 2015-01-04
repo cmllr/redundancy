@@ -93,7 +93,7 @@ INSERT INTO `Settings` (`ID`, `SettingName`, `SettingType`, `SettingValue`) VALU
 
 Update Role set permissions = '11111111111' where id = 1;
 
-Insert into Settings (`ID`, `SettingName`, `SettingType`, `SettingValue`) VALUES (12, 'Max_User_Storage','Number','10000000');
+Replace into Settings (`ID`, `SettingName`, `SettingType`, `SettingValue`) VALUES (12, 'Max_User_Storage','Number','10000000');
 
 ALTER TABLE `FileSystem`
   ADD CONSTRAINT `FileSystem_ibfk_1` FOREIGN KEY (`ownerId`) REFERENCES `User` (`id`);
