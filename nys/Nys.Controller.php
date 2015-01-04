@@ -235,6 +235,7 @@
 							$ERROR = (is_null($result)) ? "R_ERR_NULL" : "R_ERR_".$result;
 						}
 						else{
+							$maxStorage = $GLOBALS['Router']->DoRequest('Kernel','GetConfigValue',json_encode(array("Max_User_Storage")));	
 							$user = $result;
 						}
 					}

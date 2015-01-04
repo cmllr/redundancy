@@ -106,6 +106,8 @@
 			$query = "Select Ip,BanDateTime from Bans";
 			$results = array();
 			$dbquery = DBLayer::GetInstance()->RunSelect($query);
+			if (is_null($dbquery))
+				return array();
 			foreach ($dbquery as $value){
 				$results[$value["Ip"]] = $value["BanDateTime"];
 			}

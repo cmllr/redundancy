@@ -36,6 +36,9 @@ $router->CookieInteraction();
     <!-- Bootstrap -->
     <link rel='stylesheet' href='./Lib/Lenticularis/css/theme.min.css' type='text/css' />
     <script src='./Lib/Bootstrap/js/bootstrap.min.js'></script>
+    <!-- Bootstrap Slider -->
+    <link rel='stylesheet' href='./Lib/Bootstrap-slider/bootstrap-slider.css' type='text/css' />
+    <script src='./Lib/Bootstrap-slider/bootstrap-slider.js'></script>
     <!-- Others -->
     <link rel='stylesheet' href='./nys/Views/css/nys.css' type='text/css' />
     <script src='./nys/Views/js/Nys.Files.js'></script>

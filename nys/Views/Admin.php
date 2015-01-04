@@ -77,9 +77,18 @@
 			<div class="form-group">
 				<label for="contingent" class="control-label col-xs-2"><?php echo $GLOBALS["Language"]->user_storage_in_mb;?></label>
 				<div class="col-xs-10">
-					<input type="number" class="form-control" name="contingent" placeholder="<?php echo $GLOBALS["Language"]->user_storage_in_mb;?>" value="<?php echo round($user->ContingentInByte/1024,0);?>">
+					<!--<input type="number" class="form-control" name="contingent" placeholder="<?php echo $GLOBALS["Language"]->user_storage_in_mb;?>" value="<?php echo round($user->ContingentInByte/1024,0);?>">-->
+					<input id="ex1" data-slider-id='ex1Slider' name="contingent" type="text" data-slider-min="0" data-slider-max="<?php echo $maxStorage;?>" data-slider-step="1" data-slider-value="<?php echo round($user->ContingentInByte/1024,0);?>"/>
 				</div>
 			</div>
+			<script>
+			$('#ex1').slider({
+				formatter: function(value) {
+					return  Math.round(value/1024) + " MB";
+				}
+			});
+			$(".slider-horizontal").css("width","100%");
+			</script>
 			<div class="form-group">
 				<label for="newPassword" class="control-label col-xs-2"><?php echo $GLOBALS["Language"]->New_Pass;?></label>
 				<div class="col-xs-10">

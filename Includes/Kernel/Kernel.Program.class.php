@@ -33,6 +33,7 @@
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.FileSystem.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Sharing.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Updater.class.php";
+		//require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Backup.class.php";
 		//**********************************************Data classes**************************************
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/User.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/Role.class.php";
@@ -66,7 +67,7 @@
 			* The programs version
 			* Structurized in {1.9.X-codenameorbranch-state}
 			*/
-			public $Version = "1.9.16-Lenticularis-rc1-0";//"1.9.15-Lenticularis-rc1-0";
+			public $Version = "1.9.17-Lenticularis-rc1-0";//"1.9.15-Lenticularis-rc1-0";
 			/**
 			* The programs release date
 			*/
@@ -96,6 +97,10 @@
 			*/
 			public $UpdateKernel;
 			/**
+			* The kernel part to handle the backup process
+			*/
+			public $BackupKernel;
+			/**
 			* The class does not have any parameters to deliver with the base constructor.
 			*/
 			public function __construct(){
@@ -110,6 +115,7 @@
 				$this->FileSystemKernel = new \Redundancy\Kernel\FileSystemKernel();
 				$this->SharingKernel = new \Redundancy\Kernel\SharingKernel();
 				$this->UpdateKernel = new \Redundancy\Kernel\UpdateKernel();
+				//$this->BackupKernel = new \Redundancy\Kernel\BackupKernel();
 			}
 			/**
 			* Return the current server version
@@ -159,7 +165,9 @@
 				else if ($key == "Program_Language")
 					$result =  $this->SystemKernel->GetSetting("Program_Language");		
 				else if ($key == "Program_Share_Link_Length")
-					$result =  $this->SystemKernel->GetSetting("Program_Share_Link_Length");								
+					$result =  $this->SystemKernel->GetSetting("Program_Share_Link_Length");
+				else if ($key == "Max_User_Storage")
+					$result = $this->SystemKernel->GetSetting("Max_User_Storage");								
 				else 
 					return false;
 				if (!is_null($result))
