@@ -348,6 +348,8 @@ Startpage_Wiki_Description = "Probleme? In Unserem <a href='http://wiki.rdcy.de'
 Startpage_Board="Forum";
 Startpage_Board_Description = "In unserem <a href='http://board.rdcy.de'>Forum</a> kannst du dich mit anderen Benutzern austauschen oder mit den Entwicklern in Kontakt treten."
 
+R_ERR_NULL = "Es konnten keine Informationen ermittelt werden!";
+
 R_ERR_3 = "Der Benutzername oder Email ist bereits vergeben.";
 R_ERR_4 = "Die Gruppe konnte nicht gefunden werden.";
 R_ERR_5 = "Dieser Benutzername ist bereits belegt.";
