@@ -71,7 +71,7 @@ nys.Init();
 	           			if (entry.DisplayName.indexOf(".zip") == -1)
 	           				window.location.href ='?detail&f='+entry.Hash;      		
 	           			else{
-	           				alert("entpacken");
+	           				Extract(entry);
 	           			}	
 	           		}
 	           		else{
@@ -117,7 +117,25 @@ nys.Init();
 	    });	    
 	});
   }
-  
+  function Extract(entry){
+  		// UnzipInPlace($hash,$token,$path)
+  		var arguments = [];
+        arguments.push(entry.Hash);
+        arguments.push(token);
+        arguments.push(currentDir);
+        $.post('./Includes/api.inc.php', {
+            module: 'Kernel.FileSystemKernel',
+            method: 'UnzipInPlace',
+            args: arguments
+        })
+        .done(function(data) {           
+            nys.Init();
+        })
+        .fail(function(e) {
+            console.log(e);
+            ErrorDialog(e.responseText);
+        });
+  }
   function MoveOrCopyFileDialog(entry,move,targets){  	 	
   	var currentAbsolutePath = currentDir;  				
   	var existingTargetsCount = nys.GetExistingTargetCount(entry);
