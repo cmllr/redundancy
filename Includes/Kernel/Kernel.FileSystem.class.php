@@ -1087,5 +1087,81 @@
 				return $entries;
 			}
 		}
+		public function MapTreeInFS($folder,$token,$root){
+			$escapedFolder = DBLayer::GetInstance()->EscapeString($folder,true);
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedRoot = DBLayer::GetInstance()->EscapeString($root,true);
+			$entries = $this->CreateList($escapedFolder);
+			foreach ($entries as $key => $value) {
+				if (is_array($value)){
+					//IT is an directory!
+					//Create the directory
+					$rootFolder = $this->GetEntryByAbsolutePath($escapedRoot,$escapedToken);
+					$this->CreateDirectory($key, $rootFolder->Id,$escapedToken);
+					//Get the new created folder ID					
+					$parent = $this->GetEntryByAbsolutePath($escapedRoot.$key,$escapedToken);
+					$this->MapTreeInFS($folder."/".$key."/",$escapedToken,$escapedRoot.$key."/");
+				}
+				else{
+					//its an file
+					$rootFolder = $this->GetEntryByAbsolutePath($escapedRoot,$escapedToken);
+					$filecontent = file_get_contents($escapedFolder.$value);
+					$finfo = new \finfo(FILEINFO_MIME_TYPE);		
+					$_FILES["file"]["name"] = $value;
+					$_FILES["file"]["type"] = $finfo->buffer($filecontent);	
+					$_FILES["file"]["tmp_name"] = $folder."/".$value;
+					$_FILES["file"]["error"] = "UPLOAD_ERR_OK";
+					$_FILES["file"]["size"] = filesize($folder."/".$value);
+					$this->UploadFile($rootFolder->Id,$escapedToken);
+				}
+			}
+			return ($entries);
+		}
+		public function CreateList($dir){
+			$result = array(); 
+			$cdir = scandir($dir); 
+			foreach ($cdir as $key => $value) 
+			{ 
+			  if (!in_array($value,array(".",".."))) 
+			  { 
+			     if (is_dir($dir . DIRECTORY_SEPARATOR . $value)) 
+			     { 
+			        $result[$value] = $this->CreateList($dir . DIRECTORY_SEPARATOR . $value); 
+			     } 
+			     else 
+			     { 
+			        $result[] = $value; 
+			     } 
+			  } 
+			} 			   
+  			return $result; 
+		}
+		public function DeleteTree($folder,$token){
+
+		}
+		public function UnzipInPlace($hash,$token){
+			$escapedHash = DBLayer::GetInstance()->EscapeString($hash,true);
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$owner = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken);	
+			if (is_null($owner))
+				return \Redundancy\Classes\Errors::TokenNotValid; 
+			$entry = $this->GetEntryByHash($escapedHash,$escapedToken);
+			if (is_null($entry))
+				return \Redundancy\Classes\Errors::EntryNotExisting;
+
+			$zip = new \ZipArchive;
+			$storagePath = $this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage);		
+			if ($zip->open($storagePath.$entry->FilePath) === true)
+			{				
+				$tmpFolder = $this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Temp);
+				$name = $this->GetUniqueStorageFileName($entry->FilePath);
+				mkdir($tmpFolder.$name."REDUNDANCY");
+				$zip->extractTo($tmpFolder.$name."REDUNDANCY");
+				return $this->MapTreeInFS($tmpFolder.$name."REDUNDANCY",$escapedToken,"/test/");
+			}
+			else{
+				return \Redundancy\Classes\Errors::CouldNotOpenZip;
+			}
+		}
 	}
 ?>

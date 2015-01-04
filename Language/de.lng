@@ -347,6 +347,7 @@ Startpage_Wiki = "Hilfe";
 Startpage_Wiki_Description = "Probleme? In Unserem <a href='http://wiki.rdcy.de'>Wiki</a> kann dir geholfen werden!"
 Startpage_Board="Forum";
 Startpage_Board_Description = "In unserem <a href='http://board.rdcy.de'>Forum</a> kannst du dich mit anderen Benutzern austauschen oder mit den Entwicklern in Kontakt treten."
+Unzip = "Entpacken";
 
 R_ERR_NULL = "Es konnten keine Informationen ermittelt werden!";
 

@@ -66,6 +66,7 @@
 		const CannotDeleteDefaultGroup = 43;
 		const GroupNameAlreadyGiven = 44;
 		const Banned = 45;
+		const CouldNotOpenZip = 46;
 	} 
 	/**
 	* The permission set in a human readable form
