@@ -1,8 +1,8 @@
-Redundancy Lenticularis (1.9.15 and up)  branch
+Redundancy Lenticularis-novum  branch
 =================================
-[![Build Status](https://travis-ci.org/squarerootfury/redundancy.svg?branch=Lenticularis)](https://travis-ci.org/squarerootfury/redundancy)
 
 > Please note: This branch is _only_ for developing purposes. This version is bleeding edge, instable, uncomplete and does not have all functions
+> Note 2: This branch ist heavily bleeding edge. Do not use. Seriously.
 
 Redundancy is an lightweight cloud computing system. It is so lightweight that you can run it on microservers like the Raspberry Pi without having too much load.
 Redundancy does not require full server access. It can be installed on every server running a web server using PHP. The configuration is very easy through a central configuration file. At the moment it does not have a "bling bling" configuration wizard. The stable branch will probably get an installer and an installation wizard, too. The biggest difference between Redundancy and other programs for this purpose is that you get a very lightweight user
