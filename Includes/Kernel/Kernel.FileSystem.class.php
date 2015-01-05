@@ -1087,5 +1087,108 @@
 				return $entries;
 			}
 		}
+		/**
+		* Maps a physical folder into the R2-Filesystem.
+		* @param string $folder the folder path
+		* @param string $token a valid session token
+		* @param the root dir to path the folder in (path, not ID)
+		* @return bool | Errorcode 
+		* @todo test
+		*/
+		public function MapTreeInFS($folder,$token,$root){
+			$escapedFolder = DBLayer::GetInstance()->EscapeString($folder,true);
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedRoot = DBLayer::GetInstance()->EscapeString($root,true);
+			$entries = $this->CreateList($escapedFolder);
+			foreach ($entries as $key => $value) {
+				if (is_array($value)){
+					//IT is an directory!
+					//Create the directory
+					$rootFolder = $this->GetEntryByAbsolutePath($escapedRoot,$escapedToken);
+					if (is_null($rootFolder))
+						return false;
+					$result = $this->CreateDirectory($key, $rootFolder->Id,$escapedToken);					
+					//Get the new created folder ID					
+					$parent = $this->GetEntryByAbsolutePath($escapedRoot.$key,$escapedToken);
+					$this->MapTreeInFS($folder.$key."/",$escapedToken,$escapedRoot.$key."/");	
+				}
+				else{
+					//its an file
+					$rootFolder = $this->GetEntryByAbsolutePath($escapedRoot,$escapedToken);
+					$filecontent = file_get_contents($escapedFolder.$value);
+					$finfo = new \finfo(FILEINFO_MIME_TYPE);		
+					$_FILES["file"]["name"] = $value;
+					$_FILES["file"]["type"] = $finfo->buffer($filecontent);	
+					$_FILES["file"]["tmp_name"] = $folder."/".$value;
+					$_FILES["file"]["error"] = "UPLOAD_ERR_OK";
+					$_FILES["file"]["size"] = filesize($folder."/".$value);
+					$this->UploadFile($rootFolder->Id,$escapedToken);
+				}
+			}
+			return rmdir($folder);
+		}
+		/**
+		* Create a flat list of an folder (physical, not in r2!)
+		* @param string dir the path;
+		* @return array an array of the contents, when an error occurs, empty.
+		*/
+		public function CreateList($dir){
+			$result = array(); 
+			if (!is_dir($dir))
+				return array();
+			$cdir = scandir($dir); 
+			foreach ($cdir as $key => $value) 
+			{ 
+			  if (!in_array($value,array(".",".."))) 
+			  { 
+			     if (is_dir($dir . DIRECTORY_SEPARATOR . $value)) 
+			     { 
+			        $result[$value] = $this->CreateList($dir . DIRECTORY_SEPARATOR . $value); 
+			     } 
+			     else 
+			     { 
+			        $result[] = $value; 
+			     } 
+			  } 
+			} 			   
+  			return $result; 
+		}
+		/**
+		* Unzip an Zip Archive in place
+		* @param string $hash the hash of the file to identify
+		* @param string $token the session token
+		* @param string $path the current root dir (path, not int!);
+		* @return Boolean  | Errorcode the result of the hole process
+		* @todo test!
+		* @todo problem with runtime limitation -> nasty kill needed.
+		*/
+		public function UnzipInPlace($hash,$token,$path){
+			$escapedHash = DBLayer::GetInstance()->EscapeString($hash,true);
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedPath = DBLayer::GetInstance()->EscapeString($path,true);
+			$owner = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken);	
+			if (is_null($owner))
+				return \Redundancy\Classes\Errors::TokenNotValid; 
+			$entry = $this->GetEntryByHash($escapedHash,$escapedToken);
+			if (is_null($entry))
+				return \Redundancy\Classes\Errors::EntryNotExisting;			
+			$zip = new \ZipArchive;
+			$storagePath = $this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage);	
+			$opened = 	$zip->open($storagePath.$entry->FilePath);
+			if ($opened === true)
+			{				
+				$tmpFolder = $this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Temp);
+				$name = $this->GetUniqueStorageFileName($entry->FilePath);
+				mkdir($tmpFolder.$name."REDUNDANCY");
+				$zip->extractTo($tmpFolder.$name."REDUNDANCY");
+				$entries = $this->CreateList($tmpFolder.$name."REDUNDANCY");
+				if (count($entries) == 0)
+					return \Redundancy\Classes\Errors::EmptyZip;
+				return $this->MapTreeInFS($tmpFolder.$name."REDUNDANCY/",$escapedToken,$escapedPath);
+			}
+			else{
+				return \Redundancy\Classes\Errors::CouldNotOpenZip;
+			}
+		}
 	}
 ?>

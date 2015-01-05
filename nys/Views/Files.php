@@ -67,8 +67,13 @@ nys.Init();
 	           		else
 	           			alert("Not implemented yet. :(");
 	           }else if (key == "open"){
-	           		if (entry.FilePath != null)
-	           			window.location.href ='?detail&f='+entry.Hash;      			
+	           		if (entry.FilePath != null){
+	           			if (entry.DisplayName.indexOf(".zip") == -1)
+	           				window.location.href ='?detail&f='+entry.Hash;      		
+	           			else{
+	           				Extract(entry);
+	           			}	
+	           		}
 	           		else{
 	           			var directory = currentDir + entry.DisplayName +"/";	   	           					
 	           			window.location.href ='?files&d='+directory;
@@ -98,21 +103,39 @@ nys.Init();
 
 	        },
 	        items: {	
-	        	"open": {name: "<?php echo $GLOBALS["Language"]->OpenEntry; ?>", icon: "fa fa-folder-open-o"}, 
+	        	"open": {name: (entry.DisplayName.indexOf(".zip") == -1) ?"<?php echo $GLOBALS["Language"]->OpenEntry; ?>"  :"<?php echo $GLOBALS["Language"]->Unzip; ?>", icon: (entry.DisplayName.indexOf(".zip") == -1) ? "fa fa-folder-open-o" : "fa fa-file-zip-o"}, 
 	        	"openNewTab": {name: "<?php echo $GLOBALS["Language"]->OpenEntryNewTab; ?>", icon: "fa fa-folder-open-o"},        
 	            "copy": {name: "<?php echo $GLOBALS["Language"]->Copy; ?>", icon: "fa fa-copy"},
 	            "move": {name: "<?php echo $GLOBALS["Language"]->Move; ?>", icon: "fa fa-cut"},
 	            "delete": {name: "<?php echo $GLOBALS["Language"]->Delete; ?>", icon: "fa fa-recycle"},
 	            "rename": {name: "<?php echo $GLOBALS["Language"]->RenameButton; ?>", icon: "fa fa-header"},
 	            "rename": {name: "<?php echo $GLOBALS["Language"]->RenameButton; ?>", icon: "fa fa-header"},
-	            "shareToUser": {name: "<?php echo $GLOBALS["Language"]->ShareToUserGeneric; ?>", icon: "fa fa-group"},
+	            //This function is disabled until the function gets implemented. "shareToUser": {name: "<?php echo $GLOBALS["Language"]->ShareToUserGeneric; ?>", icon: "fa fa-group"},
 	            "shareWithLink": {name: "<?php echo $GLOBALS["Language"]->ShareWithLinkGeneric; ?>", icon: "fa fa-link"},
 	            "download": {name: "<?php echo $GLOBALS["Language"]->Download; ?>", icon: "fa fa-download"}
 	        }
 	    });	    
 	});
   }
-  
+  function Extract(entry){
+  		// UnzipInPlace($hash,$token,$path)
+  		var arguments = [];
+        arguments.push(entry.Hash);
+        arguments.push(token);
+        arguments.push(currentDir);
+        $.post('./Includes/api.inc.php', {
+            module: 'Kernel.FileSystemKernel',
+            method: 'UnzipInPlace',
+            args: arguments
+        })
+        .done(function(data) {           
+            nys.Init();
+        })
+        .fail(function(e) {
+            console.log(e);
+            nys.ErrorDialog(e.responseText);
+        });
+  }
   function MoveOrCopyFileDialog(entry,move,targets){  	 	
   	var currentAbsolutePath = currentDir;  				
   	var existingTargetsCount = nys.GetExistingTargetCount(entry);
