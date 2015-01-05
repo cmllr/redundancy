@@ -393,3 +393,6 @@ R_ERR_41 = "Die Erstellung bzw. Aktualisierung der Gruppe ist fehlgeschlagen!";
 R_ERR_42 = "Die Gruppe konnte nicht gelöscht werden!";
 R_ERR_43 = "Die Standardgruppe kann nicht gelöscht werden! Setze eine andere Gruppe als Standard und wiederhole den Vorgang!";
 R_ERR_44 = "Der Gruppenname ist bereits verwendet. Der Gruppenname muss eindeutig sein!";
+R_ERR_45 = "Sie wurden gebannt.";
+R_ERR_46 = "Konnte das Archiv nicht öffnen!";
+R_ERR_47 = "Das Archiv ist leer. Entpacken sinnlos.";

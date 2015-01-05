@@ -133,7 +133,7 @@ nys.Init();
         })
         .fail(function(e) {
             console.log(e);
-            ErrorDialog(e.responseText);
+            nys.ErrorDialog(e.responseText);
         });
   }
   function MoveOrCopyFileDialog(entry,move,targets){  	 	

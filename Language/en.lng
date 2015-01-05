@@ -401,3 +401,6 @@ R_ERR_41 = "The creation and/ or editing of the group failed!";
 R_ERR_42 = "Could not delete the group!";
 R_ERR_43 = "You can not delete the default group! Set another group as default and repeat the deletion.";
 R_ERR_44 = "This name is already existing. It needs to be unique!";
+R_ERR_45 = "You were banned.";
+R_ERR_46 = "Could not open the zip";
+R_ERR_47 = "The zipfile is empty!";
