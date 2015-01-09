@@ -1008,10 +1008,12 @@
 			$ownerId = $owner->ID;
 			$query =sprintf("Select id,displayName,date(uploadDateTime) as Day,time(uploadDateTime) as DayTime,\"new\" as Source,FilePath,Hash from FileSystem where ownerID = %d union all Select id,displayName,date(lastChangeDateTime) as Day,time(lastChangeDateTime) as DayTime,\"changed\" as Source,FilePath,Hash from FileSystem where ownerID = %d order by Day desc, DayTime desc limit 25",$ownerId,$ownerId);
 			$result = DBLayer::GetInstance()->RunSelect($query);
-			foreach ($result as $key => $value) {
-				$result[$key] = $value;
-				$result[$key]["Day"] = $GLOBALS["Kernel"]->InterfaceKernel->FormatDateDayOnly($value["Day"]);
-			}
+			if (count($result) != 0){
+				foreach ($result as $key => $value) {
+					$result[$key] = $value;
+					$result[$key]["Day"] = $GLOBALS["Kernel"]->InterfaceKernel->FormatDateDayOnly($value["Day"]);
+				}
+			}			
 			return $result;
 		}
 		/**
