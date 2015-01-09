@@ -731,7 +731,7 @@
 			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginName,true);
 			$escapedPassword = DBLayer::GetInstance()->EscapeString($password,true);
 			$ip =$this->GetIP();
- 			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select Id,passwordHash from User where loginName ='%s'",$escapedLoginName));
+ 			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select Id,passwordHash,isEnabled from User where loginName ='%s'",$escapedLoginName));
 			$sessionStartedDateTime = date("Y-m-d H:i:s",time());
 			if (is_null($dbquery))
 				return \Redundancy\Classes\Errors::PasswordOrUserNameWrong;
