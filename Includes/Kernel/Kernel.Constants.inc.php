@@ -68,6 +68,7 @@
 		const Banned = 45;
 		const CouldNotOpenZip = 46;
 		const EmptyZip = 47;
+		const UserDisabled = 48;
 	} 
 	/**
 	* The permission set in a human readable form

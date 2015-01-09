@@ -736,9 +736,12 @@
 			if (is_null($dbquery))
 				return \Redundancy\Classes\Errors::PasswordOrUserNameWrong;
 			if (password_verify($escapedPassword,$dbquery[0]["passwordHash"])){
+				if ($dbquery[0]["isEnabled"] == 0)
+					return \Redundancy\Classes\Errors::UserDisabled;
 				$this->ResetFailedLoginsCounter($escapedLoginName);
 				$this->SetLastLoginDateTime($escapedLoginName);
 				$sessionNeeded = $this->IsNewSessionNeeded($escapedLoginName);
+
 				if ($sessionNeeded != "true"){					
 					return $sessionNeeded;				
 				}
