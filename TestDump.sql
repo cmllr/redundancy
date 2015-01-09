@@ -67,7 +67,8 @@ CREATE TABLE IF NOT EXISTS `Bans` (
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 INSERT INTO `User` (`id`, `loginName`, `displayName`, `mailAddress`, `registrationDateTime`, `lastLoginDateTime`, `passwordHash`, `isEnabled`, `contingentInByte`, `roleID`, `failedLogins`) VALUES
-(1, 'test', 'Administrator', 'test@bla.de', '2014-09-21 15:33:45', '2014-10-18 12:48:49', '$2y$11$.Vz58QMNFzqfUsRIrzXkAesBXW8kGSNfwOMmv3tURMqf3IdArZypm', 1, 5242880, 1, 0);
+(1, 'test', 'Administrator', 'test@bla.de', '2014-09-21 15:33:45', '2014-10-18 12:48:49', '$2y$11$.Vz58QMNFzqfUsRIrzXkAesBXW8kGSNfwOMmv3tURMqf3IdArZypm', 1, 5242880, 1, 0),
+(99, 'testFS', 'testFS', 'jfafalfjl', '2014-10-27 00:00:00', '2014-10-11 11:12:40', '$2y$11$V0Fhy/2nVYpmT9RmPyaj3eiXKuE.Vb9tKUABb6Dylh.r8RKv/LROW', 1, 42424320, 1, 0);
 CREATE TABLE IF NOT EXISTS `Settings` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `SettingName` text COLLATE utf8_bin NOT NULL,
@@ -91,8 +92,6 @@ INSERT INTO `Settings` (`ID`, `SettingName`, `SettingType`, `SettingValue`) VALU
 (12, 'Max_User_Storage','Number','10000000');
 
 Update Role set permissions = '11111111111' where id = 1;
-
-Update User set isEnabled = '0' where loginName = 'testFS';
 
 Replace into Settings (`ID`, `SettingName`, `SettingType`, `SettingValue`) VALUES (12, 'Max_User_Storage','Number','10000000');
 

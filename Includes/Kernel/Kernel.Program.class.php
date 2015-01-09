@@ -67,7 +67,7 @@
 			* The programs version
 			* Structurized in {1.9.X-codenameorbranch-state}
 			*/
-			public $Version = "1.9.17-Lenticularis-rc1-0";//"1.9.15-Lenticularis-rc1-0";
+			public $Version = "1.9.17-Lenticularis-rc1-1";//"1.9.15-Lenticularis-rc1-0";
 			/**
 			* The programs release date
 			*/
@@ -132,7 +132,7 @@
 				$pattern = "/(?<major>\d+).(?<minor>\d+).(?<patch>\d+)+-(?<branch>[^-]+)-(?<stage>[^-]+)-(?<update>\d+)/";
 				$matches;
 				preg_match($pattern,$this->Version,$matches);
-				return sprintf("%s.%s.%s",$matches["major"],$matches["minor"],$matches["patch"]);
+				return sprintf("%s.%s.%s.%s",$matches["major"],$matches["minor"],$matches["patch"],$matches["update"]);
 			}
 			/**
 			* Get a config value
