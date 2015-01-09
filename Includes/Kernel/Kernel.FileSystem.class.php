@@ -806,8 +806,8 @@
 				$dir->DisplayName = $checkresult[0]["displayName"];
 				$dir->OwnerID = $checkresult[0]["ownerId"];
 				$dir->ParentID = $checkresult[0]["parentFolder"];
-				$dir->CreateDateTime = date("j.M.Y H:i",strtotime($checkresult[0]["uploadDateTime"]));
-				$dir->LastChangeDateTime =date("j.M.Y H:i",strtotime($checkresult[0]["lastChangeDateTime"]));
+				$dir->CreateDateTime = $GLOBALS["Kernel"]->InterfaceKernel->FormatDate($checkresult[0]["uploadDateTime"]);
+				$dir->LastChangeDateTime =  $GLOBALS["Kernel"]->InterfaceKernel->FormatDate($checkresult[0]["lastChangeDateTime"]);
 				$dir->Hash = $checkresult[0]["hash"];
 				$dir->MimeType = $checkresult[0]["mimeType"];		
 				//error_log($this->CalculateFolderSize($this->GetAbsolutePathById($dir->Id,$escapedToken),$escapedToken));

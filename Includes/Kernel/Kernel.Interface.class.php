@@ -183,7 +183,7 @@
 		* @todo make changable via a setting
 		*/
 		public function FormatDate($datestr) {			
-			return date("j. M Y H:i",strtotime($datestr));
+			return date("j. M Y - H:i",strtotime($datestr));
 		}
 		/**
 		* Get the well formatted date string
