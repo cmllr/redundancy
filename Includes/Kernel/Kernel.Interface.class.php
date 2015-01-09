@@ -176,5 +176,23 @@
 				return $code;
 			}
 		}
+		/**
+		* Get the well formatted date string
+		* @param string $datestring the string representing the date
+		* @return date the date 
+		* @todo make changable via a setting
+		*/
+		public function FormatDate($datestr) {			
+			return date("j. M Y H:i",strtotime($datestr));
+		}
+		/**
+		* Get the well formatted date string
+		* @param string $datestring the string representing the date
+		* @return date the date 
+		* @todo make changable via a setting
+		*/
+		public function FormatDateDayOnly($datestr) {			
+			return date("j. M Y",strtotime($datestr));
+		}
 	}
 ?>

@@ -67,13 +67,7 @@
 				<div class="col-xs-10">
 					<input type="text" class="form-control" name="displayname" placeholder="<?php echo $GLOBALS["Language"]->DisplayName;?>" value="<?php echo $user->DisplayName;?>">
 				</div>
-			</div>
-			<div class="form-group">
-				<label for="enabled" class="control-label col-xs-2"><?php echo $GLOBALS["Language"]->enabled_user;?></label>
-				<div class="col-xs-10">
-					<input type="checkbox" name="enabled" <?php echo ($user->IsEnabled == "1") ? "checked" : "";?>>
-				</div>
-			</div>
+			</div>			
 			<div class="form-group">
 				<label for="contingent" class="control-label col-xs-2"><?php echo $GLOBALS["Language"]->user_storage_in_mb;?></label>
 				<div class="col-xs-10">
@@ -110,6 +104,12 @@
 							<option <?php echo ($user->Role->Description == $value->Description) ? "selected": "" ;?>><?php echo $value->Description; ?></option>				   
 						<?php endforeach; ?>	
 					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="enabled" class="control-label col-xs-2"><?php echo $GLOBALS["Language"]->enabled_user;?></label>
+				<div class="col-xs-10">
+					<input type="checkbox" name="enabled" <?php echo ($user->IsEnabled == "1") ? "checked" : "";?>>
 				</div>
 			</div>
 			<div class="form-group">

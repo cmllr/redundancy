@@ -806,8 +806,8 @@
 				$dir->DisplayName = $checkresult[0]["displayName"];
 				$dir->OwnerID = $checkresult[0]["ownerId"];
 				$dir->ParentID = $checkresult[0]["parentFolder"];
-				$dir->CreateDateTime = $checkresult[0]["uploadDateTime"];
-				$dir->LastChangeDateTime = $checkresult[0]["lastChangeDateTime"];
+				$dir->CreateDateTime = date("j.M.Y H:i",strtotime($checkresult[0]["uploadDateTime"]));
+				$dir->LastChangeDateTime =date("j.M.Y H:i",strtotime($checkresult[0]["lastChangeDateTime"]));
 				$dir->Hash = $checkresult[0]["hash"];
 				$dir->MimeType = $checkresult[0]["mimeType"];		
 				//error_log($this->CalculateFolderSize($this->GetAbsolutePathById($dir->Id,$escapedToken),$escapedToken));
@@ -821,8 +821,8 @@
 				$file->DisplayName = $checkresult[0]["displayName"];
 				$file->OwnerID = $checkresult[0]["ownerId"];
 				$file->ParentID = $checkresult[0]["parentFolder"];
-				$file->CreateDateTime = $checkresult[0]["uploadDateTime"];
-				$file->LastChangeDateTime = $checkresult[0]["lastChangeDateTime"];
+				$file->CreateDateTime = $GLOBALS["Kernel"]->InterfaceKernel->FormatDate($checkresult[0]["uploadDateTime"]);
+				$file->LastChangeDateTime = $GLOBALS["Kernel"]->InterfaceKernel->FormatDate($checkresult[0]["lastChangeDateTime"]);
 				$file->Hash = $checkresult[0]["hash"];
 				$file->SizeInBytes = $checkresult[0]["sizeInByte"];
 				$file->FilePath = $checkresult[0]["filePath"];
@@ -1008,7 +1008,10 @@
 			$ownerId = $owner->ID;
 			$query =sprintf("Select id,displayName,date(uploadDateTime) as Day,time(uploadDateTime) as DayTime,\"new\" as Source,FilePath,Hash from FileSystem where ownerID = %d union all Select id,displayName,date(lastChangeDateTime) as Day,time(lastChangeDateTime) as DayTime,\"changed\" as Source,FilePath,Hash from FileSystem where ownerID = %d order by Day desc, DayTime desc limit 25",$ownerId,$ownerId);
 			$result = DBLayer::GetInstance()->RunSelect($query);
-			$changed = array();
+			foreach ($result as $key => $value) {
+				$result[$key] = $value;
+				$result[$key]["Day"] = $GLOBALS["Kernel"]->InterfaceKernel->FormatDateDayOnly($value["Day"]);
+			}
 			return $result;
 		}
 		/**
