@@ -1504,8 +1504,25 @@ require.register("dropzone/lib/dropzone.js", function (exports, module) {
       for (_i = 0, _len = files.length; _i < _len; _i++) {
         file = files[_i];
         file.status = Dropzone.ERROR;
-        this.emit("error", file, message, xhr);
-        this.emit("complete", file);
+
+        var arguments = [];
+        arguments.push(message.substr(2));
+        var ref = this;
+        $.post('./Includes/api.inc.php', {
+            module: 'Kernel.InterfaceKernel',
+            method: 'GetLanguageValue',
+            args: arguments
+        })
+        .done(function(data) {          
+            message=$.parseJSON(data);
+            ref.emit("error", file,message, xhr);
+            ref.emit("complete", file);
+        })
+        .fail(function(e) {
+           message = message.substr(2);
+           ref.emit("error", file,message, xhr);
+           ref.emit("complete", file);
+        }); 
       }
       if (this.options.uploadMultiple) {
         this.emit("errormultiple", files, message, xhr);
@@ -1515,7 +1532,6 @@ require.register("dropzone/lib/dropzone.js", function (exports, module) {
         return this.processQueue();
       }
     };
-
     return Dropzone;
 
   })(Em);
