@@ -44,6 +44,8 @@ $router->CookieInteraction();
     <script src='./nys/Views/js/Nys.Files.js'></script>
     <script src='./nys/Views/js/Nys.Dialogs.js'></script>
     <link rel="icon" type="image/png" href="./nys/Views/img/favicon.png">
+     <script src='./Lib/jQuery.Bootstrap/jquery.bootstrap.min.js'></script>
+    
     <title>Redundancy</title>
 </head>
 

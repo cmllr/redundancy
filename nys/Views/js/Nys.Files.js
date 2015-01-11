@@ -111,7 +111,7 @@ if (typeof nys === "undefined")
             })
             .fail(function(e) {
                 console.log(e);
-                ErrorDialog(e.responseText);
+                nys.ErrorDialog(e.responseText);
             });
     }
 
@@ -323,6 +323,7 @@ if (typeof nys === "undefined")
                     buttons: {
                         "OK": function() {
                             $(this).dialog("close");
+                             Init();
                         }
                     }
                 });

@@ -189,15 +189,15 @@ DeleteFolderTitle="Delete folder \'%s\'?";
 DeleteFolderText="Are you sure to delete \'%s\'?.";
 DeleteFolderDeleteButton = "Delete";
 RenameEntryTitle ="Rename \'%s\'"
-RenameEntryText = "Enter the new name </br><input id='newname' placeholder='%s'></input>";
+RenameEntryText = "<div class='dialogcontent input-group'><span class='input-group-addon'>Enter the new name:</span><input class='form-control' id='newname' value='%s'></input>";
 RenameButton = "Rename";
 
 MoveEntryTitle ="Move \'%s\'"
-MoveEntryText = "Move to <select class='target'></select>";
+MoveEntryText = "<div class='dialogcontent input-group'><span class='input-group-addon'>Move to</span><select class='target form-control'></select></div>";
 StartButton = "Go";
 
 CopyEntryTitle ="Copy \'%s\'"
-CopyEntryText = "Copy to <select class='target'></select>";
+CopyEntryText = "<div class='dialogcontent input-group'><span class='input-group-addon'>Copy to</span><select class='target form-control'></select></div>";
 
 Move="Move";
 
