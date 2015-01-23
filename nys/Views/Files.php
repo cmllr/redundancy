@@ -290,7 +290,7 @@ nys.Init();
 	    'dragenter',
 	    function(e) {
 	    	$("#uploadbox").attr("style","");
-	    	$("#uploadbox").dialog({title:"<?php echo $GLOBALS['Language']->Upload_Title.'</span> '.$_SESSION['currentFolder'];?>",onClose:function(){		    			
+	    	$("#uploadbox").dialog({title:"<?php echo $GLOBALS['Language']->Upload_Title.'</span> '. (isset($_SESSION['currentFolder']) ? $_SESSION['currentFolder'] : "/" );?>",onClose:function(){		    			
 				nys.Init();
 			}});
 	        e.preventDefault();
