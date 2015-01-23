@@ -35,27 +35,21 @@
         <?php echo round($percentage,2); ?>%
     </div>
  </div>
- <div class="well">        
-    <h3 class="header-form"><?php echo $GLOBALS["Language"]->MyPermissions;?></h3>
-    <div class="panel-group" id="accordion">
-     <?php foreach($PermissionSet as $key=>$value):?>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#accordion" href="#<?php echo $permissionNames[$key];?>">
-              <?php echo $permissionNames[$key];?>
-            </a>
-          </h4>
-        </div>
-        <div class="panel-collapse">
-          <div class="panel-body">
-            <?php echo ($PermissionSet[$key] == 1) ? $GLOBALS["Language"]->Allowed : $GLOBALS["Language"]->NotAllowed;?>
-          </div>
-        </div>
-      </div>
-  <?php endforeach;?>
-    </div>
-    </div>
+  <div class="well">   
+   <h3 class="header-form"><?php echo $GLOBALS["Language"]->MyPermissions;?></h3>     
+ <table class="table table-hover table-bordered">
+ <tr>
+    <th><?php echo $GLOBALS["Language"]->GroupPermissions;?></th>
+    <th></th>
+ </tr>
+   <?php foreach($PermissionSet as $key=>$value):?>
+     <tr class="<?php echo ($PermissionSet[$key] == 1) ? "success": "danger";?>">
+        <td><?php echo $permissionNames[$key];?></td>
+        <td><i class="<?php echo ($PermissionSet[$key] == 1) ? "fa fa-check": "fa fa-remove";?>"/></td>
+     </tr>
+<?php endforeach;?>
+ </table>
+ </div>
  <?php if ($allowPasswordChange) :?>
     <div class="well">        
         <h3 class="header-form"><?php echo $GLOBALS["Language"]->ChangePassword;?></h3>
@@ -91,7 +85,7 @@
     <?php if ($allowAccountDelete) :?>
     <div class="panel panel-danger">
         <div class="panel-body bg-danger">
-            <h3 class="header-form">Account löschen</h3>
+            <h3 class="header-form"><?php echo $GLOBALS["Language"]->Delete_Account;?></h3>
             <p><?php echo $GLOBALS["Language"]->Delete_Account_Warning;?></p>
             <div class="form-group">
                 <label for="deletepassword" class="control-label col-xs-2">
