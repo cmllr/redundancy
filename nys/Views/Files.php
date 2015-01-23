@@ -290,7 +290,21 @@ nys.Init();
 	    'dragenter',
 	    function(e) {
 	    	$("#uploadbox").attr("style","");
-	    	$("#uploadbox").dialog({title:"<?php echo $GLOBALS['Language']->Upload_Title.'</span> '. (isset($_SESSION['currentFolder']) ? $_SESSION['currentFolder'] : "/" );?>",onClose:function(){		    			
+	    	$("#uploadbox").dialog({title:"<?php echo $GLOBALS['Language']->Upload_Title.'</span> '. (isset($_SESSION['currentFolder']) ? $_SESSION['currentFolder'] : "/" );?>",
+	    		buttons: 
+				[					
+					{
+						text:	"OK",
+						click: function() {
+							$( this ).dialog( "close" );
+							$('.dialogcontent').each(function() {
+							    $(this).remove();
+						    });
+						},
+						'class' :"btn btn-primary"
+					}
+				],
+	    		onClose:function(){		    			
 				nys.Init();
 			}});
 	        e.preventDefault();
@@ -301,6 +315,8 @@ nys.Init();
 </script>
 </table>
 <div id="uploadbox" style="visibility:hidden;height:0px">
+<a href="#" id="clearupload"><?php  echo $GLOBALS['Language']->Clear;?></a>
+<hr>
 <div id = 'result'></div>
 
 <form class ='dropzone' id = 'my-awesome-dropzone' action='?upload' method='POST' >
@@ -324,16 +340,24 @@ Dropzone.options.myAwesomeDropzone = {
    done();
   
   },
-  complete: function(){ 
+  complete: function(file){ 
   	nys.Init();
   },
+  init:function(){
+  	var _this = this;
+  	$("#clearupload").click(function(){
+  		 _this.removeAllFiles();
+  	});
+  },
+
  // error: function(e){
   //  console.log(e);
   //},
   dictRemoveFile: '<?php echo $GLOBALS['Language']->dictRemoveFile;?>',
   dictCancelUpload: '<?php  echo $GLOBALS['Language']->dictCancelUpload;?>',
   dictDefaultMessage: '<?php  echo $GLOBALS['Language']->dictDefaultMessage;?>',  
-  dictCancelUploadConfirmation: '<?php  echo $GLOBALS['Language']->dictCancelUploadConfirmation;?>',  
+  dictCancelUploadConfirmation: '<?php  echo $GLOBALS['Language']->dictCancelUploadConfirmation;?>', 
+
 };
 </script>
 </div>

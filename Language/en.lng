@@ -358,6 +358,8 @@ Startpage_Board="Forum";
 Startpage_Board_Description = "In our <a href='http://board.rdcy.de'>Forum</a> boards you can talk with other users or get in touch with the developers";
 Unzip = "Unzip file";
 
+Clear="clear list";
+
 R_ERR_NULL = "Could not get any informations!";
 R_ERR_3 = "Username or password already given";
 R_ERR_4 = "The group could not be found";
