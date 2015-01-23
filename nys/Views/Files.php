@@ -145,22 +145,38 @@ nys.Init();
   	}
   	var dialogTitle = (move) ? "<?php echo $GLOBALS["Language"]->MoveEntryTitle; ?>".replace("%s",entry.DisplayName) : "<?php echo $GLOBALS["Language"]->CopyEntryTitle; ?>".replace("%s",entry.DisplayName);  				
   	var text = (move) ? "<?php echo $GLOBALS["Language"]->MoveEntryText; ?>".replace("%s",entry.DisplayName) :  "<?php echo $GLOBALS["Language"]->CopyEntryText; ?>".replace("%s",entry.DisplayName);  	  	
-  	$( "<p>"+text+"</p>" ).dialog({ title: dialogTitle,width: 'auto' , modal: true,draggable:false,buttons: {		
-  		"<?php echo $GLOBALS["Language"]->StartButton; ?>" : function() {	
-  			var target = $(".target").val();
-  			if (target != ""){
-  				if (move)
-  					nys.MoveEntry(entry,target);
-  				else
-  					nys.CopyEntry(entry,target);
-  				nys.DisplaySpinner();
-  				$( this ).dialog( "close" );
-  			}		        
+  	$( "<p class='dialogcontent'>"+text+"</p>" ).dialog({ title: dialogTitle,width: 'auto' , modal: true,draggable:false,buttons: 
+  	[		
+  		{
+  			text: "<?php echo $GLOBALS["Language"]->StartButton; ?>",
+  			click : function() {	
+	  			var target = $(".target").val();
+	  			if (target != ""){
+	  				//console.log(target);
+	  				if (move)
+	  					nys.MoveEntry(entry,target);
+	  				else
+	  					nys.CopyEntry(entry,target);
+	  				nys.DisplaySpinner();
+	  				$( this ).dialog( "close" );
+	  				$('.dialogcontent').each(function() {
+					    $(this).remove();
+					});
+	  			}		        
+	  		},
+	  		'class': "btn btn-primary"
   		},
-  		"<?php echo $GLOBALS["Language"]->Abort; ?>": function() {
-  			$( this ).dialog( "close" );
-  		}
-  	}});
+  		{
+  			text: "<?php echo $GLOBALS["Language"]->Abort; ?>",
+	  		click : function() {
+	  			$( this ).dialog( "close" );
+		  		$('.dialogcontent').each(function() {
+				    $(this).remove();
+				});
+	  		} 
+  		}  		
+  	]
+    });
   	$(".target").empty();
   	var currentAbsolutePath = currentDir;  				
   	if (entry.FilePath == null)
@@ -171,47 +187,96 @@ nys.Init();
   function DeleteFolderDialog(entry){  
 	var dialogTitle = "<?php echo $GLOBALS["Language"]->DeleteFolderTitle; ?>".replace("%s",entry.DisplayName);  				
 	var text = "<?php echo $GLOBALS["Language"]->DeleteFolderText; ?>".replace("%s",entry.DisplayName);  	
-		$( "<p>"+text+"</p>" ).dialog({ title: dialogTitle,width: 350 ,draggable:false, buttons: {
-	"<?php echo $GLOBALS["Language"]->DeleteFolderDeleteButton; ?>": function() {
-		nys.StartDeleteFolder(entry);
-		$( this ).dialog( "close" );
-	},
-	"<?php echo $GLOBALS["Language"]->Abort; ?>": function() {
-	  $( this ).dialog( "close" );
-	}
-	}}); 
+		$( "<p class='dialogcontent'>"+text+"</p>" ).dialog({ title: dialogTitle,width: 350 ,draggable:false, buttons: 
+		[
+			{
+				text:"<?php echo $GLOBALS["Language"]->DeleteFolderDeleteButton; ?>",
+				'class':"btn btn-primary",
+				click: function() {
+					nys.StartDeleteFolder(entry);
+					$( this ).dialog( "close" );
+					$('.dialogcontent').each(function() {
+					    $(this).remove();
+					});					
+				}
+			},
+			{
+				text:"<?php echo $GLOBALS["Language"]->Abort; ?>",
+				click:function() {
+				  $( this ).dialog( "close" );
+				  $('.dialogcontent').each(function() {
+					    $(this).remove();
+				  });
+				}
+			}
+		]
+	}); 
   }  
   
   function DeleteFileDialog(entry){  	
 	var dialogTitle = "<?php echo $GLOBALS["Language"]->DeleteFileTitle; ?>".replace("%s",entry.DisplayName);  				
 	var text = "<?php echo $GLOBALS["Language"]->DeleteFileText; ?>".replace("%s",entry.DisplayName);  	
-	$( "<p>"+text+"</p>" ).dialog({ title: dialogTitle,width: 350 , modal: true,draggable:false, buttons: {
-	"<?php echo $GLOBALS["Language"]->DeleteFileDeleteButton; ?>": function() {		        
-		nys.StartDeleteFile(entry);		        	
-			$( this ).dialog( "close" );
-		},
-		"<?php echo $GLOBALS["Language"]->Abort; ?>": function() {
-			$( this ).dialog( "close" );
-		}
-	}});  	
+	$( "<p class='dialogcontent'>"+text+"</p>" ).dialog({ title: dialogTitle,width: 350 , modal: true,draggable:false, buttons: 
+		[
+			{
+				text:"<?php echo $GLOBALS["Language"]->DeleteFileDeleteButton; ?>",
+				'class':'btn btn-danger',
+				click: function() {		        
+					nys.StartDeleteFile(entry);		        	
+					$( this ).dialog( "close" );
+					$('.dialogcontent').each(function() {
+					    $(this).remove();
+				    });
+				}
+			},
+			{
+				text: "<?php echo $GLOBALS["Language"]->Abort; ?>",
+				click: function() {
+					$( this ).dialog( "close" );
+					$('.dialogcontent').each(function() {
+					    $(this).remove();
+				    });
+				}
+			}
+		]
+	});  	
   }  
-  function RenameEntryDialog(entry){  		
+  function RenameEntryDialog(entry){  	
 	var dialogTitle = "<?php echo $GLOBALS["Language"]->RenameEntryTitle; ?>".replace("%s",entry.DisplayName);  				
-	var text = "<?php echo $GLOBALS["Language"]->RenameEntryText; ?>".replace("%s",entry.DisplayName);  	
-	$( "<p id='dialogcontent'>"+text+"</p>" ).dialog({ title: dialogTitle,width: 350 , modal: true,draggable:false,buttons: {
-		"<?php echo $GLOBALS["Language"]->RenameButton; ?>": function() {
-			var newName = $("#newname").val();		        	
-			if (newName != ""){
-				console.log(newName);
-				nys.RenameEntry(entry.Id,newName);			        		  			        
-				$( this ).dialog( "close" );
-				$("#dialogcontent").remove();		      
-			}	        	
-		},
-		"<?php echo $GLOBALS["Language"]->Abort; ?>": function() {
-			$( this ).dialog( "close" );
+	var text = "<?php echo $GLOBALS["Language"]->RenameEntryText; ?>".replace("%s",entry.DisplayName);  
+	$("<p class='dialogcontent'>"+text+"</p>").dialog({ title: dialogTitle,width: 350 , modal: true,draggable:false,buttons: 
+		[
+			{
+				text:"<?php echo $GLOBALS["Language"]->RenameButton; ?>",
+				click: function() {
+					var newName = $("#newname").val();	
+					if (newName != ""){					
+						nys.RenameEntry(entry.Id,newName);								        		  			        
+						$( this ).dialog( "close" );						
+						$('.dialogcontent').each(function() {
+					  	  $(this).remove();
+				 		});		
+					}    	
+				},
+				'class':'btn btn-primary'
+			},
+			{
+				text:	"<?php echo $GLOBALS["Language"]->Abort; ?>",
+				click: function() {
+					$( this ).dialog( "close" );
+					$('.dialogcontent').each(function() {
+					    $(this).remove();
+				    });
+				}
+			}
+		],
+		onClose:function(){
+			$(this).dialog("destroy");
+			$('.dialogcontent').each(function() {
+			  $(this).remove();
+			});	
 		}
-	}});  	
+	});  	
   } 
 </script>
 </table>

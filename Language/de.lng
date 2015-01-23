@@ -208,15 +208,15 @@ DeleteFolderTitle="Verzeichnis \'%s\' wirklich löschen?";
 DeleteFolderText="Möchten Sie das Verzeichnis \'%s\' wirklich löschen?</br>Sämtlicher Inhalt wird dabei gelöscht.";
 DeleteFolderDeleteButton = "Löschen";
 RenameEntryTitle ="\'%s\' umbenennen"
-RenameEntryText = "Neuen Namen eingeben: </br><input id='newname' placeholder='%s'></input>";
+RenameEntryText = "<div class='dialogcontent input-group'><span class='input-group-addon'>Neuen Namen eingeben:</span><input class='form-control' id='newname' value='%s'></input>";
 RenameButton = "Umbenennen";
 
 MoveEntryTitle ="\'%s\' verschieben"
-MoveEntryText = "Verschieben nach <select class='target'></select>";
+MoveEntryText = "<div class='dialogcontent input-group'><span class='input-group-addon'>Verschieben nach</span><select class='target form-control'></select></div>";
 StartButton = "Vorgang starten";
 
 CopyEntryTitle ="\'%s\' kopieren"
-CopyEntryText = "Kopieren nach <select class='target'></select>";
+CopyEntryText = "<div class='dialogcontent input-group'><span class='input-group-addon'>Kopieren nach</span><select class='target form-control'></select></div>";
 
 Move="Verschieben";
 
