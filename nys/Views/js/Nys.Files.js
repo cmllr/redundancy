@@ -339,19 +339,38 @@ if (typeof nys === "undefined")
             method: 'GetAbsolutePathById',
             args: arguments
         })
-            .done(function(data) {
-                var string = $.parseJSON(data);
-                Delete(string, true);
-            })
-            .fail(function(e) {
-                console.log(e);
-            });
+        .done(function(data) {
+            var string = $.parseJSON(data);
+            Delete(string, true);
+        })
+        .fail(function(e) {
+            console.log(e);
+        });
     }
 
-    function Delete(path, folder) {
+    function CreateDirectory(name) {
         DisplaySpinner();
         var arguments = [];
-        arguments.push(path);
+        arguments.push(name);
+        arguments.push(currentDir);
+        arguments.push(token);
+        $.post('./Includes/api.inc.php', {
+            module: 'Kernel.FileSystemKernel',
+            method: 'CreateDirectoryFromCurrentFolder',
+            args: arguments
+        })
+        .done(function(data) {
+            console.log(data);
+            var string = $.parseJSON(data);
+            Init();
+        })
+        .fail(function(e) {
+             nys.ErrorDialog(e.responseText);
+        });
+    }
+    function Delete(path, folder) {
+         var arguments = [];
+        arguments.push(name);
         arguments.push(token);
         $.post('./Includes/api.inc.php', {
             module: 'Kernel.FileSystemKernel',
@@ -456,4 +475,5 @@ if (typeof nys === "undefined")
     nys.DisplayLinksForFolder = DisplayLinksForFolder;
     nys.GetSizeWithUnit = GetSizeWithUnit;
     nys.GetExistingTargetCount = GetExistingTargetCount;
+    nys.CreateDirectory = CreateDirectory;
 }());
