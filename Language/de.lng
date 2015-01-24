@@ -209,6 +209,7 @@ DeleteFolderText="Möchten Sie das Verzeichnis \'%s\' wirklich löschen?</br>Sä
 DeleteFolderDeleteButton = "Löschen";
 RenameEntryTitle ="\'%s\' umbenennen"
 RenameEntryText = "<div class='dialogcontent input-group'><span class='input-group-addon'>Neuen Namen eingeben:</span><input class='form-control' id='newname' value='%s'></input>";
+NewDirEntryText = "<div class='dialogcontent input-group'><span class='input-group-addon'>Verzeichnisname:</span><input class='form-control' id='newname' value=''></input>";
 RenameButton = "Umbenennen";
 
 MoveEntryTitle ="\'%s\' verschieben"
@@ -253,7 +254,7 @@ NewCode = "Link erneuern";
 ShowShareLink="Link anzeigen";
 SharedByMe="Von mir freigegeben";
 SharedToMe="Für mich freigegeben";
-LinkToShareText = "Link zum freigeben:</br><input value='%s'></input>";
+LinkToShareText = "<div class="input-group"><span class='input-group-addon'>Link zum Freigeben:</span><input class='form-control' value='%s'></input></div>";
 ShareWasDeleted="Die Freigabe wurde gelöscht.";
 ShareCodeWasRefreshed="Der Freigabelink wurde erneuert";
 SharedToMeFromOthers = "An mich von %s am %s freigegeben";

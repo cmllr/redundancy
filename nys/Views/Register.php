@@ -37,22 +37,10 @@
                         <?php echo $GLOBALS['Language']->Repeat_Password; ?></label>
                     <input type='password' class='form-control' name='passwordrepeat' placeholder='<?php echo $GLOBALS['Language']->Repeat_Password;?>'>
                 </div>
-                <!--
-  <div class='form-group'>
-    <label for='password'><?php echo $GLOBALS['Language']->Lang; ?></label>
-    <select class='form-control' id='lang' name='lang'>
-        <?php 
-          $languages = $GLOBALS['Router']->DoRequest('Kernel.InterfaceKernel','GetInstalledLanguages',json_encode(array()));        
-        ?>
-        <?php foreach($languages as $key=>$value): ?>       
-              <option><?php echo $value; ?></option>           
-          <?php endforeach; ?>  
-    </select>
-  </div>-->
                 <div class="btn-group">
                     <button type='submit' class='btn btn-primary'>
                         <?php echo $GLOBALS['Language']->Log_In;?></button>
-                    <a class="btn btn-default" href="?login">Abbrechen</a>
+                    <a class="btn btn-default" href="?login"><?php echo $GLOBALS['Language']->Abort;?></a>
                 </div>
             </form>
         </div>

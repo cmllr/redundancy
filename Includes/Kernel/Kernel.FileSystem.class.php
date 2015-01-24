@@ -55,6 +55,27 @@
 			return $path;
 		}
 		/**
+		* Alias Function for CreateDirectory(string,int,string)
+		* @param string $name the name of the new dir
+		* @param string $current the current absolute path
+		* @param string $token the valid session token
+		* @return the result of CreateDirectory();
+		*/
+		public function CreateDirectoryFromCurrentFolder($name,$current,$token){
+			if (!isset($current)){
+				return false;
+			}
+			else{
+				$folder = $this->GetEntryByAbsolutePath($current,$token);
+				if (is_null($folder))
+					return false;
+				else
+				{
+					return $this->CreateDirectory($name,$folder->Id,$token);
+				}
+			}
+		}
+		/**
 		* Creates a new directory in the given root dir
 		* @param string $name the name of the new directory (relative)
 		* @param int $root int the Id of the current root dir

@@ -192,6 +192,8 @@ RenameEntryTitle ="Rename \'%s\'"
 RenameEntryText = "<div class='dialogcontent input-group'><span class='input-group-addon'>Enter the new name:</span><input class='form-control' id='newname' value='%s'></input>";
 RenameButton = "Rename";
 
+NewDirEntryText = "<div class='dialogcontent input-group'><span class='input-group-addon'>Folder name:</span><input class='form-control' id='newname' value=''></input>";
+
 MoveEntryTitle ="Move \'%s\'"
 MoveEntryText = "<div class='dialogcontent input-group'><span class='input-group-addon'>Move to</span><select class='target form-control'></select></div>";
 StartButton = "Go";
@@ -234,7 +236,7 @@ NewCode = "Generate new link";
 ShowShareLink="Show link";
 SharedByMe="Shared by me";
 SharedToMe="Shared to me";
-LinkToShareText = "Share link: </br><input value='%s'></input>";
+LinkToShareText = "<div class="input-group"><span class='input-group-addon'>Share link/span><input class='form-control' value='%s'></input></div>";
 ShareWasDeleted="The share was removed.";
 ShareCodeWasRefreshed="The share link was regenerated";
 SharedToMeFromOthers = "Shared to me %s on %s";

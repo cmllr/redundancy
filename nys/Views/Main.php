@@ -79,7 +79,7 @@
     </div>
     <!-- /.navbar-collapse -->
 </nav>
-<div class='hidden-xs hidden-sm col-md-2 col-lg-2'>
+<div class='hidden-xs  col-md-2 col-lg-2'>
     <div class='affix-top' id='leftSidebar' data-spy='affix' data-offset-top='0'>
         <div class='dropdown'>
             <button type='button' class='btn btn-primary btn-block dropdown-toggle' data-toggle='dropdown'>
@@ -134,16 +134,42 @@
                     </a>
                 </li>
                 <li>
-                    <a href='?upload'>
+                    <?php if (!isset($_GET["files"])) :?>
+                    <a href='?upload'>                       
                         <span class='fa fa-cloud-upload'>&nbsp;</span>
-                        <?php echo $GLOBALS['Language']->Upload;?>
+                        <?php echo $GLOBALS['Language']->Upload;?>                        
                     </a>
+                    <?php endif;?>
+                        <?php if (isset($_GET["files"])) :?>
+                        <a id="uploadHref" href='#'>                       
+                            <span class='fa fa-cloud-upload'>&nbsp;</span>
+                            <?php echo $GLOBALS['Language']->Upload;?>                        
+                        </a>
+                    <script>
+                    $("#uploadHref").click(function(){
+                        DisplayUploadDialog();
+                    });
+                    </script>
+                    <?php endif;?>
                 </li>
                 <li>
+                    <?php if (!isset($_GET["files"])) :?>
                     <a href='?newfolder'>
                         <span class='fa fa-folder-open'>&nbsp;</span>
                         <?php echo $GLOBALS['Language']->New_Directory_Short;?>
                     </a>
+                    <?php endif;?>
+                        <?php if (isset($_GET["files"])) :?>
+                         <a id ="newDirHref" href='#'>
+                        <span class='fa fa-folder-open'>&nbsp;</span>
+                        <?php echo $GLOBALS['Language']->New_Directory_Short;?>
+                    </a>
+                    <script>
+                    $("#newDirHref").click(function(){
+                        NewDirDialog();
+                    });
+                    </script>
+                    <?php endif;?>                   
                 </li>
                 <li>
                     <a href='?shares'>
@@ -178,4 +204,52 @@
             <?php if (isset($innerContent)) include $innerContent; ?>
         </div>
     </div>
+</div>
+<div id="uploadbox" style="visibility:hidden;height:0px">
+<a href="#" id="clearupload"><?php  echo $GLOBALS['Language']->Clear;?></a>
+<hr>
+<div id = 'result'></div>
+
+<form class ='dropzone' id = 'my-awesome-dropzone' action='?upload' method='POST' >
+<div class = 'dz-message'>
+    <h3 class="text-center"><span class='fa fa-file'>&nbsp;</span>
+       <?php echo $GLOBALS['Language']->dictUploadTitle ;?>
+    </h3>
+</div>
+    <div class='fallback'>
+    <input name='file' type='file'/>
+  </div>
+</form>
+
+<script>
+Dropzone.options.myAwesomeDropzone = {
+  paramName: 'file', 
+  uploadMultiple: true,
+  addRemoveLinks: true,
+  parallelUploads: 1,
+  accept: function(file, done) {
+   done();
+  
+  },
+  complete: function(file){ 
+    if (typeof maybeObject !== "undefined")
+        nys.Init();
+  },
+  init:function(){
+    var _this = this;
+    $("#clearupload").click(function(){
+         _this.removeAllFiles();
+    });
+  },
+
+ // error: function(e){
+  //  console.log(e);
+  //},
+  dictRemoveFile: '<?php echo $GLOBALS['Language']->dictRemoveFile;?>',
+  dictCancelUpload: '<?php  echo $GLOBALS['Language']->dictCancelUpload;?>',
+  dictDefaultMessage: '<?php  echo $GLOBALS['Language']->dictDefaultMessage;?>',  
+  dictCancelUploadConfirmation: '<?php  echo $GLOBALS['Language']->dictCancelUploadConfirmation;?>', 
+
+};
+</script>
 </div>
