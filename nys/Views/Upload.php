@@ -33,10 +33,3 @@ Dropzone.options.myAwesomeDropzone = {
   dictCancelUploadConfirmation: '<?php  echo $GLOBALS['Language']->dictCancelUploadConfirmation;?>',  
 };
 </script>
-<!-- Fallback
-<form enctype='multipart/form-data' action='?upload' method='POST'>
-<p> 
-  <input class = 'btn btn-default'  name='file[]' type='file' multiple/>
-</p>
-    <input class = 'btn btn-default'  type='submit' value='x'> 
-</form>-->
