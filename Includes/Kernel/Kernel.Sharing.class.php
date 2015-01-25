@@ -421,11 +421,11 @@ class SharingKernel{
 		$checkquery = sprintf("Select shareCode from SharedFileSystem where shareCode = '%s'",$shareCode);
 		$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);
 		do{
-			$hashToSearch =  $this->GetRandomString($GLOBALS["Kernel"]->GetConfigValue("Program_Share_Link_Length"));
+			$shareCode =  $this->GetRandomString($GLOBALS["Kernel"]->GetConfigValue("Program_Share_Link_Length"));
 			$checkquery = sprintf("Select shareCode from SharedFileSystem where shareCode = '%s'",$shareCode);
 			$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);
 		}while(count($checkresult) != 0);
-		return $hashToSearch;
+		return $shareCode;
 	}	
 }
 ?>
