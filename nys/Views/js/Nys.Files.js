@@ -370,7 +370,7 @@ if (typeof nys === "undefined")
     }
     function Delete(path, folder) {
          var arguments = [];
-        arguments.push(name);
+        arguments.push(path);
         arguments.push(token);
         $.post('./Includes/api.inc.php', {
             module: 'Kernel.FileSystemKernel',

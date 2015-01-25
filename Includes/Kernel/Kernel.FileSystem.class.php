@@ -310,7 +310,7 @@
 		* @return bool to describe the physical deletion on the server | Errorcode if failed
 		*/
 		public function DeleteFile($absolutePath,$token){
-			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);			
 			$escapedabsolutePath = DBLayer::GetInstance()->EscapeString($absolutePath,true);
 			$entry = $this->GetEntryByAbsolutePath($escapedabsolutePath,$token);
 			$ownerId = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken)->ID;
@@ -320,8 +320,8 @@
 				return \Redundancy\Classes\Errors::EntryNotExisting;
 			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowDeletingFile))
 				return \Redundancy\Classes\Errors::NotAllowed;
-			$fileToDelete = $this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage).$entry->FilePath;
-			if (unlink($fileToDelete)){
+			$fileToDelete = $this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage).$entry->FilePath;			
+			if (!is_dir($fileToDelete) && unlink($fileToDelete)){
 				//Delete the shares of the file
 				$GLOBALS["Kernel"]->SharingKernel->DeleteAllSharesOfEntry($entry->Hash,$escapedToken);
 				$dbquery = DBLayer::GetInstance()->RunDelete(sprintf("Delete from FileSystem where Id = '%d' and ownerId = '%u' limit 1",$entry->Id,$ownerId));

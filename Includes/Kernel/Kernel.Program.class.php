@@ -67,7 +67,7 @@
 			* The programs version
 			* Structurized in {1.9.X-codenameorbranch-state}
 			*/
-			public $Version = "1.9.19-Lenticularis-rc3-0";//"1.9.15-Lenticularis-rc1-0";
+			public $Version = "1.9.19-Lenticularis-rc3-1";//"1.9.15-Lenticularis-rc1-0";
 			/**
 			* The programs release date
 			*/
