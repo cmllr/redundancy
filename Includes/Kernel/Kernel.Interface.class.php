@@ -63,18 +63,18 @@
 		* @return string the language code
 		*/
 		public function GetCurrentLanguage(){
-			return $this->Language;
+			return $this->LanguageCode;
 		}
 		/**
 		* Set the language code an reparse the language data
 		* @param $languageCode the code to get parsed.
 		*/
-		public function SetCurrentLanguage($languageCode){
+		public function SetCurrentLanguage($languageCode){			
 			if (file_exists(__REDUNDANCY_ROOT__."Language/".$languageCode.".lng")){
 				$this->Language = parse_ini_file(__REDUNDANCY_ROOT__."Language/".$languageCode.".lng");	
 				$this->LanguageCode = $languageCode;			
-				return $this->Language;
 			}
+			return $this->Language;
 		}
 		/**
 		 * get a list of languages
