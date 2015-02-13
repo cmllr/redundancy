@@ -168,29 +168,33 @@
 		* @param $args the arguments (json-decoded)
 		* @return the response content
 		*/
-		public function DoRequest($module,$method,$args){		
-
-			$curl = curl_init();	
+		public function DoRequest($module,$method,$args){	
+			
 			$domain = $_SERVER['HTTP_HOST'];
 			$prefix = (isset($_SERVER['HTTPS']) && $_SERVER["HTTPS"] != "off") ? 'https://' : 'http://';
 			$relative = str_replace('index.php','',$_SERVER['SCRIPT_NAME']).'Includes/api.inc.php';				
-			// Set some options - we are passing in a useragent too here		
-			curl_setopt_array($curl, array(
-			    CURLOPT_VERBOSE => TRUE,
-			    CURLOPT_RETURNTRANSFER => 1,
-			    CURLOPT_URL => $prefix.$domain.$relative,
-			    CURLOPT_USERAGENT => (isset($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : 'Nys',
-			    CURLOPT_POST => 1,
-			    CURLOPT_POSTFIELDS => array(
-					'module' => $module,
+			
+			$postdata = http_build_query(
+			    array(
+			        'module' => $module,
 					'method' => $method,
 					'args' => $args,
 					'ip' => $_SERVER['REMOTE_ADDR']
-			    ),			   
-			    
-			));
-			// Send the request & save response to $resp
-			$resp = curl_exec($curl);	
+			    )
+			);
+ 
+			$opts = array('http' =>
+			    array(
+			        'method'  => 'POST',
+			        'header'  => 'Content-type: application/x-www-form-urlencoded',
+			        'content' => $postdata,
+			        'user_agent' => (isset($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : 'Nys'
+			    )
+			);
+ 
+			$context  = stream_context_create($opts);
+ 
+			$resp = file_get_contents($prefix.$domain.$relative, false, $context);
 			//When the file content is raw, dont do any json operations
 			if ($method =="GetContentOfFile")
 				return $resp;
@@ -198,13 +202,11 @@
 				header('HTTP/1.1 403 Forbidden');				
 				//Special handling if the file upload is used.
 				if ($method=='UploadFileWrapper'){
-					header('Content-type: text/plain');
-					curl_close($curl);			
+					header('Content-type: text/plain');						
 					exit('##R_ERR_'.$resp);
 				}
-			}					
-			// Close request to clear up some resources
-			curl_close($curl);			
+			}				
+					
 			return json_decode($resp);
 		}
 		/**
