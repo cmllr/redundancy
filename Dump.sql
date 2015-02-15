@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `Settings` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 INSERT INTO `Settings` (`ID`, `SettingName`, `SettingType`, `SettingValue`) VALUES
-(1, 'Enable_Register', 'Boolean', 'true'),
+(1, 'Enable_Register', 'Boolean', 'false'),
 (2, 'Program_Storage_Dir', 'Text', 'Storage'),
 (3, 'Program_Temp_Dir', 'Text', 'Temp'),
 (4, 'Program_Snapshots_Dir', 'Text', 'Snapshots'),
