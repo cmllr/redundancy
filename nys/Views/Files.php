@@ -312,18 +312,80 @@ nys.Init();
 	    'dragover',
 	    function(e) {
 	        e.preventDefault();
-	        e.stopPropagation();
+	        e.stopPropagation();	        
+	    }
+	)
+	$('#list').on(
+	    'drop',
+	    function(e) {	              
+	        if (nys.Target != -1 && nys.Source != -1){
+	        	$("#statusMove").fadeIn();     
+	        	e.preventDefault();
+	       		e.stopPropagation();	
+	        	console.log("will try to move");
+	        	var source = nys.Source;
+	        	console.log(source);
+	        	var target = $("#HrefOf"+nys.Target).attr("href");
+	        	var targetRe = /d=(.*)/;
+	        	if (targetRe.exec(target) == null){
+	        		nys.ErrorDialog("21");
+	        		nys.Target = -1;
+	             	nys.Source = -1;	
+	        		$("#statusMove").fadeOut();   
+	        		return;
+	        	}
+	        	target = decodeURIComponent(targetRe.exec(target)[1]);
+	        	console.log(target);	        
+		        $.post('./Includes/api.inc.php', { module: 'Kernel.FileSystemKernel',method: 'MoveEntryById',args: [source,target,token]  })
+	            .done(function(data) {	 
+	              nys.ScrollPosition = $(window).scrollTop(); 
+	              nys.Target = -1;
+	              nys.Source = -1;	
+	              $("#statusMove").fadeOut();             
+	              nys.Init();
+	            })
+	            .fail(function(data){
+	            	nys.ErrorDialog(data.responseText);
+	            	$("#statusMove").fadeOut();  
+	            });
+	        }
+
+	   }
+	)
+	$('#list').on(
+	    'dragstart',
+	    function(e) {
+	       // e.preventDefault();
+	        //e.stopPropagation();	       
+	        var re = /\d+/;
+	        var source = re.exec(e.target.id);
+
+	        if (source !== null)
+				nys.Source =source[0];
+			else
+				nys.Source = -1;   
 	    }
 	)
 	$('#list').on(
 	    'dragenter',
-	    function(e) {
-	    	DisplayUploadDialog();
+	    function(e) {  	    	
+	    	if (e.originalEvent.dataTransfer.types.indexOf("Files") !== -1){
+	    		DisplayUploadDialog();
+	    	}
+	    	else{	    		
+	    		var re = /\d+/;
+				var target = re.exec(e.target.id);
+				if (target !== null)
+					nys.Target = target[0];	 
+				else
+					nys.Target = -1;   		
+	    	}	    	
 	        e.preventDefault();
 	        e.stopPropagation();
 	    }
-	)	 
-	function DisplayUploadDialog(){
+	)
+	
+	function DisplayUploadDialog(){		
 		$("#uploadbox").attr("style","");
     	$("#uploadbox").dialog({title:"<?php echo $GLOBALS['Language']->Upload_Title.'</span> '. (isset($_SESSION['currentFolder']) ? $_SESSION['currentFolder'] : "/" );?>",
     		buttons: 
@@ -334,14 +396,19 @@ nys.Init();
 						$( this ).dialog( "close" );
 						$('.dialogcontent').each(function() {
 						    $(this).remove();
-					    });
+					    });					   
+					    $(this).dialog("close");
 					},
 					'class' :"btn btn-primary"
 				}
 			],
-    		onClose:function(){		    			
-			nys.Init();
-		}});
+    		onClose:function(){	
+    			$( this ).dialog( "close" );
+				$('.dialogcontent').each(function() {
+				    $(this).remove();
+			    });	    			
+    			$(this).dialog("close");
+			}});
 	}
 </script>
 </table>

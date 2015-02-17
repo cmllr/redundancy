@@ -101,12 +101,16 @@ if (typeof nys === "undefined")
                         DisplayContent(files);
                         DisplayBreadcrumbs(currentDir);
                         HideSpinner();
+                        nys.IEHack();
+                        if (nys.ScrollPosition !== 'undefined')
+                           $(window).scrollTop(nys.ScrollPosition);
                     })
                     .fail(function(e) {
                         $("#list").remove();
                         $(".panel-body").append("<div class='alert alert-danger'>R_ERR_" + e.responseText + "</div>");
                         DisplayBreadcrumbs("/");
                         HideSpinner();
+                        nys.IEHack();
                     });
             })
             .fail(function(e) {
@@ -308,11 +312,13 @@ if (typeof nys === "undefined")
         var text = "";
         var arguments = [];
         arguments.push("R_ERR_" + message);
-        $.post('./Includes/api.inc.php', {
+        var regex = /^\d+/;
+        if (regex.exec(message) !== null){
+            $.post('./Includes/api.inc.php', {
             module: 'Kernel.InterfaceKernel',
             method: 'GetErrorCodeTranslation',
             args: arguments
-        })
+            })
             .done(function(data) {
                 var string = $.parseJSON(data);
                 dialogTitle = "Redundancy";
@@ -327,7 +333,22 @@ if (typeof nys === "undefined")
                         }
                     }
                 });
-            })
+            });
+        }
+        else{           
+            dialogTitle = "Redundancy";
+            text = message;
+            $("<p>" + text + "</p>").dialog({
+                title: dialogTitle,
+                width: 350,
+                buttons: {
+                    "OK": function() {
+                        $(this).dialog("close");
+                         Init();
+                    }
+                }
+            });
+        }            
     }
 
     function StartDeleteFolder(entry) {
@@ -476,4 +497,6 @@ if (typeof nys === "undefined")
     nys.GetSizeWithUnit = GetSizeWithUnit;
     nys.GetExistingTargetCount = GetExistingTargetCount;
     nys.CreateDirectory = CreateDirectory;
+    nys.Source = -1;
+    nys.Target = -1;
 }());

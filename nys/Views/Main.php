@@ -137,17 +137,22 @@
                     <?php if (!isset($_GET["files"])) :?>
                     <a href='?upload'>                       
                         <span class='fa fa-cloud-upload'>&nbsp;</span>
-                        <?php echo $GLOBALS['Language']->Upload;?>                        
+                        <?php echo $GLOBALS['Language']->Upload;?>                  
                     </a>
                     <?php endif;?>
                         <?php if (isset($_GET["files"])) :?>
-                        <a id="uploadHref" href='#'>                       
+                        <div id="uploadHrefProgress"></div>            
+                        <a id="uploadHref" href='#'>         
                             <span class='fa fa-cloud-upload'>&nbsp;</span>
-                            <?php echo $GLOBALS['Language']->Upload;?>                        
+                            <?php echo $GLOBALS['Language']->Upload;?>   <span id="uploadPercentage"></span>                           
                         </a>
                     <script>
                     $("#uploadHref").click(function(){
                         DisplayUploadDialog();
+                    });
+                    $(window).bind('beforeunload', function(){
+                    if ($("#uploadPercentage").text() != "")
+                        return "<?php echo $GLOBALS['Language']->Abort_Upload_Message;?>";
                     });
                     </script>
                     <?php endif;?>
@@ -160,7 +165,7 @@
                     </a>
                     <?php endif;?>
                         <?php if (isset($_GET["files"])) :?>
-                         <a id ="newDirHref" href='#'>
+                     <a id ="newDirHref" href='#'>
                         <span class='fa fa-folder-open'>&nbsp;</span>
                         <?php echo $GLOBALS['Language']->New_Directory_Short;?>
                     </a>
@@ -182,6 +187,9 @@
                         <input class="form-control search" type="text" value="<?php echo (isset($_POST[" Search "])) ? $_POST["Search "] : "";?>" name="Search" placeholder="<?php echo $GLOBALS['Language']->Search;?>">
                     </form>
                 </li>
+                 <li id="statusMove" style="display: none;">
+                     <a href="#"><i class='fa fa-spinner fa-spin'></i> <?php echo $GLOBALS["Language"]->Move;?>...</a>
+                 </li>
             </ul>
         </div>
     </div>
@@ -237,8 +245,31 @@ Dropzone.options.myAwesomeDropzone = {
   },
   init:function(){
     var _this = this;
+    var errors = [];
     $("#clearupload").click(function(){
          _this.removeAllFiles();
+        _this.errors  = [];
+    });
+    this.on("queuecomplete",function(e){       
+        $("#uploadPercentage").text("");
+        if (errors.length != 0){
+            var errorDisplay = "<ul>";
+            for (var i = 0; i < errors.length; i++) {
+                errorDisplay = errorDisplay + "<li>"+errors[i]+"</li>";
+            };
+            errorDisplay += "</ul>";
+            nys.ErrorDialog(errorDisplay);        
+            errors  = [];
+        } 
+        $("#uploadHrefProgress").removeAttr("style");       
+        nys.Init();
+    });
+    this.on("totaluploadprogress",function(e){
+       $("#uploadPercentage").text(Math.round(e)+"%");
+       $("#uploadHrefProgress").attr("style","height:100%;background: rgba(50, 102, 146, 0.15);width:"+e+"%;position:absolute;");
+    });
+    this.on("error",function(a,b,c){
+        errors.push(a.name + ": " + b);
     });
   },
 

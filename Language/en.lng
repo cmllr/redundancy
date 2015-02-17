@@ -361,6 +361,7 @@ Startpage_Board_Description = "In our <a href='http://board.rdcy.de'>Forum</a> b
 Unzip = "Unzip file";
 
 Clear="clear list";
+Abort_Upload_Message= "Do you really want to cancel the upload process?";
 
 R_ERR_NULL = "Could not get any information!";
 R_ERR_3 = "Username or password already given";
@@ -408,3 +409,4 @@ R_ERR_44 = "This group name already exists. It needs to be unique!";
 R_ERR_45 = "You were banned.";
 R_ERR_46 = "Could not open the zip";
 R_ERR_47 = "The zipfile is empty!";
+R_ERR_48 = "Upload Error"

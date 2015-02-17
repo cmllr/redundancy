@@ -351,6 +351,7 @@ Startpage_Board_Description = "In unserem <a href='http://board.rdcy.de'>Forum</
 Unzip = "Entpacken";
 
 Clear="Liste leeren";
+Abort_Upload_Message= "Hochladen wirklich abbrechen?";
 
 R_ERR_NULL = "Es konnten keine Informationen ermittelt werden!";
 
@@ -399,3 +400,4 @@ R_ERR_44 = "Der Gruppenname ist bereits verwendet. Der Gruppenname muss eindeuti
 R_ERR_45 = "Sie wurden gebannt.";
 R_ERR_46 = "Konnte das Archiv nicht öffnen!";
 R_ERR_47 = "Das Archiv ist leer. Entpacken sinnlos.";
+R_ERR_48 = "Fehler beim Hochladen"
