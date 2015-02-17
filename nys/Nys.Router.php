@@ -185,6 +185,7 @@
  
 			$opts = array('http' =>
 			    array(
+			    	'ignore_errors' => true,
 			        'method'  => 'POST',
 			        'header'  => 'Content-type: application/x-www-form-urlencoded',
 			        'content' => $postdata,
@@ -195,6 +196,7 @@
 			$context  = stream_context_create($opts);
  
 			$resp = file_get_contents($prefix.$domain.$relative, false, $context);
+			
 			//When the file content is raw, dont do any json operations
 			if ($method =="GetContentOfFile")
 				return $resp;
