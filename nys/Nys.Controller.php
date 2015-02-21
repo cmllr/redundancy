@@ -350,7 +350,7 @@
 				//Start the update, will be started over the view
 			}
 			else{
-				$localVersion = $router->DoRequest("Kernel","GetVersion",json_encode(array()));
+				$localVersion = $router->DoRequest("Kernel","GetShortenedVersion",json_encode(array()));
 				$updateState =  $router->DoRequest("Kernel.UpdateKernel","IsUpdateNeeded",json_encode(array()));
 				$updateSource =  $router->DoRequest("Kernel.UpdateKernel","GetUpdateSource",json_encode(array()));
 			}

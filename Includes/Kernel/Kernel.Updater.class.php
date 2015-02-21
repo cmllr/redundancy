@@ -51,6 +51,7 @@
 		public function IsUpdateNeeded(){
 			$remoteVersion = $this->GetLatestVersion();
 			$localVersion = $this->GetVersion();
+		
 			return $this->IsUpdateAvailable($remoteVersion,$localVersion);
 		}
 		/**
@@ -176,7 +177,7 @@
 		*/
 		public function GetLatestVersionAsString(){
 			$result = $this->GetLatestVersion();
-			return sprintf("%s.%s.%s-%s-%s-%s",$result["major"],$result["minor"],$result["patch"],$result["branch"],$result["stage"],$result["update"]);
+			return sprintf("%s.%s.%s.%s",$result["major"],$result["minor"],$result["patch"],$result["update"]);
 		}
 		/**
 		* Get the source for updating
