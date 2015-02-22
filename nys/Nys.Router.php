@@ -41,8 +41,10 @@
 			$this->controller = new UIController();
 			if (!isset($_SESSION))
 				session_start();
-			//GRAB from config
-			$lang = $this->DoRequest('Kernel','GetConfigValue',json_encode(array("Program_Language")));	
+			if (isset($_SESSION["lang"]))
+				$lang = $_SESSION["lang"];
+			else			
+				$lang = $this->DoRequest('Kernel','GetConfigValue',json_encode(array("Program_Language")));	
 			$this->SetLanguage($lang);		
 		}
 		/**
@@ -139,7 +141,8 @@
 				"admin"=> "Admin",
 				"search"=>"Search",
 				"update"=>"Update",	
-				"default"=>"Main",			
+				"default"=>"Main",	
+				"newfolder" =>"NewFolder",		
 			);
 			$notLoggedInRoutes = array(
 				"info"=>"Info",
