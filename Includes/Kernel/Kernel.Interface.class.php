@@ -166,9 +166,12 @@
 		/**
 		* Get the translation for an errorcode
 		* @param string the errorcode (format R_ERR_{Number})
+		* @param string $lang the languagecode (optional)
 		* @return string the errorcode translation or the code itself, when no translation was found
 		*/
-		public function GetErrorCodeTranslation($code){	
+		public function GetErrorCodeTranslation($code,$lang = -1){	
+			if ($lang != -1)
+				$this->SetCurrentLanguage($lang);
 			if (isset($this->GetAllLanguageValues()[$code])){
 				return $this->GetAllLanguageValues()[$code];
 			}

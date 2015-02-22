@@ -312,6 +312,7 @@ if (typeof nys === "undefined")
         var text = "";
         var arguments = [];
         arguments.push("R_ERR_" + message);
+        arguments.push(language);
         var regex = /^\d+/;
         if (regex.exec(message) !== null){
             $.post('./Includes/api.inc.php', {

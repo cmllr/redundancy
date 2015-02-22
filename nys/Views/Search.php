@@ -3,7 +3,7 @@
     <div class="alert alert-info"><?php 
     if (count($results) == 0)
       $results = "36";
-    $error = $router->DoRequest('Kernel.InterfaceKernel','GetErrorCodeTranslation',json_encode(array("R_ERR_".$results)));
+    $error = $router->DoRequest('Kernel.InterfaceKernel','GetErrorCodeTranslation',json_encode(array("R_ERR_".$results,$_SESSION["Language"])));
     echo $error;?></div>
   <?php endif;?>
   <?php if (!is_numeric($results)) :?>

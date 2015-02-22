@@ -41,6 +41,7 @@ if ($.urlParam("d") != null)
 	currentDir = decodeURI($.urlParam("d"));
 var token = "<?php echo $_SESSION['Token']; ?>";
 var targets = null;
+var language = "<?php echo $_SESSION['Language']; ?>";
 nys.Init();  	   
   function AddContextMenu(entry){
   	$(function(){
