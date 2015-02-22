@@ -32,7 +32,11 @@
 		*/
 		public function LogIn($router){	
 			$isRegistrationEnabled = $router->DoRequest('Kernel','GetConfigValue',json_encode(array("Enable_Register")));			
-			
+			$old = $_SERVER["REQUEST_URI"];
+			$returnTo = $router->DoRequest('Kernel.InterfaceKernel','GetReturnTo',json_encode(array($old)));	
+			//correct if the requested route was the logout
+			if ($returnTo == "login")
+				$returnTo = "main";
 			if (!isset($_POST['username'],$_POST['password'])){				
 				include 'Views/LogIn.php';
 			}else
@@ -51,8 +55,8 @@
 							$_SESSION["StayLoggedIn"] = true;
 						$_SESSION['Token'] = $result;
 						$_SESSION['Language'] = $_POST['lang'];
-					}								
-					$router->DoRedirect('main');
+					}											
+					$router->DoRedirect($_POST["returnTo"]);
 				}					
 			}
 		}

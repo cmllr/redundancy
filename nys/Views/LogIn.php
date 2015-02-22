@@ -16,6 +16,7 @@
             <div class='panel-body'>
                 <h1 class="light header-form gray">Login</h1>
                 <form class='form' role='form' method='POST' action='?login'>
+                <input type="hidden" name="returnTo" value="<?php echo $returnTo;?>">
                     <div class='form-group '>
                         <label for='username'>
                             <?php echo $GLOBALS['Language']->Username;?></label>

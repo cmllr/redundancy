@@ -194,5 +194,20 @@
 		public function FormatDateDayOnly($datestr) {			
 			return date("j. M Y",strtotime($datestr));
 		}
+		/**
+		* Get the part of the uri to redirect to after an action
+		* @param string $uri the uri
+		* @return string the View name. In Case of error "main"
+		*/
+		public function GetReturnTo($uri){
+			$returnTo = "main"; //default view
+			$regex = "/\?(?<return>.{1,})/";
+			$matches;
+			$result = preg_match($regex, $uri,$matches);
+			if (isset($matches["return"]) && $result != 0)
+				return $matches["return"];
+			else
+				return $returnTo;
+		}
 	}
 ?>

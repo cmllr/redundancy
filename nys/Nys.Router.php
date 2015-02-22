@@ -101,6 +101,18 @@
 				return false;
 			}
 		}
+		private function TryToExecuteRoute($routes){
+			$executed = false;
+			foreach ($routes as $key => $value) {
+				if (isset($_GET[$key])){
+					call_user_func_array(array($this->controller,$value), array($this));
+					$executed = true;
+					break;
+				}
+			}
+			if (!$executed)
+				call_user_func_array(array($this->controller,$routes["default"]), array($this));
+		}
 		/**
 		* Routes the user to the wanted view
 		* @param $url the current url
@@ -112,53 +124,36 @@
 				return;
 			}	
 			$this->TriggerLogoutIfNeeded();
+			$loggedInRoutes = array(
+				"main" => "Main",
+				"info"=>"Info",
+				"logout"=>"LogOut",
+				"files"=>"Files",
+				"upload"=>"Upload",
+				"detail" => "Detail",
+				"download" => "Download",
+				"account" => "Account",
+				"shares" => "Shares",
+				"zipfolder" => "DownloadZip",
+				"history" => "Changes",
+				"admin"=> "Admin",
+				"search"=>"Search",
+				"update"=>"Update",	
+				"default"=>"Main",			
+			);
+			$notLoggedInRoutes = array(
+				"info"=>"Info",
+				"login" => "LogIn",
+				"share"=>"Share",
+				"shared"=>"SharedDownload",
+				"register"=>"Register",
+				"default"=>"LogIn",
+			);
 			if (isset($_SESSION['Token']) && !empty($_SESSION["Token"])){
-				if (isset($_GET['main']))
-					$this->controller->Main($this);	
-				else if (isset($_GET['info']))
-					$this->controller->Info($this);		
-				else if (isset($_GET['logout']))
-					$this->controller->LogOut($this);
-				else if (isset($_GET['files']))
-					$this->controller->Files($this);	
-				else if (isset($_GET['newfolder']))
-					$this->controller->NewFolder($this);	
-				else if (isset($_GET['upload']))
-					$this->controller->Upload($this);	
-				else if (isset($_GET['detail']))
-					$this->controller->Detail($this);	
-				else if (isset($_GET['download']))
-					$this->controller->Download($this);		
-				else if (isset($_GET['account']))
-					$this->controller->Account($this);	
-				else if (isset($_GET['shares']))
-					$this->controller->Shares($this);
-				else if (isset($_GET["zipfolder"]))
-					$this->controller->DownloadZip($this);	
-				else if (isset($_GET["history"]))
-					$this->controller->Changes($this);	
-				else if (isset($_GET["admin"]))
-					$this->controller->Admin($this);	
-				else if (isset($_GET["search"]))
-					$this->controller->Search($this);
-				else if (isset($_GET["update"]))
-					$this->controller->Update($this);									
-				else
-					$this->DoRedirect('main');
+				$this->TryToExecuteRoute($loggedInRoutes);				
 			}		
-			else{
-				if (isset($_GET['info']))
-					$this->controller->Info($this);					
-				else if (isset($_GET['login']))				
-					$this->controller->LogIn($this);	
-				else if (isset($_GET["share"]))
-					$this->controller->Share($this);
-				else if (isset($_GET["shared"]))
-					$this->controller->SharedDownload($this);				
-				else if (isset($_GET["register"]))
-					$this->controller->Register($this);
-				else
-					$this->controller->LogIn($this);		
+			else{			
+				$this->TryToExecuteRoute($notLoggedInRoutes);	
 			}									
 		}		
 		/**
@@ -220,7 +215,7 @@
 			if ($denied != false){
 				header('Location:?'.$to."&rd=1");
 			}
-			else{
+			else{				
 				header('Location:?'.$to);
 			}			
 			exit;
