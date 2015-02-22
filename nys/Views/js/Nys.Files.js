@@ -69,6 +69,7 @@ if (typeof nys === "undefined")
         nys.DisplaySpinner();
         var arguments = [];
         arguments.push(token);
+
         $.post('./Includes/api.inc.php', {
             module: 'Kernel.FileSystemKernel',
             method: 'GetFolderList',
@@ -106,15 +107,14 @@ if (typeof nys === "undefined")
                            $(window).scrollTop(nys.ScrollPosition);
                     })
                     .fail(function(e) {
-                        $("#list").remove();
-                        $(".panel-body").append("<div class='alert alert-danger'>R_ERR_" + e.responseText + "</div>");
+                        $("#list").remove();                                    
                         DisplayBreadcrumbs("/");
-                        HideSpinner();
-                        nys.IEHack();
+                        HideSpinner();  
+                        currentDir = "/";                      
+                        nys.ErrorDialog(e.responseText); 
                     });
             })
-            .fail(function(e) {
-                console.log(e);
+            .fail(function(e) {                
                 nys.ErrorDialog(e.responseText);
             });
     }
@@ -178,7 +178,7 @@ if (typeof nys === "undefined")
         }
     }
 
-    function DisplayContent(data) {
+    function DisplayContent(data) {      
         for (var i = 0; i < data.length; i++) {
             var content = '';
             content = "<tr class='entry' id='" + data[i].Hash + "'><td>";

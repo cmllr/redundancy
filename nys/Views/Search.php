@@ -1,6 +1,10 @@
 <h2><?php echo $GLOBALS["Language"]->SearchResults;?> - <?php echo sprintf($GLOBALS["Language"]->SearchTerm,$_POST["Search"]);?></h2>
-    <?php if (is_numeric($results)) :?>
-    <div class="alert alert-danger"><?php echo "R_ERR_".$results;?></div>
+    <?php if (is_numeric($results) || count($results) == 0) :?>
+    <div class="alert alert-info"><?php 
+    if (count($results) == 0)
+      $results = "36";
+    $error = $router->DoRequest('Kernel.InterfaceKernel','GetErrorCodeTranslation',json_encode(array("R_ERR_".$results)));
+    echo $error;?></div>
   <?php endif;?>
   <?php if (!is_numeric($results)) :?>
   <div class="panel-body">
