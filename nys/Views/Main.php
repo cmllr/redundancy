@@ -158,13 +158,7 @@
                     <?php endif;?>
                 </li>
                 <li>
-                    <?php if (!isset($_GET["files"])) :?>
-                    <a href='?newfolder'>
-                        <span class='fa fa-folder-open'>&nbsp;</span>
-                        <?php echo $GLOBALS['Language']->New_Directory_Short;?>
-                    </a>
-                    <?php endif;?>
-                        <?php if (isset($_GET["files"])) :?>
+                    <?php if (isset($_GET["files"])) :?>
                      <a id ="newDirHref" href='#'>
                         <span class='fa fa-folder-open'>&nbsp;</span>
                         <?php echo $GLOBALS['Language']->New_Directory_Short;?>
@@ -282,5 +276,11 @@ Dropzone.options.myAwesomeDropzone = {
   dictCancelUploadConfirmation: '<?php  echo $GLOBALS['Language']->dictCancelUploadConfirmation;?>', 
 
 };
+</script>
+<script>
+//Fu' you, IE
+$(document).ready(function(){
+    nys.IEHack();
+});
 </script>
 </div>
