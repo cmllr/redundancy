@@ -142,7 +142,8 @@
 				"search"=>"Search",
 				"update"=>"Update",	
 				"default"=>"Main",	
-				"newfolder" =>"NewFolder",		
+				"newfolder" =>"NewFolder",	
+				"share" => "Share",	
 			);
 			$notLoggedInRoutes = array(
 				"info"=>"Info",

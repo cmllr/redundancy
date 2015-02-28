@@ -480,7 +480,17 @@
 			$filePath = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetSystemDir',json_encode(array(0))).$entry->FilePath;
 			$mediaPreview = $GLOBALS['Router']->DoRequest('Kernel.InterfaceKernel','MediaPreview',json_encode(array($filePath,"./nys/Views/Partials","preview")));
 			$_SESSION["fileInject"] = $filePath;
-			include 'Views/Share.php';
+			
+			if (!isset($_SESSION["Token"])){
+				//If the user is not logged in -> Display share dialog
+				include 'Views/Share.php';
+			}
+			else{
+				$data = $this->InjectSessionData($router);
+				//display the regular share dialog included in the main frame
+				$innerContent = "Share.php";
+				include "Views/Main.php";
+			}
 		}
 		/**
 		* Prepare the download of a shared file
