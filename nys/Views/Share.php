@@ -5,7 +5,8 @@
 				<div class="panel-body">
 					<?php 
 						if (is_numeric($mediaPreview)){
-							echo "R_ERR_$mediaPreview";
+							$error = $router->DoRequest('Kernel.InterfaceKernel','GetErrorCodeTranslation',json_encode(array("R_ERR_".$mediaPreview,$_SESSION["Language"])));
+    						echo $error;
 							unset($_SESSION["fileInject"]);
 						}
 						else
