@@ -1,7 +1,6 @@
 Redundancy Lenticularis (1.9.15 and up)  branch
 =================================
-[![Build Status](https://travis-ci.org/squarerootfury/redundancy.svg?branch=Lenticularis)](https://travis-ci.org/squarerootfury/redundancy)
-
+[![Build Status](https://travis-ci.org/Redundancycloud/redundancy.svg?branch=Lenticularis)](https://travis-ci.org/Redundancycloud/redundancy)
 > Please note: This branch is _only_ for developing purposes. This version is bleeding edge, instable, uncomplete and does not have all functions
 
 Redundancy is an lightweight cloud computing system. It is so lightweight that you can run it on microservers like the Raspberry Pi without having too much load.
