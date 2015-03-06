@@ -166,12 +166,10 @@
 			DBLayer::GetInstance()->RunUpdate("Update User set PasswordHash = '$newHash' where LoginName = '$username'");
 			//Check if the password was set
 			$check = DBLayer::GetInstance()->RunSelect(sprintf("Select count(id) as Amount from User where PasswordHash = '%s'",$newHash));
-			if (is_null($check))
+			if (is_null($check) || $check[0]["Amount"] == 0)
 				return false;			
-			if ($check[0]["Amount"] != "0")
-				return true;
 			else
-				return false;	
+				return true;
 		}
 	
 		/**
@@ -230,11 +228,13 @@
 			//Delete all files
 			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select * from FileSystem inner join User u on u.id = FileSystem.ownerId   where u.loginName = '%s'",$escapedLoginName));
 			$storagePath = $GLOBALS["Kernel"]->FileSystemKernel->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage);
-			foreach ($dbquery as $value){
-				if (!is_null($value)){
-					unlink($storagePath.$value["filePath"]);
+			if (!is_null($dbquery)){
+				foreach ($dbquery as $value){
+					if (!is_null($value)){
+						unlink($storagePath.$value["filePath"]);
+					}
 				}
-			}
+			}			
 			DBLayer::GetInstance()->RunDelete(sprintf("Delete from FileSystem where ownerId = (Select id from User where loginName = '%s' limit 1)",$escapedLoginName));
 			//Kill all sessions
 			$dbquery = DBLayer::GetInstance()->RunDelete(sprintf("Delete from Session where userID = (Select  id from User where User.loginName = '%s')",$escapedLoginName));
@@ -301,6 +301,12 @@
 			//values to set
 			$escapedDisplayName = DBLayer::GetInstance()->EscapeString($displayName,true);
 			$escapedEnabled = DBLayer::GetInstance()->EscapeString($enabled,true);
+			if ($escapedEnabled != true){
+				if ($escapedEnabled == "on")
+					$escapedEnabled = "1";
+				else
+					$escapedEnabled = "0";
+			}			
 			$escapedContingent = DBLayer::GetInstance()->EscapeString($contingentInByte,true);
 			$escapedNewPassword = DBLayer::GetInstance()->EscapeString($newPassword,true);
 			$escapedGroup = DBLayer::GetInstance()->EscapeString($group,true);
@@ -315,7 +321,6 @@
 				$query = sprintf("Update User set DisplayName = '%s' where ID = %d",$escapedDisplayName,$userToModify->ID);
 				DBLayer::GetInstance()->RunUpdate($query);
 			}
-			
 			//Update enabled state if needed
 			if ($userToModify->IsEnabled != $escapedEnabled){
 				if ($this->GetUser($escapedToken)->LoginName != $userToModify->LoginName){
@@ -347,7 +352,7 @@
 			}
 			
 			//Update group if needed
-			if ($escapedGroup != $userToModify->Role->Description){
+			if ($escapedGroup != $userToModify->Role->Id){
 				//Only update the group of other users to prevent locking out
 				if ($this->GetUser($escapedToken)->LoginName != $userToModify->LoginName){
 					$installedGroups  = $this->GetInstalledRoles();
