@@ -277,10 +277,4 @@ Dropzone.options.myAwesomeDropzone = {
 
 };
 </script>
-<script>
-//Fu' you, IE
-$(document).ready(function(){
-    nys.IEHack();
-});
-</script>
 </div>

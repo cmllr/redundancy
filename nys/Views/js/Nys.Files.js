@@ -101,8 +101,7 @@ if (typeof nys === "undefined")
                         }
                         DisplayContent(files);
                         DisplayBreadcrumbs(currentDir);
-                        HideSpinner();
-                        nys.IEHack();
+                        HideSpinner();                    
                         if (nys.ScrollPosition !== 'undefined')
                            $(window).scrollTop(nys.ScrollPosition);
                     })
