@@ -90,5 +90,25 @@
 		  	$got = $GLOBALS["Kernel"]->UpdateKernel->IsUpdateAvailable($remote,$local);	
 		  	$this->assertFalse($got);
 		}
+		public function testIsUpdateAvailable05(){				
+			$remote = array(
+				"major" => 1,
+				"minor" => 9,
+				"patch" => 15,
+				"branch" =>"beta",
+				"stage" => "1",
+				"update" => 4
+			);
+			$local = array(
+				"major" => 1,
+				"minor" => 9,
+				"patch" => 14,
+				"branch" =>"beta",
+				"stage" => "2",
+				"update" => 1
+			);
+		  	$got = $GLOBALS["Kernel"]->UpdateKernel->IsUpdateAvailable($remote,$local);	
+		  	$this->assertTrue($got);
+		}
 	}
 ?>

@@ -75,6 +75,34 @@
 		public function testConstruct(){
 			$c = new \Redundancy\Kernel\InterfaceKernel(-1);
 		}
+		public function testGetReturnTo01(){
+			$got = $GLOBALS["Kernel"]->InterfaceKernel->GetReturnTo("/?login");
+			$this->assertTrue($got =="login");
+		}
+		public function testGetReturnTo02(){
+			$got = $GLOBALS["Kernel"]->InterfaceKernel->GetReturnTo("/r2/index.php?files");
+			$this->assertTrue($got =="files");
+		}
+		public function testGetReturnTo03(){
+			$got = $GLOBALS["Kernel"]->InterfaceKernel->GetReturnTo("/r2/index.php?files&d=/dir2/");
+			$this->assertTrue($got =="files&d=/dir2/");
+		}
+		public function testGetReturnTo04(){
+			$got = $GLOBALS["Kernel"]->InterfaceKernel->GetReturnTo("/r2/index.php?");			
+			$this->assertTrue($got =="main");
+		}
+		public function testGetReturnTo05(){
+			$got = $GLOBALS["Kernel"]->InterfaceKernel->GetReturnTo("/r2/index.php");
+			$this->assertTrue($got =="main");
+		}
+		public function testGetReturnTo06(){
+			$got = $GLOBALS["Kernel"]->InterfaceKernel->GetReturnTo("");
+			$this->assertTrue($got =="main");
+		}
+		public function testGetReturnTo07(){
+			$got = $GLOBALS["Kernel"]->InterfaceKernel->GetReturnTo("/r2/index.php?files&d=/dir2/&x=y");
+			$this->assertTrue($got =="files&d=/dir2/&x=y");
+		}
 
 	}
 ?>

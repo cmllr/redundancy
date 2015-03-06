@@ -104,5 +104,20 @@
 			$this->assertTrue($got->Name=="Enable_Register");
 			$this->assertTrue($got->Type=="Boolean");
 		}
+		//***********************Tests IsMyIPBanned***********************
+		public function testIsMyIPBanned01(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->IsMyIPBanned();
+			$this->assertFalse($got);
+		}
+		public function testIsMyIPBanned02(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$ip = $GLOBALS["Kernel"]->UserKernel->GetIP();
+			$GLOBALS["Kernel"]->SystemKernel->BanUser($ip,"test");
+			$got = $GLOBALS["Kernel"]->SystemKernel->IsMyIPBanned();
+			$this->assertTrue($got);
+			$GLOBALS["Kernel"]->SystemKernel->UnBan($ip,$token);
+			$got = $GLOBALS["Kernel"]->SystemKernel->IsMyIPBanned();
+			$this->assertFalse($got);
+		}
 	}
 ?>

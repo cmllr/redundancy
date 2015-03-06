@@ -151,8 +151,7 @@
 			$this->assertTrue($got == \Redundancy\Classes\Errors::PermissionNotFound);
 		}
 		//***********************Tests ChangePassword()***********************
-		public function testChangePassword(){
-			// ChangePassword($token,$oldPassword,$newPassword){
+		public function testChangePassword01(){
 			$oldPassword = "test";
 			$newPassword = "test1";
 			$user = "testUser";
@@ -160,7 +159,7 @@
 			$got =  $GLOBALS["Kernel"]->UserKernel->ChangePassword($token,$oldPassword,$newPassword);
 			$testNewPassword = $GLOBALS["Kernel"]->UserKernel->Authentificate($user,$newPassword);			
 			$this->assertTrue($got && $testNewPassword);
-		}
+		}		
 		//***********************Tests GetUserRole()***********************
 		public function testGetUserRoleShouldSucceed(){		
 			$expected = new \Redundancy\Classes\Role();
@@ -443,12 +442,65 @@
 			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("sauerkraut",$token);		
 			$this->assertTrue($got == \Redundancy\Classes\Errors::UserNotExisting);
 		}
+		public function testDeleteUserByAdminPanel03(){			
+			$GLOBALS["Kernel"]->UserKernel->RegisterUser("tdubap3","tdubap3","tdubap3@localhost","tdubap3");		
+			 $_FILES = array(
+			    'file' => array(
+				'name' => 'testFileUpload',
+				'type' => 'text/plain',
+				'size' => 16,
+				'tmp_name' => __REDUNDANCY_ROOT__."test",
+				'error' => 0
+			    )
+			);			
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("tdubap3","tdubap3",true);
+			$got = $GLOBALS["Kernel"]->FileSystemKernel->UploadFile(-1,$token);		
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("tdubap3",$token);		
+			$this->assertTrue($got);
+			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("tdubap3",$token);		
+			$this->assertTrue($got == \Redundancy\Classes\Errors::UserNotExisting);
+		}		
 		//************************SetUserByAdminPanel**********************
 		public function testSetUserByAdminPanel01(){
 			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$GLOBALS["Kernel"]->UserKernel->RegisterUser("tdubap3","tdubap3","tdubap3@localhost","tdubap3");		
 			$testFS =  $GLOBALS["Kernel"]->UserKernel->GetUser($token);	
-			$got = $GLOBALS["Kernel"]->UserKernel->SetUserByAdminPanel($token,"testFS","testFS","off",$testFS->ContingentInByte,"",1);	
-			$this->assertTrue($got == \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify);
+			$got = $GLOBALS["Kernel"]->UserKernel->SetUserByAdminPanel($token,"tdubap3","RENAMEDtdubap3","on",$testFS->ContingentInByte +1,"sauerkraut",1);	
+			$this->assertTrue($got);			
+			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("tdubap3",$token);		
+			$this->assertTrue($got);
+			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("tdubap3",$token);		
+			$this->assertTrue($got == \Redundancy\Classes\Errors::UserNotExisting);
 		}		
+		public function testSetUserByAdminPanel02(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$GLOBALS["Kernel"]->UserKernel->RegisterUser("tdubap3","tdubap3","tdubap3@localhost","tdubap3");		
+			$testFS =  $GLOBALS["Kernel"]->UserKernel->GetUser($token);	
+			$got = $GLOBALS["Kernel"]->UserKernel->SetUserByAdminPanel($token,"tdubap3","RENAMEDtdubap3","on",$testFS->ContingentInByte * -1 ,"sauerkraut",1);	
+			$this->assertFalse($got);			
+			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("tdubap3",$token);		
+			$this->assertTrue($got);
+			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("tdubap3",$token);		
+			$this->assertTrue($got == \Redundancy\Classes\Errors::UserNotExisting);
+		}	
+		public function testSetUserByAdminPanel03(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);					
+			$testFS =  $GLOBALS["Kernel"]->UserKernel->GetUser($token);	
+			$got = $GLOBALS["Kernel"]->UserKernel->SetUserByAdminPanel($token,"testFS","testFS","on",$testFS->ContingentInByte,"",1);	
+			$this->assertTrue($got == \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify);		
+		}
+		public function testSetUserByAdminPanel04(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$GLOBALS["Kernel"]->UserKernel->RegisterUser("tdubap4","tdubap4","tdubap4@localhost","tdubap3");		
+			$testFS =  $GLOBALS["Kernel"]->UserKernel->GetUser($token);	
+			$got = $GLOBALS["Kernel"]->UserKernel->SetUserByAdminPanel($token,"tdubap4","RENAMEDtdubap3","off",$testFS->ContingentInByte,"sauerkraut",2);	
+			$this->assertTrue($got);			
+			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("tdubap4",$token);		
+			$this->assertTrue($got);
+			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("tdubap4",$token);		
+			$this->assertTrue($got == \Redundancy\Classes\Errors::UserNotExisting);
+		}
+
 	}
 ?>

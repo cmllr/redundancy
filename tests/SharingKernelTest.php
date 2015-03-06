@@ -169,8 +169,8 @@
 			//ShareToUser($absolutePath,$to,$token)		
 			//create a target user...to share it to the user..
 			$GLOBALS["Kernel"]->UserKernel->RegisterUser("target","target","target@localhost.lan","target");		
-			$targetToken =  $GLOBALS["Kernel"]->UserKernel->LogIn("target","target",true);
-			$targetID = $owner = $GLOBALS["Kernel"]->UserKernel->GetUser($targetToken)->ID;
+			$targetToken =  $GLOBALS["Kernel"]->UserKernel->LogIn("target","target",true);		
+			$targetID = $GLOBALS["Kernel"]->UserKernel->GetUser($targetToken)->ID;
 			$code = $GLOBALS["Kernel"]->SharingKernel->ShareToUser("/testUpload4Share",$targetID,$token);
 			$this->assertTrue($code != false);			
 			$got = $GLOBALS["Kernel"]->SharingKernel->IsEntryShared("/testUpload4Share",$token,\Redundancy\Classes\ShareMode::ToUser);
