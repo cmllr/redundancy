@@ -115,12 +115,12 @@
 
         <div class="white-flat">
             <ul class='nav nav-pills nav-stacked'>
-                <li>
+                <!--<li>
                     <a href='index.php'>
                         <span class='fa fa-home'>&nbsp;</span>
                         <?php echo $GLOBALS['Language']->Home;?>
                     </a>
-                </li>
+                </li>-->
                 <li>
                     <a href='?files'>
                         <span class='fa fa-cloud'>&nbsp;</span>
