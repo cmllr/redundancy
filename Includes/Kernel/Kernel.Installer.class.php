@@ -80,7 +80,7 @@
 				$driver = "pdo_mysql";
 			$content =preg_replace("/const\s+DBDriver+\s+=\s+\".{0,}\";/", "const DBDriver = \"$driver\";", $content);
 			if (file_exists($dbname))
-				$content =preg_replace("/const\s+DBPath+\s+=\s+\".{0,}\";/", "const DBDriver = \"$dbpath\";", $content);
+				$content =preg_replace("/const\s+DBPath+\s+=\s+\".{0,}\";/", "const DBPath = \"$dbpath\";", $content);
 			if (file_put_contents(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Config.class.php", $content) === false)
 				return false;
 			else
