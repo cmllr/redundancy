@@ -352,6 +352,9 @@ Unzip = "Entpacken";
 
 Clear="Liste leeren";
 Abort_Upload_Message= "Hochladen wirklich abbrechen?";
+Abort_Extract_Message="Entpacken wirklich abbrechen?";
+ResetLink ="Es wurde ein neues Passwort angefordert. Unter %s kannst Du ein neues Passwort setzen. Solltest Du das nicht gewesen sein, kannst Du diese Mail ignorieren.";
+
 
 R_ERR_NULL = "Es konnten keine Informationen ermittelt werden!";
 

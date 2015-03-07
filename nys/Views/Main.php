@@ -144,7 +144,7 @@
                         <div id="uploadHrefProgress"></div>            
                         <a id="uploadHref" href='#'>         
                             <span class='fa fa-cloud-upload'>&nbsp;</span>
-                            <?php echo $GLOBALS['Language']->Upload;?>   <span id="uploadPercentage"></span>                           
+                            <?php echo $GLOBALS['Language']->Upload;?>   <span id="uploadPercentage"></span>                              
                         </a>
                     <script>
                     $("#uploadHref").click(function(){
@@ -153,6 +153,8 @@
                     $(window).bind('beforeunload', function(){
                     if ($("#uploadPercentage").text() != "")
                         return "<?php echo $GLOBALS['Language']->Abort_Upload_Message;?>";
+                    if ($("#statusExtract").attr("style") == undefined)
+                        return "<?php echo $GLOBALS['Language']->Abort_Extract_Message;?>";
                     });
                     </script>
                     <?php endif;?>
@@ -183,6 +185,9 @@
                 </li>
                  <li id="statusMove" style="display: none;">
                      <a href="#"><i class='fa fa-spinner fa-spin'></i> <?php echo $GLOBALS["Language"]->Move;?>...</a>
+                 </li>
+                 <li id = "statusExtract" style="display:none;">
+                    <a href="#"><i class='fa fa-spinner fa-spin'></i> <?php echo $GLOBALS["Language"]->Unzip;?>...</a>
                  </li>
             </ul>
         </div>

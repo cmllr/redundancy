@@ -124,6 +124,7 @@ nys.Init();
         arguments.push(entry.Hash);
         arguments.push(token);
         arguments.push(currentDir);
+        $("#statusExtract").fadeIn();
         $.post('./Includes/api.inc.php', {
             module: 'Kernel.FileSystemKernel',
             method: 'UnzipInPlace',
@@ -131,10 +132,12 @@ nys.Init();
         })
         .done(function(data) {           
             nys.Init();
+            $("#statusExtract").fadeOut();
         })
         .fail(function(e) {
             console.log(e);
             nys.ErrorDialog(e.responseText);
+            $("#statusExtract").fadeOut();
         });
   }
   function MoveOrCopyFileDialog(entry,move,targets){  	 	
