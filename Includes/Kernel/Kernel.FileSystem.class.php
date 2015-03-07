@@ -261,8 +261,12 @@
 		* @param $tempPath string the temporary file path
 		*/
 		private function CleanUpTemp($tempPath){
-			if (strpos($tempPath, "REDUNDANCY") !== false || !$GLOBALS["Kernel"]->SystemKernel->IsInTestEnvironment())
+			//Only delete if neeeded (when the file was uploaded using the UI/ UploadFileWrapper)
+			if (strpos($tempPath, "REDUNDANCY") > 0 || !$GLOBALS["Kernel"]->SystemKernel->IsInTestEnvironment())
+			{
+				if (file_exists($tempPath))
 					unlink($tempPath);
+			}	
 		}
 		/**
 		* Delete an directory
