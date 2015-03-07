@@ -69,7 +69,7 @@
 			}
 			return $result;
 		}
-		public function WriteDBConfig($user,$pass,$host,$dbname,$driver){
+		public function WriteDBConfig($user,$pass,$host,$dbname,$driver,$dbpath = ""){
 			$content = file_get_contents(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Config.class.php");
 			$content =preg_replace("/const\s+DBName+\s+=\s+\".{0,}\";/", "const DBName = \"$dbname\";", $content);
 			$content =preg_replace("/const\s+DBUser+\s+=\s+\".{0,}\";/", "const DBUser = \"$user\";", $content);
@@ -80,7 +80,7 @@
 				$driver = "pdo_mysql";
 			$content =preg_replace("/const\s+DBDriver+\s+=\s+\".{0,}\";/", "const DBDriver = \"$driver\";", $content);
 			if (file_exists($dbname))
-				$content =preg_replace("/const\s+DBPath+\s+=\s+\".{0,}\";/", "const DBDriver = \"$DBPath\";", $content);
+				$content =preg_replace("/const\s+DBPath+\s+=\s+\".{0,}\";/", "const DBDriver = \"$dbpath\";", $content);
 			if (file_put_contents(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Config.class.php", $content) === false)
 				return false;
 			else
@@ -91,7 +91,7 @@
 			$dirs["/Storage/"] = is_writeable(__REDUNDANCY_ROOT__."Storage/");
 			$dirs["/Temp/"] = is_writeable(__REDUNDANCY_ROOT__."Temp/");
 			$dirs["/Snapshots/"] = is_writeable(__REDUNDANCY_ROOT__."Snapshots/");
-			$dirs["Database-Config"] = is_writeable(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.class.php");			
+			$dirs["Database-Config"] = is_writeable(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Config.class.php");			
 			return $dirs;
 		}
 		public function GetExtensionStatus(){
@@ -101,7 +101,13 @@
 			$extensions["file"] = function_exists("finfo_open");
 			return $extensions;
 		}
-
+		public function GetSettings(){
+			$settings = array();
+			$settings["upload_max_filesize"] = ini_get("upload_max_filesize") > "3M";
+			$settings["post_max_size"] = ini_get("post_max_size") > "3M";
+			$settings["max_execution_time"] = ini_get("max_execution_time") != "30";
+			return $settings;
+		}
 		public function DoTheImport(){
 			require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Config.class.php";
 			$content = file_get_contents(__REDUNDANCY_ROOT__."Dump.sql");
@@ -147,7 +153,7 @@
 				];
 			return password_hash($password, PASSWORD_BCRYPT, $options);
 		}
-		public function SetUser($user,$pass){
+		public function SetUser($user,$pass,$email){
 			require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Config.class.php";
 			try{
 				$classLoader = new ClassLoader('Doctrine\DBAL', __REDUNDANCY_ROOT__."Lib/Doctrine");
@@ -168,7 +174,8 @@
 				$conn->connect();
 				try{					
 					$pass = $this->HashPassword($pass);
-					$result =  $conn->query("Update User set loginName = '$user',passwordHash = '$pass' where ID = 1");				
+					$registered= date("Y-m-d H:i:s",time());
+					$result =  $conn->query("Update User set loginName = '$user',passwordHash = '$pass',mailAddress ='$email',registrationDateTime ='$registered' where ID = 1");				
 				}catch(\Exception $e){
 					return false;
 				}

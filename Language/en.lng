@@ -364,6 +364,9 @@ Clear="clear list";
 Abort_Upload_Message= "Do you really want to cancel the upload process?";
 Abort_Extract_Message ="Do you really want to cancel the extraction process?";
 ResetLink ="A password recovery was requested. Follow %s to set a new password. If you did not request it, you can ignore this mail.";
+Configuration ="Following settings are recommended for Redundancy";
+Configuration_OK = "OK";
+Configuration_Fail = "Critical";
 
 R_ERR_NULL = "Could not get any information!";
 R_ERR_3 = "Username or password already given";

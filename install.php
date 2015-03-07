@@ -27,6 +27,7 @@
         $lng = $_GET["lng"];
         $dirs = $k->GetDirectoryPermissions();
         $extensions = $k->GetExtensionStatus();
+        $settings = $k->GetSettings();
     }
     if (isset($_GET["step"]) && $_GET["step"] == "license"){
         $step = 3;
@@ -44,7 +45,7 @@
             $step = 5;
     }
     else if (isset($_POST["username"]) && $_POST["password"] == $_POST["password_repeat"]){
-        if ($k->SetUser($_POST["username"],$_POST["password"]))
+        if ($k->SetUser($_POST["username"],$_POST["password"],$_POST["email"]))
             $k->Lock();
         $step = 6;
     }
@@ -93,6 +94,18 @@
                                         }                                           
                                         else
                                             echo "<span class='label label-success'>".$GLOBALS["Language"]["Extension_Existing"]."</span>";
+                                       ?></li>
+                                    <?php endforeach;?>
+                                </ul>
+                                 <div class="alert alert-info "><?php echo $GLOBALS["Language"]["Configuration"];?></div>
+                                <ul class="list-group">
+                                    <?php foreach($settings as $key => $value) :?>
+                                       <li class="list-group-item"><?php echo $key;?> - <?php
+                                        if ($value == false){
+                                            echo  "<span class='label label-danger'>".$GLOBALS["Language"]["Configuration_Fail"]."</span>";
+                                        }                                           
+                                        else
+                                            echo "<span class='label label-success'>".$GLOBALS["Language"]["Configuration_OK"]."</span>";
                                        ?></li>
                                     <?php endforeach;?>
                                 </ul>
@@ -163,11 +176,15 @@
                                             <?php echo $GLOBALS['Language']["Username"];?></label>
                                         <input type='text' class='form-control' name='username' placeholder='<?php echo $GLOBALS['Language']["Username"];?>' required>
                                     </div>
+                                    <div class="form-group ">
+                                        <label for="email"><?php echo $GLOBALS['Language']["Email"];?></label>
+                                        <input type="email" class="form-control" name="email" placeholder="E-Mail">
+                                    </div>
                                     <div class='form-group '>
                                         <label for='password'>
                                             <?php echo $GLOBALS['Language']["Password"];?></label>
                                         <input type='password' class='form-control' name='password' placeholder='<?php echo $GLOBALS['Language']["Password"];?>' required>
-                                    </div>
+                                    </div>                                    
                                     <div class='form-group '>
                                         <label for='password_repeat'>
                                             <?php echo $GLOBALS['Language']["Repeat_Password"];?></label>
