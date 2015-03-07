@@ -39,7 +39,7 @@
                 </div>
                 <div class="btn-group">
                     <button type='submit' class='btn btn-primary'>
-                        <?php echo $GLOBALS['Language']->Log_In;?></button>
+                        <?php echo $GLOBALS['Language']->Register;?></button>
                     <a class="btn btn-default" href="?login"><?php echo $GLOBALS['Language']->Abort;?></a>
                 </div>
             </form>
