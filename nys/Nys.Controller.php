@@ -124,28 +124,9 @@
 		* @param $router the Router-Object to be used.
 		* @param string $e an error to get displayed
 		*/
-		public function Main($router,$e = ""){			
-			$data = $this->InjectSessionData($router);		
-			if ($e != "")
-				$ERROR = $e;
-			$innerContent = 'StartPage.php';				
-			//Set the varaiables to be injected.
-			$storageStats = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetStorage',json_encode(array($_SESSION['Token'])));	
-			$storageSize = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetCorrectedUnit',json_encode(array($storageStats->sizeInByte)));	
-			$usedStorageSize = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetCorrectedUnit',json_encode(array($storageStats->usedStorageInByte)));	 		
-			$percentage = ($storageStats->usedStorageInByte != 0) ? 100/($storageStats->sizeInByte/$storageStats->usedStorageInByte) : 0;			
-			$storageInfo = $usedStorageSize.' '.$GLOBALS['Language']->of.' '.$storageSize.' '.$GLOBALS['Language']->used;		
-			$completeVersion = $version = $GLOBALS["Router"]->DoRequest("Kernel","GetVersion",json_encode(array()));
-			$version = $GLOBALS["Router"]->DoRequest("Kernel","GetShortenedVersion",json_encode(array()));
-			if (strpos($completeVersion,"eol") !== false)
-				$state = $GLOBALS["Language"]->EOL;
-			else  if (strpos($completeVersion,"beta") !== false)
-				$state = $GLOBALS["Language"]->Unstable;
-			else if (strpos($completeVersion,"rc") !== false)
-				$state = $GLOBALS["Language"]->RC;
-			else
-				$state = $GLOBALS["Language"]->Stable;
-			include 'Views/Main.php';
+		public function Main($router,$e = ""){	
+			$router->DoRedirect('files');
+			return;					
 		}
 		/**
 		* Display the Info-Page

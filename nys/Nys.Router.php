@@ -127,7 +127,7 @@
 			}	
 			$this->TriggerLogoutIfNeeded();
 			$loggedInRoutes = array(
-				//"main" => "Main",
+				"main" => "main",
 				"info"=>"Info",
 				"logout"=>"LogOut",
 				"files"=>"Files",
