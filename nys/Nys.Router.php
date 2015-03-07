@@ -141,7 +141,7 @@
 				"admin"=> "Admin",
 				"search"=>"Search",
 				"update"=>"Update",	
-				"default"=>"Files",	
+				"default"=>"main", //The main route redirects to the old one. IN result, files is displayed.	
 				"newfolder" =>"NewFolder",	
 				"share" => "Share",	
 			);
