@@ -5,7 +5,7 @@
 	namespace Redundancy\Kernel;
 
 	//**********************************************third party stuff*********************************
-	require_once __REDUNDANCY_ROOT__.'Lib/Doctrine/Doctrine/Common/ClassLoader.php';	
+	//require_once __REDUNDANCY_ROOT__.'Lib/Doctrine/Doctrine/Common/ClassLoader.php';	
 	use Doctrine\Common\ClassLoader;
 	use Doctrine\DBAL;
 	use Doctrine\Common;
@@ -43,28 +43,23 @@
 			else
 				$GLOBALS["Language"] = parse_ini_file("./Language/de.lng");
 		}
-		public function TestDBConnection($user,$pass,$host,$dbname,$driver){
+		public function TestDBConnection($user,$pass,$host,$dbname,$driver,$path){
 			$result = false;
 			try{
-				$classLoader = new ClassLoader('Doctrine\DBAL', __REDUNDANCY_ROOT__."Lib/Doctrine");
-				$commonLoader = new ClassLoader('Doctrine\Common', __REDUNDANCY_ROOT__."Lib/Doctrine");
-				$classLoader->register();
-				$commonLoader->register();
-				$config = new \Doctrine\DBAL\Configuration();
-				$connectionParams = array(
-					'dbname' =>$dbname,
-				    'user' =>  $user,
-				    'password' => $pass,
-				    'host' =>$host,
-				);
-				if (file_exists($dbname))
-					$connectionParams["path"] = $dbname;
-				if ($driver = "MySQL")
-					$connectionParams["driver"] = "pdo_mysql";
-				$conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
-				$conn->connect();
-				$result =  $conn->isConnected();
-			}catch(\Exception $e){
+				require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.PDO.class.php";
+
+				if ($driver == "MySQL"){				
+					$connectionString = "mysql:dbname=".$dbname.";host=".$host;					
+					$options = array(
+						\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'UTF8'",
+					);
+					$pdo =  new \PDO($connectionString,$user,$pass,$options);	
+				}else{
+					$connectionString="sqlite:".\Redundancy\Kernel\Config::DBPath;
+					$pdo =  new \PDO($connectionString);	
+				}							
+				return true;				
+			}catch(\Exception $e){				
 				$result = false;
 			}
 			return $result;
@@ -78,9 +73,11 @@
 
 			if ($driver == "MySQL")
 				$driver = "pdo_mysql";
+			else if ($driver == "SQLite")
+				$driver = "pdo_sqlite";
 			$content =preg_replace("/const\s+DBDriver+\s+=\s+\".{0,}\";/", "const DBDriver = \"$driver\";", $content);
-			if (file_exists($dbname))
-				$content =preg_replace("/const\s+DBPath+\s+=\s+\".{0,}\";/", "const DBPath = \"$dbpath\";", $content);
+			$content =preg_replace("/const\s+DBPath+\s+=\s+\".{0,}\";/", "const DBPath = \"$dbpath\";", $content);
+			
 			if (file_put_contents(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Config.class.php", $content) === false)
 				return false;
 			else
@@ -110,30 +107,17 @@
 		}
 		public function DoTheImport(){
 			require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Config.class.php";
-			$content = file_get_contents(__REDUNDANCY_ROOT__."Dump.sql");
-			$queries = explode(";", $content);
+			require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.PDO.class.php";
+			$dump = str_replace("pdo_", "", \Redundancy\Kernel\Config::DBDriver);
+			$content = file_get_contents(__REDUNDANCY_ROOT__."Dumps/".$dump.".sql");
+			$queries = explode(";", $content);			
 			try{
-				$classLoader = new ClassLoader('Doctrine\DBAL', __REDUNDANCY_ROOT__."Lib/Doctrine");
-				$commonLoader = new ClassLoader('Doctrine\Common', __REDUNDANCY_ROOT__."Lib/Doctrine");
-				$classLoader->register();
-				$commonLoader->register();
-				$config = new \Doctrine\DBAL\Configuration();
-				$connectionParams = array(
-					'dbname' => \Redundancy\Kernel\Config::DBName,
-				    'user' =>  \Redundancy\Kernel\Config::DBUser,
-				    'password' =>\Redundancy\Kernel\Config::DBPassword,
-				    'host' => \Redundancy\Kernel\Config::DBHost,
-				    'driver' => \Redundancy\Kernel\Config::DBDriver,
-				);
-				if (!empty(\Redundancy\Kernel\Config::DBPath))
-					$connectionParams["path"] =  \Redundancy\Kernel\Config::DBPath;
-				$conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
-				$conn->connect();
 				try{
-					foreach ($queries as $key => $value) {
-						$result =  $conn->query($value);
+					foreach ($queries as $key => $value) {					
+						if (!empty($value))
+							$result =  \Redundancy\Kernel\DBLayer::GetInstance()->GetConnection()->query($value);
 					}
-				}catch(\Exception $e){
+				}catch(\Exception $e){					
 					return false;
 				}
 				return true;
@@ -155,26 +139,12 @@
 		}
 		public function SetUser($user,$pass,$email){
 			require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Config.class.php";
+			require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.PDO.class.php";
 			try{
-				$classLoader = new ClassLoader('Doctrine\DBAL', __REDUNDANCY_ROOT__."Lib/Doctrine");
-				$commonLoader = new ClassLoader('Doctrine\Common', __REDUNDANCY_ROOT__."Lib/Doctrine");
-				$classLoader->register();
-				$commonLoader->register();
-				$config = new \Doctrine\DBAL\Configuration();
-				$connectionParams = array(
-					'dbname' => \Redundancy\Kernel\Config::DBName,
-				    'user' =>  \Redundancy\Kernel\Config::DBUser,
-				    'password' =>\Redundancy\Kernel\Config::DBPassword,
-				    'host' => \Redundancy\Kernel\Config::DBHost,
-				    'driver' => \Redundancy\Kernel\Config::DBDriver,
-				);
-				if (!empty(\Redundancy\Kernel\Config::DBPath))
-					$connectionParams["path"] =  \Redundancy\Kernel\Config::DBPath;
-				$conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
-				$conn->connect();
 				try{					
 					$pass = $this->HashPassword($pass);
 					$registered= date("Y-m-d H:i:s",time());
+					$conn = \Redundancy\Kernel\DBLayer::GetInstance()->GetConnection();
 					$result =  $conn->query("Update User set loginName = '$user',passwordHash = '$pass',mailAddress ='$email',registrationDateTime ='$registered' where ID = 1");				
 				}catch(\Exception $e){
 					return false;

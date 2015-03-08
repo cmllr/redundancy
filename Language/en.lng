@@ -367,6 +367,7 @@ ResetLink ="A password recovery was requested. Follow %s to set a new password. 
 Configuration ="Following settings are recommended for Redundancy";
 Configuration_OK = "OK";
 Configuration_Fail = "Critical";
+DatabasePath="Database path";
 
 R_ERR_NULL = "Could not get any information!";
 R_ERR_3 = "Username or password already given";
