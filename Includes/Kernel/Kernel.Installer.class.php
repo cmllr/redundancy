@@ -5,10 +5,6 @@
 	namespace Redundancy\Kernel;
 
 	//**********************************************third party stuff*********************************
-	//require_once __REDUNDANCY_ROOT__.'Lib/Doctrine/Doctrine/Common/ClassLoader.php';	
-	use Doctrine\Common\ClassLoader;
-	use Doctrine\DBAL;
-	use Doctrine\Common;
 	/**
 	* This class contains needed functions to install Redundancy
 	* @license
