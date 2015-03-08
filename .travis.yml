@@ -3,7 +3,7 @@ php:
   - 5.5
 before_script:
   - mysql -e 'create database Lenticularis;'
-  - mysql -u root  Lenticularis < ./TestDump.sql
+  - mysql -u root  Lenticularis < ./Dumps/mysql.sql
   - chmod 777 ./Storage
 script: phpunit --configuration ./runTests.xml
 # whitelist
