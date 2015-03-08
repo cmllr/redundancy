@@ -51,7 +51,7 @@
 					);
 					$pdo =  new \PDO($connectionString,$user,$pass,$options);	
 				}else{
-					$connectionString="sqlite:".\Redundancy\Kernel\Config::DBPath;
+					$connectionString="sqlite:".$path;
 					$pdo =  new \PDO($connectionString);	
 				}							
 				return true;				
