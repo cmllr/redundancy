@@ -84,4 +84,4 @@ CREATE TABLE `User` (
 )  ;
 
 INSERT INTO `User` (`Id`, `loginName`, `displayName`, `mailAddress`, `registrationDateTime`, `lastLoginDateTime`, `passwordHash`, `isEnabled`, `contingentInByte`, `roleID`, `failedLogins`) VALUES
-(1, 'fury', 'Administrator', 'me@0fury.de', '2015-03-07 20:42:01', '2015-03-07 20:42:16', '$2y$11$hEF1r6lt1vDNShJe5ti0EetU9apyLJvKpe4gxhPim7/FWWUrD2RHK', 1, 5242880, 1, 0);
+(1, 'test', 'Administrator', 'test@localhost', '2015-03-07 20:42:01', '2015-03-07 20:42:16', 'f', 1, 5242880, 1, 0);
