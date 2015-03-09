@@ -29,7 +29,7 @@
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.User.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Interface.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Constants.inc.php";
-		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.class.php";
+		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.PDO.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.FileSystem.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Sharing.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Updater.class.php";
@@ -43,8 +43,6 @@
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/FileSystemAnalysis.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/Share.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/Setting.class.php";
-		//**********************************************third party stuff*********************************
-		require_once __REDUNDANCY_ROOT__.'Lib/Doctrine/Doctrine/Common/ClassLoader.php';	
 		/**
 		 * This class boostraps the program itself
 		 * @license
@@ -67,7 +65,7 @@
 			* The programs version
 			* Structurized in {1.9.X-codenameorbranch-state}
 			*/
-			public $Version = "1.9.19-Lenticularis-rc3-4";//"1.9.15-Lenticularis-rc1-0";
+			public $Version = "1.9.19-pdo-rc3-4";//"1.9.15-Lenticularis-rc1-0";
 			/**
 			* The programs release date
 			*/
