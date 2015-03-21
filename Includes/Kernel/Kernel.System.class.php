@@ -29,13 +29,15 @@
 		public function IsInTestEnvironment(){
 			if (!isset($_SERVER["argv"]))
 				return false;
+			$result = false;
 			foreach ($_SERVER["argv"] as $value)
 			{
 				if (strpos($value,"phpunit") !== false){
-					return true;
+					$result =  true;
+					break;
 				}
 			}
-			return false;
+			return $result;
 		}
 		/**
 		* Bans a user with the given IP 
@@ -141,6 +143,7 @@
 			$dbquery = DBLayer::GetInstance()->RunSelect($query);
 			if (is_null($dbquery) || count($dbquery) == 0)
 				return null;
+			$s = null;
 			foreach ($dbquery as $value){
 				$s = new \Redundancy\Classes\Setting();
 				$s->Name = $value["SettingName"];
@@ -150,9 +153,8 @@
 					$s->Value = ($value["SettingValue"] == "true")? true : false;
 				else
 					$s->Value = $value["SettingValue"];
-				return $s;
 			}
-			return null;
+			return $s;
 		}
 		/**
 		* Set a specific setting
@@ -176,26 +178,30 @@
 		* @param string | array $data the data to check
 		* @return bool
 		*/
-		public function IsAffectedByXSS($data){
-			$chars = explode(";", \Redundancy\Classes\SystemConstants::XSSChars);
-
+		public function IsAffectedByXSS($data){				
+			$affected = false;
 			if (!is_array($data))
 			{
-				foreach ($chars as $key => $value) {
-					if (!empty($value) && strpos($data, $value) !== false)
-						return true;
-				}
-				return false;
+				$old = $data;
+				$new = htmlspecialchars(strip_tags($data),ENT_NOQUOTES);
+				if ($old != $new)
+					$affected = true;
+				else
+					$affected = false;							
 			}
 			else{
 				for ($i=0;$i<count($data);$i++){
-					foreach ($chars as $key => $value) {
-						if (!empty($value) && strpos($data[$i], $value) !== false)
-							return true;
+					$old = $data[$i];
+					$new = htmlspecialchars(strip_tags($data[$i]),ENT_NOQUOTES);
+					if ($old != $new){
+						$affected = true;
+						break;
 					}
-					return false;
+					else
+						$affected = false;			
 				}
 			}
+			return $affected;
 		}
 	}
 ?>

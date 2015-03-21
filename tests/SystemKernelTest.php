@@ -31,6 +31,27 @@
 			$got = $GLOBALS["Kernel"]->SystemKernel->IsAffectedByXSS(array("<script type=\"text/javascript\">alert(\"XSS\");</script>","data"));	 			
 		  	$this->assertTrue($got);
 		}
+		public function testIsAffectedByXSS05(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->IsAffectedByXSS(array("<a href='test'>Test</a>"));	 			
+		  	$this->assertTrue($got);
+		}
+		public function testIsAffectedByXSS06(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->IsAffectedByXSS(array('<script>window.onload = function() {var link=document.getElementsByTagName("a");link[0].href="http://;}</script>'));	 			
+		  	$this->assertTrue($got);
+		}
+		public function testIsAffectedByXSS07(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->IsAffectedByXSS(array('<a href=# onclick=\"document.location=\'http://=\'+escape\(document.cookie\)\;\">My Name</a>'));	 			
+		  	$this->assertTrue($got);
+		}
+		public function testIsAffectedByXSS08(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->IsAffectedByXSS(array("üäößst bla"));	 			
+		  	$this->assertFalse($got);
+		}	
+		public function testIsAffectedByXSS09(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->IsAffectedByXSS(array('{"name":"0002.gif","type":"image\/gif","tmp_name":"\/tmp\/jfkalw","error":0,"size":33067}'));	 			
+		  	$this->assertFalse($got);
+		}
+
 		//***********************Tests BanUser()***********************
 		public function testBanUser(){				
 		  	$GLOBALS["Kernel"]->SystemKernel->BanUser("127.0.0.1","Test");	 			

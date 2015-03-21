@@ -1,4 +1,4 @@
-<?php
+<?php 	
 	/**
          * the api file is a central point which grabs the queries and executes them in the wanted kernel parts
 	 * @file
@@ -22,6 +22,7 @@
 	 * Central api layer to send requests to.
 	 */	
 	namespace Redundancy;	
+
 	//Damn Windows!
 	if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
 		$path = str_replace("Includes\api.inc.php","", __file__);
@@ -50,24 +51,32 @@
 	}	
 	if (isset($_POST["method"])){	
 		$method = $_POST["method"];
-				
-		if (isset($_POST["args"]))
-			$params = is_array($_POST["args"]) ? $_POST["args"] : json_decode($_POST["args"]);
+
+		if (isset($_POST["args"])){
+			$params = is_array($_POST["args"]) ? $_POST["args"] : json_decode($_POST["args"]);				
+		}
 		else
-			$params = array();		
-		
+			$params = array();
 		//If the regular parsing fails, try to decode the data first (for example if files are send)	
 		//Wenn maybe same solution of line 55
 		if (is_null($params))
 			$params = json_decode(urldecode($_POST["args"]));			
 		$module = $_POST["module"];
-
-		//TODO: ban XSS attackers
-		if ($Redundancy->SystemKernel->IsAffectedByXSS($params)){
+		
+		if ($Redundancy->SystemKernel->IsAffectedByXSS($params)){			
 			$ip = $Redundancy->UserKernel->GetIP();
-			$Redundancy->SystemKernel->BanUser($ip,"XSS");
-			die($Redundancy->Output(\Redundancy\Classes\Errors::XSSAttack));	
+			error_log("Redundancy [Warning]: Propably XSS attack from $ip");
+			//The user does not get banned, but the request ist stopped here!
+			//die($Redundancy->Output(\Redundancy\Classes\Errors::XSSAttack));	
 		}
+		//Clean up the parameters		
+		$cleanedArgs = array();			
+		if (!empty($params)){				
+			foreach ($params as $key => $value) {
+				$cleanedArgs[] = htmlspecialchars(strip_tags($value),ENT_NOQUOTES);
+			}
+			$params = $cleanedArgs;
+		}			
 		if ($Redundancy->SystemKernel->IsMyIPBanned() && $method != "GetIP")
 		{
 			die ($Redundancy->Output(\Redundancy\Classes\Errors::Banned));

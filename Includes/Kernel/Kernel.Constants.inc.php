@@ -101,8 +101,7 @@
 	* This class contains contanst for the system
 	*/
 	abstract class SystemConstants{
-	    const NotAllowedChars = '/;<;>';
-	    const XSSChars = "<;>;<script;< script;script";
+	    const NotAllowedChars = '/;<;>';	 
 	}
     /**
     * The systems share modes
