@@ -197,21 +197,108 @@
 		* @todo check the systems email configuration to prevent mail sending when mail is not configured
 		* @todo mail body
 		* @todo Function not complete implemented
+		* @todo permission check
 		*/
-		public function ResetPasswordByMail($mailAddress){
-			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowChangingPassword))
-				return \Redundancy\Classes\Errors::NotAllowed;	
-			$mailAddress = DBLayer::GetInstance()->EscapeString($mailAddress);
+		public function ResetPasswordByMail($mailAddress){			
+			$mailAddress = DBLayer::GetInstance()->EscapeString($mailAddress,true);
 			$check = DBLayer::GetInstance()->RunSelect(sprintf("Select count(id) as Amount from User where MailAddress = '%s'",$mailAddress));
 			if (is_null($check))
 				return false;			
 			if ($check[0]["Amount"] != "0")
 			{
 				//Send mail
+				$domain = $_SERVER['HTTP_HOST'];
+				$prefix = (isset($_SERVER['HTTPS']) && $_SERVER["HTTPS"] != "off") ? 'https://' : 'http://';
+				$relative = str_replace('Includes/api.inc.php','index.php',$_SERVER['SCRIPT_NAME']);		
+				$pw = $this->GeneratePassword(-1);
+				$username = "";
+				$tokenEndDateTime = date("Y-m-d H:i:s",time());
+				$ip =$this->GetIP();
+				$token = $this->GenerateToken($username,$tokenEndDateTime,$ip);
+				$resetLink = $prefix.$domain.$relative."?resetpass&token=$token";
+				//echo $resetLink;
+				$content = sprintf($GLOBALS["Kernel"]->InterfaceKernel->GetLanguageValue("ResetLink"),$resetLink);
+				//ResetLink
+				$result =$this->InsertPasswordChange($token,$mailAddress);
+				$result = mail($mailAddress,"Redundancy",$content);
+				return $result;
 			}
 			else
 				return false;	
 		}
+		/**
+		* Inserts a password change request into the database
+		* @param string $token the new token
+		* @param string $mailAddress the mail address of the affected user
+		* @return bool
+		*/
+		public function InsertPasswordChange($token,$mailAddress){
+			$mailAddress = DBLayer::GetInstance()->EscapeString($mailAddress,true);
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$userQuery = DBLayer::GetInstance()->RunSelect(sprintf("Select id from User where MailAddress = '%s'",$mailAddress));
+			if (is_null($userQuery))
+				return false;	
+			$tokenEndDateTime = date("Y-m-d H:i:s",time());
+			$userId = $userQuery[0]["id"];
+			//Destroy old requests
+			$deletion = "Delete from PasswordRecoveries where UserId = $userId";
+			DBLayer::GetInstance()->RunDelete($deletion);
+			//Insert the request						
+			$reset = "INSERT INTO PasswordRecoveries( UserId, Token, tokenEndDateTime ) 
+			VALUES (
+			'$userId',  '$escapedToken',  '$tokenEndDateTime'
+			)";
+			DBLayer::GetInstance()->RunInsert($reset);
+			return true;
+		}
+		/**
+		* Checks if a token is valid to reset the password
+		* @param string $token the token which should me checked
+		* @return bool 
+		*/
+		public function IsResetTokenValid($token,$expire = " + 1 day"){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$checkQuery = DBLayer::GetInstance()->RunSelect(sprintf("Select * from PasswordRecoveries where Token = '%s'",$escapedToken));
+			if (is_null($checkQuery) || count($checkQuery) == 0)
+				return false;
+			$maxEndDate = date('Y-m-d H:i:s', strtotime($checkQuery[0]["TokenEndDateTime"]. $expire));
+			$dateTime = date("Y-m-d H:i:s",time()); //The expire date is 24 hours
+			if ($dateTime > $maxEndDate)
+				return false;
+			else
+				return true; 
+		}
+		/**
+		* Reset the password by a given request token
+		* @param string $token the token to the request
+		* @param string $newpass the new password
+		* @return bool
+		*/
+		public function ResetPasswordByMailToken($token,$newpass){
+			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
+			$escapedNewPassword = DBLayer::GetInstance()->EscapeString($newpass,true);
+			if (!$this->IsResetTokenValid($token))
+				return false;
+			//Set the password
+			$checkQuery = DBLayer::GetInstance()->RunSelect(sprintf("Select * from PasswordRecoveries where Token = '%s'",$escapedToken));
+			$userId = $checkQuery[0]["UserId"];	
+			//Check if the user is allowed to change his/hers password...
+			$usernameQuery = DBLayer::GetInstance()->RunSelect(sprintf("Select * from User where Id = '%s'",$userId));
+
+			$role = $this->GetUserRole($usernameQuery[0]["loginName"]);
+			$isAllowed = $this->CheckPermissions($role->Permissions,\Redundancy\Classes\PermissionSet::AllowChangingPassword);			
+			if (!$isAllowed)
+				return false;
+
+			$hashed = $this->HashPassword($escapedNewPassword);
+			$query = sprintf("Update User set passwordHash = '%s' where ID = %d",$hashed,$userId);
+			DBLayer::GetInstance()->RunUpdate($query);
+
+			//Destroy old requests
+			$deletion = "Delete from PasswordRecoveries where UserId = $userId";
+			DBLayer::GetInstance()->RunDelete($deletion);
+			return true;
+		}		
 		public function DeleteUserByAdminPanel($loginname,$token){
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
 			$escapedLoginName = DBLayer::GetInstance()->EscapeString($loginname,true);	
@@ -576,9 +663,18 @@
 				return false;
 			}		
 			$permissions = $user->Role->Permissions;	
+			return $this->CheckPermissions($permissions,$escapedPermission);
+		}
+		/**
+		* Checks if a escapedPermission is allowed
+		* @param array $permissions the permissions to check
+		* @param string $escapedPermissions the index to check
+		* @return bool
+		*/
+		private function CheckPermissions($permissions,$escapedPermission){
 			if (is_null($permissions) || $escapedPermission > count($permissions) -1)		
 				return false;	
-			if ($permissions[$permission] == "0")
+			if ($permissions[$escapedPermission] == "0")
 				return false;
 			else
 				return true;
