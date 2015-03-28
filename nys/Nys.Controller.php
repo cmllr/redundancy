@@ -86,6 +86,10 @@
 				$router->DoRedirect("login");
 			}
 			else{
+				$isValid = $router->DoRequest('Kernel.UserKernel','IsResetTokenValid',json_encode(array($_GET["token"])));
+				if (!(bool)$isValid){
+					$router->DoRedirect("login");
+				}
 				if (isset($_POST["password"]) && isset($_POST["passwordrepeat"])){
 					if ($_POST["password"] == $_POST["passwordrepeat"]){
 						//DO it
