@@ -357,6 +357,9 @@ ResetLink ="Es wurde ein neues Passwort angefordert. Unter %s kannst Du ein neue
 Configuration ="Folgende Einstellungen sind für Redundancy empfehlenswert";
 Configuration_OK = "In Ordnung";
 Configuration_Fail = "Problematisch";
+DatabasePath="Datenbankpfad";
+
+CheckMail ="Bitte überprüfe deine Mails!";
 
 R_ERR_NULL = "Es konnten keine Informationen ermittelt werden!";
 

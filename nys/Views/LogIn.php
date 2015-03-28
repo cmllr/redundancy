@@ -54,8 +54,13 @@
                         <a href="?register" class="btn btn-default">
                             <?php echo $GLOBALS['Language']->Register;?></a>
                         <?php endif;?>
-                    </div>
-                </form>
+                       
+                    </div>  
+                    <hr>
+                    <div class="">
+                          <a href="?requestpass"><?php echo $GLOBALS['Language']->reset_pass;?></a>
+                    </div> 
+                 </form>
             </div>
         </div>
     </div>

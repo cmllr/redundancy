@@ -152,6 +152,8 @@
 				"shared"=>"SharedDownload",
 				"register"=>"Register",
 				"default"=>"LogIn",
+				"resetpass"=>"ResetPass",
+				"requestpass" => "RequestPass",
 			);
 			if (isset($_SESSION['Token']) && !empty($_SESSION["Token"])){
 				$this->TryToExecuteRoute($loggedInRoutes);				

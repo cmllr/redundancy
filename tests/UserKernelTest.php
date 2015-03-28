@@ -501,6 +501,12 @@
 			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("tdubap4",$token);		
 			$this->assertTrue($got == \Redundancy\Classes\Errors::UserNotExisting);
 		}
+		//************************IsResetTokenValid**********************
+		public function testIsResetTokenValid01(){			
+			$got = $GLOBALS["Kernel"]->UserKernel->IsResetTokenValid("bullshit");
+			$this->assertFalse($got);
+		}
+			
 
 	}
 ?>

@@ -61,6 +61,51 @@
 			}
 		}
 		/**
+		* Display the password reset request page when the user resets the password using mail
+		* @param $router the Router-Object to be used.
+		*/
+		public function RequestPass($router){
+			if (isset($_POST["email"])){
+				//request the pass
+				$got = $router->DoRequest('Kernel.UserKernel','ResetPasswordByMail',json_encode(array($_POST["email"])));		
+				if ((bool)$got){
+					$MESSAGE = $GLOBALS["Language"]->CheckMail;
+				}
+				else{
+					$ERROR = $GLOBALS["Language"]->wronginput;
+				}
+			}
+			include 'Views/RequestPassword.php';
+		}
+		/**
+		* Display the password reset page when the user resets the password using mail
+		* @param $router the Router-Object to be used.
+		*/
+		public function ResetPass($router){
+			if (!isset($_GET["token"])){
+				$router->DoRedirect("login");
+			}
+			else{
+				if (isset($_POST["password"]) && isset($_POST["passwordrepeat"])){
+					if ($_POST["password"] == $_POST["passwordrepeat"]){
+						//DO it
+						$reset = $router->DoRequest('Kernel.UserKernel','ResetPasswordByMailToken',json_encode(array($_GET["token"],$_POST["password"])));			
+						if ((bool)$reset == true){
+							$MESSAGE = $GLOBALS["Language"]->setpass_success;
+						}
+						else{
+							$ERROR = $GLOBALS["Language"]->wronginput;
+						}
+					}
+					else
+					{
+						$ERROR = $GLOBALS["Language"]->wronginput;
+					}
+				}
+				include 'Views/Reset.php';
+			}			
+		}
+		/**
 		* Does the configuration
 		* @param $router the router object
 		*/
