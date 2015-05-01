@@ -64,10 +64,19 @@
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn($loginName,$password,$stayLoggedIn);		
 			$this->assertTrue($token != \Redundancy\Classes\Errors::PasswordOrUserNameWrong);
 		}
+		public function testLogInShouldSucceed02(){
+			$loginName = "testFS";
+			$password = "testFS";
+			$stayLoggedIn = false;
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn($loginName,$password,$stayLoggedIn);			
+
+			$this->assertTrue($token != \Redundancy\Classes\Errors::PasswordOrUserNameWrong);		
+		}
 		public function testLogInShouldFail(){
 			$loginName = "testUser";
 			$password = "test1";
-			$stayLoggedIn = "true";
+			$stayLoggedIn = "false";
+
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn($loginName,$password,$stayLoggedIn);				
 			$this->assertTrue($token == \Redundancy\Classes\Errors::PasswordOrUserNameWrong);
 		}
@@ -78,6 +87,7 @@
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn($loginName,$password,$stayLoggedIn);		
 			$this->assertTrue($token == \Redundancy\Classes\Errors::PasswordOrUserNameWrong);
 		}
+
 		//***********************Tests GetInstalledRoles()***********************
 		public function testGetInstalledRoles(){
 			$value = $GLOBALS["Kernel"]->UserKernel->GetInstalledRoles();
@@ -213,7 +223,7 @@
 			$got =  $GLOBALS["Kernel"]->UserKernel->GetUser($token);	
 			$this->assertTrue($got->LoginName == $loginName);			
 			$this->assertTrue(!is_null($got));
-		}
+		}		
 		public function testGetUserShouldFail1(){			
 			$loginName = "testUser";
 			$password = "test";
@@ -283,7 +293,7 @@
 			$foo = self::getMethod('IsNewSessionNeeded');
 		  	$obj = $GLOBALS["Kernel"]->UserKernel;	  
 			$got = $foo->invokeArgs($obj, array("testUserX"));		
-			$this->assertTrue($got);
+			$this->assertTrue((bool)$got);
 		}
 		//***********************Tests GetFailedLoginsCounter()***********************
 		public function testGetFailedLoginsCounter1(){
@@ -325,7 +335,10 @@
 			$got = $GLOBALS["Kernel"]->UserKernel->IsActionAllowed($token,300); //This permission can't be existing!
 			$this->assertFalse($got);	
 		}	
-		
+		public function testIsActionAllowed04(){			
+			$got = $GLOBALS["Kernel"]->UserKernel->IsActionAllowed("djaldjla",\Redundancy\Classes\PermissionSet::AllowUpload);
+			$this->assertTrue($got == false);	
+		}
 		//***********************Tests KillSessionByToken()***********************
 		public function testKillSessionByToken(){
 			$loginName = "testUser";		
@@ -364,6 +377,7 @@
 			$groupTotest = $GLOBALS["Kernel"]->UserKernel->GetRoleByName("sauerkrautRenamed");
 			$this->assertTrue($groupTotest->Description == "sauerkrautRenamed");
 		}
+
 		//***********************Tests SetAsDefaultGroup()***********************
 		public function SetAsDefaultGroup01(){
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser","test1",true);	
@@ -399,6 +413,13 @@
 			$this->assertFalse($got);
 			$groupTotest = $GLOBALS["Kernel"]->UserKernel->GetRoleByName("sauerkrautRenamed");
 			$this->assertTrue(is_numeric($groupTotest));
+		}
+		public function testDeleteGroup04(){
+			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$got =  $GLOBALS["Kernel"]->UserKernel->UpdateOrCreateGroup("testDeleteGroup04","-1","00000000000",$token);
+			$this->assertTrue($got);	
+			$got =  $GLOBALS["Kernel"]->UserKernel->DeleteGroup("testDeleteGroup04",$token);
+			$this->assertTrue($got);		
 		}
 		//***********************Tests DeleteUser()***********************
 		public function testDeleteUser(){
@@ -501,12 +522,129 @@
 			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("tdubap4",$token);		
 			$this->assertTrue($got == \Redundancy\Classes\Errors::UserNotExisting);
 		}
+		public function testSetUserByAdminPanel05(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$GLOBALS["Kernel"]->UserKernel->RegisterUser("tdubap4","tdubap4","tdubap4@localhost","tdubap3");		
+			$testFS =  $GLOBALS["Kernel"]->UserKernel->GetUser($token);	
+			$got = $GLOBALS["Kernel"]->UserKernel->SetUserByAdminPanel($token,"tdubap4","RENAMEDtdubap3","on",$testFS->ContingentInByte,"sauerkraut",2);	
+			$this->assertTrue($got);			
+			$got = $GLOBALS["Kernel"]->UserKernel->GetUserByAdminPanel("tdubap4",$token);	
+			$this->assertTrue($got->IsEnabled == 1);
+			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("tdubap4",$token);		
+			$this->assertTrue($got);
+			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("tdubap4",$token);		
+			$this->assertTrue($got == \Redundancy\Classes\Errors::UserNotExisting);
+		}
+		public function testSetUserByAdminPanel06(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$GLOBALS["Kernel"]->UserKernel->RegisterUser("tdubap4","tdubap4","tdubap4@localhost","tdubap3");		
+			$testFS =  $GLOBALS["Kernel"]->UserKernel->GetUser($token);	
+			$got = $GLOBALS["Kernel"]->UserKernel->SetUserByAdminPanel($token,"testFS","testFS",false,$testFS->ContingentInByte,"testFS",1);	
+			$this->assertTrue($got == \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify);			
+			$GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("tdubap4",$token);
+		}
+		public function testSetUserByAdminPanel07(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);					
+			$testFS =  $GLOBALS["Kernel"]->UserKernel->GetUser($token);	
+			$got = $GLOBALS["Kernel"]->UserKernel->SetUserByAdminPanel($token,"testFS","testFS","on",$testFS->ContingentInByte,"testFS",2);	
+			$this->assertTrue($got == \Redundancy\Classes\Errors::SystemAdminAccountNotAllowedToModify);	
+		}
+		public function testSetUserByAdminPanel08(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
+			$GLOBALS["Kernel"]->UserKernel->RegisterUser("tdubap4","tdubap4","tdubap4@localhost","tdubap3");		
+			$testFS =  $GLOBALS["Kernel"]->UserKernel->GetUser($token);	
+			$got = $GLOBALS["Kernel"]->UserKernel->SetUserByAdminPanel($token,"tdubap4","RENAMEDtdubap3","on",$testFS->ContingentInByte,"sauerkraut",14);	
+			$this->assertTrue($got);			
+			$got = $GLOBALS["Kernel"]->UserKernel->GetUserByAdminPanel("tdubap4",$token);	
+			$this->assertTrue($got->IsEnabled == 1);
+			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("tdubap4",$token);		
+			$this->assertTrue($got);
+			$got = $GLOBALS["Kernel"]->UserKernel->DeleteUserByAdminPanel("tdubap4",$token);		
+			$this->assertTrue($got == \Redundancy\Classes\Errors::UserNotExisting);
+		}
+		//************************GetStorageByAdminPanel**********************
+		public function testGetStorageByAdminPanel01(){			
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);		
+			$testFS =  $GLOBALS["Kernel"]->UserKernel->GetUser($token);	
+			$nD = $GLOBALS["Kernel"]->FileSystemKernel->CreateDirectory("testGetStorageByAdminPanel01",-1,$token);
+			$got = $GLOBALS["Kernel"]->UserKernel->GetStorageByAdminPanel($token,$testFS->ID);			
+			$this->assertTrue($nD);
+			$GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/testGetStorageByAdminPanel01/",$token);
+			$this->assertTrue($got->usedStorageInByte == 0);
+		}
 		//************************IsResetTokenValid**********************
 		public function testIsResetTokenValid01(){			
 			$got = $GLOBALS["Kernel"]->UserKernel->IsResetTokenValid("bullshit");
 			$this->assertFalse($got);
 		}
+		public function testIsResetTokenValid02(){			
+			$foo = self::getMethod('InsertPasswordChange');
+		  	$obj = $GLOBALS["Kernel"]->UserKernel;	  
+			$got = $foo->invokeArgs($obj, array("test","jfafalfjl"));
+			$got = $GLOBALS["Kernel"]->UserKernel->IsResetTokenValid("test");
+			$this->assertTrue($got);
+		}
+		//************************ResetPasswordByMailToken**********************
+		public function testResetPasswordByMailToken01(){			
+			$got = $GLOBALS["Kernel"]->UserKernel->ResetPasswordByMailToken("test","testFS");
+			$this->assertTrue($got);
+			$got = $GLOBALS["Kernel"]->UserKernel->IsResetTokenValid("test");
+			$this->assertFalse($got);
+		}
+		public function testResetPasswordByMailToken02(){			
+			$got = $GLOBALS["Kernel"]->UserKernel->ResetPasswordByMailToken("test","testFS");
+			$this->assertFalse($got);			
+		}
+		//************************ResetPasswordByMail**********************
+		public function testResetPasswordByMail01(){		
+			$_SERVER["HTTP_HOST"] = "localhost";
+			$_SERVER["HTTPS"] = "on";
+
+			$got = $GLOBALS["Kernel"]->UserKernel->ResetPasswordByMail("jfafalfjl2");
+			$this->assertFalse($got);
+		}
+		public function testResetPasswordByMail02(){		
+			$_SERVER["HTTP_HOST"] = "localhost";
+			$_SERVER["HTTPS"] = "on";
+					
+			$got = $GLOBALS["Kernel"]->UserKernel->ResetPasswordByMail("jfafalfjl");
+			$this->assertTrue($got);
+		}
+		//************************GetPermissionValueFromRole**********************
+		public function testGetPermissionValueFromRole01(){			
+			$role = $GLOBALS["Kernel"]->UserKernel->GetRoleByName("Root");
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetPermissionValueFromRole($role);
+			$this->assertFalse(count($got) == 11);
+		}
+		//************************GetIP**********************
+		public function testGetIP01(){			
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetIP();
+			$this->assertFalse($got != "127.0.0.1");
+		}
+		public function testGetIP02(){			
+			$_SERVER["HTTP_CLIENT_IP"] = "127.0.0.1";
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetIP();
+			$this->assertFalse($got != "127.0.0.1");
+		}
+		public function testGetIP03(){			
+			$_SERVER["HTTP_CLIENT_IP"] = "";
+			$_SERVER["HTTP_X_FORWARDED_FOR"] = "127.0.0.1";
 			
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetIP();
+			$this->assertFalse($got != "127.0.0.1");
+		}
+		//************************GetListOfInstalledPermissions**********************
+		public function testGetListOfInstalledPermission01(){	
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetListOfInstalledPermissions($token);
+			$this->assertTrue(count($got) == 11);
+		}
+		public function testGetListOfInstalledPermission02(){		
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetListOfInstalledPermissions("nonsensetoken");
+			$this->assertTrue($got == \Redundancy\Classes\Errors::TokenNotValid);
+		}		
+		
+
 
 	}
 ?>
