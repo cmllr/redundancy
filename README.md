@@ -1,4 +1,4 @@
-Redundancy Lenticularis (1.9.15 and up)  branch
+Redundancy
 =================================
 [![Build Status](https://travis-ci.org/Redundancycloud/redundancy.svg?branch=Lenticularis)](https://travis-ci.org/Redundancycloud/redundancy)
 > Please note: This branch is _only_ for developing purposes. This version is bleeding edge, instable, uncomplete and does not have all functions
@@ -24,4 +24,7 @@ for client:
 License and components
 ----------------------
 
-This information will be added when the branch is stable.
+Redundancy is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
