@@ -82,14 +82,10 @@
 				DBLayer::GetInstance()->RunInsert($dbinsertion);
 				//Check if the user was created
 				$checkquery = sprintf("Select id from User where loginName = '%s'",$user->LoginName);
-				$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);
-				if (count($checkresult) == 1){
-					$user->ID = $checkresult[0]["id"];
-					return $user;			
-				}
-				else{
-					return \Redundancy\Classes\Errors::MultipleUserAccountsFound;			
-				}
+				$checkresult = DBLayer::GetInstance()->RunSelect($checkquery);	
+				//There is (now) no check if the db thrown an error while running this query. I guess that the program will explode sooner when the previous queries are being run.			
+				$user->ID = $checkresult[0]["id"];
+				return $user;					
 			}else{
 				return \Redundancy\Classes\Errors::UserOrEmailAlreadyGiven;				
 			}			
@@ -220,7 +216,7 @@
 				$content = sprintf($GLOBALS["Kernel"]->InterfaceKernel->GetLanguageValue("ResetLink"),$resetLink);
 				//ResetLink
 				$result =$this->InsertPasswordChange($token,$mailAddress);
-				$result = mail($mailAddress,"Redundancy",$content);
+				$result = !$GLOBALS["Kernel"]->SystemKernel->IsInTestEnvironment()? mail($mailAddress,"Redundancy",$content) : true;
 				return $result;
 			}
 			else
@@ -232,7 +228,7 @@
 		* @param string $mailAddress the mail address of the affected user
 		* @return bool
 		*/
-		public function InsertPasswordChange($token,$mailAddress){
+		private function InsertPasswordChange($token,$mailAddress){
 			$mailAddress = DBLayer::GetInstance()->EscapeString($mailAddress,true);
 			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
 			$userQuery = DBLayer::GetInstance()->RunSelect(sprintf("Select id from User where MailAddress = '%s'",$mailAddress));
@@ -387,7 +383,7 @@
 				return \Redundancy\Classes\Errors::NotAllowed;	
 			//values to set
 			$escapedDisplayName = DBLayer::GetInstance()->EscapeString($displayName,true);
-			$escapedEnabled = DBLayer::GetInstance()->EscapeString($enabled,true);
+			$escapedEnabled = DBLayer::GetInstance()->EscapeString($enabled,true);			
 			if ($escapedEnabled != true){
 				if ($escapedEnabled == "on")
 					$escapedEnabled = "1";
@@ -441,10 +437,10 @@
 			//Update group if needed
 			if ($escapedGroup != $userToModify->Role->Id){
 				//Only update the group of other users to prevent locking out
-				if ($this->GetUser($escapedToken)->LoginName != $userToModify->LoginName){
+				if ($this->GetUser($escapedToken)->LoginName != $userToModify->LoginName){					
 					$installedGroups  = $this->GetInstalledRoles();
 					foreach ($installedGroups as $key => $value) {
-						if ($value->Description == $escapedGroup){
+						if ($value->Id == $escapedGroup){
 							$query = sprintf("Update User set roleID = '%d' where ID = %d",$value->Id,$userToModify->ID);
 							DBLayer::GetInstance()->RunUpdate($query);
 							break;
@@ -474,11 +470,13 @@
 			$role = null;
 			foreach ($roles as $key => $value) {
 				if ($value->Description == $name){
-					return $value;
+					$role =  $value;
+					return $role;
 				}
 			}
 			if (is_null($role))
-				return \Redundancy\Classes\Errors::PermissionNotFound;
+				$role =  \Redundancy\Classes\Errors::PermissionNotFound;
+			return $role;
 		}
 		/**
 		* Get the value of a permission of a role
@@ -578,16 +576,18 @@
 			if ($roleSearchResult->IsDefault)
 				return \Redundancy\Classes\Errors::CannotDeleteDefaultGroup;
 			$roles = $this->GetInstalledRoles();
+			$result = false;
 			foreach ($roles as $key => $value) {
 				if ($value->IsDefault){
 					$query = sprintf("Update User set roleID = '%d' where roleID='%d'",$value->Id,$roleSearchResult->Id);	
 					DBLayer::GetInstance()->RunUpdate($query);
 					$query =sprintf("Delete from Role where Id = '%d' limit 1",$roleSearchResult->Id);
 					DBLayer::GetInstance()->RunDelete($query);
-					return true;
+					$result = true;
+					break;
 				}
 			}
-			return false;
+			return $result;
 		}
 		/**
 		* Translates the permission of a role to a string
@@ -750,8 +750,6 @@
 				$user->MailAddress = $value["mailAddress"];
 				$user->RegistrationDateTime = $value["registrationDateTime"];
 				$user->LastLoginDateTime = $value["lastLoginDateTime"];
-				//@todo security?
-				$user->PasswordHash = $value["passwordHash"];
 				$user->IsEnabled = $value["isEnabled"];
 				$user->ContingentInByte = $value["contingentInByte"];
 				$user->Role = $this->GetUserRole($user->LoginName);
@@ -834,23 +832,24 @@
 			$ip =$this->GetIP();
  			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select Id,passwordHash,isEnabled from User where loginName ='%s'",$escapedLoginName));
 			$sessionStartedDateTime = date("Y-m-d H:i:s",time());
+			
 			if (is_null($dbquery))
 				return \Redundancy\Classes\Errors::PasswordOrUserNameWrong;
 			if (password_verify($escapedPassword,$dbquery[0]["passwordHash"])){
 				if ($dbquery[0]["isEnabled"] == 0)
 					return \Redundancy\Classes\Errors::UserDisabled;
 				$this->ResetFailedLoginsCounter($escapedLoginName);
+				//Delete old sessions to make sure there are no Sessions with an too old EndDate
+				$this->DeleteExpiredSession($escapedLoginName);		
 				$this->SetLastLoginDateTime($escapedLoginName);
-				$sessionNeeded = $this->IsNewSessionNeeded($escapedLoginName);
-
-				if ($sessionNeeded != "true"){					
+				$sessionNeeded = $this->IsNewSessionNeeded($escapedLoginName);					
+				//this value can be a kind of bool
+				if ($sessionNeeded != "true"){
 					return $sessionNeeded;				
 				}
 				else{
 					$token =  $this->GenerateToken($escapedLoginName,$sessionStartedDateTime,$ip);
-					$userId = $dbquery[0]["Id"];
-					//Delete old sessions
-					$this->DeleteExpiredSession($escapedLoginName);
+					$userId = $dbquery[0]["Id"];					
 					if ($stayLoggedIn || $GLOBALS["Kernel"]->GetConfigValue("Program_Session_Timeout") == -1){
 						$dbquery = sprintf("Insert into Session (userId,token,sessionStartedDateTime,sessionEndDateTime) values('%u','%s','%s','%s')",$userId,$token,$sessionStartedDateTime,null);
 						if (!$GLOBALS["Kernel"]->SystemKernel->IsInTestEnvironment())
@@ -957,16 +956,18 @@
 		* @return bool the result of the deletion. If the token was not existing, the function returns false;
 		*/
 		public function KillSessionByToken($token){
-			//["fuxry","test",false ]
+			$result = false;
 			if (!$this->IsSessionExisting($token))
-				return false;
-			$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);
-							
-			if (!$GLOBALS["Kernel"]->SystemKernel->IsInTestEnvironment())
-				$this->KillSessionCookie();
-			DBLayer::GetInstance()->RunDelete(sprintf("Delete from Session where Token = '%s'",$escapedToken));
-			if (!$this->IsSessionExisting($token))
-				return true;
+				$result = false;
+			else{
+				$escapedToken = DBLayer::GetInstance()->EscapeString($token,true);							
+				if (!$GLOBALS["Kernel"]->SystemKernel->IsInTestEnvironment())
+					$this->KillSessionCookie();
+				DBLayer::GetInstance()->RunDelete(sprintf("Delete from Session where Token = '%s'",$escapedToken));
+				if (!$this->IsSessionExisting($token))
+					$result =  true;
+			}
+			return $result;
 		}		
 		/**
 		* Check if a single token exists in the database;
@@ -993,12 +994,15 @@
 			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select token,sessionStartedDateTime,sessionEndDateTime from Session inner join User u on u.Id = userId where u.loginName = '%s'",$escapedLoginName));
 		
 			//If there is no token, a new one can be created
-			if (is_null($dbquery))
-				return true;			
+			if (is_null($dbquery) || count($dbquery) == 0)
+				return "true";			
 			foreach ($dbquery as $value){				
-				$ip =$this->GetIP();			
-				$sessionStartedDateTime = date("Y-m-d H:i:s",strtotime($value["sessionStartedDateTime"]));			
-				$compareToken = $this->GenerateToken($escapedLoginName,$sessionStartedDateTime,$ip);							
+				$ip =$this->GetIP();	
+
+				$sessionStartedDateTime = $value["sessionStartedDateTime"];			
+				$compareToken = $this->GenerateToken($escapedLoginName,$sessionStartedDateTime,$ip);	
+				//TODO: fix this			
+					
 				if ($compareToken == $value["token"]){	
 					if ($value["sessionEndDateTime"] == "0000-00-00 00:00:00"){						
 						return $compareToken;
@@ -1006,13 +1010,12 @@
 						$currentDateTime = date("Y-m-d H:i:s",time());
 						$sessionEndDateTime = date("Y-m-d H:i:s",strtotime($value["sessionEndDateTime"]	));					
 						if ($currentDateTime >= $sessionEndDateTime)
-							return true;
+							return "true";
 						else
 							return $compareToken;			
 					}
 				}
 			}		
-			return true;	
 		}		
 		/**
 		* Delete old sessions (except it is a keep alive session!)
