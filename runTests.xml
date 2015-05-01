@@ -1,0 +1,7 @@
+<phpunit bootstrap="./Includes/api.inc.php">
+<testsuites>
+  <testsuite name="My Test Suite">
+    <directory>./tests/</directory>
+  </testsuite>
+</testsuites>
+</phpunit>
