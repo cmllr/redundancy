@@ -67,7 +67,7 @@
 			* The programs version
 			* Structurized in {1.9.X-codenameorbranch-state}
 			*/
-			public $Version = "1.9.19-Lenticularis-rc3-5";//"1.9.15-Lenticularis-rc1-0";
+			public $Version = "1.9.20-Lenticularis-rc3-0";//"1.9.15-Lenticularis-rc1-0";
 			/**
 			* The programs release date
 			*/
@@ -208,7 +208,7 @@
 			* @return int the statuscode or -1
 			*/	
 			private function SetHTTPHeader($result){
-				if (is_int($result))
+				if (is_int($result) || (is_bool($result) && (bool)$result == false))
 					return http_response_code("503");
 				return -1;
 			}	

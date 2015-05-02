@@ -281,10 +281,10 @@
 			if (is_null($ownerId))
 				return \Redundancy\Classes\Errors::TokenNotValid;
 			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowDeletingFolder))
-				return false;
+				return \Redundancy\Classes\Errors::NotAllowed;
 			$folder = $this->GetEntryByAbsolutePath($name,$token);
 			if (is_null($folder))
-				return false;
+				return \Redundancy\Classes\Errors::EntryNotExisting;
 			$query = sprintf("Select * from FileSystem where OwnerID = '%u' and parentFolder = '%d'",$ownerId,$folder->Id);			
 			$result = DBLayer::GetInstance()->RunSelect($query);	
 			if (count($result) != 0){
@@ -1137,7 +1137,10 @@
 					$rootFolder = $this->GetEntryByAbsolutePath($escapedRoot,$escapedToken);
 					if (is_null($rootFolder))
 						return false;
-					$result = $this->CreateDirectory($key, $rootFolder->Id,$escapedToken);					
+					$result = $this->CreateDirectory($key, $rootFolder->Id,$escapedToken);
+					error_log($result);	
+					if (!$result)
+						return \Redundancy\Classes\Errors::EntryExisting;
 					//Get the new created folder ID					
 					$parent = $this->GetEntryByAbsolutePath($escapedRoot.$key,$escapedToken);
 					$this->MapTreeInFS($folder.$key."/",$escapedToken,$escapedRoot.$key."/");	
