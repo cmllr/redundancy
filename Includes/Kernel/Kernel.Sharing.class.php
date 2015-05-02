@@ -294,9 +294,7 @@ class SharingKernel{
                 $escapedHash = DBLayer::GetInstance()->EscapeString($hash,true);        
                 $owner = $GLOBALS["Kernel"]->UserKernel->GetUser($escapedToken);
                 if (is_null($owner))
-                        return \Redundancy\Classes\Errors::TokenNotValid;
-                if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowSharing))
-                        return \Redundancy\Classes\Errors::NotAllowed;
+                        return \Redundancy\Classes\Errors::TokenNotValid;                
                 $deleteQuery = sprintf("Delete from SharedFileSystem where (Select count(id) from FileSystem fs where fs.hash = '%s' and fs.ownerId ='%d' and fs.id = SharedFileSystem.entryId) = 1",$escapedHash,$owner->ID);
                 DBLayer::GetInstance()->RunDelete($deleteQuery);                   
         }
