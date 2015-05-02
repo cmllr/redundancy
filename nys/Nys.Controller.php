@@ -36,15 +36,14 @@
 			$returnTo = $router->DoRequest('Kernel.InterfaceKernel','GetReturnTo',json_encode(array($old)));	
 			//correct if the requested route was the logout
 			if ($returnTo == "login")
-				$returnTo = "main";
-			if (!isset($_POST['username'],$_POST['password'])){				
+				$returnTo = "main";			
+			if (!isset($_POST['username'],$_POST['password'])){							
 				include 'Views/LogIn.php';
 			}else
 			{
 				$args = array($_POST['username'],$_POST['password'],isset($_POST["stayloggedin"]));
 				
-				$result = $router->DoRequest('Kernel.UserKernel','LogIn',json_encode($args));						
-				
+				$result = $router->DoRequest('Kernel.UserKernel','LogIn',json_encode($args));							
 				if (is_numeric($result)){
 					$ERROR=$GLOBALS['Language']->wrongcredentials;					
 					include 'Views/LogIn.php';
@@ -366,6 +365,9 @@
 				$settings = $GLOBALS['Router']->DoRequest('Kernel.SystemKernel','GetSettings',json_encode(array()));
 			
 			}
+			else if (isset($_POST["newUserPass"])){
+				var_dump($_POST);
+			}
 			$ips = $GLOBALS['Router']->DoRequest('Kernel.SystemKernel','GetBannedIPs',json_encode(array($_SESSION['Token'])));
 			$innerContent = 'Admin.php';	
 			include 'Views/Main.php';
@@ -497,6 +499,15 @@
 		* @todo language??
 		*/
 		function Share($router){
+			$isAllowed = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],10)));
+			if (!$isAllowed)
+			{
+				$ERROR = "R_ERR_15";
+				$innerContent ="Files.php";
+				include "Views/Main.php";
+				return;
+			}
+
 			//$router->SetLanguage("de");
 			$entry =  $GLOBALS['Router']->DoRequest('Kernel.SharingKernel','GetEntryByShareCode',json_encode(array($_GET["c"])));
 			$shareCode = $_GET["c"];
@@ -595,7 +606,15 @@
 		* @param $router the Router-Object to be used.
 		*/
 		public function Shares($router){	
-			$data = $this->InjectSessionData($router);		
+			$data = $this->InjectSessionData($router);	
+			$isAllowed = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],10)));
+			if (!$isAllowed)
+			{
+				$ERROR = "R_ERR_15";
+				$innerContent ="Files.php";
+				include "Views/Main.php";
+				return;
+			}	
 			//$GLOBALS['Router']->DoRequest('Kernel.SharingKernel','ShareToUser',json_encode(array("/PerfTests/",84,$_SESSION['Token'])));
 			if (isset($_GET["d"])){
 				if (isset($_GET["c"])){
