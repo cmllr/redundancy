@@ -32,6 +32,16 @@
 		*/
 		private $LanguageCode;
 		/**
+		* The date format string for dates
+		* @var string
+		*/
+		private $DateFormatter = "j. M Y - H:i";
+		/**
+		* The day format string for dates
+		* @var string
+		*/
+		private $DayFormatter = "j. M Y";
+		/**
 		* Constructor
 		* @param $languageCode an language code or if not set the default value from Program_Language
 		*/
@@ -40,7 +50,7 @@
 				$languageCode = $GLOBALS["Kernel"]->GetConfigValue("Program_Language");
 			if (file_exists(__REDUNDANCY_ROOT__."Language/".$languageCode.".lng")){
 				$this->Language = parse_ini_file(__REDUNDANCY_ROOT__."Language/".$languageCode.".lng");	
-				$this->LanguageCode = $languageCode;
+				$this->LanguageCode = $languageCode;				
 			}	
 		}
 		/**
@@ -180,13 +190,29 @@
 			}
 		}
 		/**
+		* Sets the datetime formatters to UNIX timestamp
+		*/
+		public function SetRawDateFormatter(){
+			$this->SetDateFormatters("U","U");
+		}
+		/**
+		* Set the date and day formatters
+		* @param string $date the date formatter
+		* @param string $day the day formatter
+		*/
+		private function SetDateFormatters($date,$day){
+			$this->DateFormatter = $date;
+			$this->DayFormatter = $day;
+		}
+
+		/**
 		* Get the well formatted date string
 		* @param string $datestring the string representing the date
 		* @return date the date 
 		* @todo make changable via a setting
 		*/
-		public function FormatDate($datestr) {			
-			return date("j. M Y - H:i",strtotime($datestr));
+		public function FormatDate($datestr) {				
+			return date($this->DateFormatter,strtotime($datestr));
 		}
 		/**
 		* Get the well formatted date string
@@ -195,7 +221,7 @@
 		* @todo make changable via a setting
 		*/
 		public function FormatDateDayOnly($datestr) {			
-			return date("j. M Y",strtotime($datestr));
+			return date($this->DayFormatter,strtotime($datestr));
 		}
 		/**
 		* Get the part of the uri to redirect to after an action

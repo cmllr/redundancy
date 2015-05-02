@@ -126,7 +126,7 @@
 			//This one should fail
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);
 			$got = $GLOBALS["Kernel"]->FileSystemKernel->DeleteDirectory("/testDirectory01NOTEXISTING/",$token);
-			$this->assertFalse($got);
+			$this->AssertTrue($got == \Redundancy\Classes\Errors::EntryNotExisting);
 		}
 		public function testDeleteDirectory03(){
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);

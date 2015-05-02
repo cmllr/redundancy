@@ -37,7 +37,6 @@
 		<td><?php 
 		echo   $router->DoRequest("Kernel","GetShortenedVersion",json_encode(array())); 
 		$version = $router->DoRequest("Kernel","GetVersion",json_encode(array())); 
-
 		?></td>
 	</tr>
 	<tr>
@@ -56,7 +55,8 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Codename</td>
-		<td>Lenticularis</td>
+		<td>Branch</td>
+		<?php $branch = $router->DoRequest("Kernel","GetBranch",json_encode(array()));?>
+		<td><?php echo $branch;?></td>
 	</tr>
 </table>
