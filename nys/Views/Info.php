@@ -56,6 +56,7 @@
 	</tr>
 	<tr>
 		<td>Branch</td>
-		<td><?php echo $version["branch"];?></td>
+		<?php $branch = $router->DoRequest("Kernel","GetBranch",json_encode(array()));?>
+		<td><?php echo $branch;?></td>
 	</tr>
 </table>

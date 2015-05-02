@@ -135,6 +135,16 @@
 				return sprintf("%s.%s.%s.%s",$matches["major"],$matches["minor"],$matches["patch"],$matches["update"]);
 			}
 			/**
+			* Get the currently used branch
+			* @return string
+			*/
+			public function GetBranch(){
+				$pattern = "/(?<major>\d+).(?<minor>\d+).(?<patch>\d+)+-(?<branch>[^-]+)-(?<stage>[^-]+)-(?<update>\d+)/";
+				$matches;
+				preg_match($pattern,$this->Version,$matches);
+				return $matches["branch"];
+			}
+			/**
 			* Get a config value
 			* @param string $key the key to find
 			* @return mixed the value or false 
