@@ -302,7 +302,7 @@ if (typeof nys === "undefined")
                 Delete(string, false);
             })
             .fail(function(e) {
-                ErrorDialog(e.responseText);
+                nys.ErrorDialog(e.responseText);
             });
     }
 
@@ -365,7 +365,7 @@ if (typeof nys === "undefined")
             Delete(string, true);
         })
         .fail(function(e) {
-            console.log(e);
+            nys.ErrorDialog(e);
         });
     }
 
@@ -398,13 +398,13 @@ if (typeof nys === "undefined")
             method: (folder) ? 'DeleteDirectory' : 'DeleteFile',
             args: arguments
         })
-            .done(function(data) {
-                var string = $.parseJSON(data);
-                Init();
-            })
-            .fail(function(e) {
-                console.log(e);
-            });
+        .done(function(data) {
+            var string = $.parseJSON(data);                
+            Init();
+        })
+        .fail(function(e) {
+            nys.ErrorDialog(e.responseText);
+        });
     }
     /**
 	Display Methods.

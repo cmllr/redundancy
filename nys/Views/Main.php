@@ -42,24 +42,30 @@
                     <?php echo $GLOBALS['Language']->changes;?>
                 </a>
             </li>
+            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],0)))) :?>
             <li>
                 <a href='?upload'>
                     <span class='fa fa-cloud-upload'>&nbsp;</span>
                     <?php echo $GLOBALS['Language']->Upload;?>
                 </a>
             </li>
+            <?php endif;?>
+            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],1)))) :?>
             <li>
                 <a href='?newfolder'>
                     <span class='fa fa-folder-open'>&nbsp;</span>
                     <?php echo $GLOBALS['Language']->New_Directory_Short;?>
                 </a>
             </li>
+            <?php endif;?>
+            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],10)))) :?>
             <li>
                 <a href='?shares'>
                     <span class='fa fa-share'>&nbsp;</span>
                     <?php echo $GLOBALS['Language']->ShareMenu;?>
                 </a>
             </li>
+            <?php endif;?>
             <li class='divider'></li>
             <li>
                 <form method="POST" action="?search">
@@ -133,6 +139,7 @@
                         <?php echo $GLOBALS['Language']->changes;?>
                     </a>
                 </li>
+                <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],0)))) :?>
                 <li>
                     <?php if (!isset($_GET["files"])) :?>
                     <a href='?upload'>                       
@@ -159,6 +166,8 @@
                     </script>
                     <?php endif;?>
                 </li>
+                <?php endif;?>
+                <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],1)))) :?>
                 <li>
                     <?php if (isset($_GET["files"])) :?>
                      <a id ="newDirHref" href='#'>
@@ -172,12 +181,15 @@
                     </script>
                     <?php endif;?>                   
                 </li>
+                <?php endif;?>
+                <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],10)))) :?>
                 <li>
                     <a href='?shares'>
                         <span class='fa fa-share'>&nbsp;</span>
                         <?php echo $GLOBALS['Language']->ShareMenu;?>
                     </a>
                 </li>
+                <?php endif;?>
                 <li>
                     <form method="POST" action="?search">
                         <input class="form-control search" type="text" value="<?php echo (isset($_POST[" Search "])) ? $_POST["Search "] : "";?>" name="Search" placeholder="<?php echo $GLOBALS['Language']->Search;?>">

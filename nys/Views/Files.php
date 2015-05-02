@@ -106,13 +106,13 @@ nys.Init();
 	        items: {	
 	        	"open": {name: (entry.DisplayName.indexOf(".zip") == -1) ?"<?php echo $GLOBALS["Language"]->OpenEntry; ?>"  :"<?php echo $GLOBALS["Language"]->Unzip; ?>", icon: (entry.DisplayName.indexOf(".zip") == -1) ? "fa fa-folder-open-o" : "fa fa-file-zip-o"}, 
 	        	"openNewTab": {name: "<?php echo $GLOBALS["Language"]->OpenEntryNewTab; ?>", icon: "fa fa-folder-open-o"},        
-	            "copy": {name: "<?php echo $GLOBALS["Language"]->Copy; ?>", icon: "fa fa-copy"},
-	            "move": {name: "<?php echo $GLOBALS["Language"]->Move; ?>", icon: "fa fa-cut"},
-	            "delete": {name: "<?php echo $GLOBALS["Language"]->Delete; ?>", icon: "fa fa-recycle"},
-	            "rename": {name: "<?php echo $GLOBALS["Language"]->RenameButton; ?>", icon: "fa fa-header"},
-	            "rename": {name: "<?php echo $GLOBALS["Language"]->RenameButton; ?>", icon: "fa fa-header"},
+	            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],8)))) :?> "copy": {name: "<?php echo $GLOBALS["Language"]->Copy; ?>", icon: "fa fa-copy"}, <?php endif;?>
+	            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],7)))) :?> "move": {name: "<?php echo $GLOBALS["Language"]->Move; ?>", icon: "fa fa-cut"},<?php endif;?>
+	           "delete": {name: "<?php echo $GLOBALS["Language"]->Delete; ?>", icon: "fa fa-recycle"},
+	            
+	            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],4)))) :?> "rename": {name: "<?php echo $GLOBALS["Language"]->RenameButton; ?>", icon: "fa fa-header"},<?php endif;?>
 	            //This function is disabled until the function gets implemented. "shareToUser": {name: "<?php echo $GLOBALS["Language"]->ShareToUserGeneric; ?>", icon: "fa fa-group"},
-	            "shareWithLink": {name: "<?php echo $GLOBALS["Language"]->ShareWithLinkGeneric; ?>", icon: "fa fa-link"},
+	            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],10)))) :?> "shareWithLink": {name: "<?php echo $GLOBALS["Language"]->ShareWithLinkGeneric; ?>", icon: "fa fa-link"},<?php endif;?>
 	            "download": {name: "<?php echo $GLOBALS["Language"]->Download; ?>", icon: "fa fa-download"}
 	        }
 	    });	    
@@ -130,7 +130,8 @@ nys.Init();
             method: 'UnzipInPlace',
             args: arguments
         })
-        .done(function(data) {           
+        .done(function(data) {   
+        	console.log(data);        
             nys.Init();
             $("#statusExtract").fadeOut();
         })
@@ -195,7 +196,7 @@ nys.Init();
 		[
 			{
 				text:"<?php echo $GLOBALS["Language"]->DeleteFolderDeleteButton; ?>",
-				'class':"btn btn-primary",
+				'class':"btn btn-danger",
 				click: function() {
 					nys.StartDeleteFolder(entry);
 					$( this ).dialog( "close" );
