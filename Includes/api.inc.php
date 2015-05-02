@@ -83,6 +83,10 @@
 		}
 		if (!isset($module))
 			die("Fatal Error :( ".\Redundancy\Classes\Errors::ModuleMissing);		
+		//RAW Date formatter set
+		if (isset($_POST["rawDate"])){
+			$Redundancy->InterfaceKernel->SetRawDateFormatter();
+		}
 		//TODO: A more professional solution			
 		switch($module){
 			case "Kernel":
