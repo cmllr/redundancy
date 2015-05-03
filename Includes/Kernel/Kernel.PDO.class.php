@@ -3,9 +3,6 @@
 	* Kernel.DBLayer.class.php
 	*/	
 	namespace Redundancy\Kernel;		
-	use Doctrine\Common\ClassLoader;
-	use Doctrine\DBAL;
-	use Doctrine\Common;
 	/**
 	 * This file contains the database abstraction layer, the framework Doctrine is used.
 	 * @license
@@ -31,7 +28,7 @@
 		/**
 		* The currently open database connection.
 		*/
-		private $connection;
+		private $pdoinstance;
 		/**
 		* private constructor. Nothing to tell
 		*/
@@ -54,22 +51,21 @@
 		*/
 		private function Setup(){
 			try{
-				$classLoader = new ClassLoader('Doctrine\DBAL', __REDUNDANCY_ROOT__."Lib/Doctrine");
-				$commonLoader = new ClassLoader('Doctrine\Common', __REDUNDANCY_ROOT__."Lib/Doctrine");
-				$classLoader->register();
-				$commonLoader->register();
-				$config = new \Doctrine\DBAL\Configuration();
-				$connectionParams = array(
-					'dbname' => \Redundancy\Kernel\Config::DBName,
-				    'user' =>  \Redundancy\Kernel\Config::DBUser,
-				    'password' =>\Redundancy\Kernel\Config::DBPassword,
-				    'host' => \Redundancy\Kernel\Config::DBHost,
-				    'driver' => \Redundancy\Kernel\Config::DBDriver,
-				);
-				if (!empty(\Redundancy\Kernel\Config::DBPath))
-					$connectionParams["path"] =  \Redundancy\Kernel\Config::DBPath;
-				$conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
-				$this->connection = $conn;		
+				if (\Redundancy\Kernel\Config::DBDriver == "pdo_mysql"){
+					$user = \Redundancy\Kernel\Config::DBUser;
+					$password = \Redundancy\Kernel\Config::DBPassword;
+					$host = \Redundancy\Kernel\Config::DBHost;
+					$db = \Redundancy\Kernel\Config::DBName;
+					$connectionString = "mysql:dbname=".$db.";host=".$host;					
+					$options = array(
+						\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'UTF8'",
+						\PDO::ATTR_PERSISTENT => true,
+					);
+					$this->pdoinstance =  new \PDO($connectionString,$user,$password,$options);	
+				}else{
+					$connectionString="sqlite:".\Redundancy\Kernel\Config::DBPath;
+					$this->pdoinstance =  new \PDO($connectionString);	
+				}
 			}catch(PDOException $e){
 				die(Errors::DataBaseError);	
 			}				
@@ -79,7 +75,7 @@
 		* @return \Doctrine\DBAL\Connection the current connection		
 		*/
 		public function GetConnection(){
-			return $this->connection;
+			return $this->pdoinstance;
 		}
 		/**
 		* Runs an select query on the database
@@ -89,7 +85,7 @@
 		public function RunSelect($sql){
 			$result = null;
 			try{
-				if (!isset($this->connection)){
+				if (!isset($this->pdoinstance)){
 					$this->Setup();
 				}	
 				$stmt = $this->GetConnection()->query($sql);				
@@ -108,10 +104,10 @@
 		*/
 		public function RunUpdate($sql){
 			try{
-				if (!isset($this->connection)){
+				if (!isset($this->pdoinstance)){
 					$this->Setup();
 				}	
-				$count =  $this->GetConnection()->executeUpdate($sql);
+				$count =  $this->GetConnection()->exec($sql);				
 				return $count;
 			}catch(Exception $e){
 				return null;
@@ -124,7 +120,7 @@
 		*/
 		public function RunDelete($sql){
 			try{
-				if (!isset($this->connection)){
+				if (!isset($this->pdoinstance)){
 					$this->Setup();
 				}
 				$result =  $this->GetConnection()->query($sql);
@@ -140,7 +136,7 @@
 		*/
 		function RunInsert($sql){
 			try{
-				if (!isset($this->connection)){
+				if (!isset($this->pdoinstance)){
 					$this->Setup();
 				}
 				$result =  $this->GetConnection()->query($sql);

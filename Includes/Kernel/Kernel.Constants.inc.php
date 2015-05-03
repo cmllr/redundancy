@@ -25,6 +25,9 @@
 		const MethodMissing = 2;
 		const UserOrEmailAlreadyGiven = 3;
 		const RoleNotFound = 4;
+		/**
+		* @deprecated since 29.03.2015: This error cannot be thrown anymore (the only case was if the user db has multiple accounts with the same name).
+		*/
 		const MultipleUserAccountsFound = 5;
 		const DataBaseError = 6;
 		const PasswordOrUserNameWrong = 7;
