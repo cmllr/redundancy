@@ -150,15 +150,18 @@
 		* @param $string the param to escape
 		* @param $quotemarks determines if the escaped string should replace '' with nothing
 		* @return string the escaped string
+		* @todo improve this feature
 		*/
 		public function EscapeString($string,$quotemarks){
+
+			$string = addslashes($string);
 			if (!isset($this->connection)){
 				$this->Setup();
 			}
 			if ($quotemarks == false)
 				return $this->GetConnection()->quote($string);	
 			else
-				return str_replace("\"","",str_replace("'","",$this->GetConnection()->quote($string, \PDO::PARAM_STR)));	
+				return str_replace("\"","",str_replace("'","",$this->GetConnection()->quote($string)));	
 		}
 	}
 ?>
