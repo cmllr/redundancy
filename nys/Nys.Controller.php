@@ -499,15 +499,6 @@
 		* @todo language??
 		*/
 		function Share($router){
-			$isAllowed = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],10)));
-			if (!$isAllowed)
-			{
-				$ERROR = "R_ERR_15";
-				$innerContent ="Files.php";
-				include "Views/Main.php";
-				return;
-			}
-
 			//$router->SetLanguage("de");
 			$entry =  $GLOBALS['Router']->DoRequest('Kernel.SharingKernel','GetEntryByShareCode',json_encode(array($_GET["c"])));
 			$shareCode = $_GET["c"];
