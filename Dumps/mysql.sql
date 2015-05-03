@@ -22,8 +22,7 @@ CREATE TABLE IF NOT EXISTS `Role` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 INSERT INTO `Role` (`id`, `description`, `permissions`, `IsDefault`) VALUES
-(1, 'Root', '1111111111', 0),
-(2, 'Users', '11111111101', 1);
+(1, 'Root', '1111111111', 1);
 CREATE TABLE IF NOT EXISTS `Session` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userID` int(11) NOT NULL,
@@ -78,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `Settings` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 INSERT INTO `Settings` (`ID`, `SettingName`, `SettingType`, `SettingValue`) VALUES
-(1, 'Enable_Register', 'Boolean', 'false'),
+(1, 'Enable_Register', 'Boolean', 'true'),
 (2, 'Program_Storage_Dir', 'Text', 'Storage'),
 (3, 'Program_Temp_Dir', 'Text', 'Temp'),
 (4, 'Program_Snapshots_Dir', 'Text', 'Snapshots'),
@@ -90,15 +89,6 @@ INSERT INTO `Settings` (`ID`, `SettingName`, `SettingType`, `SettingValue`) VALU
 (10, 'Program_Share_Link_Length', 'Number', '7'),
 (11, 'Program_Language', 'Text', 'en'),
 (12, 'Max_User_Storage','Number','10000000');
-
-CREATE TABLE IF NOT EXISTS `PasswordRecoveries` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
-  `UserId` int(11) NOT NULL,
-  `Token` text COLLATE utf8_bin NOT NULL,
-  `TokenEndDateTime` datetime DEFAULT NULL,
-  PRIMARY KEY (`Id`),
-  UNIQUE KEY `UserId` (`UserId`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 Update Role set permissions = '11111111111' where id = 1;
 

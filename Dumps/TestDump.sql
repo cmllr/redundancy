@@ -116,6 +116,5 @@ ALTER TABLE `SharedFileSystem`
 
 ALTER TABLE `User`
   ADD CONSTRAINT `fk_Role` FOREIGN KEY (`roleID`) REFERENCES `Role` (`id`);
-
 ALTER TABLE `PasswordRecoveries`
   ADD CONSTRAINT `PasswordRecoveries_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `User` (`id`);
