@@ -76,6 +76,16 @@ CREATE TABLE IF NOT EXISTS `Settings` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+CREATE TABLE IF NOT EXISTS `PasswordRecoveries` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `UserId` int(11) NOT NULL,
+  `Token` text COLLATE utf8_bin NOT NULL,
+  `TokenEndDateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `UserId` (`UserId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+
 INSERT INTO `Settings` (`ID`, `SettingName`, `SettingType`, `SettingValue`) VALUES
 (1, 'Enable_Register', 'Boolean', 'true'),
 (2, 'Program_Storage_Dir', 'Text', 'Storage'),
