@@ -213,7 +213,7 @@
 		*/
 		public function FormatDate($datestr) {
 			if ($this->DateFormatter == "/Date(U)/"){
-				return "/Date(".(date("U",strtotime($datestr))*1000).")/";
+				return "/Date(".(date("U",strtotime($datestr))*1000).date("O",strtotime($datestr)).")/";
 			}else{
 				return date($this->DateFormatter,strtotime($datestr));
 			}				
@@ -226,7 +226,7 @@
 		*/
 		public function FormatDateDayOnly($datestr) {	
 			if ($this->DayFormatter == "/Date(U)/"){
-				return "/Date(".(date("U",strtotime($datestr))*1000).")/";
+				return "/Date(".(date("U",strtotime($datestr))*1000).date("O",strtotime($datestr)).")/";
 			}else{
 				return date($this->DayFormatter,strtotime($datestr));
 			}			
