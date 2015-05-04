@@ -193,7 +193,7 @@
 		* Sets the datetime formatters to UNIX timestamp
 		*/
 		public function SetRawDateFormatter(){
-			$this->SetDateFormatters("\/Date(U)\/","\/Date(U)\/");
+			$this->SetDateFormatters("/Date(U)/","/Date(U)/");
 		}
 		/**
 		* Set the date and day formatters
@@ -212,8 +212,8 @@
 		* @todo make changable via a setting
 		*/
 		public function FormatDate($datestr) {
-			if ($this->DateFormatter == "\/Date(U)\/"){
-				return "\/Date(".(date("U",strtotime($datestr))*1000).")\/";
+			if ($this->DateFormatter == "/Date(U)/"){
+				return "/Date(".(date("U",strtotime($datestr))*1000).")/";
 			}else{
 				return date($this->DateFormatter,strtotime($datestr));
 			}				
@@ -225,8 +225,8 @@
 		* @todo make changable via a setting
 		*/
 		public function FormatDateDayOnly($datestr) {	
-			if ($this->DayFormatter == "\/Date(U)\/"){
-				return "\/Date(".(date("U",strtotime($datestr))*1000).")\/";
+			if ($this->DayFormatter == "/Date(U)/"){
+				return "/Date(".(date("U",strtotime($datestr))*1000).")/";
 			}else{
 				return date($this->DayFormatter,strtotime($datestr));
 			}			
