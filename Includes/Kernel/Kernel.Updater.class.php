@@ -113,9 +113,8 @@
 				$zip->ExtractTo($targetPath,$entries);
 				$zip->close();
 			}			
-			
-			$dbengine = str_replace("pdo_", "", \Redundancy\Kernel\Config::DBDriver);
-			$content = file_get_contents(__REDUNDANCY_ROOT__."Dumps/".$dbengine.".sql");
+			//Fallback until further improvement of the updater
+			$content = file_get_contents(__REDUNDANCY_ROOT__."Dump.sql");
 			$queries = explode(";", $content);
 			try{
 				foreach ($queries as $key => $value) {
@@ -140,7 +139,7 @@
 		*/
 		public function GetVersion(){					
 			$currentVersion = $GLOBALS["Kernel"]->Version;
-			$matches =array();
+			$matches = array();
 			if (!preg_match($this->pattern,$currentVersion,$matches))
 				return "";
 			else
