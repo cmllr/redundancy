@@ -113,7 +113,9 @@
 				$zip->ExtractTo($targetPath,$entries);
 				$zip->close();
 			}			
-			$content = file_get_contents(__REDUNDANCY_ROOT__."Dump.sql");
+			
+			$dbengine = str_replace("pdo_", "", \Redundancy\Kernel\Config::DBDriver);
+			$content = file_get_contents(__REDUNDANCY_ROOT__."Dumps/".$dbengine.".sql");
 			$queries = explode(";", $content);
 			try{
 				foreach ($queries as $key => $value) {
@@ -138,7 +140,7 @@
 		*/
 		public function GetVersion(){					
 			$currentVersion = $GLOBALS["Kernel"]->Version;
-			$matches;
+			$matches =array();
 			if (!preg_match($this->pattern,$currentVersion,$matches))
 				return "";
 			else
@@ -163,7 +165,7 @@
 			$branch = $this->GetBranch();
 			$url = sprintf($this->updateSource,$branch);	
 			$content  = file_get_contents($url);
-			$matches;
+			$matches =array();
 			if (!preg_match($this->pattern,$content,$matches)){
 				return "";
 			}
