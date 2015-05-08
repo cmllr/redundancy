@@ -203,5 +203,45 @@
 			}
 			return $affected;
 		}
+		/**
+		* Extract the bytes from a string like 256M
+		* @param string $string the string containing the bytes
+		* @return int (-1) in case of error
+		*/
+		public function ExtractBytesFromDisplayString($string){		
+			$value = (int)$string;
+			$re = "/(?<value>\\d+)(?<size>.*)/mi"; 		
+			$matches=array();	 
+			$got = preg_match_all($re, $string, $matches);
+
+			if (!isset($matches["value"]))
+				return -1;
+			switch (strtolower($matches["size"][0])) {
+				case 'k':
+					$value = ((int)$matches["value"][0])*1024;
+					break;
+				case 'm':
+					$value = ((int)$matches["value"][0])*1024*1024;
+					break;
+				case 'g':
+					$value = ((int)$matches["value"][0])*1024*1024*1024;
+					break;
+				default:
+					# code...
+					break;
+			}
+			return $value;
+		}
+		/**
+		* Get the maximum upload size in bytes reported by the server
+		* @param string $maxFielSize the numeric value reported by PHP's config
+		* @param string $maxPostSize the numeric value reported by PHP's config
+		* @return bool
+		*/
+		public function GetMaxUploadSize($maxFileSize, $maxPostSize){
+			$maxFileSize = $this->ExtractBytesFromDisplayString($maxFileSize);
+			$maxPostSize = $this->ExtractBytesFromDisplayString($maxPostSize);
+			return ($maxFileSize > $maxPostSize) ? $maxFileSize : $maxPostSize;
+		}
 	}
 ?>
