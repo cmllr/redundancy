@@ -769,8 +769,8 @@
 		private function GenerateToken($loginName,$dateTime,$ip){
 			$token = \Redundancy\Classes\Errors::TokenGenerationFailed;
 			$userAgent = "";						
-			if (isset($_SERVER['HTTP_USER_AGENT']))
-				$userAgent = $_SERVER['HTTP_USER_AGENT'];			
+			//if (isset($_SERVER['HTTP_USER_AGENT']))
+				//$userAgent = $_SERVER['HTTP_USER_AGENT'];			
 			$token = md5(md5($loginName).md5($dateTime).md5($ip).md5($userAgent));
 			return $token;		
 		}
@@ -842,8 +842,10 @@
 				//Delete old sessions to make sure there are no Sessions with an too old EndDate
 				$this->DeleteExpiredSession($escapedLoginName);		
 				$this->SetLastLoginDateTime($escapedLoginName);
-				$sessionNeeded = $this->IsNewSessionNeeded($escapedLoginName);					
-				//this value can be a kind of bool
+
+				$sessionNeeded = $this->IsNewSessionNeeded($escapedLoginName);		
+
+				//this value can be a kind of bool				
 				if ($sessionNeeded != "true"){
 					return $sessionNeeded;				
 				}
@@ -995,14 +997,16 @@
 		
 			//If there is no token, a new one can be created
 			if (is_null($dbquery) || count($dbquery) == 0)
-				return "true";			
+				return "true";				
 			foreach ($dbquery as $value){				
 				$ip =$this->GetIP();	
 
 				$sessionStartedDateTime = $value["sessionStartedDateTime"];			
-				$compareToken = $this->GenerateToken($escapedLoginName,$sessionStartedDateTime,$ip);	
+				$compareToken = $this->GenerateToken($escapedLoginName,(string)$sessionStartedDateTime,$ip);	
 				//TODO: fix this			
-					
+				//error_log($compareToken);	
+				//error_log($compareToken);
+				//error_log($value["token"]);			
 				if ($compareToken == $value["token"]){	
 					if ($value["sessionEndDateTime"] == "0000-00-00 00:00:00"){						
 						return $compareToken;
@@ -1015,7 +1019,9 @@
 							return $compareToken;			
 					}
 				}
-			}		
+			}
+			//When no token has fit
+			return "true";		
 		}		
 		/**
 		* Delete old sessions (except it is a keep alive session!)
