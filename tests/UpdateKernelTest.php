@@ -110,5 +110,28 @@
 		  	$got = $GLOBALS["Kernel"]->UpdateKernel->IsUpdateAvailable($remote,$local);	
 		  	$this->assertTrue($got);
 		}
+		public function testGetVersion01(){
+			$got = $GLOBALS["Kernel"]->UpdateKernel->GetVersion();				
+			$this->assertTrue(isset($got["major"]) && $got["major"] == 1);
+			$this->assertTrue(isset($got["minor"]) && $got["minor"] == 10);
+			$this->assertTrue(isset($got["patch"]));
+			$this->assertTrue(isset($got["branch"]) && $got["branch"] == "Lenticularis");
+		}
+		public function testGetBranch01(){
+			$got = $GLOBALS["Kernel"]->UpdateKernel->GetBranch();				
+			$this->assertTrue($got == "Lenticularis");
+		}
+		public function testGetLatestVersion01(){
+			$got = $GLOBALS["Kernel"]->UpdateKernel->GetLatestVersion();
+			$this->assertTrue($got != "");	//Well, we can't do a intelligent test here.
+		}
+		public function testGetLatestVersionAsString01(){
+			$got = $GLOBALS["Kernel"]->UpdateKernel->GetLatestVersion();
+			$this->assertTrue($got != "");	//Well, we can't do a intelligent test here.
+		}
+		public function testGetUpdateSource01(){
+			$got = $GLOBALS["Kernel"]->UpdateKernel->GetUpdateSource();
+			$this->assertTrue($got == "https://github.com/squarerootfury/redundancy/archive/Lenticularis.zip");
+		}
 	}
 ?>
