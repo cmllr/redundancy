@@ -119,8 +119,7 @@
 			try{
 				foreach ($queries as $key => $value) {
 					try{
-
-						DBLayer::GetInstance()->RunSelect($value);//$result =  $conn->query($value);
+						DBLayer::GetInstance()->RunUpdate($value);
 					}
 					catch (\Exception $e){
 
