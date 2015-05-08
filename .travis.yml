@@ -10,3 +10,5 @@ script: phpunit --configuration ./runTests.xml
 branches:
   only:
     - Lenticularis
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
