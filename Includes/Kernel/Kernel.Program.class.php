@@ -128,7 +128,7 @@
 			*/
 			public function GetShortenedVersion(){
 				$pattern = "/(?<major>\d+).(?<minor>\d+).(?<patch>\d+)+-(?<branch>[^-]+)-(?<stage>[^-]+)-(?<update>\d+)/";
-				$matches;
+				$matches = array();
 				preg_match($pattern,$this->Version,$matches);
 				return sprintf("%s.%s.%s.%s",$matches["major"],$matches["minor"],$matches["patch"],$matches["update"]);
 			}
@@ -138,7 +138,7 @@
 			*/
 			public function GetBranch(){
 				$pattern = "/(?<major>\d+).(?<minor>\d+).(?<patch>\d+)+-(?<branch>[^-]+)-(?<stage>[^-]+)-(?<update>\d+)/";
-				$matches;
+				$matches = array();
 				preg_match($pattern,$this->Version,$matches);
 				return $matches["branch"];
 			}

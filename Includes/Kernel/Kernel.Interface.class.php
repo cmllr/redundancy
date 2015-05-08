@@ -239,7 +239,7 @@
 		public function GetReturnTo($uri){
 			$returnTo = "main"; //default view
 			$regex = "/\?(?<return>.{1,})/";
-			$matches;
+			$matches = array();
 			$result = preg_match($regex, $uri,$matches);
 			if (isset($matches["return"]) && $result != 0)
 				return $matches["return"];

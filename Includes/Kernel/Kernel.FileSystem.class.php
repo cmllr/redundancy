@@ -1052,7 +1052,7 @@
 			for ($i = 0;$i<(count($partials));$i++){
 				if ($partials[$i] != ""){
 					$pattern ="/(?<column>[^\s=<>%;$]+)\s{0,}(?<operator>[=<>%]{1,2})\s{0,}(?<term>[^$,;]*)/";
-					$result;
+					$result = array();
 					preg_match($pattern, $partials[$i], $result);
 					if (!empty($result["column"]) && !empty($result["operator"]) && !empty($result["term"])){
 						$operator = ($result["operator"] == "%") ? " like " : $result["operator"];
