@@ -633,6 +633,11 @@
 			$got =  $GLOBALS["Kernel"]->UserKernel->GetIP();
 			$this->assertFalse($got != "127.0.0.1");
 		}
+		public function testGetIP04(){			
+			$_SERVER["HTTP_CF_CONNECTING_IP"] = "8.8.8.8";
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetIP();
+			$this->assertTrue($got == "8.8.8.8");
+		}
 		//************************GetListOfInstalledPermissions**********************
 		public function testGetListOfInstalledPermission01(){	
 			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			

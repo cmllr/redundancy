@@ -805,6 +805,11 @@
 		public function GetIP(){			
 			if (isset($_POST["ip"]))
 				return DBLayer::GetInstance()->EscapeString($_POST["ip"],true);	
+			//Cloudflare related fixes..
+			if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])){
+				$_SERVER['HTTP_CLIENT_IP'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+			}
+
 			if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
 			    $ip = $_SERVER['HTTP_CLIENT_IP'];
 			} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
