@@ -108,7 +108,7 @@ nys.Init();
 	        	"openNewTab": {name: "<?php echo $GLOBALS["Language"]->OpenEntryNewTab; ?>", icon: "fa fa-folder-open-o"},        
 	            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],8)))) :?> "copy": {name: "<?php echo $GLOBALS["Language"]->Copy; ?>", icon: "fa fa-copy"}, <?php endif;?>
 	            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],7)))) :?> "move": {name: "<?php echo $GLOBALS["Language"]->Move; ?>", icon: "fa fa-cut"},<?php endif;?>
-	           "delete": {name: "<?php echo $GLOBALS["Language"]->Delete; ?>", icon: "fa fa-recycle"},
+	            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],11)))) :?> "delete": {name: "<?php echo $GLOBALS["Language"]->Delete; ?>", icon: "fa fa-recycle"},<?php endif;?>
 	            
 	            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],4)))) :?> "rename": {name: "<?php echo $GLOBALS["Language"]->RenameButton; ?>", icon: "fa fa-header"},<?php endif;?>
 	            //This function is disabled until the function gets implemented. "shareToUser": {name: "<?php echo $GLOBALS["Language"]->ShareToUserGeneric; ?>", icon: "fa fa-group"},

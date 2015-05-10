@@ -22,7 +22,9 @@ CREATE TABLE IF NOT EXISTS `Role` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 INSERT INTO `Role` (`id`, `description`, `permissions`, `IsDefault`) VALUES
-(1, 'Root', '11111111111', 1);
+(1, 'Root', '111111111111', 1),
+(14, 'Test','111111111111', 1);
+
 CREATE TABLE IF NOT EXISTS `Session` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userID` int(11) NOT NULL,
@@ -100,7 +102,7 @@ CREATE TABLE IF NOT EXISTS `PasswordRecoveries` (
   UNIQUE KEY `UserId` (`UserId`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-Update Role set permissions = '11111111111' where id = 1;
+Update Role set permissions = '111111111111' where id = 1;
 
 Replace into Settings (`ID`, `SettingName`, `SettingType`, `SettingValue`) VALUES (12, 'Max_User_Storage','Number','10000000');
 
@@ -116,5 +118,6 @@ ALTER TABLE `SharedFileSystem`
 
 ALTER TABLE `User`
   ADD CONSTRAINT `fk_Role` FOREIGN KEY (`roleID`) REFERENCES `Role` (`id`);
+
 ALTER TABLE `PasswordRecoveries`
   ADD CONSTRAINT `PasswordRecoveries_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `User` (`id`);

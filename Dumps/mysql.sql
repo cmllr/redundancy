@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `Role` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 INSERT INTO `Role` (`id`, `description`, `permissions`, `IsDefault`) VALUES
-(1, 'Root', '11111111111', 1);
+(1, 'Root', '111111111111', 1);
 CREATE TABLE IF NOT EXISTS `Session` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userID` int(11) NOT NULL,
@@ -32,6 +32,16 @@ CREATE TABLE IF NOT EXISTS `Session` (
   PRIMARY KEY (`id`),
   KEY `userID` (`userID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE IF NOT EXISTS `PasswordRecoveries` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `UserId` int(11) NOT NULL,
+  `Token` text COLLATE utf8_bin NOT NULL,
+  `TokenEndDateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `UserId` (`UserId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
 CREATE TABLE IF NOT EXISTS `SharedFileSystem` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `entryID` int(11) NOT NULL,
@@ -76,16 +86,6 @@ CREATE TABLE IF NOT EXISTS `Settings` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-CREATE TABLE IF NOT EXISTS `PasswordRecoveries` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
-  `UserId` int(11) NOT NULL,
-  `Token` text COLLATE utf8_bin NOT NULL,
-  `TokenEndDateTime` datetime DEFAULT NULL,
-  PRIMARY KEY (`Id`),
-  UNIQUE KEY `UserId` (`UserId`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
-
 INSERT INTO `Settings` (`ID`, `SettingName`, `SettingType`, `SettingValue`) VALUES
 (1, 'Enable_Register', 'Boolean', 'true'),
 (2, 'Program_Storage_Dir', 'Text', 'Storage'),
@@ -100,7 +100,16 @@ INSERT INTO `Settings` (`ID`, `SettingName`, `SettingType`, `SettingValue`) VALU
 (11, 'Program_Language', 'Text', 'en'),
 (12, 'Max_User_Storage','Number','10000000');
 
-Update Role set permissions = '11111111111' where id = 1;
+CREATE TABLE IF NOT EXISTS `PasswordRecoveries` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `UserId` int(11) NOT NULL,
+  `Token` text COLLATE utf8_bin NOT NULL,
+  `TokenEndDateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `UserId` (`UserId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+Update Role set permissions = '111111111111' where id = 1;
 
 Update User set isEnabled = '0' where loginName = 'testFS';
 

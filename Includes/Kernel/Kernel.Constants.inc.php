@@ -88,7 +88,8 @@
 		const AllowCopying = 8;
 		const AllowAdministration = 9;
 		const AllowSharing = 10;
-		const CurrentPermissions = "AllowUpload,AllowCreatingFolder,AllowDeletingUser,AllowDeletingFile,AllowRenaming,AllowDeletingUser,AllowChangingPassword,AllowMoving,AllowCopying,AllowAdministration,AllowSharing";
+		const AllowDeleteFromUserInterface = 11;
+		const CurrentPermissions = "AllowUpload,AllowCreatingFolder,AllowDeletingFolder,AllowDeletingFile,AllowRenaming,AllowDeletingUser,AllowChangingPassword,AllowMoving,AllowCopying,AllowAdministration,AllowSharing,AllowDeleteFromUserInterface";
 	}
 	/**
 	* File system constants to use
