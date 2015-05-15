@@ -84,8 +84,15 @@ CREATE TABLE IF NOT EXISTS `PasswordRecoveries` (
   PRIMARY KEY (`Id`),
   UNIQUE KEY `UserId` (`UserId`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
-
+CREATE TABLE IF NOT EXISTS `UserSettings` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `SettingName` text COLLATE utf8_bin NOT NULL,
+  `SettingType` text COLLATE utf8_bin NOT NULL,
+  `SettingValue` text COLLATE utf8_bin NOT NULL,
+  `UserId` int(11) NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `UserId` (`UserId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 INSERT INTO `Settings` (`ID`, `SettingName`, `SettingType`, `SettingValue`) VALUES
 (1, 'Enable_Register', 'Boolean', 'true'),
 (2, 'Program_Storage_Dir', 'Text', 'Storage'),
@@ -121,3 +128,5 @@ ALTER TABLE `User`
 
 ALTER TABLE `PasswordRecoveries`
   ADD CONSTRAINT `PasswordRecoveries_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `User` (`id`);
+ALTER TABLE `UserSettings`
+  ADD CONSTRAINT `UserSettings_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `User` (`id`);
