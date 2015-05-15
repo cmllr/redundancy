@@ -65,8 +65,10 @@ nys.Init();
 	           }else if (key == "download"){
 	           		if (entry.FilePath != null)
 	           			window.open('?download&f='+entry.Hash,'_blank');
-	           		else
-	           			alert("Not implemented yet. :(");
+	           		else{
+	           			DownloadFolder(entry);
+	           			
+	           		}
 	           }else if (key == "open"){
 	           		if (entry.FilePath != null){
 	           			if (entry.DisplayName.indexOf(".zip") == -1)
@@ -117,6 +119,23 @@ nys.Init();
 	        }
 	    });	    
 	});
+  }
+  function DownloadFolder(entry){
+  	var arguments = [];
+        arguments.push(entry.Id);
+        arguments.push(token);
+        $.post('./Includes/api.inc.php', {
+            module: 'Kernel.FileSystemKernel',
+            method: 'GetAbsolutePathById',
+            args: arguments
+        })
+        .done(function(data) {   
+        	var path = $.parseJSON(data);
+        	window.open('?zipfolder&d='+path,'_blank');
+        })
+        .fail(function(e) {         
+            nys.ErrorDialog(e.responseText);
+        });
   }
   function Extract(entry){
   		// UnzipInPlace($hash,$token,$path)
