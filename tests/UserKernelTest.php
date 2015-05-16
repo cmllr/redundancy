@@ -108,6 +108,8 @@
 			$expected[0]->Permissions[] = "1";
 			$expected[0]->Permissions[] = "1";
 			$expected[0]->Permissions[] = "1";
+			$expected[0]->Permissions[] = "1";
+			$expected[0]->Permissions[] = "1";
 			$this->assertEquals($value[0],$expected[0]);		
 		}
 		//***********************Tests GetPermissionSet()***********************
@@ -115,6 +117,8 @@
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",false);	
 			$got = $GLOBALS["Kernel"]->UserKernel->GetPermissionSet($token);
 			$expected = array();
+			$expected[] = "1";
+			$expected[] = "1";
 			$expected[] = "1";
 			$expected[] = "1";
 			$expected[] = "1";
@@ -135,7 +139,7 @@
 		//***********************Tests GetPermissionValues()***********************
 		function testGetPermissionValues01(){
 			$got = $GLOBALS["Kernel"]->UserKernel->GetPermissionValues();
-			$this->assertTrue(count($got) == 11);
+			$this->assertTrue(count($got) == 13);
 		}
 		//***********************Tests GetRoleByName()***********************
 		function testGetRoleByName01(){
@@ -176,6 +180,8 @@
 			$expected->Id = 1;
 			$expected->Description = "Root";
 			$expected->Permissions = array();
+			$expected->Permissions[] = "1";
+			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
@@ -359,18 +365,18 @@
 		//***********************Tests UpdateOrCreateGroup()***********************
 		public function testUpdateOrCreateGroup01(){
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser","test1",true);	
-			$got =  $GLOBALS["Kernel"]->UserKernel->UpdateOrCreateGroup("sauerkraut","-1","000000000",$token);
+			$got =  $GLOBALS["Kernel"]->UserKernel->UpdateOrCreateGroup("sauerkraut","-1","0000000000",$token);
 			$this->assertTrue($got);
 		}
 		public function testUpdateOrCreateGroup02(){
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser","test1",true);	
-			$got =  $GLOBALS["Kernel"]->UserKernel->UpdateOrCreateGroup("sauerkraut","-1","000000000",$token);
+			$got =  $GLOBALS["Kernel"]->UserKernel->UpdateOrCreateGroup("sauerkraut","-1","0000000000",$token);
 			$this->assertTrue(is_numeric($got));
 		}
 		public function testUpdateOrCreateGroup03(){
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testUser","test1",true);	
 			$groupTotest = $GLOBALS["Kernel"]->UserKernel->GetRoleByName("sauerkraut");
-			$got =  $GLOBALS["Kernel"]->UserKernel->UpdateOrCreateGroup("sauerkrautRenamed",$groupTotest->Id,"000000001",$token);
+			$got =  $GLOBALS["Kernel"]->UserKernel->UpdateOrCreateGroup("sauerkrautRenamed",$groupTotest->Id,"0000000010",$token);
 			$groupTotest = $GLOBALS["Kernel"]->UserKernel->GetRoleByName("sauerkraut");
 			//Test old name
 			$this->assertTrue(is_numeric($groupTotest));
@@ -416,7 +422,7 @@
 		}
 		public function testDeleteGroup04(){
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);	
-			$got =  $GLOBALS["Kernel"]->UserKernel->UpdateOrCreateGroup("testDeleteGroup04","-1","00000000000",$token);
+			$got =  $GLOBALS["Kernel"]->UserKernel->UpdateOrCreateGroup("testDeleteGroup04","-1","000000000000",$token);
 			$this->assertTrue($got);	
 			$got =  $GLOBALS["Kernel"]->UserKernel->DeleteGroup("testDeleteGroup04",$token);
 			$this->assertTrue($got);		
@@ -633,18 +639,59 @@
 			$got =  $GLOBALS["Kernel"]->UserKernel->GetIP();
 			$this->assertFalse($got != "127.0.0.1");
 		}
+		public function testGetIP04(){			
+			$_SERVER["HTTP_CF_CONNECTING_IP"] = "8.8.8.8";
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetIP();
+			$this->assertTrue($got == "8.8.8.8");
+		}
 		//************************GetListOfInstalledPermissions**********************
 		public function testGetListOfInstalledPermission01(){	
 			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
 			$got =  $GLOBALS["Kernel"]->UserKernel->GetListOfInstalledPermissions($token);
-			$this->assertTrue(count($got) == 11);
+			$this->assertTrue(count($got) == 13);
 		}
 		public function testGetListOfInstalledPermission02(){		
 			$got =  $GLOBALS["Kernel"]->UserKernel->GetListOfInstalledPermissions("nonsensetoken");
 			$this->assertTrue($got == \Redundancy\Classes\Errors::TokenNotValid);
 		}		
-		
-
-
+		public function testGetUserSetting01(){	
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetUserSetting("thisonedoesnotexist",$token);
+			$this->assertTrue(is_null($got));
+		}
+		public function testGetUserSetting02(){	
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetUserSetting("ui-user-scalable",$token);
+			$this->assertTrue(is_null($got));
+		}
+		public function testGetUserSetting03(){	
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
+			$GLOBALS["Kernel"]->UserKernel->SetUserSetting("ui-user-scalable","false",$token);
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetUserSetting("ui-user-scalable",$token);
+			$this->assertTrue($got->Value == false);
+		}
+		public function testSetDefaultSetting01(){
+			$got = $GLOBALS["Kernel"]->UserKernel->SetDefaultSetting("ui-user-scalable","Boolean","true","invalidtoken");
+			$this->assertFalse($got);
+		}
+		public function testSetDefaultSetting02(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);		
+			$got = $GLOBALS["Kernel"]->UserKernel->SetDefaultSetting("ui-user-scalable","Boolean","true",$token);
+			$this->assertFalse($got);
+		}
+		public function testGetDefaultSettingsSet01(){
+			$got = $GLOBALS["Kernel"]->UserKernel->GEtDefaultSettingsSet();
+			$this->assertTrue(count($got) != 0);
+		}
+		public function testSetUserSetting01(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
+			$GLOBALS["Kernel"]->UserKernel->SetUserSetting("ui-user-scalable","true",$token);
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetUserSetting("ui-user-scalable",$token);
+			$this->assertTrue($got->Value == true);
+		}
+		public function testSetUserSetting02(){
+			$got =  $GLOBALS["Kernel"]->UserKernel->SetUserSetting("ui-user-scalable","true","invalidtoken");
+			$this->assertTrue($got == 15);
+		}
 	}
 ?>

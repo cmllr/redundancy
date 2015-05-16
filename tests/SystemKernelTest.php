@@ -140,5 +140,65 @@
 			$got = $GLOBALS["Kernel"]->SystemKernel->IsMyIPBanned();
 			$this->assertFalse($got);
 		}
+		public function testGetMaxUploadSize01(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->GetMaxUploadSize(1,2);
+			$this->assertTrue($got == 2);
+		}
+		public function testGetMaxUploadSize02(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->GetMaxUploadSize(4,2);
+			$this->assertTrue($got == 4);
+		}
+		public function testGetMaxUploadSize03(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->GetMaxUploadSize(2,2);
+			$this->assertTrue($got == 2);
+		}
+		public function testGetMaxUploadSize04(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->GetMaxUploadSize("1m","2m");
+			$this->assertTrue($got == 2*1024*1024);
+		}
+		public function testGetMaxUploadSize05(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->GetMaxUploadSize("4m","2m");
+			$this->assertTrue($got == 4*1024*1024);
+		}
+		public function testGetMaxUploadSize06(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->GetMaxUploadSize("2m","2m");
+			$this->assertTrue($got == 2*1024*1024);
+		}
+		public function testGetMaxUploadSize07(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->GetMaxUploadSize("4","2m");
+			$this->assertTrue($got == 2*1024*1024);
+		}
+		public function testExtractBytesFromDisplayString01(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->ExtractBytesFromDisplayString("81k");			
+			$this->assertTrue($got == 81*1024);
+		}
+		public function testExtractBytesFromDisplayString02(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->ExtractBytesFromDisplayString("81m");			
+			$this->assertTrue($got == 81*1024*1024);
+		}
+		public function testExtractBytesFromDisplayString03(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->ExtractBytesFromDisplayString("81g");			
+			$this->assertTrue($got == 81*1024*1024*1024);
+		}
+		public function testExtractBytesFromDisplayString04(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->ExtractBytesFromDisplayString("81K");			
+			$this->assertTrue($got == 81*1024);
+		}
+		public function testExtractBytesFromDisplayString05(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->ExtractBytesFromDisplayString("81M");			
+			$this->assertTrue($got == 81*1024*1024);
+		}
+		public function testExtractBytesFromDisplayString06(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->ExtractBytesFromDisplayString("81G");			
+			$this->assertTrue($got == 81*1024*1024*1024);
+		}
+		public function testExtractBytesFromDisplayString07(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->ExtractBytesFromDisplayString("81");		
+			$this->assertTrue($got == 81);
+		}
+		public function testExtractBytesFromDisplayString08(){
+			$got = $GLOBALS["Kernel"]->SystemKernel->ExtractBytesFromDisplayString("814231421");		
+			$this->assertTrue($got == 814231421);
+		}
 	}
 ?>

@@ -986,7 +986,7 @@
 				return \Redundancy\Classes\Errors::EntryNotExisting;
 			//Start Zipfile creation
 			$path =  $this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Temp);
-			$filename = $owner->LoginName."".str_replace("/", "", $this->GetAbsolutePathById($escapedRootPath,$escapedToken));
+			$filename = uniqid();
 			if (file_exists($path.$filename.".zip"))
 				return \Redundancy\Classes\Errors::ZipFileExisting;
 			$zip = new \ZipArchive;
@@ -996,7 +996,7 @@
 			}
 			$this->CreateZipFileOfFolder($zip,$entry,$escapedRootPath,$escapedToken);
 			$zip->close();
-			return $this->GetAbsolutePathById($escapedRootPath,$escapedToken)	;
+			return $filename;
 		}
 		/**
 		* Create a zip file
@@ -1006,13 +1006,18 @@
 		* @param string $escapedToken a valid session token
 		* @return an string containt the filename or errorcode.
 		*/
-		private function CreateZipFileOfFolder($zip,$entry,$escapedRootPath,$escapedToken){
-			$zip->addEmptyDir(iconv("UTF-8","CP437",$this->GetAbsolutePathById($entry->Id,$escapedToken)));
+		private function CreateZipFileOfFolder($zip,$entry,$escapedRootPath,$escapedToken){	
+
+			$newDirPath = iconv("UTF-8","CP437",$this->GetAbsolutePathById($entry->Id,$escapedToken));
+			if ($newDirPath[0] == "/")
+				$newDirPath = substr($newDirPath,1,strlen($newDirPath));
+			$zip->addEmptyDir($newDirPath);
 			$entries = $this->GetContent($this->GetAbsolutePathById($entry->Id,$escapedToken),$escapedToken);
 			$storagePath = $this->GetSystemDir(\Redundancy\Classes\SystemDirectories::Storage);
 			foreach ($entries as $key => $value) {
 				if (!is_null($value->FilePath)){
 					$path = iconv("UTF-8","CP437",$this->GetAbsolutePathById($value->Id,$escapedToken));
+					$path = substr($path, 1,strlen($path));
 					$zip->addFile($storagePath.$value->FilePath,$path);
 				}
 				else{
@@ -1052,7 +1057,7 @@
 			for ($i = 0;$i<(count($partials));$i++){
 				if ($partials[$i] != ""){
 					$pattern ="/(?<column>[^\s=<>%;$]+)\s{0,}(?<operator>[=<>%]{1,2})\s{0,}(?<term>[^$,;]*)/";
-					$result;
+					$result = array();
 					preg_match($pattern, $partials[$i], $result);
 					if (!empty($result["column"]) && !empty($result["operator"]) && !empty($result["term"])){
 						$operator = ($result["operator"] == "%") ? " like " : $result["operator"];

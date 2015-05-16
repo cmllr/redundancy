@@ -25,6 +25,9 @@
 		const MethodMissing = 2;
 		const UserOrEmailAlreadyGiven = 3;
 		const RoleNotFound = 4;
+		/**
+		* @deprecated since 29.03.2015: This error cannot be thrown anymore (the only case was if the user db has multiple accounts with the same name).
+		*/
 		const MultipleUserAccountsFound = 5;
 		const DataBaseError = 6;
 		const PasswordOrUserNameWrong = 7;
@@ -69,6 +72,7 @@
 		const CouldNotOpenZip = 46;
 		const EmptyZip = 47;
 		const UserDisabled = 48;
+		const ToLarge = 49;//Client side upload limiation
 	} 
 	/**
 	* The permission set in a human readable form
@@ -85,7 +89,9 @@
 		const AllowCopying = 8;
 		const AllowAdministration = 9;
 		const AllowSharing = 10;
-		const CurrentPermissions = "AllowUpload,AllowCreatingFolder,AllowDeletingUser,AllowDeletingFile,AllowRenaming,AllowDeletingUser,AllowChangingPassword,AllowMoving,AllowCopying,AllowAdministration,AllowSharing";
+		const AllowDeleteFromUserInterface = 11;
+		const AllowUserSettings = 12;
+		const CurrentPermissions = "AllowUpload,AllowCreatingFolder,AllowDeletingFolder,AllowDeletingFile,AllowRenaming,AllowDeletingUser,AllowChangingPassword,AllowMoving,AllowCopying,AllowAdministration,AllowSharing,AllowDeleteFromUserInterface,AllowUserSettings";
 	}
 	/**
 	* File system constants to use

@@ -43,7 +43,8 @@
 			{
 				$args = array($_POST['username'],$_POST['password'],isset($_POST["stayloggedin"]));
 				
-				$result = $router->DoRequest('Kernel.UserKernel','LogIn',json_encode($args));							
+				$result = $router->DoRequest('Kernel.UserKernel','LogIn',json_encode($args));
+
 				if (is_numeric($result)){
 					$ERROR=$GLOBALS['Language']->wrongcredentials;					
 					include 'Views/LogIn.php';
@@ -236,6 +237,34 @@
 			$results = $GLOBALS["Router"]->DoRequest("Kernel.FileSystemKernel","SearchFileSystem",json_encode(array($_POST["Search"],$_SESSION["Token"])));
 			$searchTerm = $_POST["Search"];
 			$innerContent = 'Search.php';
+			include 'Views/Main.php';	
+		}
+		public function Settings($router){
+			$data = $this->InjectSessionData($router);	
+			$allowed  = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],12)));
+			if (!$allowed)
+				$router->DoRedirect("main",true);
+			$settings = $GLOBALS["Router"]->DoRequest("Kernel.UserKernel","GetDefaultSettingsSet",json_encode());
+			if (isset($_POST["submitted"])){
+				//Save the settings
+				foreach ($settings as $key => $value) {
+					$valueToStore = null;
+					if (isset($_POST[$value->Name])){
+						//The value was set
+						$valueToStore = $_POST[$value->Name];									
+						$valueToStore = ($valueToStore == "on") ?  "true" : "false";
+					}
+					else{
+						//the value was deselected
+						$valueToStore = $value->Value;
+					}
+					$stored = $GLOBALS["Router"]->DoRequest("Kernel.UserKernel","SetUserSetting",json_encode(array($value->Name,$valueToStore,$_SESSION["Token"])));
+
+				}
+			}
+			
+			
+			$innerContent = 'Settings.php';
 			include 'Views/Main.php';	
 		}
 		/**
@@ -568,7 +597,7 @@
 			if (!is_null($entry)){
 				ob_end_clean();	
 				header("Content-Type: ".$entry->MimeType);
-			    header("Content-Disposition: attachment; filename=\"".$entry->DisplayName."\"");		
+			    header("Content-Disposition: inline; filename='".$entry->DisplayName."'");		
 				$resp = $router->DoRequest('Kernel.FileSystemKernel','GetContentOfFile',json_encode(array($fileHash,$token)));			
 				echo $resp;
 				exit();
@@ -581,24 +610,29 @@
 		* Download a zipped folder (only works when already zipped and the session is the one of the owner)
 		* @param route $router object
 		*/
-		public function DownloadZip($router){
-			$data = $this->InjectSessionData($router);
-			$user = $data["user"];
-			$loginName = $user->LoginName;
+		public function DownloadZip($router){			
+			if (!isset($_GET["d"]))
+				$router->DoRedirect("main");
 			$folderPath= urldecode(str_replace("/", "",$_GET["d"]));
-			$filename = $loginName.$folderPath.".zip";
 			$tempPath = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetSystemDir',json_encode(array(1)));
-			if (file_exists($tempPath.$filename)){
+			$entry =  $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','GetEntryByAbsolutePath',json_encode(array($_GET["d"],$_SESSION["Token"])));
+			
+			$zipCreation = $GLOBALS['Router']->DoRequest('Kernel.FileSystemKernel','StartZipCreation',json_encode(array($entry->Id,$_SESSION["Token"],$entry->ParentID)));
+			//($id,$token,$rootpath)
+		
+			if (file_exists($tempPath.$zipCreation.".zip")){			
 				ob_end_clean();	
-				header("Content-Type: application/zip");
-			    header("Content-Disposition: attachment; filename=\"".$filename."\"");		
-				$resp = file_get_contents($tempPath.$filename);			
-				echo $resp;
-				unlink($tempPath.$filename);
-				exit();
+
+				header("Content-type: application/zip");
+
+				header("Content-Disposition: attachment; filename='".$entry->DisplayName.".zip'");	
+		   		readfile($tempPath.$zipCreation.".zip");
+				unlink($tempPath.$zipCreation.".zip");
+				
 			}	
 			else{
-				$router->DoRedirect("main");
+				//$router->DoRedirect("main");
+				echo $tempPath.$zipCreation."zip";
 			}		
 		}
 		/**
@@ -706,7 +740,8 @@
 			$absolutePathCurrentDirectory = $_SESSION['currentFolder'];				
 			if (isset($_FILES['file'])){
 				$fileToUpload = array();
-				$_FILES['file'] = $this->diverse_array($_FILES['file']);
+				error_log(print_r($_FILES,true));
+				//$_FILES['file'] = $this->diverse_array($_FILES['file']);
 				if (!isset($_FILES['file']['name'])){
 					for ($i =0 ; $i < count($_FILES['file']);$i++){
 						$fileToUpload[] = $_FILES['file'][$i];
@@ -727,12 +762,21 @@
 
 					if (isset($value)){						
 						$result =  $router->DoRequest('Kernel.FileSystemKernel','UploadFileWrapper',json_encode(array($entry->Id,$_SESSION['Token'],json_encode($file))));	
-						//TODO: Fallback handling
-						/*if (!is_numeric($result) && $result)
+						
+						if (!is_numeric($result) && $result){
+							error_log($result);
+							http_response_code(200);
 							echo 'YEAH BITCHEZ';
-						else
-							echo 'ERROR $result';*/
+
+						}
+						else{
+							error_log($result);
+							http_response_code(403);
+							echo 'ERROR $result';
+						}		
+						exit();	
 					}
+					
 				}
 			}						
 			$innerContent = 'Upload.php';			
@@ -749,6 +793,8 @@
 			$user = $router->DoRequest('Kernel.UserKernel','GetUser',json_encode($args));		
 			$data = array();
 			$data['user'] = $user;
+			$data['maxUploadSize'] = $router->DoRequest('Kernel.SystemKernel','GetMaxUploadSize',json_encode(array(ini_get("upload_max_filesize"),ini_get("post_max_size"))));	
+			
 			if (is_null($user))
 				$router->DoRedirect("login");
 			return $data;

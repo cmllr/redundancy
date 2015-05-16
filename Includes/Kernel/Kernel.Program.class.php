@@ -29,7 +29,7 @@
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.User.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Interface.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Constants.inc.php";
-		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.DBLayer.class.php";
+		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.PDO.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.FileSystem.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Sharing.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Updater.class.php";
@@ -43,8 +43,6 @@
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/FileSystemAnalysis.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/Share.class.php";
 		require_once __REDUNDANCY_ROOT__."Includes/Classes/Setting.class.php";
-		//**********************************************third party stuff*********************************
-		require_once __REDUNDANCY_ROOT__.'Lib/Doctrine/Doctrine/Common/ClassLoader.php';	
 		/**
 		 * This class boostraps the program itself
 		 * @license
@@ -67,7 +65,7 @@
 			* The programs version
 			* Structurized in {1.9.X-codenameorbranch-state}
 			*/
-			public $Version = "1.9.20-stable-rc3-0";//"1.9.15-Lenticularis-rc1-0";
+			public $Version = "1.10.1-stable-rc3-0";
 			/**
 			* The programs release date
 			*/
@@ -130,7 +128,7 @@
 			*/
 			public function GetShortenedVersion(){
 				$pattern = "/(?<major>\d+).(?<minor>\d+).(?<patch>\d+)+-(?<branch>[^-]+)-(?<stage>[^-]+)-(?<update>\d+)/";
-				$matches;
+				$matches = array();
 				preg_match($pattern,$this->Version,$matches);
 				return sprintf("%s.%s.%s.%s",$matches["major"],$matches["minor"],$matches["patch"],$matches["update"]);
 			}
@@ -140,7 +138,7 @@
 			*/
 			public function GetBranch(){
 				$pattern = "/(?<major>\d+).(?<minor>\d+).(?<patch>\d+)+-(?<branch>[^-]+)-(?<stage>[^-]+)-(?<update>\d+)/";
-				$matches;
+				$matches = array();
 				preg_match($pattern,$this->Version,$matches);
 				return $matches["branch"];
 			}

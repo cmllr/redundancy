@@ -130,7 +130,10 @@
 			//Kill all sessions
 			$dbquery = DBLayer::GetInstance()->RunDelete(sprintf("Delete from Session where userID = (Select  id from User where User.loginName = '%s')",$escapedLoginName));
 			$deleteShares = DBLayer::GetInstance()->RunDelete(sprintf("Delete from SharedFileSystem where userID = (Select  id from User where User.loginName = '%s')",$escapedLoginName));
+			//Delete all settings.
+			DBLayer::GetInstance()->RunDelete(sprintf("Delete from UserSettings where userId = (Select  id from User where User.loginName = '%s')",$escapedLoginName));
 			$sessioncheck = DBLayer::GetInstance()->RunSelect(sprintf("Select count(s.id) as Amount from Session s inner join User u on u.id = s.userID where u.loginName = '%s' ",$escapedLoginName));
+			
 			//If the check returns values, there must be a problem and the deletion failed					
 			//Delete the user			
 			$dbquery = DBLayer::GetInstance()->RunDelete(sprintf("Delete from User where loginName = '%s'",$escapedLoginName));
@@ -769,8 +772,8 @@
 		private function GenerateToken($loginName,$dateTime,$ip){
 			$token = \Redundancy\Classes\Errors::TokenGenerationFailed;
 			$userAgent = "";						
-			if (isset($_SERVER['HTTP_USER_AGENT']))
-				$userAgent = $_SERVER['HTTP_USER_AGENT'];			
+			//if (isset($_SERVER['HTTP_USER_AGENT']))
+				//$userAgent = $_SERVER['HTTP_USER_AGENT'];			
 			$token = md5(md5($loginName).md5($dateTime).md5($ip).md5($userAgent));
 			return $token;		
 		}
@@ -805,6 +808,11 @@
 		public function GetIP(){			
 			if (isset($_POST["ip"]))
 				return DBLayer::GetInstance()->EscapeString($_POST["ip"],true);	
+			//Cloudflare related fixes..
+			if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])){
+				$_SERVER['HTTP_CLIENT_IP'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+			}
+
 			if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
 			    $ip = $_SERVER['HTTP_CLIENT_IP'];
 			} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -842,8 +850,10 @@
 				//Delete old sessions to make sure there are no Sessions with an too old EndDate
 				$this->DeleteExpiredSession($escapedLoginName);		
 				$this->SetLastLoginDateTime($escapedLoginName);
-				$sessionNeeded = $this->IsNewSessionNeeded($escapedLoginName);					
-				//this value can be a kind of bool
+
+				$sessionNeeded = $this->IsNewSessionNeeded($escapedLoginName);		
+
+				//this value can be a kind of bool				
 				if ($sessionNeeded != "true"){
 					return $sessionNeeded;				
 				}
@@ -995,14 +1005,16 @@
 		
 			//If there is no token, a new one can be created
 			if (is_null($dbquery) || count($dbquery) == 0)
-				return "true";			
+				return "true";				
 			foreach ($dbquery as $value){				
 				$ip =$this->GetIP();	
 
 				$sessionStartedDateTime = $value["sessionStartedDateTime"];			
-				$compareToken = $this->GenerateToken($escapedLoginName,$sessionStartedDateTime,$ip);	
+				$compareToken = $this->GenerateToken($escapedLoginName,(string)$sessionStartedDateTime,$ip);	
 				//TODO: fix this			
-					
+				//error_log($compareToken);	
+				//error_log($compareToken);
+				//error_log($value["token"]);			
 				if ($compareToken == $value["token"]){	
 					if ($value["sessionEndDateTime"] == "0000-00-00 00:00:00"){						
 						return $compareToken;
@@ -1015,7 +1027,9 @@
 							return $compareToken;			
 					}
 				}
-			}		
+			}
+			//When no token has fit
+			return "true";		
 		}		
 		/**
 		* Delete old sessions (except it is a keep alive session!)
@@ -1053,5 +1067,89 @@
 			$permissionSet = explode(",",\Redundancy\Classes\PermissionSet::CurrentPermissions);
 			return $permissionSet;
 		}	
+		/**
+		* Get a user defined setting
+		* @param string $name the setting name (must be one of the returned of GetDefaultSettingsSet())
+		* @param string $token the session token
+		* @return mixed the settings value or null when the setting does not exist
+		*/
+		public function GetUserSetting($name,$token){
+			$escapedName= DBLayer::GetInstance()->EscapeString($name,true);
+			$escapedToken= DBLayer::GetInstance()->EscapeString($token,true);
+			$user = $this->GetUser($escapedToken);				
+			if (is_null($user))
+				return false;
+			$query = sprintf("Select * from UserSettings where SettingName = '%s' and UserId = '%s'",$escapedName,$user->ID);			
+			$dbquery = DBLayer::GetInstance()->RunSelect($query);
+			if (is_null($dbquery) || count($dbquery) == 0)
+				return null;
+			$s = null;
+			foreach ($dbquery as $value){
+				$s = new \Redundancy\Classes\Setting();
+				$s->Name = $value["SettingName"];
+				$s->Type = $value["SettingType"];
+				//A special bool handling
+				if ($s->Type =="Boolean")
+					$s->Value = ($value["SettingValue"] == "true")? true : false;
+				else
+					$s->Value = $value["SettingValue"];
+			}
+			return $s;
+		}
+		/**
+		* Set a new setting
+		* @param string $name the name
+		* @param string $type the type ("Boolean","Text","Number")
+		* @param mixed $value the value to use
+		* @param string $token the session token
+		* @return bool
+		*/
+		public function SetDefaultSetting($name,$type,$value,$token){
+			$escapedName= DBLayer::GetInstance()->EscapeString($name,true);
+			$escapedType= DBLayer::GetInstance()->EscapeString($type,true);
+			$escapedValue= DBLayer::GetInstance()->EscapeString($value,true);
+			$escapedToken= DBLayer::GetInstance()->EscapeString($token,true);
+			$user = $this->GetUser($escapedToken);		
+			if (is_null($user))
+				return false;
+			//count the setting to prevent duplicate ones
+			$dbquery = DBLayer::GetInstance()->RunSelect(sprintf("Select count(id) as Amount from UserSettings where SettingName = '%s' and UserId = '%s'",$escapedName,$user->ID));
+			if ($dbquery[0]["Amount"] != 0)
+				return false;
+			$query = sprintf("Insert into UserSettings (SettingName,SettingType,SettingValue,UserId) VALUES ('%s','%s','%s','%s')",$escapedName,$escapedType,$escapedValue,$user->ID);
+			DBLayer::GetInstance()->RunInsert($query);
+			return true;
+		}
+		/**
+		* Get the default list of user settings
+		* @return \Redundancy\Classes\Setting[] the settings
+		*/
+		public function GetDefaultSettingsSet(){
+			$settings = array();
+			$s = new \Redundancy\Classes\Setting();
+			$s->Name = "ui-user-scalable";
+			$s->Type="Boolean";
+			$s->Value = "false";
+			$settings[$s->Name] = $s;
+			return $settings;
+		}
+		public function SetUserSetting($name,$value,$token){
+			$escapedToken= DBLayer::GetInstance()->EscapeString($token,true);
+			if (!$GLOBALS["Kernel"]->UserKernel->IsActionAllowed($escapedToken,\Redundancy\Classes\PermissionSet::AllowUserSettings))
+				return \Redundancy\Classes\Errors::NotAllowed;				
+			$user = $this->GetUser($escapedToken);			
+			if (is_null($user))
+				return false;
+			if (is_null($this->GetUserSetting($name,$token))){
+				//The Setting is not existing
+				$defaults = $this->GetDefaultSettingsSet();
+				$this->SetDefaultSetting($defaults[$name]->Name,$defaults[$name]->Type,$defaults[$name]->Value,$token);
+			}
+			$escapedName =  DBLayer::GetInstance()->EscapeString($name,true);
+			$escapedValue=  DBLayer::GetInstance()->EscapeString($value,true);
+			$query = sprintf("Update UserSettings set SettingValue = '%s' where SettingName = '%s' and UserId = '%s'",$escapedValue, $escapedName,$user->ID);	
+			$dbquery = DBLayer::GetInstance()->RunUpdate($query);							
+			return true;
+		}
 	}
 ?>

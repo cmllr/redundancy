@@ -1,4 +1,8 @@
 <phpunit bootstrap="./Includes/api.inc.php">
+<logging>
+<log type="coverage-clover" target="coverage.xml"/>
+<log type="coverage-text" target="textcoverage" showUncoveredFiles="false"/>
+</logging>
 <testsuites>
   <testsuite name="My Test Suite">
     <directory>./tests/</directory>

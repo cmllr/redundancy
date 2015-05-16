@@ -193,7 +193,7 @@
 		* Sets the datetime formatters to UNIX timestamp
 		*/
 		public function SetRawDateFormatter(){
-			$this->SetDateFormatters("U","U");
+			$this->SetDateFormatters("/Date(U)/","/Date(U)/");
 		}
 		/**
 		* Set the date and day formatters
@@ -211,8 +211,12 @@
 		* @return date the date 
 		* @todo make changable via a setting
 		*/
-		public function FormatDate($datestr) {				
-			return date($this->DateFormatter,strtotime($datestr));
+		public function FormatDate($datestr) {
+			if ($this->DateFormatter == "/Date(U)/"){
+				return "/Date(".(date("U",strtotime($datestr))*1000).date("O",strtotime($datestr)).")/";
+			}else{
+				return date($this->DateFormatter,strtotime($datestr));
+			}				
 		}
 		/**
 		* Get the well formatted date string
@@ -220,8 +224,12 @@
 		* @return date the date 
 		* @todo make changable via a setting
 		*/
-		public function FormatDateDayOnly($datestr) {			
-			return date($this->DayFormatter,strtotime($datestr));
+		public function FormatDateDayOnly($datestr) {	
+			if ($this->DayFormatter == "/Date(U)/"){
+				return "/Date(".(date("U",strtotime($datestr))*1000).date("O",strtotime($datestr)).")/";
+			}else{
+				return date($this->DayFormatter,strtotime($datestr));
+			}			
 		}
 		/**
 		* Get the part of the uri to redirect to after an action
@@ -231,7 +239,7 @@
 		public function GetReturnTo($uri){
 			$returnTo = "main"; //default view
 			$regex = "/\?(?<return>.{1,})/";
-			$matches;
+			$matches = array();
 			$result = preg_match($regex, $uri,$matches);
 			if (isset($matches["return"]) && $result != 0)
 				return $matches["return"];

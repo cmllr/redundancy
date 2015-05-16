@@ -482,10 +482,11 @@
 			);	
 			$GLOBALS["Kernel"]->FileSystemKernel->UploadFile(-1,$token);	
 			$got =$GLOBALS["Kernel"]->FileSystemKernel->StartZipCreation(-1,$token,-1);
-			$this->AssertTrue($got == \Redundancy\Classes\Errors::ZipFileExisting);	
+
+			$this->AssertTrue($got != "");	
 			$GLOBALS["Kernel"]->FileSystemKernel->DeleteFile("/testUpload2",$token);	
 			$tempPath = $GLOBALS["Kernel"]->FileSystemKernel->GetSystemDir(1);
-			unlink($tempPath."testFS.zip");
+			$this->AssertTrue(file_exists($tempPath.$got.".zip"));
 		}
 		//***********************Test GetSearchTerms()***********************	
 		public function testGetSearchTerms01(){

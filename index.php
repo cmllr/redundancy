@@ -16,7 +16,18 @@ $router->CookieInteraction();
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?php if (!isset($_SESSION["Token"])) :?>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php endif;?>
+    <?php if (isset($_SESSION["Token"])) :?>
+    <?php $enableScrolling = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','GetUserSetting',json_encode(array("ui-user-scalable",$_SESSION["Token"])));?>
+    <?php if (!is_null($enableScrolling) && $enableScrolling->Value == true) :?>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <?php endif;?>
+    <?php if (is_null($enableScrolling) || $enableScrolling->Value == false) :?>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php endif;?>
+    <?php endif;?>
     <!-- jQuery -->
     <script src="./Lib/jQuery/jquery-1.10.2.min.js"></script>
     <!-- FontAwesome -->
@@ -45,15 +56,13 @@ $router->CookieInteraction();
     <script src='./nys/Views/js/Nys.Dialogs.js'></script>
     <link rel="icon" type="image/png" href="./nys/Views/img/favicon.png">
      <script src='./Lib/jQuery.Bootstrap/jquery.bootstrap.min.js'></script>
-    
     <title>Redundancy</title>
 </head>
 
 <body>
     <div class='container'>
         <div class='row'>
-            <?php
-$router->Route($_SERVER['REQUEST_URI']); ?>
+            <?php $router->Route($_SERVER['REQUEST_URI']); ?>
         </div>
     </div>   
 </body>

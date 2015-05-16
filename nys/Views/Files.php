@@ -65,8 +65,10 @@ nys.Init();
 	           }else if (key == "download"){
 	           		if (entry.FilePath != null)
 	           			window.open('?download&f='+entry.Hash,'_blank');
-	           		else
-	           			alert("Not implemented yet. :(");
+	           		else{
+	           			DownloadFolder(entry);
+	           			
+	           		}
 	           }else if (key == "open"){
 	           		if (entry.FilePath != null){
 	           			if (entry.DisplayName.indexOf(".zip") == -1)
@@ -108,7 +110,7 @@ nys.Init();
 	        	"openNewTab": {name: "<?php echo $GLOBALS["Language"]->OpenEntryNewTab; ?>", icon: "fa fa-folder-open-o"},        
 	            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],8)))) :?> "copy": {name: "<?php echo $GLOBALS["Language"]->Copy; ?>", icon: "fa fa-copy"}, <?php endif;?>
 	            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],7)))) :?> "move": {name: "<?php echo $GLOBALS["Language"]->Move; ?>", icon: "fa fa-cut"},<?php endif;?>
-	           "delete": {name: "<?php echo $GLOBALS["Language"]->Delete; ?>", icon: "fa fa-recycle"},
+	            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],11)))) :?> "delete": {name: "<?php echo $GLOBALS["Language"]->Delete; ?>", icon: "fa fa-recycle"},<?php endif;?>
 	            
 	            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],4)))) :?> "rename": {name: "<?php echo $GLOBALS["Language"]->RenameButton; ?>", icon: "fa fa-header"},<?php endif;?>
 	            //This function is disabled until the function gets implemented. "shareToUser": {name: "<?php echo $GLOBALS["Language"]->ShareToUserGeneric; ?>", icon: "fa fa-group"},
@@ -117,6 +119,23 @@ nys.Init();
 	        }
 	    });	    
 	});
+  }
+  function DownloadFolder(entry){
+  	var arguments = [];
+        arguments.push(entry.Id);
+        arguments.push(token);
+        $.post('./Includes/api.inc.php', {
+            module: 'Kernel.FileSystemKernel',
+            method: 'GetAbsolutePathById',
+            args: arguments
+        })
+        .done(function(data) {   
+        	var path = $.parseJSON(data);
+        	window.open('?zipfolder&d='+path,'_blank');
+        })
+        .fail(function(e) {         
+            nys.ErrorDialog(e.responseText);
+        });
   }
   function Extract(entry){
   		// UnzipInPlace($hash,$token,$path)

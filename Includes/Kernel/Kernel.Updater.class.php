@@ -113,13 +113,13 @@
 				$zip->ExtractTo($targetPath,$entries);
 				$zip->close();
 			}			
+			//Fallback until further improvement of the updater
 			$content = file_get_contents(__REDUNDANCY_ROOT__."Dump.sql");
 			$queries = explode(";", $content);
 			try{
 				foreach ($queries as $key => $value) {
 					try{
-
-						DBLayer::GetInstance()->RunSelect($value);//$result =  $conn->query($value);
+						DBLayer::GetInstance()->RunUpdate($value);
 					}
 					catch (\Exception $e){
 
@@ -138,7 +138,7 @@
 		*/
 		public function GetVersion(){					
 			$currentVersion = $GLOBALS["Kernel"]->Version;
-			$matches;
+			$matches = array();
 			if (!preg_match($this->pattern,$currentVersion,$matches))
 				return "";
 			else
@@ -163,7 +163,7 @@
 			$branch = $this->GetBranch();
 			$url = sprintf($this->updateSource,$branch);	
 			$content  = file_get_contents($url);
-			$matches;
+			$matches =array();
 			if (!preg_match($this->pattern,$content,$matches)){
 				return "";
 			}

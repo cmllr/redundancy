@@ -18,6 +18,13 @@
                     <span class='fa fa-user'>&nbsp;</span>
                     <?php echo $GLOBALS['Language']->My_Account;?></a>
             </li>
+            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],12)))) :?>
+            <li>
+                <a href='?settings'>
+                    <span class='fa fa-user'>&nbsp;</span>
+                    <?php echo $GLOBALS['Language']->Account_Settings;?></a>
+            </li>
+            <?php endif;?>
             <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],9)))) :?>
             <li>
                 <a href='?admin'>
@@ -42,7 +49,7 @@
                     <?php echo $GLOBALS['Language']->changes;?>
                 </a>
             </li>
-            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],0)))) :?>
+            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],0))))  :?>
             <li>
                 <a href='?upload'>
                     <span class='fa fa-cloud-upload'>&nbsp;</span>
@@ -98,6 +105,12 @@
                     <a href='?account'>
                         <?php echo $GLOBALS['Language']->My_Account;?></a>
                 </li>
+                <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],12)))) :?>
+                <li>
+                    <a href='?settings'>
+                        <?php echo $GLOBALS['Language']->Account_Settings;?></a>
+                </li>
+                <?php endif;?>
                 <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],9)))) :?>
                 <li>
                     <a href='?admin'>
