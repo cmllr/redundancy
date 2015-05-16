@@ -1,0 +1,48 @@
+6a4ac4f (Sat May 16 12:26:37 2015 +0200) Fallback for index
+3240607 (Sat May 16 11:40:46 2015 +0200) 	modified:   Dumps/TestDump.sql
+e06c1c7 (Sat May 16 11:30:51 2015 +0200) Applied tests on new right amount
+201d490 (Sat May 16 11:15:08 2015 +0200) Corrected tests
+8339d90 (Sat May 16 11:06:01 2015 +0200) Updated test dump
+5ff1d5a (Sat May 16 11:01:37 2015 +0200) Added settings dialog
+d0ca6df (Sat May 16 10:58:14 2015 +0200) New language vars
+12fb861 (Sat May 16 10:18:55 2015 +0200) Applied new permission 'AllowUserSettings' on database dump
+99cdf11 (Fri May 15 19:26:14 2015 +0200) Update of mysql dumps
+1bd550f (Fri May 15 16:36:18 2015 +0200) Enabled folder download
+c6e0d9e (Fri May 15 16:33:36 2015 +0200) Zip Creation fix
+52f6031 (Sun May 10 11:01:03 2015 +0200) Added new permission to control display of the delete button in the user interface. For issue #147
+2f13bbe (Sat May 9 10:33:59 2015 +0200) Cloudflare related fix in GetIP()
+dc74c7e (Fri May 8 21:03:15 2015 +0200) Bugfix for update process
+610cd64 (Fri May 8 20:22:29 2015 +0200) Added dump in old place for fallback
+0a3c1d9 (Fri May 8 19:59:39 2015 +0200) Fallback until next updater improvement
+79dd469 (Fri May 8 19:17:11 2015 +0200) Further HHVM related fixes
+3ba9243 (Fri May 8 19:03:00 2015 +0200) HHVM related fixes
+cfdc405 (Fri May 8 19:00:42 2015 +0200) Added new tests
+eee3620 (Fri May 8 18:42:40 2015 +0200) Fix for #145. Needs further investigation, but seems to be partially resolved
+0cc93a1 (Fri May 8 09:04:32 2015 +0200) Travis syntax problem?
+fc76e0a (Fri May 8 08:57:55 2015 +0200) Allowed to fail the php nightly build
+6b4b46c (Fri May 8 08:52:54 2015 +0200) Added php 5.6 and nightly to the build script
+c88e98d (Fri May 8 08:49:24 2015 +0200) Travis.yml change
+aa6a829 (Fri May 8 08:44:44 2015 +0200) Added composer file
+c0f30bb (Fri May 8 08:39:42 2015 +0200) Applied changes to travis build
+1c80d0b (Fri May 8 08:39:26 2015 +0200) HHVM travis ci
+16de14f (Fri May 8 08:22:57 2015 +0200) Added codecov badge
+f1a159f (Fri May 8 08:19:14 2015 +0200) Added coverage report to phpUnit XML config
+57f404a (Fri May 8 08:10:37 2015 +0200) added service to travis config
+5b77e15 (Fri May 8 07:58:58 2015 +0200) Added needed functions to get the max upload size
+225169f (Mon May 4 19:32:46 2015 +0200) Applied GMT diff to rawDate formatter
+29b9d4b (Mon May 4 18:59:40 2015 +0200) Applied new rawDate formatter
+4bcaa50 (Mon May 4 16:32:52 2015 +0200) RawDate Fix for JSON.NET
+df1c763 (Mon May 4 08:31:50 2015 +0200) Merge pull request #154 from Redundancycloud/pdo
+27ef222 (Mon May 4 08:28:45 2015 +0200) Added password recoveries table to regular DB dump
+55b31e3 (Sun May 3 15:43:26 2015 +0200) Fixed #153
+60f6af0 (Sun May 3 12:46:46 2015 +0200) Fixed #152
+7b4f5b1 (Sun May 3 12:44:07 2015 +0200) Moved Dumps
+59503c0 (Sun May 3 11:16:59 2015 +0200) PDO Escaping:
+9f38b4e (Sun May 3 11:04:38 2015 +0200) Version increase to 1.10.
+36295fa (Sun May 3 10:36:44 2015 +0200) Removed Doctrine
+797415b (Sat May 2 20:30:59 2015 +0200) Fixed encodings mentioned in #150
+124fa58 (Sat May 2 16:36:45 2015 +0200) Merge pull request #150 from lebochequirit/patch-1
+9730b97 (Sat May 2 16:32:59 2015 +0200) Update de.lng
+952d5f7 (Sat May 2 16:21:28 2015 +0200) Fixed typo
+67a7b84 (Sat May 2 16:04:41 2015 +0200) Allow to delete a shared file when there is no permission to share
+29e7a8d (Sat May 2 15:29:24 2015 +0200) Fixed #149
