@@ -46,3 +46,16 @@ df1c763 (Mon May 4 08:31:50 2015 +0200) Merge pull request #154 from Redundancyc
 952d5f7 (Sat May 2 16:21:28 2015 +0200) Fixed typo
 67a7b84 (Sat May 2 16:04:41 2015 +0200) Allow to delete a shared file when there is no permission to share
 29e7a8d (Sat May 2 15:29:24 2015 +0200) Fixed #149
+913c98f (Sat May 2 14:50:23 2015 +0200) 	modified:   README.md
+d3df058 (Sat May 2 14:48:46 2015 +0200) Added gitter.im badge to readme
+a04a772 (Sat May 2 12:33:09 2015 +0200) Added possibility to use UNIX timestamp when dealing with date properties
+93f5d78 (Sat May 2 12:02:30 2015 +0200) Improved branch display
+b2e009b (Sat May 2 11:57:30 2015 +0200) Now the branch name is displayed in the info dialog
+3a7a653 (Sat May 2 11:45:45 2015 +0200) Merge branch 'Lenticularis' of https://github.com/Redundancycloud/redundancy into Lenticularis
+f0a84ac (Sat May 2 11:45:20 2015 +0200) Hiding of functions where the permissions are missing. Exception: Delete (currently not able to hide b/c of the jQuery Context Menu plugin)
+d19eecc (Sat May 2 11:43:11 2015 +0200) Added Permission block on Share and Shares
+fd0fa85 (Sat May 2 11:42:43 2015 +0200) Improved detail of feedback of FSKernel::DeleteDirectory()
+8cc30fd (Fri May 1 18:42:17 2015 +0200) Wrong branch m(
+a8d7ce6 (Fri May 1 18:41:29 2015 +0200) Update Kernel.Program.class.php
+bb85d36 (Fri May 1 18:32:05 2015 +0200) Added new tests
+dd4165a (Fri May 1 18:26:06 2015 +0200) Old sessions are now cleaned in any case. Connected to issue #145
