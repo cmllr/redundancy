@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `Role` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 INSERT INTO `Role` (`id`, `description`, `permissions`, `IsDefault`) VALUES
-(1, 'Root', '111111111111', 1);
+(1, 'Root', '1111111111111', 1);
 CREATE TABLE IF NOT EXISTS `Session` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userID` int(11) NOT NULL,
@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS `PasswordRecoveries` (
   UNIQUE KEY `UserId` (`UserId`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-Update Role set permissions = '111111111111' where id = 1;
+Update Role set permissions = '1111111111111' where id = 1;
 
 Update User set isEnabled = '0' where loginName = 'testFS';
 
