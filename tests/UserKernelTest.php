@@ -139,7 +139,7 @@
 		//***********************Tests GetPermissionValues()***********************
 		function testGetPermissionValues01(){
 			$got = $GLOBALS["Kernel"]->UserKernel->GetPermissionValues();
-			$this->assertTrue(count($got) == 12);
+			$this->assertTrue(count($got) == 13);
 		}
 		//***********************Tests GetRoleByName()***********************
 		function testGetRoleByName01(){
