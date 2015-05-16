@@ -109,6 +109,7 @@
 			$expected[0]->Permissions[] = "1";
 			$expected[0]->Permissions[] = "1";
 			$expected[0]->Permissions[] = "1";
+			$expected[0]->Permissions[] = "1";
 			$this->assertEquals($value[0],$expected[0]);		
 		}
 		//***********************Tests GetPermissionSet()***********************
@@ -116,6 +117,7 @@
 			$token =  $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",false);	
 			$got = $GLOBALS["Kernel"]->UserKernel->GetPermissionSet($token);
 			$expected = array();
+			$expected[] = "1";
 			$expected[] = "1";
 			$expected[] = "1";
 			$expected[] = "1";
@@ -178,6 +180,7 @@
 			$expected->Id = 1;
 			$expected->Description = "Root";
 			$expected->Permissions = array();
+			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
 			$expected->Permissions[] = "1";
@@ -645,7 +648,7 @@
 		public function testGetListOfInstalledPermission01(){	
 			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
 			$got =  $GLOBALS["Kernel"]->UserKernel->GetListOfInstalledPermissions($token);
-			$this->assertTrue(count($got) == 12);
+			$this->assertTrue(count($got) == 13);
 		}
 		public function testGetListOfInstalledPermission02(){		
 			$got =  $GLOBALS["Kernel"]->UserKernel->GetListOfInstalledPermissions("nonsensetoken");

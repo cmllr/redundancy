@@ -16,7 +16,18 @@ $router->CookieInteraction();
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?php if (!isset($_SESSION["Token"])) :?>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php endif;?>
+    <?php if (isset($_SESSION["Token"])) :?>
+    <?php $enableScrolling = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','GetUserSetting',json_encode(array("ui-user-scalable",$_SESSION["Token"])));?>
+    <?php if (!is_null($enableScrolling) && $enableScrolling->Value == true) :?>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <?php endif;?>
+    <?php if (is_null($enableScrolling) || $enableScrolling->Value == false) :?>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php endif;?>
+    <?php endif;?>
     <!-- jQuery -->
     <script src="./Lib/jQuery/jquery-1.10.2.min.js"></script>
     <!-- FontAwesome -->
@@ -33,16 +44,26 @@ $router->CookieInteraction();
     <!-- Dropzone.js -->
     <script src='./Lib/Dropzone.js/dropzone.js' charset='UTF-8'></script>
     <link rel='stylesheet' href='Lib/Dropzone.js/css/dropzone.css' type='text/css' />
+    <script src="./Lib/formstone/core.js"></script>
+    <script src="./Lib/formstone/upload.js"></script>
+    <link rel='stylesheet' href='./Lib/formstone/upload.css' type='text/css' /
     <!-- Bootstrap -->
     <link rel='stylesheet' href='./Lib/Lenticularis/css/theme.min.css' type='text/css' />
     <script src='./Lib/Bootstrap/js/bootstrap.min.js'></script>
+   <!-- <link rel='stylesheet' href='./Lib/Bootstrap_DOS/css/bootstrap.min.css'/> <!--gebloedel-->
     <!-- Bootstrap Slider -->
     <link rel='stylesheet' href='./Lib/Bootstrap-slider/bootstrap-slider.css' type='text/css' />
     <script src='./Lib/Bootstrap-slider/bootstrap-slider.js'></script>
+    <!-- Intro.js -->
+    <script src='./Lib/Intro.js/intro.min.js'></script>
+    <link rel='stylesheet' href='./Lib/Intro.js/introjs.min.css' type='text/css' />
     <!-- Others -->
     <link rel='stylesheet' href='./nys/Views/css/nys.css' type='text/css' />
     <script src='./nys/Views/js/Nys.Files.js'></script>
     <script src='./nys/Views/js/Nys.Dialogs.js'></script>
+    <script src='./nys/Views/js/Nys.Intro.js'></script>
+
+
     <link rel="icon" type="image/png" href="./nys/Views/img/favicon.png">
      <script src='./Lib/jQuery.Bootstrap/jquery.bootstrap.min.js'></script>
     
@@ -52,8 +73,7 @@ $router->CookieInteraction();
 <body>
     <div class='container'>
         <div class='row'>
-            <?php
-$router->Route($_SERVER['REQUEST_URI']); ?>
+            <?php $router->Route($_SERVER['REQUEST_URI']); ?>
         </div>
     </div>   
 </body>
