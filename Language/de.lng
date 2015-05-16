@@ -161,6 +161,7 @@ QuickButtons_Description = "Häufig genutzte Funktionalitäten";
 Stable_Description = "Danke, dass Sie Redundancy nutzen. In dieser Version wurden einige Fehler behoben und neue Funktionalitäten integriert. Möchten Sie sich mehr über die Entwicklungsfortschritte von Redundancy informieren, können Sie am unteren Ende dieser Seite das Changelog einsehen.";
 Unstable_Description = "Danke, dass Sie Redundancy nutzen. Bitte beachten Sie, dass es sich bei dieser Version um eine nicht stabile Testversion handelt. Durch unbehobene Fehler kann sich das Programm unerwartet verhalten. Bitte beachten Sie auch die Hinweise im <a href = 'https://github.com/squarerootfury/redundancy/wiki/Beta-notes'>Wiki</a>.";
 Account_Settings = "Kontoeinstellungen";
+Account_Settings_Hint = "Du kannst hier Redundancy für dich einstellen. Diese Einstellungen betreffen nur dein Konto";
 Account_Storage_Info = "Speichernutzung";
 Dir_Empty = "Dieses Verzeichnis ist leer.";
 LocalShare ="Interne Freigabe";
@@ -360,6 +361,10 @@ Configuration_Fail = "Problematisch";
 DatabasePath="Datenbankpfad";
 
 CheckMail ="Bitte überprüfe deine Mails!";
+Queued = "Eingereihte Uploads";
+Finished = "Abgeschlossene Uploads";
+
+ui-user-scalable = "Zoomen auf mobilen Geräten deaktivieren";
 
 R_ERR_NULL = "Es konnten keine Informationen ermittelt werden!";
 
@@ -408,4 +413,5 @@ R_ERR_44 = "Der Gruppenname ist bereits verwendet. Der Gruppenname muss eindeuti
 R_ERR_45 = "Sie wurden gebannt.";
 R_ERR_46 = "Konnte das Archiv nicht öffnen!";
 R_ERR_47 = "Das Archiv ist leer. Entpacken sinnlos.";
-R_ERR_48 = "Fehler beim Hochladen"
+R_ERR_48 = "Fehler beim Hochladen";
+R_ERR_49 = "Die Datei ist zu groß.";
