@@ -239,6 +239,34 @@
 			$innerContent = 'Search.php';
 			include 'Views/Main.php';	
 		}
+		public function Settings($router){
+			$data = $this->InjectSessionData($router);	
+			$allowed  = $GLOBALS['Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],12)));
+			if (!$allowed)
+				$router->DoRedirect("main",true);
+			$settings = $GLOBALS["Router"]->DoRequest("Kernel.UserKernel","GetDefaultSettingsSet",json_encode());
+			if (isset($_POST["submitted"])){
+				//Save the settings
+				foreach ($settings as $key => $value) {
+					$valueToStore = null;
+					if (isset($_POST[$value->Name])){
+						//The value was set
+						$valueToStore = $_POST[$value->Name];									
+						$valueToStore = ($valueToStore == "on") ?  "true" : "false";
+					}
+					else{
+						//the value was deselected
+						$valueToStore = $value->Value;
+					}
+					$stored = $GLOBALS["Router"]->DoRequest("Kernel.UserKernel","SetUserSetting",json_encode(array($value->Name,$valueToStore,$_SESSION["Token"])));
+
+				}
+			}
+			
+			
+			$innerContent = 'Settings.php';
+			include 'Views/Main.php';	
+		}
 		/**
 		* Display the files list
 		* @param $router the Router-Object to be used.

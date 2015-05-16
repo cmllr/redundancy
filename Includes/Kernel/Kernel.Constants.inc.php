@@ -72,6 +72,7 @@
 		const CouldNotOpenZip = 46;
 		const EmptyZip = 47;
 		const UserDisabled = 48;
+		const ToLarge = 49;//Client side upload limiation
 	} 
 	/**
 	* The permission set in a human readable form
@@ -89,7 +90,8 @@
 		const AllowAdministration = 9;
 		const AllowSharing = 10;
 		const AllowDeleteFromUserInterface = 11;
-		const CurrentPermissions = "AllowUpload,AllowCreatingFolder,AllowDeletingFolder,AllowDeletingFile,AllowRenaming,AllowDeletingUser,AllowChangingPassword,AllowMoving,AllowCopying,AllowAdministration,AllowSharing,AllowDeleteFromUserInterface";
+		const AllowUserSettings = 12;
+		const CurrentPermissions = "AllowUpload,AllowCreatingFolder,AllowDeletingFolder,AllowDeletingFile,AllowRenaming,AllowDeletingUser,AllowChangingPassword,AllowMoving,AllowCopying,AllowAdministration,AllowSharing,AllowDeleteFromUserInterface,AllowUserSettings";
 	}
 	/**
 	* File system constants to use

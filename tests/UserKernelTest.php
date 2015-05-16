@@ -651,8 +651,44 @@
 			$got =  $GLOBALS["Kernel"]->UserKernel->GetListOfInstalledPermissions("nonsensetoken");
 			$this->assertTrue($got == \Redundancy\Classes\Errors::TokenNotValid);
 		}		
-		
-
-
+		public function testGetUserSetting01(){	
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetUserSetting("thisonedoesnotexist",$token);
+			$this->assertTrue(is_null($got));
+		}
+		public function testGetUserSetting02(){	
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetUserSetting("ui-user-scalable",$token);
+			$this->assertTrue(is_null($got));
+		}
+		public function testGetUserSetting03(){	
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
+			$GLOBALS["Kernel"]->UserKernel->SetUserSetting("ui-user-scalable","false",$token);
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetUserSetting("ui-user-scalable",$token);
+			$this->assertTrue($got->Value == false);
+		}
+		public function testSetDefaultSetting01(){
+			$got = $GLOBALS["Kernel"]->UserKernel->SetDefaultSetting("ui-user-scalable","Boolean","true","invalidtoken");
+			$this->assertFalse($got);
+		}
+		public function testSetDefaultSetting02(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);		
+			$got = $GLOBALS["Kernel"]->UserKernel->SetDefaultSetting("ui-user-scalable","Boolean","true",$token);
+			$this->assertFalse($got);
+		}
+		public function testGetDefaultSettingsSet01(){
+			$got = $GLOBALS["Kernel"]->UserKernel->GEtDefaultSettingsSet();
+			$this->assertTrue(count($got) != 0);
+		}
+		public function testSetUserSetting01(){
+			$token = $GLOBALS["Kernel"]->UserKernel->LogIn("testFS","testFS",true);			
+			$GLOBALS["Kernel"]->UserKernel->SetUserSetting("ui-user-scalable","true",$token);
+			$got =  $GLOBALS["Kernel"]->UserKernel->GetUserSetting("ui-user-scalable",$token);
+			$this->assertTrue($got->Value == true);
+		}
+		public function testSetUserSetting02(){
+			$got =  $GLOBALS["Kernel"]->UserKernel->SetUserSetting("ui-user-scalable","true","invalidtoken");
+			$this->assertTrue($got == 15);
+		}
 	}
 ?>
