@@ -41,9 +41,10 @@ $router->CookieInteraction();
     <link rel="stylesheet" href="./Lib/jQuery/jquery.contextMenu.css">
     <!-- Spin.js -->
     <script src='./Lib/spin.min.js'></script>
-    <!-- Dropzone.js -->
-    <script src='./Lib/Dropzone.js/dropzone.js' charset='UTF-8'></script>
-    <link rel='stylesheet' href='Lib/Dropzone.js/css/dropzone.css' type='text/css' />
+    <!-- Formstone -->
+    <script src="./Lib/formstone/core.js"></script>
+    <script src="./Lib/formstone/upload.js"></script>
+    <link rel='stylesheet' href='./Lib/formstone/upload.css' type='text/css' /
     <!-- Bootstrap -->
     <link rel='stylesheet' href='./Lib/Lenticularis/css/theme.min.css' type='text/css' />
     <script src='./Lib/Bootstrap/js/bootstrap.min.js'></script>

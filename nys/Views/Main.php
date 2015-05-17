@@ -49,7 +49,7 @@
                     <?php echo $GLOBALS['Language']->changes;?>
                 </a>
             </li>
-            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],0))))  :?>
+            <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],0))) && isset($_GET["files"]))  :?>
             <li>
                 <a href='?upload'>
                     <span class='fa fa-cloud-upload'>&nbsp;</span>
@@ -154,12 +154,7 @@
                 </li>
                 <?php if($GLOBALS[ 'Router']->DoRequest('Kernel.UserKernel','IsActionAllowed',json_encode(array($_SESSION['Token'],0)))) :?>
                 <li>
-                    <?php if (!isset($_GET["files"])) :?>
-                    <a href='?upload'>                       
-                        <span class='fa fa-cloud-upload'>&nbsp;</span>
-                        <?php echo $GLOBALS['Language']->Upload;?>                  
-                    </a>
-                    <?php endif;?>
+                  
                         <?php if (isset($_GET["files"])) :?>
                         <div id="uploadHrefProgress"></div>            
                         <a id="uploadHref" href='#'>         
@@ -239,72 +234,115 @@
 </div>
 <div id="uploadbox" style="visibility:hidden;height:0px">
 <a href="#" id="clearupload"><?php  echo $GLOBALS['Language']->Clear;?></a>
-<hr>
-<div id = 'result'></div>
+<div class="uploadDropper">
+    <div class="filelists">
+        <h5><?php echo $GLOBALS["Language"]->Finished;?></h5>
+        <ol class="filelist complete">
+        </ol>
+        <h5><?php echo $GLOBALS["Language"]->Queued;?></h5>
+        <ol class="filelist queue">
+        </ol>
+    </div>
 
-<form class ='dropzone' id = 'my-awesome-dropzone' action='?upload' method='POST' >
-<div class = 'dz-message'>
-    <h3 class="text-center"><span class='fa fa-file'>&nbsp;</span>
-       <?php echo $GLOBALS['Language']->dictUploadTitle ;?>
-    </h3>
 </div>
-    <div class='fallback'>
-    <input name='file' type='file'/>
-  </div>
-</form>
 
-<script>
-Dropzone.options.myAwesomeDropzone = {
-  paramName: 'file', 
-  uploadMultiple: true,
-  addRemoveLinks: true,
-  parallelUploads: 1,
-  accept: function(file, done) {
-   done();
-  
-  },
-  complete: function(file){ 
-    if (typeof maybeObject !== "undefined")
-        nys.Init();
-  },
-  init:function(){
-    var _this = this;
-    var errors = [];
-    $("#clearupload").click(function(){
-         _this.removeAllFiles();
-        _this.errors  = [];
-    });
-    this.on("queuecomplete",function(e){       
-        $("#uploadPercentage").text("");
-        if (errors.length != 0){
-            var errorDisplay = "<ul>";
-            for (var i = 0; i < errors.length; i++) {
-                errorDisplay = errorDisplay + "<li>"+errors[i]+"</li>";
-            };
-            errorDisplay += "</ul>";
-            nys.ErrorDialog(errorDisplay);        
-            errors  = [];
-        } 
+<script type="text/javascript">
+   // jquery file upload
+   $(document).ready(function(){
+    $filequeue = $(".filelist.queue");
+        $filelist = $(".filelist.complete");
+        $(".uploadDropper").upload({
+            maxSize: <?php echo $data['maxUploadSize'];?>,
+            action:"index.php?upload",
+            postKey:"file",
+            label: " <?php echo $GLOBALS['Language']->dictUploadTitle ;?>",
+        }).on("start.upload", onStart)
+          .on("complete.upload", onComplete)
+          .on("filestart.upload", onFileStart)
+          .on("fileprogress.upload", onFileProgress)
+          .on("filecomplete.upload", onFileComplete)
+          .on("fileerror.upload", onFileError);
+   });
+    function onStart(e, files) {
+        console.log("Start");
+        var html = '';
+        for (var i = 0; i < files.length; i++) {
+            html += '<li data-index="' + files[i].index + '"><span class="file">' + files[i].name + '</span><span class="progress">Queued</span></li>';
+        }
+        $filequeue.append(html);
+    }
+
+    function onComplete(e) {
+        console.log("Complete");
+        // All done!
+    }
+
+    function onFileStart(e, file) {
+        console.log("File Start");
+        $filequeue.find("li[data-index=" + file.index + "]")
+                  .find(".progress").text("0%");
+    }
+
+    function onFileProgress(e, file, percent) {
+        $("#uploadPercentage").text(Math.round(percent)+"%");
+       $("#uploadHrefProgress").attr("style","height:100%;background: rgba(50, 102, 146, 0.15);width:"+percent+"%;position:absolute;");
+        $filequeue.find("li[data-index=" + file.index + "]")
+                  .find(".progress").text(percent + "%");
+    }
+
+    function onFileComplete(e, file, response) {
+        console.log("File Complete");
+        if (response.trim() === "" || response.toLowerCase().indexOf("error") > -1) {
+            $filequeue.find("li[data-index=" + file.index + "]").addClass("error")
+                      .find(".progress").text(response.trim());
+        } else {
+            var $target = $filequeue.find("li[data-index=" + file.index + "]");
+            $target.find(".file").text(file.name);
+            $target.find(".progress").remove();
+            $target.appendTo($filelist);
+        }
+        $("#uploadPercentage").text("");       
         $("#uploadHrefProgress").removeAttr("style");       
         nys.Init();
-    });
-    this.on("totaluploadprogress",function(e){
-       $("#uploadPercentage").text(Math.round(e)+"%");
-       $("#uploadHrefProgress").attr("style","height:100%;background: rgba(50, 102, 146, 0.15);width:"+e+"%;position:absolute;");
-    });
-    this.on("error",function(a,b,c){
-        errors.push(a.name + ": " + b);
-    });
-  },
+    }
 
- // error: function(e){
-  //  console.log(e);
-  //},
-  dictRemoveFile: '<?php echo $GLOBALS['Language']->dictRemoveFile;?>',
-  dictCancelUpload: '<?php  echo $GLOBALS['Language']->dictCancelUpload;?>',
-  dictDefaultMessage: '<?php  echo $GLOBALS['Language']->dictDefaultMessage;?>',  
-  dictCancelUploadConfirmation: '<?php  echo $GLOBALS['Language']->dictCancelUploadConfirmation;?>', 
-
-};
+    function onFileError(e, file, error) {
+        if (file.transfer){
+            //file was too large
+             var errorRawText = file.transfer.responseText;
+            var errorText = /R_ERR_\d+/.exec(errorRawText)[0];
+            var arguments = [];
+            arguments.push(errorText);
+           $.post('./Includes/api.inc.php', {
+                module: 'Kernel.InterfaceKernel',
+                method: 'GetLanguageValue',
+                args: arguments,
+            })
+            .done(function(data) {  
+                data = $.parseJSON(data);  
+                var errorDisplayText = data.replace(/["']/g, "");
+                $filequeue.find("li[data-index=" + file.index + "]").addClass("error")
+                .find(".progress").text(errorDisplayText);
+            })
+            .fail(function(e) {
+                $filequeue.find("li[data-index=" + file.index + "]").addClass("error")
+                .find(".progress").text("Error: " + error);
+            }); 
+        }
+        else{
+            if (error == "Too large"){
+                error="<?php echo $GLOBALS["Language"]->R_ERR_49;?>";
+            }
+             $filequeue.find("li[data-index=" + file.index + "]").addClass("error")
+                .find(".progress").text(error);
+        }
+         $("#uploadPercentage").text("");       
+        $("#uploadHrefProgress").removeAttr("style");             
+        
+    }
+    $("#clearupload").click(function(){
+        $(".complete").empty()
+        $(".queue").empty()
+    });
 </script>
 </div>
