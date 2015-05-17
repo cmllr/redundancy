@@ -138,7 +138,6 @@
                                               <?php echo $GLOBALS['Language']["Driver"];?></label>
                                             <select id="driver" class = "form-control" name="driver" required>
                                                 <option>MySQL</option>
-                                                <option>SQLite</option>
                                             </select>
                                     </div>
                                     <div class='form-group' id="usernameFormGroup">
