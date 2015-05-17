@@ -372,6 +372,7 @@ DatabasePath="Database path";
 CheckMail ="Please check your mails!";
 Queued = "Queued uploads";
 Finished = "Finished uploads";
+DatabaseUser = "Database user";
 ui-user-scalable = "Disable zooming on mobile devices";
 
 R_ERR_NULL = "Could not get any information!";

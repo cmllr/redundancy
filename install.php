@@ -3,17 +3,20 @@
     <meta charset="UTF-8">
     <!-- Bootstrap -->
     <link rel='stylesheet' href='./Lib/Lenticularis/css/theme.min.css' type='text/css' />
+    <script src="./Lib/jQuery/jquery-1.10.2.min.js"></script>
     <script src='./Lib/Bootstrap/js/bootstrap.min.js'></script>
     <title>Redundancy</title>
 </head>
 <?php
-    $path = str_replace("install.php","", __file__);
+     error_reporting(E_ALL);
+    $path = str_replace("install.php","", __file__);   
     /**
     * The systems root dir, ending with "/"
     */      
     define("__REDUNDANCY_ROOT__",$path);
-    //Some stuff...
-    require_once "./Includes/Kernel/Kernel.Installer.class.php";
+    //Some stuff...  
+    require_once __REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Installer.class.php";
+   // var_dump($k);
     $k = new \Redundancy\Kernel\Installer();
     if ($k->IsLocked())
     {
@@ -38,8 +41,8 @@
 
     if (isset($_POST["hostname"])){
         //$user,$pass,$host,$dbname,$driver
-        $dbConnResult =  $k->TestDBConnection($_POST["username"],$_POST["password"],$_POST["hostname"],$_POST["db"],$_POST["driver"]);
-        $write = $k->WriteDBConfig($_POST["username"],$_POST["password"],$_POST["hostname"],$_POST["db"],$_POST["driver"]);
+        $dbConnResult =  $k->TestDBConnection($_POST["username"],$_POST["password"],$_POST["hostname"],$_POST["db"],$_POST["driver"],$_POST["path"]);
+        $write = $k->WriteDBConfig($_POST["username"],$_POST["password"],$_POST["hostname"],$_POST["db"],$_POST["driver"],$_POST["path"]);
         $dbimport = $k->DoTheImport();
         if ($dbConnResult && $write )
             $step = 5;
@@ -130,42 +133,83 @@
                                     <div class="alert alert-success"><?php echo $GLOBALS["Language"]["DBConTrue"];?></div>
                                 <?php endif ;?>
                                 <form class='form' role='form' method='POST' action='./install.php?step=db&lng=<?php echo  $lng ;?>' autocomplete ="off" >
-                                    <div class='form-group '>
+                                     <div class='form-group '>
+                                        <label for='driver'>
+                                              <?php echo $GLOBALS['Language']["Driver"];?></label>
+                                            <select id="driver" class = "form-control" name="driver" required>
+                                                <option>MySQL</option>
+                                                <option>SQLite</option>
+                                            </select>
+                                    </div>
+                                    <div class='form-group' id="usernameFormGroup">
                                         <label for='username'>
-                                            <?php echo $GLOBALS['Language']["Username"];?></label>
-                                        <input type='text' class='form-control' name='username' placeholder='<?php echo $GLOBALS['Language']["Username"];?>' 
+                                            <?php echo $GLOBALS['Language']["DatabaseUser"];?></label>
+                                        <input type='text' class='form-control' name='username' placeholder='<?php echo $GLOBALS['Language']["DatabaseUser"];?>' 
                                         value ="<?php echo isset($_POST["username"]) ? $_POST["username"] : "";?>" required>
                                     </div>
-                                    <div class='form-group '>
+                                    <div class='form-group ' id="passwordFormGroup">
                                         <label for='password'>
                                             <?php echo $GLOBALS['Language']["Password"];?></label>
                                         <input type='password' class='form-control' name='password' placeholder='<?php echo $GLOBALS['Language']["Password"];?>' 
                                         value ="<?php echo isset($_POST["password"]) ? $_POST["password"] : "";?>"
                                         >
                                     </div>
-                                    <div class='form-group '>
+                                    <div class='form-group ' id="dbFormGroup">
                                         <label for='db'>
                                             <?php echo $GLOBALS['Language']["Database"];?></label>
                                         <input type='text' class='form-control' name='db' placeholder='<?php echo $GLOBALS['Language']["Database"];?>' 
                                         value ="<?php echo isset($_POST["db"]) ? $_POST["db"] : "";?>"
                                         required>
                                     </div>
-                                    <div class='form-group '>
+                                    <div class='form-group ' id="hostnameFormGroup">
                                         <label for='hostname'>
                                             Hostname</label>
                                         <input type='text' class='form-control' name='hostname' value='localhost' required>
                                     </div>
-                                    <div class='form-group '>
-                                        <label for='driver'>
-                                              <?php echo $GLOBALS['Language']["Driver"];?></label>
-                                            <select class = "form-control" name="driver" required>
-                                                <option>MySQL</option>
-                                            </select>
-                                    </div>
+                                    <div class='form-group ' id="pathFormGroup" style="display: none;">
+                                        <label for='path'>
+                                            <?php echo $GLOBALS['Language']["DatabasePath"];?></label>
+                                        <input type='text' class='form-control' name='path' value=''>
+                                    </div>                                   
                                      <a class="btn btn-default" href ="./install.php?step=license&lng=<?php echo  $lng ;?>"><?php echo $GLOBALS["Language"]["Back"];?></a>
-                                <input type ="submit" class="btn btn-primary" value="<?php echo $GLOBALS["Language"]["NextUser"];?>"</input>
+                                  <input type ="submit" class="btn btn-primary" value="<?php echo $GLOBALS["Language"]["NextUser"];?>"</input>
                                 </form>
-                               
+                               <script>
+                                    var serverBased = ["MySQL"];
+                                    var fileBased = ["SQLite"];
+                                    $("#driver").change(function(){                                       
+                                        var driver = $('#driver').find(":selected").text();
+                                        if (serverBased.indexOf(driver) != -1){
+                                            //server based
+                                            $("#pathFormGroup").hide();
+                                            $("#hostnameFormGroup").show();
+                                            $("#dbFormGroup").show();
+                                            $("[name='hostname']").attr("required");
+                                            $("[name='username']").attr("required");
+                                            $("[name='db']").attr("required");
+                                            $("[name='password']").attr("required");
+                                            $("[name='hostname']").attr("required");
+                                            $("#passwordFormGroup").show();
+                                            $("#usernameFormGroup").show();
+                                        }
+                                        else{
+                                            //file based
+                                            $("#pathFormGroup").show();
+                                            $("#dbFormGroup").hide();
+                                            $("#hostnameFormGroup").hide(); 
+                                            $("#passwordFormGroup").hide();
+                                            $("#usernameFormGroup").hide();
+                                            $("[name='password']").removeAttr("required");
+                                            $("[name='hostname']").removeAttr("required");
+                                            $("[name='username']").removeAttr("required");
+                                            $("[name='db']").removeAttr("required");
+                                            $("[name='password']").removeAttr("required");
+                                            $("[name='hostname']").removeAttr("required");   
+
+                                           
+                                        }
+                                    });
+                               </script>
                             <?php endif ;?>
                              <?php if ($step == 5) :?>
                                 <h1 class="light header-form gray"><?php echo $GLOBALS["Language"]["Installation"];?></h1>

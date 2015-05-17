@@ -363,6 +363,7 @@ DatabasePath="Datenbankpfad";
 CheckMail ="Bitte überprüfe deine Mails!";
 Queued = "Eingereihte Uploads";
 Finished = "Abgeschlossene Uploads";
+DatabaseUser = "Datenbankbenutzer";
 
 ui-user-scalable = "Zoomen auf mobilen Geräten deaktivieren";
 
