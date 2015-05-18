@@ -173,7 +173,7 @@
 		public function DoRequest($module,$method,$args){	
 			
 			$domain = $_SERVER['HTTP_HOST'];
-			$prefix = (isset($_SERVER['HTTPS']) && $_SERVER["HTTPS"] != "off") ? 'https://' : 'http://';
+			$prefix = (isset($_SERVER['HTTPS']) && $_SERVER["HTTPS"] != "off" && !empty($_SERVER["HTTPS"])) ? 'https://' : 'http://';
 			$relative = str_replace('index.php','',$_SERVER['SCRIPT_NAME']).'Includes/api.inc.php';				
 			
 			$postdata = http_build_query(
