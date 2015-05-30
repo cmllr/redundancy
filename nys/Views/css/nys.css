@@ -51,3 +51,7 @@
 .list-group-item a{
 	text-decoration: none;
 }
+.progress{
+	margin-left: 10px;
+    padding: 3px;
+}
