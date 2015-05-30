@@ -366,6 +366,18 @@ Finished = "Abgeschlossene Uploads";
 DatabaseUser = "Datenbankbenutzer";
 
 ui-user-scalable = "Zoomen auf mobilen Geräten deaktivieren";
+Enable_Register="Registrierung aktivieren";
+Program_Storage_Dir="Speicherverzeichnis";
+Program_Temp_Dir="Temporäres Verzeichnis";
+Program_Snapshots_Dir="Backupverzeichnis";
+Program_XSS_Timeout="Timeout für Sperren (veraltet)";
+Program_Name="Instanzname";
+User_Contingent="Standardquota für neue Benutzer in MB";
+User_Recover_Password_Length="Länge für generierte Benutzerpasswörter";
+Program_Session_Timeout="Sitzungslänge in Sekunden";
+Program_Share_Link_Length ="Länge der Codes zum Teilen per Link";
+Program_Language="Systemsprache";
+Max_User_Storage="Maximale Benutzerquota in MB";
 
 R_ERR_NULL = "Es konnten keine Informationen ermittelt werden!";
 

@@ -244,17 +244,17 @@
 			<input type="hidden" value="whereismysauerkraut" name="settings"></input>
 			<?php foreach($settings as $key => $value) :?>
 				<div class="form-group">
-					<label for="<?php echo $value->Name;?>" class="control-label col-xs-3"><?php echo $value->Name;?></label>
+					<label for="<?php echo $value->Name;?>" class="control-label col-xs-3"><?php echo property_exists($GLOBALS["Language"], $value->Name) ? $GLOBALS["Language"]->{$value->Name} : $value->Name;?></label>
 					<div class="col-xs-9">
 						<?php if ($value->Type == "Boolean") :?>
 							<input type="checkbox" name="<?php echo $value->Name;?>" <?php echo ($value->Value == "true") ? "checked" : "";?>>
-						<?php endif;?>		
+						<?php endif;?>
 						<?php if ($value->Type == "Text") :?>
 							<input type="text" class="form-control" name="<?php echo $value->Name;?>" value="<?php echo $value->Value;?>">
-						<?php endif;?>	
-						<?php if ($value->Type == "Number") :?>
+						<?php endif;?>
+						<?php if ($value->Type == "Number" || empty($value->Type)) :?>
 							<input type="number" class="form-control" name="<?php echo $value->Name;?>" value="<?php echo $value->Value;?>">
-						<?php endif;?>	
+						<?php endif;?>
 					</div>
 				</div>
 			<?php endforeach;?>
