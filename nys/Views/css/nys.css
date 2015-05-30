@@ -48,3 +48,6 @@
 	top: 30%;
 	left: 54%;
 }
+.list-group-item a{
+	text-decoration: none;
+}
