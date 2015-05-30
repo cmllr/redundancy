@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `Bans` (
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 INSERT INTO `User` (`id`, `loginName`, `displayName`, `mailAddress`, `registrationDateTime`, `lastLoginDateTime`, `passwordHash`, `isEnabled`, `contingentInByte`, `roleID`, `failedLogins`) VALUES
-(1, 'test', 'Administrator', 'test@bla.de', '2014-09-21 15:33:45', '2014-10-18 12:48:49', '$2y$11$.Vz58QMNFzqfUsRIrzXkAesBXW8kGSNfwOMmv3tURMqf3IdArZypm', 1, 5242880, 1, 0);
+(1, 'test', 'Administrator', 'test@bla.de', '2014-09-21 15:33:45', '2014-10-18 12:48:49', '$2y$11$.Vz58QMNFzqfUsRIrzXkAesBXW8kGSNfwOMmv3tURMqf3IdArZypm', 1, 524288000, 1, 0);
 CREATE TABLE IF NOT EXISTS `Settings` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `SettingName` text COLLATE utf8_bin NOT NULL,
