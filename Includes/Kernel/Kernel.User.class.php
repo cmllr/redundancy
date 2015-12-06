@@ -29,11 +29,24 @@
 		* @return the password hash
 		*/
 		private function HashPassword($password){
-			$options = [
+			if ($this->IsSaltOptionDeprecated()){
+				return password_hash($password,PASSWORD_BCRYPT);
+			}
+			else{
+					$options = [
 				    'cost' => 11,
 				    'salt' => mcrypt_create_iv(22, MCRYPT_DEV_URANDOM),
 				];
-			return password_hash($password, PASSWORD_BCRYPT, $options);
+				return password_hash($password, PASSWORD_BCRYPT, $options);
+			}		
+		}
+		/**
+		* Checks if the salt option is deprecated in the current php environment.
+		* @see https://secure.php.net/manual/de/migration70.deprecated.php
+		* @return bool
+		*/
+		private function IsSaltOptionDeprecated(){
+			return version_compare(phpversion(), "7.0.0") == -1;
 		}
 		/**
 		* Create a new system user, will be created using the settings User_Default_Role and User_Contingent
