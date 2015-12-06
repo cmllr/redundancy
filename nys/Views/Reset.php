@@ -9,7 +9,7 @@
       include 'Partials/Message.php';
 ?>
     <div class="hidden-xs">
-        <img class='img-responsive logo' src='./nys/Views/img/logoWithText.png'>
+        <a href="index.php"><img class='img-responsive logo' src='./nys/Views/img/logoWithText.png'></a>
     </div>
     <div class='panel panel-default white-flat'>
         <div class="panel-body">
