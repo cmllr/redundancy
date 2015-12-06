@@ -46,7 +46,7 @@
 		* @return bool
 		*/
 		private function IsSaltOptionDeprecated(){
-			return version_compare(phpversion(), "7.0.0") == -1;
+			return PHP_MAJOR_VERSION  >= 7;
 		}
 		/**
 		* Create a new system user, will be created using the settings User_Default_Role and User_Contingent
