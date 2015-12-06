@@ -15,12 +15,11 @@ Requirements
 ------------
 
 for server:
-- PHP 5.5.x is required
+- PHP 5.6.x is required
 - PHP GD modules
 - PHP zip modules
-- PHP mcrypt modules
 - cUrl enabled in PHP
-- MySQL(i) or equivalent
+- MySQLi or equivalent
 
 for client:
 - JavaScript support
