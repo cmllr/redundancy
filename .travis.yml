@@ -10,8 +10,6 @@ before_script:
   - mysql -e 'create database Lenticularis;'
   - mysql -u root  Lenticularis < ./Dumps/TestDump.sql
   - chmod 777 ./Storage
-  - travis_retry composer self-update
-  - travis_retry composer --prefer-source --dev install
 script: phpunit --configuration ./runTests.xml
 # whitelist
 branches:
