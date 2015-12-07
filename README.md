@@ -2,7 +2,7 @@ Redundancy Lenticularis (1.9.15 and up)  branch
 =================================
 
 [![Join the chat at https://gitter.im/Redundancycloud/public](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Redundancycloud/public?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://travis-ci.org/Redundancycloud/redundancy.svg?branch=Lenticularis)](https://travis-ci.org/Redundancycloud/redundancy)
+[![Build Status](https://travis-ci.org/squarerootfury/redundancy.svg?branch=Lenticularis)](https://travis-ci.org/squarerootfury/redundancy)
 [![codecov.io](http://codecov.io/github/Redundancycloud/redundancy/coverage.svg?branch=Lenticularis)](http://codecov.io/github/Redundancycloud/redundancy?branch=Lenticularis)
 
 > Please note: This branch is _only_ for developing purposes. This version is bleeding edge, instable, uncomplete and does not have all functions
