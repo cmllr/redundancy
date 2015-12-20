@@ -51,8 +51,11 @@
 				}
 				else{					
 					if (!isset($_SESSION['Token'])){
-						if (isset($_POST["stayloggedin"]) && $_POST["stayloggedin"] == "true")
-							$_SESSION["StayLoggedIn"] = true;
+						if (isset($_POST["stayloggedin"]) && $_POST["stayloggedin"] == "true"){
+                                                    $_SESSION["StayLoggedIn"] = true;
+                                                    setcookie("r2token",$result);
+                                                    setcookie("r2lang",$_POST["lang"]);
+                                                }							
 						$_SESSION['Token'] = $result;
 						$_SESSION['Language'] = $_POST['lang'];
 					}											
@@ -528,7 +531,6 @@
 		* @todo language??
 		*/
 		function Share($router){
-			//$router->SetLanguage("de");
 			$entry =  $GLOBALS['Router']->DoRequest('Kernel.SharingKernel','GetEntryByShareCode',json_encode(array($_GET["c"])));
 			$shareCode = $_GET["c"];
 			if (is_null($entry) || is_numeric($entry))
@@ -779,7 +781,6 @@
 		* @return an array containg the session data
 		*/
 		private function InjectSessionData($router){			
-			$router->SetLanguage(isset($_SESSION['Language']) ? $_SESSION['Language'] :  $GLOBALS["Language"]);
 			$args = array($_SESSION['Token']);			
 			$user = $router->DoRequest('Kernel.UserKernel','GetUser',json_encode($args));		
 			$data = array();

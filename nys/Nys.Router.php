@@ -40,50 +40,31 @@
 			$GLOBALS['Router'] = $this;
 			$this->controller = new UIController();
 			if (!isset($_SESSION))
-				session_start();
+				session_start();                        
+                        //Set the cookies if needed
+                        $this->CookieInteraction();
+                     
 			if (isset($_SESSION["lang"]))
 				$lang = $_SESSION["lang"];
 			else			
-				$lang = $this->DoRequest('Kernel','GetConfigValue',json_encode(array("Program_Language")));	
-			$this->SetLanguage($lang);		
+				$lang = $this->DoRequest('Kernel','GetConfigValue',json_encode(array("Program_Language")));                        
+			$GLOBALS['Language'] = $this->DoRequest('Kernel.InterfaceKernel','SetCurrentLanguage',json_encode(array($lang)));
 		}
 		/**
 		* Interacts with the cookies, creates or deletes them (if needed)
 		*/
 		public function CookieInteraction(){
-			//If the logged in feature is requested, set the cookie
-			if (isset($_SESSION["StayLoggedIn"])){
-				setcookie("SessionData", $_SESSION["Token"]);//,time()+5);
-				setcookie("SessionDataLang", $_SESSION["Language"]);//,time()+5);
-				unset($_SESSION["StayLoggedIn"]);
-			}
-			//If the session cookie is not empty
-			if (!empty($_COOKIE["SessionData"])){
-				//If any route except logout is requested and the token is empty, fill it with the values from the cookie
-				if(!isset($_GET["logout"])){
-					//only set the token if it is not saved already.
-					if (!isset($_SESSION["Token"]) ||empty($_SESSION["Token"])){
-						$_SESSION["Token"] = $_COOKIE["SessionData"];
-						$_SESSION["Language"] = $_COOKIE["SessionDataLang"];
-					}					
-				}
-				else{
-					//If logout is requested, kill the cookie (SESSION will be killed in Controller)
-					unset($_COOKIE["SessionData"]);
-					unset($_COOKIE["SessionDataLang"]);
-					// empty value and expiration one hour before
-					setcookie("SessionData", '', time() - 3600);
-					setcookie("SessionDataLang", '', time() - 3600);		
-				}
-			}
-		}
-		/**
-		* Sets the global language object
-		* @param $languageCode the language code to use (e. g. de or en)
-		*/
-		public function SetLanguage($languageCode){
-			$args = array($languageCode);		
-			$GLOBALS['Language'] = $this->DoRequest('Kernel.InterfaceKernel','SetCurrentLanguage',json_encode($args));				
+                    if (isset($_COOKIE["r2token"]) && isset($_COOKIE["r2lang"]) && !isset($_GET["logout"]) && !isset($_SESSION["Token"]) && !isset($_SESSION["lang"])){
+                       
+                        if (empty($_SESSION)){
+                            $_SESSION["lang"] = filter_input(INPUT_COOKIE, "r2lang");
+                            $_SESSION["Token"] = filter_input(INPUT_COOKIE, "r2token");
+                        }    
+                    }	
+                    else if (isset($_GET["logout"])){
+                        setcookie("r2lang","", time() -300); 
+                        setcookie("r2token","", time() -300); 
+                    }   
 		}	
 		/**
 		* Triggers the logout if the session token is not valid anymore (for example when it is already expired.)
