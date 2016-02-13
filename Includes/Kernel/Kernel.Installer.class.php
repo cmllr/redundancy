@@ -84,7 +84,8 @@
 			$dirs["/Storage/"] = is_writeable(__REDUNDANCY_ROOT__."Storage/");
 			$dirs["/Temp/"] = is_writeable(__REDUNDANCY_ROOT__."Temp/");
 			$dirs["/Snapshots/"] = is_writeable(__REDUNDANCY_ROOT__."Snapshots/");
-			$dirs["Database-Config"] = is_writeable(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Config.class.php");			
+			$dirs["Database-Config"] = is_writeable(__REDUNDANCY_ROOT__."Includes/Kernel/Kernel.Config.class.php");
+                        $dirs["Lockfile"] = is_writeable(__REDUNDANCY_ROOT__ );
 			return $dirs;
 		}
 		public function GetExtensionStatus(){
