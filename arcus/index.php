@@ -1,9 +1,10 @@
 <html>
   <head>
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.4/css/bootstrap.min.css">
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" />
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tether/1.3.7/css/tether-theme-basic.min.css" />
-     <link rel="stylesheet" href="./arcus.css">
+     <link rel="stylesheet" href="./arcus.css">     
   </head>
   <body>
     <div id="app" class="container">      
@@ -26,13 +27,15 @@ Vue.debug = true;
 </script>
 <?php include "./routes/LogIn.vue";?> 
 <?php include "./routes/Home.vue";?> 
+<?php include "./routes/Exit.vue";?> 
 <script>
 const API = "http://web/redundancy/Includes/api.inc.php";
 const router = new VueRouter({
   root: '/',
   routes:[
-    { path: '/home/', component: Home},
-    { path: '/', component: LogIn}
+    { path: '/home', component: Home},
+    { path: '/', component: LogIn},
+    { path: '/logout',component: Exit}
   ]
 });
 Vue.use(VueRouter)

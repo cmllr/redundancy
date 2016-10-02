@@ -23,7 +23,7 @@
 	//start a session if needed	
 
 	$filePath =$_GET["i"];
-	displayImage($filePath);
+	displayImage("../Storage/".$filePath);
 	/**
 	 * create an image by a full path
 	 * @param $imagepath the path of the image

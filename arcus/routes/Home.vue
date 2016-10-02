@@ -11,28 +11,38 @@
             </div>
         </div>      
         </div>
-        <div class="col-lg-10">
-        {{ $route.params.path }}
-            <div class="list-group">
-                <a class="list-group-item active">
-                    <a class="crumb" href="#" v-for="crumb in breadcrumbs">
-                        {{ crumb }}
-                    </a>
-                </a>
-                <a v-for="item in dirContents"  class="list-group-item list-group-item-action">
-                     <i class="fa" v-bind:class="{'fa-folder': item.FilePath === null,'fa-file-o': item.FilePath !== null  }" ></i>
+        <div class="col-lg-10">        
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Last modified</th>
+                        <th>Size</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-if="dir !== '/'">                            
+                        <td>
+                            <a class="parent-dir" v-on:click="open(dirData.ParentID,true)">
+                                ../    
+                            </a>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr v-for="item in dirContents">                            
+                        <td> 
+                           <i class="fa" v-bind:class="{'fa-folder': item.FilePath === null,'fa-file-o': item.FilePath !== null  }" ></i>
                   
-                    <a  v-on:click="open(item.Id,item.FilePath == null)">                       
-                        {{ item.DisplayName }} 
-                    <a>
-                    <span class="file-meta">
-                        {{ item.SizeWithUnit }}
-                    </span>
-                    <span class="file-meta">
-                        {{ item.CreateDateTime | date }}
-                    </span>
-                </a>
-            </div>
+                            <a  v-on:click="open(item.Id,item.FilePath == null)" >                       
+                                    {{ item.DisplayName }} 
+                            <a>
+                        </td>
+                        <td>{{ item.LastChangeDateTime | date }}</td>
+                        <td>{{ item.SizeWithUnit }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
          <div class="modal fade" id="file-modal" v-if="file !== null">
         <div class="modal-dialog" role="document">
@@ -41,16 +51,33 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">{{ file.DisplayName }}</h4>
+                <h4 class="modal-title modal-file-name">{{ file.DisplayName }}</h4>
             </div>
             <div class="modal-body">
-                <p>
-                    <img v-if ="file !== null && file.MimeType.indexOf('image') !== -1" v-attr="src: './image.php?i='file.FilePath'"></img>
+                <p v-if="file !== null && file.MimeType.indexOf('image') !== -1">
+                    <img class="image-preview" :src="'./image.php?i='+file.FilePath"></img>
                 </p>
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <h5 class="list-group-item-heading">Size</h5>
+                        <p class="list-group-item-text">{{ file.SizeWithUnit }}</p>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <h5 class="list-group-item-heading">Type</h5>
+                        <p class="list-group-item-text">{{ file.MimeType }}</p>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <h5 class="list-group-item-heading">Created</h5>
+                        <p class="list-group-item-text"> {{ file.CreateDateTime | date }}</p>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <h5 class="list-group-item-heading">Changed</h5>
+                        <p class="list-group-item-text"> {{ file.LastChangeDateTime | date }}</p>
+                    </a>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
             </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -60,6 +87,7 @@
 </script>
 
 <script type="text/javascript">
+$('#myModal').modal();
 const Home = {
   template: '#home', 
   replace: true,
@@ -68,6 +96,7 @@ const Home = {
           user: {},
           dir: '/',
           dirContents: [],
+          dirData: null,
           file:null
       };
   },
@@ -97,26 +126,29 @@ const Home = {
         }
         var args = JSON.stringify([id,this.$parent.token]);
         this.$http.post(API,{method:'GetAbsolutePathById',module:'Kernel.FileSystemKernel',args:args}).then((response) => {  
-            this.show(JSON.parse(response.data));
+            this.show(JSON.parse(response.data));            
         }, (response) => {
           console.log(response);
         });       
      },
      openFile:function(id){
-         console.log(id);
-         //GetEntryById
         var args = JSON.stringify([id,this.$parent.token]);
         this.$http.post(API,{method:'GetEntryById',module:'Kernel.FileSystemKernel',args:args}).then((response) => {  
             this.file = JSON.parse(response.data);
-            $('#file-modal').modal();
-            console.log(this.file);
+            $('#file-modal').modal('show');
         }, (response) => {
-        console.log(response);
+            console.log(response);
         });  
      },
      show:function(path){     
         localStorage.setItem("dir",path);       
         this.dir = localStorage.getItem("dir");
+        var args = JSON.stringify([path,this.$parent.token]);
+        this.$http.post(API,{method:'GetEntryByAbsolutePath',module:'Kernel.FileSystemKernel',args:args}).then((response) => {  
+            this.dirData = JSON.parse(response.data);   
+        }, (response) => {
+            console.log(response);
+        }); 
         this.getFiles();       
      }
   },
@@ -130,13 +162,6 @@ const Home = {
         this.dir =  storageDir !== null ? storageDir : "/";
         this.show(this.dir);
         this.getUser();
-      }
-  },
-  computed:{
-      breadcrumbs:function(){
-          var parts = this.dir.split('/');
-          parts.unshift("/");
-          return parts;
       }
   }
 };

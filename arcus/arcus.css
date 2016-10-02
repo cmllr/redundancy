@@ -8,3 +8,14 @@
 .crumb{
     color:white;
 }
+.image-preview{
+    max-width: 100%;
+}
+.modal-file-name{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.parent-dir{
+   color:rgba(128, 128, 128, 0.78) !important;
+}
