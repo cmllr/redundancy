@@ -19,3 +19,19 @@
 .parent-dir{
    color:rgba(128, 128, 128, 0.78) !important;
 }
+.header-logo{
+	height: 2.5em;
+}
+.header-vendor{
+	font-weight: bold;
+    margin-right: -4px;
+    font-size: 1.4em;
+}
+.header-middle{
+	vertical-align: sub;
+}
+.header-instance{
+	color:#818a91;
+	font-size: small;
+    vertical-align: baseline;
+}

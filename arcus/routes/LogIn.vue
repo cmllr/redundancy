@@ -1,4 +1,4 @@
-<script type="text/x-template" id="login">
+<script type="text/x-template" id="login">    
     <div class="row">
         <div class="col-lg-4">
         </div>
