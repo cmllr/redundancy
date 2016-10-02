@@ -1,0 +1,10 @@
+.row{
+    padding-top:2em;
+}
+.file-meta{
+    color: rgba(128, 128, 128, 0.67);
+    font-style: italic;
+}
+.crumb{
+    color:white;
+}
