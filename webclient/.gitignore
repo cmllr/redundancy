@@ -1,8 +1,0 @@
-#############
-## npm, grunt, bower, distribution folder
-#############
-
-bower_components/
-node_modules/
-dist/
-#index.html
