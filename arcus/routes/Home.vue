@@ -10,22 +10,49 @@
             <span class="header-instance">
               {{ this.$parent.instance }}
             </span>
+            <span class="header-dir">
+              {{ this.dir }}
+            </span>
           </span>
         </div> 
-        <div class="col-lg-2">
-             <div class="dropdown closed">
-              <a class="dropdown-toggle" href="http://example.com" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  {{ user.DisplayName }}
-              </a>
-
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <a class="dropdown-item" href="#/logout">Logout</a>
-              </div>
-          </div>      
-        </div>
       </div>
       <div class="row">
-          <div class="col-lg-12">        
+            	<div class="col-md-3">
+			<div class="profile-sidebar">
+                <div class="profile-userpic">
+					<img :src="user.Gravatar" class="img-responsive" alt="">
+				</div>
+				<div class="profile-usertitle">
+					<div class="profile-usertitle-name">
+						{{ user.DisplayName }}
+					</div>
+					<div class="profile-usertitle-job">
+						{{ user.LoginName }}
+					</div>
+				</div>
+				<div class="profile-usermenu">
+					<ul class="nav">
+						<li>
+							<a href="#/home">
+							<i class="glyphicon glyphicon-home"></i>
+							Home </a>
+						</li>
+						<li>
+							<a href="#">
+							<i class="glyphicon glyphicon-user"></i>
+							Account Settings </a>
+						</li>
+                        <li>
+							<a href="#/logout">
+							<i class="glyphicon glyphicon-log-out"></i>
+							Logout </a>
+						</li>
+					</ul>
+				</div>
+				<!-- END MENU -->
+			</div>
+		</div>
+          <div class="col-lg-9">        
               <table class="table table-hover">
                   <thead>
                       <tr>
@@ -57,6 +84,7 @@
                       </tr>
                   </tbody>
               </table>
+              <input type="file" v-on:change="upload">
           </div>
           <div v-if="file !== null" id="demoLightbox" class="lightbox hide fade"  tabindex="-1" role="dialog" aria-hidden="true">
             <div class='lightbox-content'>
@@ -101,13 +129,14 @@
               </div>
               </div><!-- /.modal-content -->
           </div><!-- /.modal-dialog -->
-          </div><!-- /.modal -->   
+          </div><!-- /.modal -->             
       </div>
     </div>
 </script>
 
 <script type="text/javascript">
 $('#myModal').modal();
+
 const Home = {
   template: '#home', 
   replace: true,
@@ -117,7 +146,8 @@ const Home = {
           dir: '/',
           dirContents: [],
           dirData: null,
-          file:null
+          file:null,
+          upload:null
       };
   },
   methods:{
@@ -126,6 +156,7 @@ const Home = {
         this.$http.post(API,{method:'GetUser',module:'Kernel.UserKernel',args:args}).then((response) => {
            var result = JSON.parse(response.data);
            this.user = result;
+           this.user.Gravatar = "https://www.gravatar.com/avatar/" + CryptoJS.MD5(this.user.MailAddress);
         }, (response) => {
           console.log(response);
         });
@@ -170,7 +201,32 @@ const Home = {
             console.log(response);
         }); 
         this.getFiles();       
-     }
+     },
+     upload: function(e) {
+        e.preventDefault();        
+        var files = e.target.files;    
+        var formData = new FormData();
+        formData.append('file', files[0]);
+        connect = new XMLHttpRequest();
+        var vue = this;
+        connect.onreadystatechange = function (e) {
+            if(connect.readyState == 4 && connect.status == 200) {
+                 vue.getFiles();   
+            }
+        };
+        connect.onprogress = function(e){
+            if (e.lengthComputable) {
+                var percentComplete = e.loaded / e.total;
+                console.log(percentComplete);
+            } else {
+                // Unable to compute progress information since the total size is unknown
+            }
+        }
+        var args = JSON.stringify([-1,this.$parent.token,JSON.stringify(formData)]);
+        //upload throught wrapper
+        connect.open('POST', "./upload.php?token="+this.$parent.token,true);
+        connect.send(formData);       
+    }
   },
   created:function(){
       if (localStorage.getItem("token") === null){
@@ -181,7 +237,8 @@ const Home = {
         var storageDir = localStorage.getItem("dir"); 
         this.dir =  storageDir !== null ? storageDir : "/";
         this.show(this.dir);
-        this.getUser();
+        this.getUser();   
+            
       }
   }
 };
