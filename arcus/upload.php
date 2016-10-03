@@ -4,7 +4,7 @@ $file = $_FILES['file'];
 $oldPath = $file['tmp_name'];						
 move_uploaded_file($oldPath,$oldPath.'REDUNDANCY');
 $file['tmp_name'] = $oldPath.'REDUNDANCY';	
-$got =  DoRequest('http://web/redundancy/Includes/api.inc.php','Kernel.FileSystemKernel','UploadFileWrapper',json_encode(array(-1,$_GET['token'],json_encode($file))));	
+$got =  DoRequest('http://web/redundancy/Includes/api.inc.php','Kernel.FileSystemKernel','UploadFileWrapper',json_encode(array($_GET['dir'],$_GET['token'],json_encode($file))));	
 echo $got;
 function DoRequest($api,$module,$method,$args){	
         $postdata = http_build_query(
@@ -26,7 +26,8 @@ function DoRequest($api,$module,$method,$args){
         );
         $context  = stream_context_create($opts);
         $resp = file_get_contents($api, false, $context);  
-        if (is_int(json_decode($resp))){	
+        if (is_int(json_decode($resp))){
+            error_log($resp);	
             header('HTTP/1.1 403 Forbidden');				
             //Special handling if the file upload is used.
             if ($method=='UploadFileWrapper'){

@@ -43,6 +43,16 @@
 							Account Settings </a>
 						</li>
                         <li>
+							<a href="#" v-on:click="browseFile">
+							<i class="glyphicon glyphicon-upload"></i>
+							Upload </a>
+						</li>   
+                        <li>
+							<a href="#" v-on:click="newFolder">
+							<i class="glyphicon glyphicon-upload"></i>
+							New folder </a>
+						</li>
+                        <li>
 							<a href="#/logout">
 							<i class="glyphicon glyphicon-log-out"></i>
 							Logout </a>
@@ -84,7 +94,7 @@
                       </tr>
                   </tbody>
               </table>
-              <input type="file" v-on:change="upload">
+              <input class="hidden" type="file" id="file-upload" v-on:change="upload">
           </div>
           <div v-if="file !== null" id="demoLightbox" class="lightbox hide fade"  tabindex="-1" role="dialog" aria-hidden="true">
             <div class='lightbox-content'>
@@ -202,6 +212,10 @@ const Home = {
         }); 
         this.getFiles();       
      },
+     browseFile: function(e){
+         e.preventDefault();
+         document.getElementById('file-upload').click();
+     },
      upload: function(e) {
         e.preventDefault();        
         var files = e.target.files;    
@@ -222,10 +236,17 @@ const Home = {
                 // Unable to compute progress information since the total size is unknown
             }
         }
-        var args = JSON.stringify([-1,this.$parent.token,JSON.stringify(formData)]);
+        connect.onerror = function(e){
+            console.log(e);
+        }
+
+        var args = JSON.stringify([this.dirData.Id,this.$parent.token,JSON.stringify(formData)]);
         //upload throught wrapper
-        connect.open('POST', "./upload.php?token="+this.$parent.token,true);
+        connect.open('POST', "./upload.php?dir="+this.dirData.Id+"&token="+this.$parent.token,true);
         connect.send(formData);       
+    },
+    newFolder: function(e){
+        e.preventDefault();      
     }
   },
   created:function(){
@@ -237,8 +258,7 @@ const Home = {
         var storageDir = localStorage.getItem("dir"); 
         this.dir =  storageDir !== null ? storageDir : "/";
         this.show(this.dir);
-        this.getUser();   
-            
+        this.getUser();               
       }
   }
 };

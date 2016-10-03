@@ -41,6 +41,11 @@
 }
 
 
+.hidden{
+    display:none;
+}
+
+
 .profile {
   margin: 20px 0;
 }
