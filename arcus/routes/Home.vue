@@ -2,7 +2,7 @@
     <div>
       <div class="row">
         <div class="col-lg-10">
-          <img class="header-logo" src="./logo.png">  
+          <img class="header-logo" src="./logo.png">
           <span class="header-middle">
             <span class="header-vendor">
               {{ this.$parent.title }}
@@ -14,7 +14,7 @@
               {{ this.dir }}
             </span>
           </span>
-        </div> 
+        </div>
       </div>
       <div class="row">
             	<div class="col-md-3">
@@ -27,7 +27,7 @@
 						{{ user.DisplayName }}
 					</div>
 					<div class="profile-usertitle-job">
-						{{ user.LoginName }}
+						@{{ user.LoginName }}
 					</div>
 				</div>
 				<div class="profile-usermenu">
@@ -46,11 +46,12 @@
 							<a href="#" v-on:click="browseFile">
 							<i class="glyphicon glyphicon-upload"></i>
 							Upload </a>
-						</li>   
+						</li>
                         <li>
-							<a href="#" v-on:click="newFolder">
-							<i class="glyphicon glyphicon-upload"></i>
+							<a href="#" v-on:click="newFolder" data-toggle="modal" data-target=".bs-example-modal-sm">
+							<i class="glyphicon glyphicon-folder-open"></i>
 							New folder </a>
+              <input v-if="folder != null" type="text" class="form-control" v-model="folder" v-on:keyup.enter="createFolder">
 						</li>
                         <li>
 							<a href="#/logout">
@@ -62,7 +63,7 @@
 				<!-- END MENU -->
 			</div>
 		</div>
-          <div class="col-lg-9">        
+          <div class="col-lg-9">
               <table class="table table-hover">
                   <thead>
                       <tr>
@@ -72,21 +73,21 @@
                       </tr>
                   </thead>
                   <tbody>
-                      <tr v-if="dir !== '/'">                            
+                      <tr v-if="dir !== '/'">
                           <td>
-                              <a class="parent-dir" v-on:click="open(dirData.ParentID,true)">
-                                  ../    
+                              <a  href="#"  class="parent-dir" v-on:click="open($event,dirData.ParentID,true)">
+                                  ../
                               </a>
                           </td>
                           <td></td>
                           <td></td>
                       </tr>
-                      <tr v-for="item in dirContents">                            
-                          <td> 
+                      <tr v-for="item in dirContents">
+                          <td>
                              <i class="fa" v-bind:class="{'fa-folder': item.FilePath === null,'fa-file-o': item.FilePath !== null  }" ></i>
-                    
-                              <a  v-on:click="open(item.Id,item.FilePath == null)" >                       
-                                      {{ item.DisplayName }} 
+
+                              <a href="#" v-on:click="open($event,item.Id,item.FilePath == null)" >
+                                      {{ item.DisplayName }}
                               <a>
                           </td>
                           <td>{{ item.LastChangeDateTime | date }}</td>
@@ -102,7 +103,7 @@
               <div class="lightbox-caption"><p>Your caption here</p></div>
             </div>
           </div>
-           <div class="modal fade" id="file-modal" v-if="file !== null">
+           <div class="modal fade " data-backdrop="false" id="file-modal" v-if="file !== null">
           <div class="modal-dialog" role="document">
               <div class="modal-content">
               <div class="modal-header">
@@ -139,7 +140,7 @@
               </div>
               </div><!-- /.modal-content -->
           </div><!-- /.modal-dialog -->
-          </div><!-- /.modal -->             
+          </div><!-- /.modal -->
       </div>
     </div>
 </script>
@@ -148,7 +149,7 @@
 $('#myModal').modal();
 
 const Home = {
-  template: '#home', 
+  template: '#home',
   replace: true,
   data: function(){
       return {
@@ -157,7 +158,8 @@ const Home = {
           dirContents: [],
           dirData: null,
           file:null,
-          upload:null
+          upload:null,
+          folder:null
       };
   },
   methods:{
@@ -168,64 +170,65 @@ const Home = {
            this.user = result;
            this.user.Gravatar = "https://www.gravatar.com/avatar/" + CryptoJS.MD5(this.user.MailAddress);
         }, (response) => {
-          console.log(response);
+          console.log(responsglyphicone);
         });
      },
      getFiles:function(){
         var args = JSON.stringify([this.dir,this.$parent.token]);
-        this.dirContents = [];  
+        this.dirContents = [];
         this.$http.post(API,{method:'GetContent',module:'Kernel.FileSystemKernel',args:args}).then((response) => {
            this.dirContents = JSON.parse(response.data);
         }, (response) => {
           console.log(response);
         });
      },
-     open:function(id,isDir){        
+     open:function($event,id,isDir){
+        $event.preventDefault();
         if (!isDir){
             this.openFile(id);
             return;
         }
         var args = JSON.stringify([id,this.$parent.token]);
-        this.$http.post(API,{method:'GetAbsolutePathById',module:'Kernel.FileSystemKernel',args:args}).then((response) => {  
-            this.show(JSON.parse(response.data));            
+        this.$http.post(API,{method:'GetAbsolutePathById',module:'Kernel.FileSystemKernel',args:args}).then((response) => {
+            this.show(JSON.parse(response.data));
         }, (response) => {
           console.log(response);
-        });       
+        });
      },
      openFile:function(id){
         var args = JSON.stringify([id,this.$parent.token]);
-        this.$http.post(API,{method:'GetEntryById',module:'Kernel.FileSystemKernel',args:args}).then((response) => {  
+        this.$http.post(API,{method:'GetEntryById',module:'Kernel.FileSystemKernel',args:args}).then((response) => {
             this.file = JSON.parse(response.data);
             $('#file-modal').modal('show');
         }, (response) => {
             console.log(response);
-        });  
+        });
      },
-     show:function(path){     
-        localStorage.setItem("dir",path);       
+     show:function(path){
+        localStorage.setItem("dir",path);
         this.dir = localStorage.getItem("dir");
         var args = JSON.stringify([path,this.$parent.token]);
-        this.$http.post(API,{method:'GetEntryByAbsolutePath',module:'Kernel.FileSystemKernel',args:args}).then((response) => {  
-            this.dirData = JSON.parse(response.data);   
+        this.$http.post(API,{method:'GetEntryByAbsolutePath',module:'Kernel.FileSystemKernel',args:args}).then((response) => {
+            this.dirData = JSON.parse(response.data);
         }, (response) => {
             console.log(response);
-        }); 
-        this.getFiles();       
+        });
+        this.getFiles();
      },
      browseFile: function(e){
          e.preventDefault();
          document.getElementById('file-upload').click();
      },
      upload: function(e) {
-        e.preventDefault();        
-        var files = e.target.files;    
+        e.preventDefault();
+        var files = e.target.files;
         var formData = new FormData();
         formData.append('file', files[0]);
         connect = new XMLHttpRequest();
         var vue = this;
         connect.onreadystatechange = function (e) {
             if(connect.readyState == 4 && connect.status == 200) {
-                 vue.getFiles();   
+                 vue.getFiles();
             }
         };
         connect.onprogress = function(e){
@@ -243,22 +246,39 @@ const Home = {
         var args = JSON.stringify([this.dirData.Id,this.$parent.token,JSON.stringify(formData)]);
         //upload throught wrapper
         connect.open('POST', "./upload.php?dir="+this.dirData.Id+"&token="+this.$parent.token,true);
-        connect.send(formData);       
+        connect.send(formData);
     },
     newFolder: function(e){
-        e.preventDefault();      
+        e.preventDefault();
+        if (this.folder === ""){
+          this.folder = null;
+        }else{
+          this.folder = "";
+        }
+    },
+    createFolder: function(){
+      console.log(this.folder);
+      //CreateDirectory($name,$folder->Id,$token)
+      var args = JSON.stringify([this.folder,this.dirData.Id,this.$parent.token]);
+      this.$http.post(API,{method:'CreateDirectory',module:'Kernel.FileSystemKernel',args:args}).then((response) => {
+        console.log(response);
+        this.getFiles();
+        this.folder = null;
+      }, (response) => {
+          console.log(response);
+      });
     }
   },
   created:function(){
       if (localStorage.getItem("token") === null){
           //redirect to login
-          window.location.href="#/"; 
-      }else{            
+          window.location.href="#/";
+      }else{
         this.$parent.token = localStorage.getItem("token");
-        var storageDir = localStorage.getItem("dir"); 
+        var storageDir = localStorage.getItem("dir");
         this.dir =  storageDir !== null ? storageDir : "/";
         this.show(this.dir);
-        this.getUser();               
+        this.getUser();
       }
   }
 };
